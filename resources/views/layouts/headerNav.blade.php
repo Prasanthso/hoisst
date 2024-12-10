@@ -289,27 +289,27 @@
                 </a>
                 <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="components-alerts.html">
+                        <a href="#">
                             <i class="bi bi-circle"></i><span>Raw Materials</span>
                         </a>
                     </li>
                     <li>
-                        <a href="components-accordion.html">
+                        <a href="#">
                             <i class="bi bi-circle"></i><span>Packing Materials</span>
                         </a>
                     </li>
                     <li>
-                        <a href="components-badges.html">
+                        <a href="#">
                             <i class="bi bi-circle"></i><span>Overheads</span>
                         </a>
                     </li>
                     <li>
-                        <a href="components-breadcrumbs.html">
+                        <a href="#">
                             <i class="bi bi-circle"></i><span>Products</span>
                         </a>
                     </li>
                     <li>
-                        <a href="components-buttons.html">
+                        <a href="{{ route('category') }}'"">
                             <i class="bi bi-circle"></i><span>Category</span>
                         </a>
                     </li>
