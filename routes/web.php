@@ -27,5 +27,9 @@ Route::post('/login', [LoginController::class, 'verifyLogin'])->name('login.veri
 //     return view('category');
 // });
 
-Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+Route::get('/dashboard', function () {
+    return view('rawMaterial');
+})->name('dashboard');
+
+Route::get('/category', [CategoryController::class, 'index'])->name('categories.index');
 Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');

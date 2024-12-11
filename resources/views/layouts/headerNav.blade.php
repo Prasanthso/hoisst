@@ -309,7 +309,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('category') }}'"">
+                        <a href="{{ 'category' }}">
                             <i class="bi bi-circle"></i><span>Category</span>
                         </a>
                     </li>

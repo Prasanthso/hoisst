@@ -29,7 +29,7 @@ class LoginController extends Controller
 
         if ($user && $user->password === $password) {
             // Login successful, set success message in session
-            return redirect()->route('login')->with('success', 'Login successful!');
+            return redirect()->route('dashboard')->with('success', 'Login successful!');
         }
 
         // Login failed
