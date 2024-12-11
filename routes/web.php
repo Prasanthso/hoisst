@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,5 +16,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('rawMaterial');
-});
+    return view('landingPage');
+})->name('landing');
+
+// Login Routes
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login'); // Serves the login form
+Route::post('/login', [LoginController::class, 'verifyLogin'])->name('login.verify'); // Verifies credentials
+
+// Route::get('/', function () {
+//     return view('category');
+// });
+
+Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
