@@ -37,19 +37,15 @@ Route::get('/rawmaterial', function () {
     return view('rawMaterial');
 })->name('rawMaterial');
 
-// Route::get('/category', function () {
-//     return view('addcategory');
-// })->name('category');
-
-// Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-// Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
-
-// Route::get('/category', function () {
-//     $categories = DB::table('categories')->get();
-//     // dd($categories); // Fetch all categories from the database
-//     return view('addcategory', compact('categories')); // Pass categories to the view
-// })->name('category');
 
 Route::get('/category', [CategoryItemController::class, 'create'])->name('category.create');
 Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('categoryitem.store');
+
+Route::get('/addrawmaterial', function () {
+    return view('addRawmaterial');
+})->name('addrawmaterial');
+
+Route::get('/category', function () {
+    return view('addcategory');
+})->name('category');
 
