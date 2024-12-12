@@ -20,12 +20,11 @@
                                 @csrf
                                 <div class="col-md-12">
                                     <label for="inputNanme4" class="form-label">Choose Category For</label>
-                                    <select id="inputState" class="form-select">
-                                        <option selected>Choose...</option>
-                                        <option>Raw Materials</option>
-                                        <option>Packing Materials</option>
-                                        <option>Overheads</option>
-                                        <option>Products</option>
+                                    <select id="inputState" name="categoryId" class="form-select">
+                                        <option selected disabled>Choose...</option>
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->categoryname }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="col-12">
