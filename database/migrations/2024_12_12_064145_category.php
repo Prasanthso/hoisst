@@ -14,7 +14,7 @@ class CreateCategoryTable extends Migration
 
             Schema::create('categories', function (Blueprint $table) {
                 $table->id(); // Auto-incrementing primary key
-                $table->string('categoryname'); // Column for category name
+                $table->string('categoryname')->unique(); // Column for category name
                 $table->timestamps(); // Created and updated timestamps
             });
 

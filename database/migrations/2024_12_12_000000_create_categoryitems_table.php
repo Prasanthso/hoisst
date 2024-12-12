@@ -17,7 +17,7 @@ class CreateCategoryItemsTable extends Migration
                 $table->string('categoryId');
                 $table->string('itemname');
                 $table->string('description');
-                $table->string('created_user');
+                $table->string('created_user')->nullable();
                 $table->timestamps(); // Created and updated timestamps
             });
 

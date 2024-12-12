@@ -13,10 +13,12 @@
                 <div class="col-lg-6">
 
                     <div class="card">
+                        @if(session('success'))
+                            <div class="alert alert-success">{{ session('success') }}</div>
+                            @endif
                         <div class="card-body">
-
                             <!-- Vertical Form -->
-                            <form action="{{ route('categoryitem.store') }}" class="row g-3 mt-2">
+                            <form method="POST" action="{{ route('categoryitem.store') }}" class="row g-3 mt-2">
                                 @csrf
                                 <div class="col-md-12">
                                     <label for="inputNanme4" class="form-label">Choose Category For</label>
@@ -26,17 +28,23 @@
                                             <option value="{{ $category->id }}">{{ $category->categoryname }}</option>
                                         @endforeach
                                     </select>
+                                    @error('categoryId')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
                                 </div>
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Category Name</label>
-                                    <input type="text" class="form-control" id="inputNanme4">
+                                    <input type="text" class="form-control" id="inputNanme4" name="itemname">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Description</label>
                                     <div class="form-floating">
-                                        <textarea class="form-control" placeholder="Category Description" id="floatingTextarea" style="height: 100px;"></textarea>
+                                        <textarea class="form-control" placeholder="Category Description" name="description" id="floatingTextarea" style="height: 100px;"></textarea>
                                         <label for="floatingTextarea">Category Description</label>
                                     </div>
+                                    @error('description')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary">Save</button>

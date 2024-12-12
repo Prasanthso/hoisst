@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CategoryItemController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -29,19 +30,26 @@ Route::post('/login', [LoginController::class, 'verifyLogin'])->name('login.veri
 // });
 
 Route::get('/dashboard', function () {
-    return view('rawMaterial');
+    return view('dashboard');
 })->name('dashboard');
 
 Route::get('/rawmaterial', function () {
     return view('rawMaterial');
 })->name('rawMaterial');
 
-Route::get('/category', function () {
-    return view('addcategory');
-})->name('category');
+// Route::get('/category', function () {
+//     return view('addcategory');
+// })->name('category');
 
-Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+// Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+// Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
 
-Route::get('/category/categoryitem/create', [CategoryItemController::class, 'create'])->name('categoryitem.create');
-Route::post('/category/categoryitem/store', [CategoryItemController::class, 'store'])->name('categoryitem.store');
+// Route::get('/category', function () {
+//     $categories = DB::table('categories')->get();
+//     // dd($categories); // Fetch all categories from the database
+//     return view('addcategory', compact('categories')); // Pass categories to the view
+// })->name('category');
+
+Route::get('/category', [CategoryItemController::class, 'create'])->name('category.create');
+Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('categoryitem.store');
+
