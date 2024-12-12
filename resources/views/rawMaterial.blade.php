@@ -3,8 +3,11 @@
 @section('content') <!-- Defining the 'content' section -->
 <main id="main" class="main">
 
-    <div class="pagetitle">
+    <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
         <h1>Raw Material</h1>
+        <a href="{{ 'addrawmaterial' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
+            <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
+        </a>
     </div><!-- End Page Title -->
 
     <section class="section dashboard">
@@ -53,37 +56,37 @@
             </div><!-- End Left side columns -->
             <div class="col-lg-1">
             </div>
-                <!-- Right side columns -->
-                <div class="col-lg-7">
-                    <div class="row">
-                        <!-- Bordered Table -->
-                        <table class="table table-bordered">
-                            <thead class="custom-header table-primary">
-                                <tr>
-                                    <th scope="col">S.NO</th>
-                                    <th scope="col">Raw Materials</th>
-                                    <th scope="col">RM Code</th>
-                                    <th scope="col">Raw Material Category</th>
-                                    <th scope="col">Price(Rs)</th>
-                                    <th scope="col">UoM</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>SunFlower oil</td>
-                                    <td>RM0001</td>
-                                    <td>Oils</td>
-                                    <td>300</td>
-                                    <td>Ltr</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <!-- End Bordered Table -->
+            <!-- Right side columns -->
+            <div class="col-lg-7">
+                <div class="row">
+                    <!-- Bordered Table -->
+                    <table class="table table-bordered">
+                        <thead class="custom-header table-primary">
+                            <tr>
+                                <th scope="col">S.NO</th>
+                                <th scope="col">Raw Materials</th>
+                                <th scope="col">RM Code</th>
+                                <th scope="col">Raw Material Category</th>
+                                <th scope="col">Price(Rs)</th>
+                                <th scope="col">UoM</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>SunFlower oil</td>
+                                <td>RM0001</td>
+                                <td>Oils</td>
+                                <td>300</td>
+                                <td>Ltr</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- End Bordered Table -->
 
-                    </div>
-                </div><!-- End Right side columns -->
-            </div>
+                </div>
+            </div><!-- End Right side columns -->
+        </div>
     </section>
 
 </main><!-- End #main -->
