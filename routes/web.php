@@ -31,5 +31,13 @@ Route::get('/dashboard', function () {
     return view('rawMaterial');
 })->name('dashboard');
 
-Route::get('/category', [CategoryController::class, 'index'])->name('categories.index');
+Route::get('/rawmaterial', function () {
+    return view('rawMaterial');
+})->name('rawMaterial');
+
+Route::get('/category', function () {
+    return view('addcategory');
+})->name('category');
+
+Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
