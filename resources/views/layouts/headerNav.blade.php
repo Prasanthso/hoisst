@@ -289,7 +289,7 @@
                 </a>
                 <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="#">
+                        <a href="{{ 'rawmaterial' }}">
                             <i class="bi bi-circle"></i><span>Raw Materials</span>
                         </a>
                     </li>
