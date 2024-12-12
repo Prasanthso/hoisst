@@ -16,13 +16,16 @@
                         <div class="card-body">
 
                             <!-- Vertical Form -->
-                            <form class="row g-3 mt-2">
+                            <form action="{{ route('categoryitem.store') }}" class="row g-3 mt-2">
+                                @csrf
                                 <div class="col-md-12">
                                     <label for="inputNanme4" class="form-label">Choose Category For</label>
                                     <select id="inputState" class="form-select">
                                         <option selected>Choose...</option>
-                                        <option>Raw Material</option>
-                                        <option>Packing Material</option>
+                                        <option>Raw Materials</option>
+                                        <option>Packing Materials</option>
+                                        <option>Overheads</option>
+                                        <option>Products</option>
                                     </select>
                                 </div>
                                 <div class="col-12">

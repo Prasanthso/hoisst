@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\CategoryItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,3 +42,6 @@ Route::get('/category', function () {
 
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+
+Route::get('/category/categoryitem/create', [CategoryItemController::class, 'create'])->name('categoryitem.create');
+Route::post('/category/categoryitem/store', [CategoryItemController::class, 'store'])->name('categoryitem.store');
