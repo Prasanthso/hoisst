@@ -115,7 +115,7 @@
             </div>
             <div class="modal-body">
                 <table class="table table-bordered">
-                    <thead class="custom-header table-primary" style="border-bottom: none;">
+                    <thead class="custom-header table-primary">
                         <tr>
                             <th>Effective From</th>
                             <th>Price</th>
