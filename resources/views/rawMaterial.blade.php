@@ -41,8 +41,8 @@
                                 </div>
 
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="gridCheck2" checked>
-                                    <label class="form-check-label" for="gridCheck2">
+                                    <input class="form-check-input" type="checkbox" id="gridCheck3" checked>
+                                    <label class="form-check-label" for="gridCheck3">
                                         Bread
                                     </label>
                                 </div>
