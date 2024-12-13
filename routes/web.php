@@ -45,7 +45,7 @@ Route::get('/addrawmaterial', function () {
     return view('addRawmaterial');
 })->name('addrawmaterial');
 
-Route::get('/category', function () {
-    return view('addcategory');
-})->name('category');
+// Route::get('/category', function () {
+//     return view('addcategory');
+// })->name('category');
 
