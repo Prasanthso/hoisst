@@ -16,7 +16,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('rmcode', 64)->unique();
             $table->string('uom');
-            $table->string('raw_material_category');
+            $table->integer('category_id1')->nullable();
+            $table->integer('category_id2')->nullable();
+            $table->integer('category_id3')->nullable();
+            $table->integer('category_id4')->nullable();
+            $table->integer('category_id5')->nullable();
             $table->string('price');
             $table->string('price_update_frequency');
             $table->string('price_threshold');

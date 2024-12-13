@@ -16,10 +16,11 @@
                         <div class="card-body">
 
                             <!-- Vertical Form -->
-                            <form class="row g-3 mt-2">
+                            <form method="POST" action="{{ route('rawmaterials.store') }}" class="row g-3 mt-2">
+                                @csrf
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Name</label>
-                                    <input type="text" class="form-control" id="inputNanme4">
+                                    <input type="text" class="form-control" id="inputNanme4" name="name">
                                 </div>
                                 <!-- <div class="col-12">
                                     <label for="inputNanme4" class="form-label">RM Code</label>
@@ -27,37 +28,31 @@
                                 </div> -->
                                 <div class="col-md-12">
                                     <label for="inputNanme4" class="form-label">Choose Category For</label>
-                                    <select id="inputState" class="form-select">
+                                    <select id="inputState" class="form-select" name="uom">
                                         <option selected>UoM</option>
                                         <option>Ltr</option>
                                         <option>Kgs</option>
                                     </select>
                                 </div>
                                 <div class="col-md-12">
-                                    <label for="inputNanme4" class="form-label">Raw Material Category</label>
-                                    <select class="form-multi-select" id="ms1" multiple data-coreui-search="global">
-                                        <option value="0">Angular</option>
-                                        <option value="1">Bootstrap</option>
-                                        <option value="2">React.js</option>
-                                        <option value="3">Vue.js</option>
-                                        <optgroup label="backend">
-                                            <option value="4">Django</option>
-                                            <option value="5">Laravel</option>
-                                            <option value="6">Node.js</option>
-                                        </optgroup>
+                                    <label for="categorySelect" class="form-label">Raw Material Category</label>
+                                    <select id="categorySelect" class="form-select select2" name="category_ids[]" multiple>
+                                        @foreach($rawMaterialCategories as $categories)
+                                        <option value="{{ $categories->id }}">{{ $categories->itemname }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="inputNanme4">
+                                    <input type="text" class="form-control" id="inputNanme4" name="price">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Pricing update frequency</label>
-                                    <input type="text" class="form-control" id="inputNanme4">
+                                    <input type="text" class="form-control" id="inputNanme4" name="price_update_frequency">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Price threshold</label>
-                                    <input type="text" class="form-control" id="inputNanme4">
+                                    <input type="text" class="form-control" id="inputNanme4" name="price_threshold">
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary">
@@ -87,5 +82,19 @@
 <script src="{{ asset('assets/vendor/tinymce/tinymce.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/php-email-form/validate.js') }}"></script>
 
-<!-- Template Main JS File -->
-<script src="{{ asset('js/main.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#categorySelect').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Choose Categories',
+            allowClear: true
+        });
+    });
+</script>
+
+
+<!--Template Main JS File-->
+<script src="{{ asset('js/main.js') }}">
+</script>
