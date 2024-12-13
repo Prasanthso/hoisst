@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CategoryItemController;
-
+use App\Http\Controllers\RawMaterialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,9 +41,8 @@ Route::get('/rawmaterial', function () {
 Route::get('/category', [CategoryItemController::class, 'create'])->name('category.create');
 Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('categoryitem.store');
 
-Route::get('/addrawmaterial', function () {
-    return view('addRawmaterial');
-})->name('addrawmaterial');
+Route::get('/addrawmaterial', [RawMaterialController::class, 'create'])->name('rawmaterial.create');
+
 
 // Route::get('/category', function () {
 //     return view('addcategory');
