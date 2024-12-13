@@ -42,7 +42,7 @@ Route::get('/category', [CategoryItemController::class, 'create'])->name('catego
 Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('categoryitem.store');
 
 Route::get('/addrawmaterial', [RawMaterialController::class, 'create'])->name('rawmaterial.create');
-
+Route::post('/saverawmaterial', [RawMaterialController::class, 'store'])->name('rawmaterials.store');
 
 // Route::get('/category', function () {
 //     return view('addcategory');
