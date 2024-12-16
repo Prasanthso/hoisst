@@ -27,9 +27,9 @@ Route::post('/login', [LoginController::class, 'verifyLogin'])->name('login.veri
 //     return view('category');
 // });
 
-Route::get('/dashboard', function () {
-    return view('rawMaterial');
-})->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('rawMaterial');
+// })->name('dashboard'); 
 
 Route::get('/rawmaterial', function () {
     return view('rawMaterial');
@@ -41,3 +41,7 @@ Route::get('/category', function () {
 
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard'); 
