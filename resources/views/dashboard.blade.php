@@ -3,191 +3,244 @@
 @section('content') <!-- Defining the 'content' section -->
 <main id="main" class="main">
 
+<style>
+    body {
+        background-color: #ffffff !important;
+    }
+</style>
+
+
     <div class="pagetitle">
-        <h1>Dashboard</h1>
+        <h1><b>DASHBOARD</b></h1>
     </div><!-- End Page Title -->
 
     <section class="section dashboard">
-        <div class="row">
-            <!-- Left side columns -->
-            <div class="col-lg-3">
-
-                <!-- Recent Activity -->
-                <div class="card">
-
-
-                    <div class="card-body">
-                        <h5 class="card-title">Raw Material Categories</h5>
-
-                        <div class="activity">
-
-                            <div class="activity-item d-flex">
-                                <div class="activite-label">32 min</div>
-                                <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
-                                <div class="activity-content">
-                                    Quia quae rerum <a href="#" class="fw-bold text-dark">explicabo officiis</a> beatae
-                                </div>
-                            </div><!-- End activity item-->
-
-                            <div class="activity-item d-flex">
-                                <div class="activite-label">56 min</div>
-                                <i class='bi bi-circle-fill activity-badge text-danger align-self-start'></i>
-                                <div class="activity-content">
-                                    Voluptatem blanditiis blanditiis eveniet
-                                </div>
-                            </div><!-- End activity item-->
-
-                            <div class="activity-item d-flex">
-                                <div class="activite-label">2 hrs</div>
-                                <i class='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
-                                <div class="activity-content">
-                                    Voluptates corrupti molestias voluptatem
-                                </div>
-                            </div><!-- End activity item-->
-
-                            <div class="activity-item d-flex">
-                                <div class="activite-label">1 day</div>
-                                <i class='bi bi-circle-fill activity-badge text-info align-self-start'></i>
-                                <div class="activity-content">
-                                    Tempore autem saepe <a href="#" class="fw-bold text-dark">occaecati voluptatem</a> tempore
-                                </div>
-                            </div><!-- End activity item-->
-
-                            <div class="activity-item d-flex">
-                                <div class="activite-label">2 days</div>
-                                <i class='bi bi-circle-fill activity-badge text-warning align-self-start'></i>
-                                <div class="activity-content">
-                                    Est sit eum reiciendis exercitationem
-                                </div>
-                            </div><!-- End activity item-->
-
-                            <div class="activity-item d-flex">
-                                <div class="activite-label">4 weeks</div>
-                                <i class='bi bi-circle-fill activity-badge text-muted align-self-start'></i>
-                                <div class="activity-content">
-                                    Dicta dolorem harum nulla eius. Ut quidem quidem sit quas
-                                </div>
-                            </div><!-- End activity item-->
-
-                        </div>
-
-                    </div>
-                </div><!-- End Recent Activity -->
+ 
 
             </div><!-- End Left side columns -->
             <!-- Right side columns -->
-            <div class="col-lg-8">
-                <div class="row">
-
-                    <!-- Sales Card -->
-                    <div class="col-xxl-4 col-md-6">
-                        <div class="card info-card sales-card">
-
-                            <div class="filter">
-                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                    <li class="dropdown-header text-start">
-                                        <h6>Filter</h6>
-                                    </li>
-
-                                    <li><a class="dropdown-item" href="#">Today</a></li>
-                                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                                </ul>
-                            </div>
-
-                            <div class="card-body">
-                                <h5 class="card-title">Sales <span>| Today</span></h5>
-
-                                <div class="d-flex align-items-center">
-                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-cart"></i>
-                                    </div>
-                                    <div class="ps-3">
-                                        <h6>145</h6>
-                                        <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
-
-                                    </div>
-                                </div>
-                            </div>
-
+    <!-- First Row of Boxes -->
+    <div class="row d-flex flex-wrap justify-content-between" style="margin: 0 -10px;">
+        <!-- Box 1 -->
+        <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <div class="card info-card revenue-card" style="background-color: rgb(255, 226, 229); border-radius: 20px; padding: 15px 0 15px 0;">
+                <div class="card-body">
+                    <div class="d-flex flex-column align-items-start">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
+                            <i class="bi bi-currency-dollar"></i>
                         </div>
-                    </div><!-- End Sales Card -->
-
-                    <!-- Revenue Card -->
-                    <div class="col-xxl-4 col-md-6">
-                        <div class="card info-card revenue-card">
-
-                            <div class="filter">
-                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                    <li class="dropdown-header text-start">
-                                        <h6>Filter</h6>
-                                    </li>
-
-                                    <li><a class="dropdown-item" href="#">Today</a></li>
-                                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                                </ul>
-                            </div>
-
-                            <div class="card-body">
-                                <h5 class="card-title">Revenue <span>| This Month</span></h5>
-
-                                <div class="d-flex align-items-center">
-                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-currency-dollar"></i>
-                                    </div>
-                                    <div class="ps-3">
-                                        <h6>$3,264</h6>
-                                        <span class="text-success small pt-1 fw-bold">8%</span> <span class="text-muted small pt-2 ps-1">increase</span>
-
-                                    </div>
-                                </div>
-                            </div>
-
+                        <div class="ps-3" style="margin-bottom: 10px;">
+                            <h6>3500</h6>
                         </div>
-                    </div><!-- End Revenue Card -->
-
-                    <!-- Customers Card -->
-                    <div class="col-xxl-4 col-xl-12">
-
-                        <div class="card info-card customers-card">
-
-                            <div class="filter">
-                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                    <li class="dropdown-header text-start">
-                                        <h6>Filter</h6>
-                                    </li>
-
-                                    <li><a class="dropdown-item" href="#">Today</a></li>
-                                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                                </ul>
-                            </div>
-
-                            <div class="card-body">
-                                <h5 class="card-title">Customers <span>| This Year</span></h5>
-
-                                <div class="d-flex align-items-center">
-                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-people"></i>
-                                    </div>
-                                    <div class="ps-3">
-                                        <h6>1244</h6>
-                                        <span class="text-danger small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">decrease</span>
-
-                                    </div>
-                                </div>
-
-                            </div>
+                        <div class="ps-3">
+                            <span class="text-muted small pt-2 ps-1"><b>Raw Materials</b></span>
                         </div>
-
-                    </div><!-- End Customers Card -->
-
+                    </div>
                 </div>
-            </div><!-- End Right side columns -->
+            </div>
+        </div>
+
+        <!-- Box 2 -->
+        <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <div class="card info-card revenue-card" style="background-color: rgb(255,244,222); border-radius: 20px; padding: 15px 0 15px 0;">
+                <div class="card-body">
+                    <div class="d-flex flex-column align-items-start">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div class="ps-3" style="margin-bottom: 10px;">
+                            <h6>300</h6>
+                        </div>
+                        <div class="ps-3">
+                            <span class="text-muted small pt-2 ps-1"><b>Packing Materials</b></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Box 3 -->
+        <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <div class="card info-card revenue-card" style="background-color: rgb(220,252,231); border-radius: 20px; padding: 15px 0 15px 0;">
+                <div class="card-body">
+                    <div class="d-flex flex-column align-items-start">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div class="ps-3" style="margin-bottom: 10px;">
+                            <h6>125</h6>
+                        </div>
+                        <div class="ps-3">
+                            <span class="text-muted small pt-2 ps-1"><b>Overheads</b></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Box 4 -->
+        <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <div class="card info-card revenue-card" style="background-color: rgb(243,232,255); border-radius: 20px; padding: 15px 0 15px 0;">
+                <div class="card-body">
+                    <div class="d-flex flex-column align-items-start">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div class="ps-3" style="margin-bottom: 10px;">
+                            <h6>500</h6>
+                        </div>
+                        <div class="ps-3">
+                            <span class="text-muted small pt-2 ps-1"><b>Products</b></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Box 5 -->
+        <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <div class="card info-card revenue-card" style="background-color: rgb(214,236,236); border-radius: 20px; padding: 15px 0 15px 0;">
+                <div class="card-body">
+                    <div class="d-flex flex-column align-items-start">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div class="ps-3" style="margin-bottom: 10px;">
+                            <h6>445</h6>
+                        </div>
+                        <div class="ps-3">
+                            <span class="text-muted small pt-2 ps-1"><b>Recipes</b></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second Row of Boxes -->
+    <div class="row d-flex flex-wrap justify-content-between" style="margin: 0 -10px;">
+        <!-- Box 6 -->
+        <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <div class="card info-card revenue-card" style="background-color: rgb(212,245,255); border-radius: 20px; padding: 15px 0 15px 0;">
+                <div class="card-body">
+                    <div class="d-flex flex-column align-items-start">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div class="ps-3" style="margin-bottom: 10px;">
+                            <h6>125</h6>
+                        </div>
+                        <div class="ps-3">
+                            <span class="text-muted small pt-2 ps-1"><b>Raw Materail categories</b></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Box 7 -->
+        <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <div class="card info-card revenue-card" style="background-color: rgb(255,254,222); border-radius: 20px; padding: 15px 0 15px 0;">
+                <div class="card-body">
+                    <div class="d-flex flex-column align-items-start">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div class="ps-3" style="margin-bottom: 10px;">
+                            <h6>102</h6>
+                        </div>
+                        <div class="ps-3">
+                            <span class="text-muted small pt-2 ps-1"><b>Packing Material categories</b></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Box 8 -->
+        <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <div class="card info-card revenue-card" style="background-color: rgb(223,234,227); border-radius: 20px; padding: 15px 0 15px 0;">
+                <div class="card-body">
+                    <div class="d-flex flex-column align-items-start">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div class="ps-3" style="margin-bottom: 10px;">
+                            <h6>03</h6>
+                        </div>
+                        <div class="ps-3">
+                            <span class="text-muted small pt-2 ps-1"><b>Overheads Categories</b></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Box 9 -->
+        <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <div class="card info-card revenue-card" style="background-color: rgb(232,238,255); border-radius: 20px; padding: 15px 0 15px 0;">
+                <div class="card-body">
+                    <div class="d-flex flex-column align-items-start">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div class="ps-3" style="margin-bottom: 10px;">
+                            <h6>29</h6>
+                        </div>
+                        <div class="ps-3">
+                            <span class="text-muted small pt-2 ps-1"><b>Products Categories</b></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Box 10 -->
+        <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <div class="card info-card revenue-card" style="background-color: rgb(249,207,180); border-radius: 20px; padding: 15px 0 15px 0;">
+                <div class="card-body">
+                    <div class="d-flex flex-column align-items-start">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div class="ps-3" style="margin-bottom: 10px;">
+                            <h6>14</h6>
+                        </div>
+                        <div class="ps-3">
+                            <span class="text-muted small pt-2 ps-1"><b>Alert Messages</b></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+  <!-- Box 11 -->
+  <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <div class="card info-card revenue-card" style="background-color: rgb(180,249,242); border-radius: 20px; padding: 15px 0 15px 0;">
+                <div class="card-body">
+                    <div class="d-flex flex-column align-items-start">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div class="ps-3" style="margin-bottom: 10px;">
+                            <h6>14</h6>
+                        </div>
+                        <div class="ps-3">
+                            <span class="text-muted small pt-2 ps-1"><b>Products with high & low margins</b></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+                <!-- End Right side columns -->
         </div>
     </section>
 
