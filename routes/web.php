@@ -29,18 +29,22 @@ Route::post('/login', [LoginController::class, 'verifyLogin'])->name('login.veri
 //     return view('category');
 // });
 
-Route::get('/rawmaterial', function () {
-    return view('rawMaterial');
-})->name('rawMaterial');
+// Route::get('/rawmaterial', function () {
+//     return view('rawMaterial');
+// })->name('rawMaterial');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->name('dashboard'); 
+})->name('dashboard');
 
 Route::get('/category', [CategoryItemController::class, 'create'])->name('category.create');
 Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('categoryitem.store');
 
 Route::get('/addrawmaterial', [RawMaterialController::class, 'create'])->name('rawmaterial.create');
 Route::post('/saverawmaterial', [RawMaterialController::class, 'store'])->name('rawmaterials.store');
+
+Route::get('/rawmaterial', [RawMaterialController::class, 'index'])->name('rawmaterials.index');
+Route::post('/update-material-price/{id}', [RawMaterialController::class, 'updatePrice']);
+
 
 

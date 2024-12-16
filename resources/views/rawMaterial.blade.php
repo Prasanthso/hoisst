@@ -71,34 +71,28 @@
                             </tr>
                         </thead>
                         <tbody id="rawMaterialTable">
+                            @foreach ($rawMaterials as $index => $material)
                             <tr>
                                 <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
                                 </td>
-                                <td>1</td>
-                                <td>SunFlower oil</td>
-                                <td>RM0001</td>
-                                <td>Oils</td>
+                                <td>{{ $index + 1 }}</td> <!-- Auto-increment S.NO -->
+                                <td>{{ $material->name }}</td> <!-- Raw Material Name -->
+                                <td>{{ $material->rmcode }}</td> <!-- RM Code -->
                                 <td>
-                                    <span class="price-text">300</span>
-                                    <input type="text" class="form-control price-input d-none" style="width: 80px;" value="300">
+                                    {{ $material->category_name1 ?? '' }}
+                                    {{ $material->category_name2 ? ', ' . $material->category_name2 : '' }}
+                                    {{ $material->category_name3 ? ', ' . $material->category_name3 : '' }}
+                                    {{ $material->category_name4 ? ', ' . $material->category_name4 : '' }}
+                                    {{ $material->category_name5 ? ', ' . $material->category_name5 : '' }}
                                 </td>
-                                <td>Ltr</td>
+                                <td>
+                                    <span class="price-text">{{ $material->price }}</span>
+                                    <input type="text" class="form-control price-input d-none" style="width: 80px;" value="{{ $material->price }}">
+                                </td>
+                                <td>{{ $material->uom }}</td> <!-- UoM -->
                             </tr>
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="form-check-input row-checkbox">
-                                </td>
-                                <td>2</td>
-                                <td>Maida Flour</td>
-                                <td>RM0002</td>
-                                <td>Flour</td>
-                                <td>
-                                    <span class="price-text">100</span>
-                                    <input type="text" class="form-control price-input d-none" style="width: 80px;" value="300">
-                                </td>
-                                <td>Kgs</td>
-                            </tr>
+                            @endforeach
                         </tbody>
                     </table>
                     <!-- End Bordered Table -->
@@ -150,64 +144,79 @@
         const selectAllCheckbox = document.getElementById('select-all');
         const rows = document.querySelectorAll('#rawMaterialTable tr');
 
-        // Function to get all row checkboxes dynamically
-        const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
+         // Function to get all row checkboxes dynamically
+    const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
 
-        // Edit Table Button - Toggles Edit Mode for Price Column
-        editTableBtn.addEventListener("click", function () {
-            table.querySelectorAll("tr").forEach(row => {
-                const priceText = row.querySelector(".price-text");
-                const priceInput = row.querySelector(".price-input");
+// Enable editing price for the selected rows
+const enablePriceEditing = () => {
+    table.querySelectorAll("tr").forEach(row => {
+        const checkbox = row.querySelector(".row-checkbox");
+        const priceText = row.querySelector(".price-text");
+        const priceInput = row.querySelector(".price-input");
 
-                if (priceText && priceInput) {
-                    if (priceText.classList.contains("d-none")) {
-                        // Save the edited value
-                        priceText.textContent = priceInput.value;
-                        priceText.classList.remove("d-none");
-                        priceInput.classList.add("d-none");
-                    } else {
-                        // Enter edit mode
-                        priceText.classList.add("d-none");
-                        priceInput.classList.remove("d-none");
-                    }
-                }
-            });
+        if (checkbox && priceText && priceInput) {
+            if (checkbox.checked) {
+                // Enable editing
+                priceText.classList.add("d-none");
+                priceInput.classList.remove("d-none");
+            } else {
+                // Disable editing
+                priceInput.classList.add("d-none");
+                priceText.classList.remove("d-none");
+            }
+        }
+    });
+};
+
+// Edit Table Button - Enables Price Editing for Selected Rows
+editTableBtn.addEventListener("click", function () {
+    let isAnyRowSelected = false;
+
+    // Check if any row is selected
+    getRowCheckboxes().forEach(checkbox => {
+        if (checkbox.checked) {
+            isAnyRowSelected = true;
+        }
+    });
+
+    if (isAnyRowSelected) {
+        enablePriceEditing();
+    } else {
+        alert("Please select at least one row to edit.");
+    }
+});
+
+// Event listener for Select All checkbox
+selectAllCheckbox.addEventListener('change', function () {
+    const isChecked = this.checked;
+
+    // Toggle all row checkboxes
+    getRowCheckboxes().forEach((checkbox) => {
+        checkbox.checked = isChecked;
+    });
+});
+
+// Event listener for individual row checkboxes
+const updateRowCheckboxListeners = () => {
+    getRowCheckboxes().forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            const row = this.closest("tr");
+            const priceText = row.querySelector(".price-text");
+            const priceInput = row.querySelector(".price-input");
+
+            if (this.checked) {
+                priceText.classList.add("d-none");
+                priceInput.classList.remove("d-none");
+            } else {
+                priceInput.classList.add("d-none");
+                priceText.classList.remove("d-none");
+            }
         });
+    });
+};
 
-        // Delete Table Button - Deletes All Rows
-        deleteTableBtn.addEventListener("click", function () {
-            table.innerHTML = "";
-            selectAllCheckbox.checked = false; // Uncheck the Select All checkbox
-        });
-
-        // Event listener for Select All checkbox
-        selectAllCheckbox.addEventListener('change', function () {
-            const isChecked = this.checked;
-
-            // Toggle all row checkboxes
-            getRowCheckboxes().forEach((checkbox) => {
-                checkbox.checked = isChecked;
-            });
-        });
-
-        // Event listener for individual row checkboxes
-        const updateRowCheckboxListeners = () => {
-            getRowCheckboxes().forEach((checkbox) => {
-                checkbox.addEventListener('change', function () {
-                    // If any checkbox is unchecked, uncheck Select All
-                    if (!this.checked) {
-                        selectAllCheckbox.checked = false;
-                    } else {
-                        // If all checkboxes are checked, check Select All
-                        const allChecked = Array.from(getRowCheckboxes()).every((cb) => cb.checked);
-                        selectAllCheckbox.checked = allChecked;
-                    }
-                });
-            });
-        };
-
-        // Initialize listeners for row checkboxes
-        updateRowCheckboxListeners();
+// Initialize listeners for row checkboxes
+updateRowCheckboxListeners();
 
 // Attach a click event to each Price column
     table.querySelectorAll("tr").forEach(row => {
