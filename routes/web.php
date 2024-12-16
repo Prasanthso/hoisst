@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\CategoryItemController;
+use App\Http\Controllers\RawMaterialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,21 +29,18 @@ Route::post('/login', [LoginController::class, 'verifyLogin'])->name('login.veri
 //     return view('category');
 // });
 
-// Route::get('/dashboard', function () {
-//     return view('rawMaterial');
-// })->name('dashboard'); 
-
 Route::get('/rawmaterial', function () {
     return view('rawMaterial');
 })->name('rawMaterial');
 
-Route::get('/category', function () {
-    return view('addcategory');
-})->name('category');
-
-Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
-
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard'); 
+
+Route::get('/category', [CategoryItemController::class, 'create'])->name('category.create');
+Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('categoryitem.store');
+
+Route::get('/addrawmaterial', [RawMaterialController::class, 'create'])->name('rawmaterial.create');
+Route::post('/saverawmaterial', [RawMaterialController::class, 'store'])->name('rawmaterials.store');
+
+
