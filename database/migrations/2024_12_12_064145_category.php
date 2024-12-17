@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-
+        if(!Schema::hasTable('categories')) {
             Schema::create('categories', function (Blueprint $table) {
                 $table->id(); // Auto-incrementing primary key
                 $table->string('categoryname')->unique(); // Column for category name
                 $table->timestamps(); // Created and updated timestamps
             });
+        }
 
     }
 

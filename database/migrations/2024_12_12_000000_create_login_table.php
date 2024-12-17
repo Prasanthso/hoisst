@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
+        if(!Schema::hasTable('login')) {
         Schema::create('login', function (Blueprint $table) {
             $table->id(); // Auto-incrementing primary key
             $table->string('username');
             $table->string('password');
             $table->timestamps(); // Created and updated timestamps
         });
+        }
     }
 
     /**
