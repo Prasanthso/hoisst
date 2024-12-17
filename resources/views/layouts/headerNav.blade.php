@@ -37,6 +37,14 @@
 
     <!-- Laravel Mix JS -->
     <script src="{{ mix('js/app.js') }}" defer></script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
+    <!-- font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 
 
@@ -45,19 +53,19 @@
     <!-- ======= Header ======= -->
     <header id="header" class="header fixed-top d-flex align-items-center">
 
-    <div class="d-flex align-items-center justify-content-between">
-    <a href="/" class="logo d-flex align-items-center">
-        <img src="assets/img/logo_.png" alt="">
-        <span class="d-none d-lg-block">
-            <span style="color: rgb(186, 234, 249);">Recipe</span> 
-            <span style="color: rgb(102,100,100);">Management System</span>
-        </span>
-    </a>
-    <!-- <i class="bi bi-list toggle-sidebar-btn"></i> -->
-</div>
-<!-- End Logo -->
+        <div class="d-flex align-items-center justify-content-between">
+            <a href="/" class="logo d-flex align-items-center">
+                <img src="assets/img/logo_.png" alt="">
+                <span class="d-none d-lg-block">
+                    <span style="color: rgb(186, 234, 249);">Recipe</span>
+                    <span style="color: rgb(102,100,100);">Management System</span>
+                </span>
+            </a>
+            <!-- <i class="bi bi-list toggle-sidebar-btn"></i> -->
+        </div>
+        <!-- End Logo -->
 
-        
+
         <nav class="header-nav ms-auto">
             <ul class="d-flex align-items-center">
 
@@ -69,109 +77,109 @@
 
                 <li class="nav-item dropdown">
 
-                <!-- Search Icon -->
-<li>
-    <a class="nav-link nav-icon" href="#" onclick="toggleSearchBox()">
-        <i class="bi bi-search"></i>
-    </a>
-</li>
+                    <!-- Search Icon -->
+                <li>
+                    <a class="nav-link nav-icon" href="#" onclick="toggleSearchBox()">
+                        <i class="bi bi-search"></i>
+                    </a>
+                </li>
 
-<!-- Search Box -->
-<div id="search-box" style="display: none; position: absolute; top: 20px; right: 200px; background-color: #fff; border: 1px solid #ccc; padding: 10px; border-radius: 5px; z-index: 1000;">
-    <input type="text" placeholder="Search..." style="padding: 5px; width: 200px;">
-    <button onclick="performSearch()" style="padding: 5px;">Go</button>
-</div>
+                <!-- Search Box -->
+                <div id="search-box" style="display: none; position: absolute; top: 20px; right: 200px; background-color: #fff; border: 1px solid #ccc; padding: 10px; border-radius: 5px; z-index: 1000;">
+                    <input type="text" placeholder="Search..." style="padding: 5px; width: 200px;">
+                    <button onclick="performSearch()" style="padding: 5px;">Go</button>
+                </div>
 
 
-                    <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-                        <i class="bi bi-bell"></i>
-                        <span class="badge bg-primary badge-number">4</span>
-                    </a><!-- End Notification Icon -->
+                <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                    <i class="bi bi-bell"></i>
+                    <span class="badge bg-primary badge-number">4</span>
+                </a><!-- End Notification Icon -->
 
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
-                        <li class="dropdown-header">
-                            You have 4 new notifications
-                            <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+                    <li class="dropdown-header">
+                        You have 4 new notifications
+                        <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
 
-                        <li class="notification-item">
-                            <i class="bi bi-exclamation-circle text-warning"></i>
-                            <div>
-                                <h4>Lorem Ipsum</h4>
-                                <p>Quae dolorem earum veritatis oditseno</p>
-                                <p>30 min. ago</p>
-                            </div>
-                        </li>
+                    <li class="notification-item">
+                        <i class="bi bi-exclamation-circle text-warning"></i>
+                        <div>
+                            <h4>Lorem Ipsum</h4>
+                            <p>Quae dolorem earum veritatis oditseno</p>
+                            <p>30 min. ago</p>
+                        </div>
+                    </li>
 
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
 
-                        <li class="notification-item">
-                            <i class="bi bi-x-circle text-danger"></i>
-                            <div>
-                                <h4>Atque rerum nesciunt</h4>
-                                <p>Quae dolorem earum veritatis oditseno</p>
-                                <p>1 hr. ago</p>
-                            </div>
-                        </li>
+                    <li class="notification-item">
+                        <i class="bi bi-x-circle text-danger"></i>
+                        <div>
+                            <h4>Atque rerum nesciunt</h4>
+                            <p>Quae dolorem earum veritatis oditseno</p>
+                            <p>1 hr. ago</p>
+                        </div>
+                    </li>
 
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
 
-                        <li class="notification-item">
-                            <i class="bi bi-check-circle text-success"></i>
-                            <div>
-                                <h4>Sit rerum fuga</h4>
-                                <p>Quae dolorem earum veritatis oditseno</p>
-                                <p>2 hrs. ago</p>
-                            </div>
-                        </li>
+                    <li class="notification-item">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <div>
+                            <h4>Sit rerum fuga</h4>
+                            <p>Quae dolorem earum veritatis oditseno</p>
+                            <p>2 hrs. ago</p>
+                        </div>
+                    </li>
 
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
 
-                        <li class="notification-item">
-                            <i class="bi bi-info-circle text-primary"></i>
-                            <div>
-                                <h4>Dicta reprehenderit</h4>
-                                <p>Quae dolorem earum veritatis oditseno</p>
-                                <p>4 hrs. ago</p>
-                            </div>
-                        </li>
+                    <li class="notification-item">
+                        <i class="bi bi-info-circle text-primary"></i>
+                        <div>
+                            <h4>Dicta reprehenderit</h4>
+                            <p>Quae dolorem earum veritatis oditseno</p>
+                            <p>4 hrs. ago</p>
+                        </div>
+                    </li>
 
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li class="dropdown-footer">
-                            <a href="#">Show all notifications</a>
-                        </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li class="dropdown-footer">
+                        <a href="#">Show all notifications</a>
+                    </li>
 
-                    </ul><!-- End Notification Dropdown Items -->
+                </ul><!-- End Notification Dropdown Items -->
 
                 </li><!-- End Notification Nav -->
 
 
-                
 
-                        <li>
-                        <a class="nav-link nav-icon" href="login.html" ">
-                                <i class="bi bi-person"></i>
-                            </a>
-                        </li>
-                        
-                        <li>
-                        <a class="nav-link nav-icon" href="{{ 'login' }}" style="color: red;">
-                            <i class="bi bi-box-arrow-right"></i>
-                        </a>
-                        </li>
 
-                    </ul><!-- End Profile Dropdown Items -->
+                <li>
+                    <a class="nav-link nav-icon" href="login.html" ">
+                                <i class=" bi bi-person"></i>
+                    </a>
+                </li>
+
+                <li>
+                    <a class="nav-link nav-icon" href="{{ 'login' }}" style="color: red;">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                </li>
+
+            </ul><!-- End Profile Dropdown Items -->
 
             </ul>
         </nav><!-- End Icons Navigation -->
@@ -181,68 +189,68 @@
     <!-- ======= Sidebar ======= -->
     <aside id="sidebar" class="sidebar" style="background-color: rgb(186, 234, 249);">
 
-<ul class="sidebar-nav" id="sidebar-nav">
-    <li class="nav-item">
-        <a class="nav-link" href="{{ 'dashboard' }}" style="background-color: rgb(186, 234, 249); color: black;">
-            <i class="bi bi-grid"></i>
-            <span>Dashboard</span>
-        </a>
-    </li><!-- End Dashboard Nav -->
+        <ul class="sidebar-nav" id="sidebar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ 'dashboard' }}" style="background-color: rgb(186, 234, 249); color: black;">
+                    <i class="bi bi-grid"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li><!-- End Dashboard Nav -->
 
-    <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); color: black;">
-            <i class="bi bi-menu-button-wide"></i><span>Masters</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-            <li>
-                <a href="{{ 'rawmaterial' }}" style="background-color: rgb(186, 234, 249); color: black;">
-                    <i class="bi bi-circle"></i><span>Raw Materials</span>
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); color: black;">
+                    <i class="bi bi-menu-button-wide"></i><span>Masters</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
-            </li>
-            <li>
-                <a href="#" style="background-color: rgb(186, 234, 249); color: black;">
-                    <i class="bi bi-circle"></i><span>Packing Materials</span>
+                <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="{{ 'rawmaterial' }}" style="background-color: rgb(186, 234, 249); color: black;">
+                            <i class="bi bi-circle"></i><span>Raw Materials</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" style="background-color: rgb(186, 234, 249); color: black;">
+                            <i class="bi bi-circle"></i><span>Packing Materials</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" style="background-color: rgb(186, 234, 249); color: black;">
+                            <i class="bi bi-circle"></i><span>Overheads</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" style="background-color: rgb(186, 234, 249); color: black;">
+                            <i class="bi bi-circle"></i><span>Products</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ 'category' }}" style="background-color: rgb(186, 234, 249); color: black;">
+                            <i class="bi bi-circle"></i><span>Category</span>
+                        </a>
+                    </li>
+                </ul>
+            </li><!-- End Masters Nav -->
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); color: black;">
+                    <i class="bi bi-journal-text"></i><span>Recipe</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
-            </li>
-            <li>
-                <a href="#" style="background-color: rgb(186, 234, 249); color: black;">
-                    <i class="bi bi-circle"></i><span>Overheads</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" style="background-color: rgb(186, 234, 249); color: black;">
-                    <i class="bi bi-circle"></i><span>Products</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ 'category' }}" style="background-color: rgb(186, 234, 249); color: black;">
-                    <i class="bi bi-circle"></i><span>Category</span>
-                </a>
-            </li>
+                <ul id="forms-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="forms-elements.html" style="background-color: rgb(186, 234, 249); color: black;">
+                            <i class="bi bi-circle"></i><span>Details & Description</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="forms-layouts.html" style="background-color: rgb(186, 234, 249); color: black;">
+                            <i class="bi bi-circle"></i><span>Pricing</span>
+                        </a>
+                    </li>
+                </ul>
+            </li><!-- End Recipe Nav -->
         </ul>
-    </li><!-- End Masters Nav -->
+    </aside>
 
-    <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); color: black;">
-            <i class="bi bi-journal-text"></i><span>Recipe</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="forms-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-            <li>
-                <a href="forms-elements.html" style="background-color: rgb(186, 234, 249); color: black;">
-                    <i class="bi bi-circle"></i><span>Details & Description</span>
-                </a>
-            </li>
-            <li>
-                <a href="forms-layouts.html" style="background-color: rgb(186, 234, 249); color: black;">
-                    <i class="bi bi-circle"></i><span>Pricing</span>
-                </a>
-            </li>
-        </ul>
-    </li><!-- End Recipe Nav -->
-</ul>
-</aside>
-
-<!-- End Sidebar-->
+    <!-- End Sidebar-->
 
     <main>
         @yield('content') <!-- This is where child content will be injected -->
@@ -277,22 +285,22 @@
 
 
     <script>
-    // Toggle the search box visibility
-function toggleSearchBox() {
-    const searchBox = document.getElementById("search-box");
-    if (searchBox.style.display === "none") {
-        searchBox.style.display = "block";
-    } else {
-        searchBox.style.display = "none";
-    }
-}
+        // Toggle the search box visibility
+        function toggleSearchBox() {
+            const searchBox = document.getElementById("search-box");
+            if (searchBox.style.display === "none") {
+                searchBox.style.display = "block";
+            } else {
+                searchBox.style.display = "none";
+            }
+        }
 
-// Example: Perform a search (you can replace this with actual search functionality)
-function performSearch() {
-    const input = document.querySelector("#search-box input");
-    alert(`Searching for: ${input.value}`);
-}
-</script>
+        // Example: Perform a search (you can replace this with actual search functionality)
+        function performSearch() {
+            const input = document.querySelector("#search-box input");
+            alert(`Searching for: ${input.value}`);
+        }
+    </script>
 
 </body>
 
