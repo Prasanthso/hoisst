@@ -5,6 +5,9 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CategoryItemController;
 use App\Http\Controllers\RawMaterialController;
+use App\Http\Controllers\PackingMaterialController;
+
+use App\Models\PackingMaterial;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,5 +49,7 @@ Route::post('/saverawmaterial', [RawMaterialController::class, 'store'])->name('
 Route::get('/rawmaterial', [RawMaterialController::class, 'index'])->name('rawmaterials.index');
 Route::post('/update-material-price/{id}', [RawMaterialController::class, 'updatePrice']);
 
-
+Route::get('/packingmaterial', [PackingMaterialController::class, 'index'])->name('packingmaterials.index');
+Route::get('/addpackingmaterial', [PackingMaterialController::class, 'create'])->name('packingmaterial.create');
+Route::post('/savepackingmaterial', [PackingMaterialController::class, 'store'])->name('packingmaterials.store');
 

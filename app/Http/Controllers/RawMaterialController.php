@@ -45,7 +45,7 @@ class RawMaterialController extends Controller
      */
     public function create()
     {
-        $rawMaterialCategories = DB::table('categoryitems')->get(); // Fetch all category data
+        $rawMaterialCategories = CategoryItems::getRawMaterialsCategory();// Fetch all category data
         return view('addRawMaterial', compact('rawMaterialCategories')); // Match view name
     }
 

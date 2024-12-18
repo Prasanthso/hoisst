@@ -208,7 +208,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" style="background-color: rgb(186, 234, 249); color: black;">
+                        <a href="{{ 'packingmaterial' }}" style="background-color: rgb(186, 234, 249); color: black;">
                             <i class="bi bi-circle"></i><span>Packing Materials</span>
                         </a>
                     </li>
