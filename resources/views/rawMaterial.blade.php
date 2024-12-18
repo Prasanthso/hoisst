@@ -189,6 +189,7 @@
 
     // Function to restore Edit/Delete buttons
     const showEditDeleteButtons = () => {
+        isEditing = false;
         const actionButtonsContainer = document.querySelector(".action-buttons");
         actionButtonsContainer.innerHTML = `
             <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
@@ -218,21 +219,63 @@
         exitEditingMode();
     };
 
-    // Function to cancel editing
+  // Function to cancel editing
     const cancelEditing = () => {
-        table.querySelectorAll("tr").forEach(row => {
-            const checkbox = row.querySelector(".row-checkbox");
-            const priceText = row.querySelector(".price-text");
-            const priceInput = row.querySelector(".price-input");
+    const selectedRows = Array.from(getRowCheckboxes()).filter(checkbox => checkbox.checked);
+    if (selectedRows.length === 0) {
+        // No rows selected, prompt the user to select rows
+        alert("Please select at least one row to cancel.");
+        return;
+    }
 
-            if (checkbox.checked && !priceInput.classList.contains("d-none")) {
-                // Revert input value to original price text for selected row
-                priceInput.value = priceText.textContent;
-            }
-        });
+    table.querySelectorAll("tr").forEach(row => {
+        const checkbox = row.querySelector(".row-checkbox");
+        const priceText = row.querySelector(".price-text");
+        const priceInput = row.querySelector(".price-input");
 
-        exitEditingMode();
+        if (checkbox.checked && !priceInput.classList.contains("d-none")) {
+            // Revert input value to original price text for selected row
+            priceInput.value = priceText.textContent;
+        }
+
+    });
+    exitEditingMode();
     };
+
+    // Function to cancel editing
+//     const cancelEditing = () => {
+//     // Get all row checkboxes
+//     const allCheckboxes = Array.from(getRowCheckboxes());
+
+//     // Find unchecked rows
+//     const unselectedRows = allCheckboxes.filter(checkbox => !checkbox.checked);
+
+//     if (unselectedRows.length === 0) {
+//         // If no rows are unselected, prompt the user
+//         alert("All rows are selected. Please unselect rows to cancel editing.");
+//         return;
+//     }
+
+//     // Process each unselected row
+//     unselectedRows.forEach(checkbox => {
+//         const row = checkbox.closest("tr"); // Get the corresponding row
+//         const priceText = row.querySelector(".price-text");
+//         const priceInput = row.querySelector(".price-input");
+
+//         if (!priceInput.classList.contains("d-none")) {
+//             // Revert input value to original price text for unselected row
+//             priceInput.value = priceText.textContent;
+//             priceInput.classList.add("d-none");
+//             priceText.classList.remove("d-none");
+//         }
+//     });
+
+//     // If all rows are unchecked, exit editing mode
+//     const stillEditing = allCheckboxes.some(checkbox => checkbox.checked);
+//     if (!stillEditing) {
+//         exitEditingMode();
+//     }
+// };
 
     // Function to exit edit mode
     const exitEditingMode = () => {
@@ -267,35 +310,69 @@
         getRowCheckboxes().forEach((checkbox) => {
             checkbox.checked = isChecked;
         });
-
         // Automatically enable edit mode if at least one row is selected
-        if (isChecked) {
-            enableEditing();
-        } else {
+        if (!isChecked) {
+        //    editTableBtn.addEventListener("click", enableEditing);
+        // } else {
             exitEditingMode();
         }
     });
 
+        // Event listener for individual row checkboxes
+    const updateSelectAllState = () => {
+        const allCheckboxes = getRowCheckboxes();
+        const allChecked = Array.from(allCheckboxes).every((checkbox) => checkbox.checked);
+
+        // Update Select All checkbox state
+        selectAllCheckbox.checked = allChecked;
+
+        // Automatically enable or disable edit mode based on selections
+        const anyChecked = Array.from(allCheckboxes).some((checkbox) => checkbox.checked);
+
+        if (anyChecked && isEditing) {
+            // editTableBtn.addEventListener("click", enableEditing);
+            enableEditing();
+        }
+        else{
+            exitEditingMode();
+            // cancelEditing();
+        }
+
+    };
+
+    getRowCheckboxes().forEach((checkbox) => {
+        checkbox.addEventListener('change', () => {
+        // const unselectedRows = Array.from(getRowCheckboxes()).filter(chk => !chk.checked);
+        // If a row is unselected and editing mode is enabled, cancel editing mode
+        // if (unselectedRows) {
+        //     exitEditingMode();
+        // }
+
+        updateSelectAllState();
+    });
+});
+
     // Initialize Edit button functionality
     editTableBtn.addEventListener("click", enableEditing);
 
-    // Row checkbox change listener
-    getRowCheckboxes().forEach(checkbox => {
-        checkbox.addEventListener('change', function () {
-            const selectedRows = Array.from(getRowCheckboxes()).filter(chk => chk.checked);
+    // // Row checkbox change listener
+    // getRowCheckboxes().forEach(checkbox => {
+    //     checkbox.addEventListener('change', function () {
+    //         const selectedRows = Array.from(getRowCheckboxes()).filter(chk => chk.checked);
 
-            // If no rows are selected, exit editing mode
-            if (selectedRows.length === 0) {
-                exitEditingMode();
-            } else if (selectedRows.length === 1) {
-                // Allow edit for the selected row
-                enableEditing();
-            } else {
-                // More than one row selected, disable editing
-                exitEditingMode();
-            }
-        });
-    });
+    //         // If no rows are selected, exit editing mode
+    //         if (selectedRows.checked === false) {
+    //             exitEditingMode();
+    //         }
+    //         //  else if (selectedRows.length === 1) {
+    //         //     // Allow edit for the selected row
+    //         //     enableEditing();
+    //         // } else {
+    //         //     // More than one row selected, disable editing
+    //         //     exitEditingMode();
+    //         // }
+    //     });
+    // });
 
     // Attach a click event to each Price column
     table.querySelectorAll("tr").forEach(row => {
