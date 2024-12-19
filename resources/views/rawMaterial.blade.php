@@ -20,20 +20,19 @@
                         <h5 class="card-title">Categories</h5>
                         <div class="row mb-3">
                             <div class="col-sm-10">
+                                @foreach($categoryitems as $category)
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="gridCheck1">
-                                    <label class="form-check-label" for="gridCheck1">Oils</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="gridCheck2" checked>
-                                    <label class="form-check-label" for="gridCheck2">Vegetables</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="gridCheck3" checked>
-                                    <label class="form-check-label" for="gridCheck3">
-                                        Bread
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="category_{{ $category->id }}"
+                                        {{-- @if($category->is_checked) checked @endif
+                                    > --}}
+                                    <label class="form-check-label" for="category_{{ $category->id }}">
+                                        {{ $category->itemname }}
                                     </label>
                                 </div>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -311,9 +310,9 @@
             checkbox.checked = isChecked;
         });
         // Automatically enable edit mode if at least one row is selected
-        if (!isChecked) {
-        //    editTableBtn.addEventListener("click", enableEditing);
-        // } else {
+        if (isChecked && isEditing) {
+           enableEditing();
+        } else {
             exitEditingMode();
         }
     });

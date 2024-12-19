@@ -36,7 +36,9 @@ class RawMaterialController extends Controller
             )
             ->get();
             // dd($rawMaterials);
-            return view('rawMaterial', compact('rawMaterials'));
+            $categoryitems = DB::table('categoryitems')->get();
+
+            return view('rawMaterial', compact('rawMaterials','categoryitems'));
 
     }
 
