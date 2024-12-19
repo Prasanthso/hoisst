@@ -1224,3 +1224,73 @@ h6 {
   font-size: 13px;
   color: #012970;
 }
+
+/* General Table Styles */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "Poppins", serif;
+  margin-bottom: 20px;
+}
+
+.table-bordered {
+  border: 1px solid #ddd;
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #ddd;
+  padding: 2px;
+  text-align: center;
+}
+
+/* Header Styles */
+.custom-header {
+  background-color: #00ABDF;
+}
+
+.custom-header th {
+  text-align: center;
+  color: rgb(121, 16, 16);
+    /* text-transform: uppercase; */
+    font-family: "Poppins", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* Row Hover Effect */
+.table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Checkbox Alignment */
+.form-check-input {
+  margin: 0 auto;
+  display: block;
+}
+
+/* Price Editable Input */
+.price-input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+  .table {
+    font-size: 14px;
+  }
+
+  .table th,
+  .table td {
+    padding: 6px;
+  }
+}
+
+/* Specific Column Styling */
+.table th:nth-child(3),
+.table td:nth-child(3) {
+  text-align: left;
+  /* Center-align S.NO column */
+}
+
