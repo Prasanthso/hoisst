@@ -71,7 +71,7 @@
                         </thead>
                         <tbody id="rawMaterialTable">
                             @foreach ($rawMaterials as $index => $material)
-                            <tr>
+                            <tr data-id="{{ $material->id }}">
                                 <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
                                 </td>
@@ -101,30 +101,30 @@
     </section>
 
     <!-- Modal -->
-<div class="modal fade" id="priceModal" tabindex="-1" aria-labelledby="priceModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="priceModalLabel">Price Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <table class="table table-bordered">
-                    <thead class="custom-header table-primary">
-                        <tr>
-                            <th>Effective From</th>
-                            <th>Price</th>
-                            <th>Updated By</th>
-                        </tr>
-                    </thead>
-                    <tbody id="priceDetailsTable">
-                        <!-- Data will be dynamically injected here -->
-                    </tbody>
-                </table>
+    <div class="modal fade" id="priceModal" tabindex="-1" aria-labelledby="priceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="priceModalLabel">Price Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <thead class="custom-header table-primary">
+                            <tr>
+                                <th>Effective From</th>
+                                <th>Price</th>
+                                <th>Updated By</th>
+                            </tr>
+                        </thead>
+                        <tbody id="priceDetailsTable">
+                            <!-- Data will be dynamically injected here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 </main><!-- End #main -->
 @endsection
@@ -137,42 +137,42 @@
 <script src="{{ asset('js/main.js') }}"></script>
 
 <script>
-   document.addEventListener("DOMContentLoaded", function () {
-    const table = document.getElementById("rawMaterialTable");
-    const editTableBtn = document.querySelector(".edit-table-btn");
-    const deleteTableBtn = document.querySelector(".delete-table-btn");
-    const selectAllCheckbox = document.getElementById('select-all');
-    const rows = document.querySelectorAll('#rawMaterialTable tr');
-    let isEditing = false; // Track if edit mode is active
+    document.addEventListener("DOMContentLoaded", function() {
+        const table = document.getElementById("rawMaterialTable");
+        const editTableBtn = document.querySelector(".edit-table-btn");
+        const deleteTableBtn = document.querySelector(".delete-table-btn");
+        const selectAllCheckbox = document.getElementById('select-all');
+        const rows = document.querySelectorAll('#rawMaterialTable tr');
+        let isEditing = false; // Track if edit mode is active
 
-    // Function to get all row checkboxes dynamically
-    const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
+        // Function to get all row checkboxes dynamically
+        const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
 
-    // Function to toggle editing mode for selected rows
-    const toggleEditMode = (enable) => {
-        table.querySelectorAll("tr").forEach(row => {
-            const checkbox = row.querySelector(".row-checkbox");
-            const priceText = row.querySelector(".price-text");
-            const priceInput = row.querySelector(".price-input");
+        // Function to toggle editing mode for selected rows
+        const toggleEditMode = (enable) => {
+            table.querySelectorAll("tr").forEach(row => {
+                const checkbox = row.querySelector(".row-checkbox");
+                const priceText = row.querySelector(".price-text");
+                const priceInput = row.querySelector(".price-input");
 
-            if (checkbox && priceText && priceInput) {
-                if (checkbox.checked && enable) {
-                    // Enable editing
-                    priceText.classList.add("d-none");
-                    priceInput.classList.remove("d-none");
-                } else {
-                    // Disable editing
-                    priceInput.classList.add("d-none");
-                    priceText.classList.remove("d-none");
+                if (checkbox && priceText && priceInput) {
+                    if (checkbox.checked && enable) {
+                        // Enable editing
+                        priceText.classList.add("d-none");
+                        priceInput.classList.remove("d-none");
+                    } else {
+                        // Disable editing
+                        priceInput.classList.add("d-none");
+                        priceText.classList.remove("d-none");
+                    }
                 }
-            }
-        });
-    };
+            });
+        };
 
-    // Function to add Save and Cancel buttons
-    const showSaveCancelButtons = () => {
-        const actionButtonsContainer = document.querySelector(".action-buttons");
-        actionButtonsContainer.innerHTML = `
+        // Function to add Save and Cancel buttons
+        const showSaveCancelButtons = () => {
+            const actionButtonsContainer = document.querySelector(".action-buttons");
+            actionButtonsContainer.innerHTML = `
             <button class="btn btn-sm save-btn me-2" style="background-color: #28a745; color: white; border-radius: 50%; padding: 10px;">
                 <i class="fas fa-save"></i>
             </button>
@@ -181,16 +181,16 @@
             </button>
         `;
 
-        // Add functionality to Save and Cancel buttons
-        document.querySelector(".save-btn").addEventListener("click", saveChanges);
-        document.querySelector(".cancel-btn").addEventListener("click", cancelEditing);
-    };
+            // Add functionality to Save and Cancel buttons
+            document.querySelector(".save-btn").addEventListener("click", saveChanges);
+            document.querySelector(".cancel-btn").addEventListener("click", cancelEditing);
+        };
 
-    // Function to restore Edit/Delete buttons
-    const showEditDeleteButtons = () => {
-        isEditing = false;
-        const actionButtonsContainer = document.querySelector(".action-buttons");
-        actionButtonsContainer.innerHTML = `
+        // Function to restore Edit/Delete buttons
+        const showEditDeleteButtons = () => {
+            isEditing = false;
+            const actionButtonsContainer = document.querySelector(".action-buttons");
+            actionButtonsContainer.innerHTML = `
             <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                 <i class="fas fa-edit" style="color: black;"></i>
             </button>
@@ -199,193 +199,189 @@
             </button>
         `;
 
-        // Reassign the edit button functionality
-        document.querySelector(".edit-table-btn").addEventListener("click", enableEditing);
-    };
+            // Reassign the edit button functionality
+            document.querySelector(".edit-table-btn").addEventListener("click", enableEditing);
+        };
 
-    // Function to save changes
-    const saveChanges = () => {
-        table.querySelectorAll("tr").forEach(row => {
-            const priceText = row.querySelector(".price-text");
-            const priceInput = row.querySelector(".price-input");
+        // Function to save changes
+        const saveChanges = () => {
+            const updatedData = [];
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // CSRF token
 
-            if (!priceInput.classList.contains("d-none")) {
-                // Update price text with input value
-                priceText.textContent = priceInput.value;
+            table.querySelectorAll("tr").forEach(row => {
+                const checkbox = row.querySelector(".row-checkbox");
+                const priceText = row.querySelector(".price-text");
+                const priceInput = row.querySelector(".price-input");
+
+                if (checkbox && checkbox.checked && !priceInput.classList.contains("d-none")) {
+                    // Collect data for this row
+                    const materialId = row.getAttribute("data-id"); // Ensure row has a `data-id` attribute for identifying raw material
+                    const updatedPrice = priceInput.value.trim();
+
+                    updatedData.push({
+                        id: materialId,
+                        price: updatedPrice
+                    });
+                }
+            });
+
+            // Send data to the server via AJAX
+            if (updatedData.length > 0) {
+                fetch("{{ route('rawMaterial.updatePrices') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": token
+                        },
+                        body: JSON.stringify({
+                            updatedMaterials: updatedData
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Success message
+                            alert("Prices updated successfully!");
+
+                            // Update price text and exit editing mode
+                            updatedData.forEach(item => {
+                                const row = document.querySelector(`tr[data-id="${item.id}"]`);
+                                if (row) {
+                                    const priceText = row.querySelector(".price-text");
+                                    const priceInput = row.querySelector(".price-input");
+                                    priceText.textContent = item.price;
+                                    priceInput.value = item.price;
+                                }
+                            });
+                            exitEditingMode();
+                        } else {
+                            alert("Failed to update prices. Please try again.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error updating prices:", error);
+                        alert("An error occurred. Please try again.");
+                    });
+            } else {
+                alert("No rows selected for saving.");
+            }
+        };
+
+
+        // Function to cancel editing
+        const cancelEditing = () => {
+            const selectedRows = Array.from(getRowCheckboxes()).filter(checkbox => checkbox.checked);
+            if (selectedRows.length === 0) {
+                // No rows selected, prompt the user to select rows
+                alert("Please select at least one row to cancel.");
+                return;
+            }
+
+            table.querySelectorAll("tr").forEach(row => {
+                const checkbox = row.querySelector(".row-checkbox");
+                const priceText = row.querySelector(".price-text");
+                const priceInput = row.querySelector(".price-input");
+
+                if (checkbox.checked && !priceInput.classList.contains("d-none")) {
+                    // Revert input value to original price text for selected row
+                    priceInput.value = priceText.textContent;
+                }
+
+            });
+            exitEditingMode();
+        };
+
+        // Function to exit edit mode
+        const exitEditingMode = () => {
+            toggleEditMode(false);
+            isEditing = false;
+            showEditDeleteButtons();
+        };
+
+        // Function to enable editing
+        const enableEditing = () => {
+            let isAnyRowSelected = false;
+
+            // Check if any row is selected
+            getRowCheckboxes().forEach(checkbox => {
+                if (checkbox.checked) isAnyRowSelected = true;
+            });
+
+            if (isAnyRowSelected) {
+                isEditing = true;
+                toggleEditMode(true);
+                showSaveCancelButtons();
+            } else {
+                alert("Please select at least one row to edit.");
+            }
+        };
+
+        // Event listener for Select All checkbox
+        selectAllCheckbox.addEventListener('change', function() {
+            const isChecked = this.checked;
+
+            // Toggle all row checkboxes
+            getRowCheckboxes().forEach((checkbox) => {
+                checkbox.checked = isChecked;
+            });
+            // Automatically enable edit mode if at least one row is selected
+            if (isChecked && isEditing) {
+                enableEditing();
+            } else {
+                exitEditingMode();
             }
         });
 
-        exitEditingMode();
-    };
-
-  // Function to cancel editing
-    const cancelEditing = () => {
-    const selectedRows = Array.from(getRowCheckboxes()).filter(checkbox => checkbox.checked);
-    if (selectedRows.length === 0) {
-        // No rows selected, prompt the user to select rows
-        alert("Please select at least one row to cancel.");
-        return;
-    }
-
-    table.querySelectorAll("tr").forEach(row => {
-        const checkbox = row.querySelector(".row-checkbox");
-        const priceText = row.querySelector(".price-text");
-        const priceInput = row.querySelector(".price-input");
-
-        if (checkbox.checked && !priceInput.classList.contains("d-none")) {
-            // Revert input value to original price text for selected row
-            priceInput.value = priceText.textContent;
-        }
-
-    });
-    exitEditingMode();
-    };
-
-    // Function to cancel editing
-//     const cancelEditing = () => {
-//     // Get all row checkboxes
-//     const allCheckboxes = Array.from(getRowCheckboxes());
-
-//     // Find unchecked rows
-//     const unselectedRows = allCheckboxes.filter(checkbox => !checkbox.checked);
-
-//     if (unselectedRows.length === 0) {
-//         // If no rows are unselected, prompt the user
-//         alert("All rows are selected. Please unselect rows to cancel editing.");
-//         return;
-//     }
-
-//     // Process each unselected row
-//     unselectedRows.forEach(checkbox => {
-//         const row = checkbox.closest("tr"); // Get the corresponding row
-//         const priceText = row.querySelector(".price-text");
-//         const priceInput = row.querySelector(".price-input");
-
-//         if (!priceInput.classList.contains("d-none")) {
-//             // Revert input value to original price text for unselected row
-//             priceInput.value = priceText.textContent;
-//             priceInput.classList.add("d-none");
-//             priceText.classList.remove("d-none");
-//         }
-//     });
-
-//     // If all rows are unchecked, exit editing mode
-//     const stillEditing = allCheckboxes.some(checkbox => checkbox.checked);
-//     if (!stillEditing) {
-//         exitEditingMode();
-//     }
-// };
-
-    // Function to exit edit mode
-    const exitEditingMode = () => {
-        toggleEditMode(false);
-        isEditing = false;
-        showEditDeleteButtons();
-    };
-
-    // Function to enable editing
-    const enableEditing = () => {
-        let isAnyRowSelected = false;
-
-        // Check if any row is selected
-        getRowCheckboxes().forEach(checkbox => {
-            if (checkbox.checked) isAnyRowSelected = true;
-        });
-
-        if (isAnyRowSelected) {
-            isEditing = true;
-            toggleEditMode(true);
-            showSaveCancelButtons();
-        } else {
-            alert("Please select at least one row to edit.");
-        }
-    };
-
-    // Event listener for Select All checkbox
-    selectAllCheckbox.addEventListener('change', function () {
-        const isChecked = this.checked;
-
-        // Toggle all row checkboxes
-        getRowCheckboxes().forEach((checkbox) => {
-            checkbox.checked = isChecked;
-        });
-        // Automatically enable edit mode if at least one row is selected
-        if (isChecked && isEditing) {
-           enableEditing();
-        } else {
-            exitEditingMode();
-        }
-    });
-
         // Event listener for individual row checkboxes
-    const updateSelectAllState = () => {
-        const allCheckboxes = getRowCheckboxes();
-        const allChecked = Array.from(allCheckboxes).every((checkbox) => checkbox.checked);
+        const updateSelectAllState = () => {
+            const allCheckboxes = getRowCheckboxes();
+            const allChecked = Array.from(allCheckboxes).every((checkbox) => checkbox.checked);
 
-        // Update Select All checkbox state
-        selectAllCheckbox.checked = allChecked;
+            // Update Select All checkbox state
+            selectAllCheckbox.checked = allChecked;
 
-        // Automatically enable or disable edit mode based on selections
-        const anyChecked = Array.from(allCheckboxes).some((checkbox) => checkbox.checked);
+            // Automatically enable or disable edit mode based on selections
+            const anyChecked = Array.from(allCheckboxes).some((checkbox) => checkbox.checked);
 
-        if (anyChecked && isEditing) {
-            // editTableBtn.addEventListener("click", enableEditing);
-            enableEditing();
-        }
-        else{
-            exitEditingMode();
-            // cancelEditing();
-        }
+            if (anyChecked && isEditing) {
+                // editTableBtn.addEventListener("click", enableEditing);
+                enableEditing();
+            } else {
+                exitEditingMode();
+                // cancelEditing();
+            }
 
-    };
+        };
 
-    getRowCheckboxes().forEach((checkbox) => {
-        checkbox.addEventListener('change', () => {
-        // const unselectedRows = Array.from(getRowCheckboxes()).filter(chk => !chk.checked);
-        // If a row is unselected and editing mode is enabled, cancel editing mode
-        // if (unselectedRows) {
-        //     exitEditingMode();
-        // }
+        getRowCheckboxes().forEach((checkbox) => {
+            checkbox.addEventListener('change', () => {
+                // const unselectedRows = Array.from(getRowCheckboxes()).filter(chk => !chk.checked);
+                // If a row is unselected and editing mode is enabled, cancel editing mode
+                // if (unselectedRows) {
+                //     exitEditingMode();
+                // }
 
-        updateSelectAllState();
-    });
-});
+                updateSelectAllState();
+            });
+        });
 
-    // Initialize Edit button functionality
-    editTableBtn.addEventListener("click", enableEditing);
+        // Initialize Edit button functionality
+        editTableBtn.addEventListener("click", enableEditing);
 
-    // // Row checkbox change listener
-    // getRowCheckboxes().forEach(checkbox => {
-    //     checkbox.addEventListener('change', function () {
-    //         const selectedRows = Array.from(getRowCheckboxes()).filter(chk => chk.checked);
 
-    //         // If no rows are selected, exit editing mode
-    //         if (selectedRows.checked === false) {
-    //             exitEditingMode();
-    //         }
-    //         //  else if (selectedRows.length === 1) {
-    //         //     // Allow edit for the selected row
-    //         //     enableEditing();
-    //         // } else {
-    //         //     // More than one row selected, disable editing
-    //         //     exitEditingMode();
-    //         // }
-    //     });
-    // });
+        // Attach a click event to each Price column
+        table.querySelectorAll("tr").forEach(row => {
+            const priceColumn = row.querySelector(".price-text"); // Price column
+            if (priceColumn) {
+                priceColumn.addEventListener("click", function() {
+                    // Fetch data for the modal
+                    const effectiveFrom = "2024-01-01"; // Example static value
+                    const price = priceColumn.textContent.trim();
+                    const updatedBy = "Admin"; // Example static value
 
-    // Attach a click event to each Price column
-    table.querySelectorAll("tr").forEach(row => {
-        const priceColumn = row.querySelector(".price-text"); // Price column
-        if (priceColumn) {
-            priceColumn.addEventListener("click", function () {
-                // Fetch data for the modal
-                const effectiveFrom = "2024-01-01"; // Example static value
-                const price = priceColumn.textContent.trim();
-                const updatedBy = "Admin"; // Example static value
-
-                // Inject data into the modal table
-                const modalTableBody = document.getElementById("priceDetailsTable");
-                modalTableBody.innerHTML = `
+                    // Inject data into the modal table
+                    const modalTableBody = document.getElementById("priceDetailsTable");
+                    modalTableBody.innerHTML = `
                     <tr>
                         <td>${effectiveFrom}</td>
                         <td>${price}</td>
@@ -393,13 +389,11 @@
                     </tr>
                 `;
 
-                // Show the modal
-                const priceModal = new bootstrap.Modal(document.getElementById("priceModal"));
-                priceModal.show();
-            });
-        }
+                    // Show the modal
+                    const priceModal = new bootstrap.Modal(document.getElementById("priceModal"));
+                    priceModal.show();
+                });
+            }
+        });
     });
-});
-
 </script>
-

@@ -7,6 +7,7 @@ use App\Models\RawMaterial;
 use App\Models\UniqueCode;
 use Illuminate\Http\Request;
 
+
 class RawMaterialController extends Controller
 {
     /**
@@ -24,6 +25,7 @@ class RawMaterialController extends Controller
             ->leftJoin('categoryitems as c4', 'rm.category_id4', '=', 'c4.id')
             ->leftJoin('categoryitems as c5', 'rm.category_id5', '=', 'c5.id')
             ->select(
+                'rm.id',
                 'rm.name',
                 'rm.rmcode',
                 'rm.price',
@@ -94,21 +96,42 @@ class RawMaterialController extends Controller
         return redirect()->back()->with('success', 'Raw Material created successfully.');
     }
 
-    public function updatePrice(Request $request, $id)
+
+    public function updatePrices(Request $request)
     {
-        $validated = $request->validate([
-            'price' => 'required|numeric',
+        $validatedData = $request->validate([
+            'updatedMaterials' => 'required|array',
+            'updatedMaterials.*.id' => 'required|exists:raw_materials,id',
+            'updatedMaterials.*.price' => 'required|numeric|min:0',
         ]);
 
-        $material = Material::find($id);
-        if ($material) {
-            $material->price = $validated['price'];
-            $material->save();
+        try {
+            DB::transaction(function () use ($validatedData) {
+                foreach ($validatedData['updatedMaterials'] as $material) {
+                    // Fetch the current material
+                    $currentMaterial = RawMaterial::find($material['id']);
 
-            return response()->json(['success' => true]);
+                    // Check if the price has changed
+                    if ($currentMaterial->price != $material['price']) {
+                        // Log the price update in the rm_price_histories table
+                        DB::table('rm_price_histories')->insert([
+                            'raw_material_id' => $currentMaterial->id,
+                            'old_price' => $currentMaterial->price,
+                            'new_price' => $material['price'],
+                            'updated_by' => 1, // Ensure user is authenticated
+                            'updated_at' => now(),
+                        ]);
+
+                        // Update the raw material price
+                        $currentMaterial->update(['price' => $material['price']]);
+                    }
+                }
+            });
+
+            return response()->json(['success' => true, 'message' => 'Prices updated successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'An error occurred while updating prices.'], 500);
         }
-
-        return response()->json(['success' => false], 400);
     }
 
 
