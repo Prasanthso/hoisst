@@ -4,7 +4,7 @@
 <main id="main" class="main">
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
-        <h1>Raw Material</h1>
+        <h1>RAW MATERIALS</h1>
         <a href="{{ 'addrawmaterial' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
             <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
         </a>
@@ -13,17 +13,17 @@
     <section class="section dashboard">
         <div class="row">
             <!-- Left side columns -->
-            <div class="col-lg-2">
+            <div class="col-lg-2" >
                 <!-- Categories Section -->
-                <div class="card">
+                <div class="card" style="background-color: #EEEEEE;">
                     <div class="card-body">
-                        <h5 class="card-title">Categories</h5>
+                        <h5 class="card-title">Raw Material Categories</h5>
                         <div class="row mb-3">
-                            <div class="col-sm-10">
+                            <div class="col-sm-10" id="categoryFilter">
                                 @foreach($categoryitems as $category)
                                 <div class="form-check">
                                     <input
-                                        class="form-check-input"
+                                        class="form-check-input category-checkbox"
                                         type="checkbox"
                                         id="category_{{ $category->id }}"
                                         {{-- @if($category->is_checked) checked @endif
@@ -56,8 +56,8 @@
 
                     <!-- Bordered Table -->
                     <table class="table table-bordered">
-                        <thead class="custom-header table-primary">
-                            <tr>
+                        <thead class="custom-header" style="background-color:#00ABDF;">
+                            <tr style="color:white;">
                                 <th scope="col">
                                     <input type="checkbox" id="select-all" class="form-check-input">
                                 </th>
@@ -144,6 +144,9 @@
         const selectAllCheckbox = document.getElementById('select-all');
         const rows = document.querySelectorAll('#rawMaterialTable tr');
         let isEditing = false; // Track if edit mode is active
+
+        const checkboxes = document.querySelectorAll('.category-checkbox');
+        const rawMaterialsBody = document.getElementById('rawMaterialTable');
 
         // Function to get all row checkboxes dynamically
         const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
@@ -360,13 +363,12 @@
                 // if (unselectedRows) {
                 //     exitEditingMode();
                 // }
-
                 updateSelectAllState();
             });
         });
 
         // Initialize Edit button functionality
-        editTableBtn.addEventListener("click", enableEditing);
+        // editTableBtn.addEventListener("click", enableEditing);
 
 
         // Attach a click event to each Price column
@@ -395,5 +397,98 @@
                 });
             }
         });
+
+        // checkboxes.forEach(checkbox => {
+        //     checkbox.addEventListener('change', function () {
+        //         const selectedCategories = Array.from(checkboxes)
+        //             .filter(cb => cb.checked)
+        //             .map(cb => cb.value);
+
+        //         fetch('{{ route('rawmaterials.index') }}', {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        //             },
+        //             body: JSON.stringify({ categories: selectedCategories })
+        //         })
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             rawMaterialsBody.innerHTML = '';
+
+        //             if (data.length) {
+        //                 data.forEach((item, index) => {
+        //                 rawMaterialsBody.innerHTML += `
+        //                     <tr data-id="${item.id}">
+        //                         <td><input type="checkbox" class="form-check-input row-checkbox"></td>
+        //                         <td>${index + 1}</td>
+        //                         <td>${item.name}</td>
+        //                         <td>${item.rmcode}</td>
+        //                         <td>
+        //                             ${item.category1 ? item.category1.name : ''}
+        //                             ${item.category2 ? ', ' + item.category2.name : ''}
+        //                             ${item.category3 ? ', ' + item.category3.name : ''}
+        //                             ${item.category4 ? ', ' + item.category4.name : ''}
+        //                             ${item.category5 ? ', ' + item.category5.name : ''}
+        //                         </td>
+        //                         <td><span class="price-text">${item.price}</span></td>
+        //                         <td>${item.uom}</td>
+        //                     </tr>
+        //                 `;
+        //             });
+        //             } else {
+        //                 rawMaterialsBody.innerHTML = '<tr><td colspan="5">No data found.</td></tr>';
+        //             }
+        //         });
+        //     });
+        // });
+    // });
+
+    $(document).ready(function () {
+    // Triggered when a category checkbox is changed
+    $('#categoryFilter').on('change', '.category-checkbox', function () {
+        // Collect selected category IDs
+        var selectedCategories = [];
+        $('.category-checkbox:checked').each(function () {
+            selectedCategories.push($(this).val());
+        });
+
+        // Send selected categories to the server via AJAX
+        $.ajax({
+            url: '{{ route('rawmaterials.index') }}',  // Route to your controller
+            method: 'GET',
+            data: {
+                category_ids: selectedCategories  // Pass selected category IDs
+            },
+            success: function(response) {
+                // Update the raw materials table dynamically with the filtered data
+                var rawMaterialsBody = $('#rawMaterialTable');
+                rawMaterialsBody.empty();  // Clear current table data
+
+                response.rawMaterials.forEach(function (item, index) {
+                    rawMaterialsBody.append(`
+                        <tr data-id="${item.id}">
+                            <td>${index + 1}</td>
+                            <td>${item.name}</td>
+                            <td>${item.rmcode}</td>
+                            <td>
+                                ${item.category_name1 ? item.category_name1 : ''}
+                                ${item.category_name2 ? ', ' + item.category_name2 : ''}
+                                ${item.category_name3 ? ', ' + item.category_name3 : ''}
+                                ${item.category_name4 ? ', ' + item.category_name4 : ''}
+                                ${item.category_name5 ? ', ' + item.category_name5 : ''}
+                            </td>
+                            <td>${item.price}</td>
+                            <td>${item.uom}</td>
+                        </tr>
+                    `);
+                });
+            },
+            error: function() {
+                alert('Error fetching raw materials');
+            }
+        });
+    });
+});
     });
 </script>
