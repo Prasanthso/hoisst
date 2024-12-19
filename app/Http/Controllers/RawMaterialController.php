@@ -13,12 +13,75 @@ class RawMaterialController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-            // Fetch raw material data from the database
-            // $rawMaterials = RawMaterial::all(); // Replace with actual query logic if needed
-            // $rawMaterials = DB::table('raw_materials')->get();
-            $rawMaterials = DB::table('raw_materials as rm')
+        // Fetch all category items
+        $categoryitems = DB::table('categoryitems')->get();
+
+        // If it's an AJAX request for filtered raw materials
+        if ($request->ajax()) {
+            // Get selected category IDs from the request
+            $selectedCategoryIds = $request->input('category_ids', []);
+                dd($selectedCategoryIds);
+            // If no categories are selected, return all raw materials
+            if (empty($selectedCategoryIds)) {
+                $rawMaterials = DB::table('raw_materials as rm')
+                    ->leftJoin('categoryitems as c1', 'rm.category_id1', '=', 'c1.id')
+                    ->leftJoin('categoryitems as c2', 'rm.category_id2', '=', 'c2.id')
+                    ->leftJoin('categoryitems as c3', 'rm.category_id3', '=', 'c3.id')
+                    ->leftJoin('categoryitems as c4', 'rm.category_id4', '=', 'c4.id')
+                    ->leftJoin('categoryitems as c5', 'rm.category_id5', '=', 'c5.id')
+                    ->select(
+                        'rm.id',
+                        'rm.name',
+                        'rm.rmcode',
+                        'rm.price',
+                        'rm.uom',
+                        'c1.itemname as category_name1',
+                        'c2.itemname as category_name2',
+                        'c3.itemname as category_name3',
+                        'c4.itemname as category_name4',
+                        'c5.itemname as category_name5'
+                    )
+                    ->get();
+            } else {
+                // Fetch raw materials filtered by the selected category IDs
+                $rawMaterials = DB::table('raw_materials as rm')
+                    ->leftJoin('categoryitems as c1', 'rm.category_id1', '=', 'c1.id')
+                    ->leftJoin('categoryitems as c2', 'rm.category_id2', '=', 'c2.id')
+                    ->leftJoin('categoryitems as c3', 'rm.category_id3', '=', 'c3.id')
+                    ->leftJoin('categoryitems as c4', 'rm.category_id4', '=', 'c4.id')
+                    ->leftJoin('categoryitems as c5', 'rm.category_id5', '=', 'c5.id')
+                    ->select(
+                        'rm.id',
+                        'rm.name',
+                        'rm.rmcode',
+                        'rm.price',
+                        'rm.uom',
+                        'c1.itemname as category_name1',
+                        'c2.itemname as category_name2',
+                        'c3.itemname as category_name3',
+                        'c4.itemname as category_name4',
+                        'c5.itemname as category_name5'
+                    )
+                    ->where(function ($query) use ($selectedCategoryIds) {
+                        $query->whereIn('c1.id', $selectedCategoryIds)
+                              ->orWhereIn('c2.id', $selectedCategoryIds)
+                              ->orWhereIn('c3.id', $selectedCategoryIds)
+                              ->orWhereIn('c4.id', $selectedCategoryIds)
+                              ->orWhereIn('c5.id', $selectedCategoryIds);
+                    })
+                    ->get();
+            }
+
+            // Return filtered raw materials as JSON response
+            return response()->json([
+                'rawMaterials' => $rawMaterials
+            ]);
+        }
+
+        // Default view, return all raw materials and category items
+        $rawMaterials = DB::table('raw_materials as rm')
             ->leftJoin('categoryitems as c1', 'rm.category_id1', '=', 'c1.id')
             ->leftJoin('categoryitems as c2', 'rm.category_id2', '=', 'c2.id')
             ->leftJoin('categoryitems as c3', 'rm.category_id3', '=', 'c3.id')
@@ -37,12 +100,10 @@ class RawMaterialController extends Controller
                 'c5.itemname as category_name5'
             )
             ->get();
-            // dd($rawMaterials);
-            $categoryitems = DB::table('categoryitems')->get();
 
-            return view('rawMaterial', compact('rawMaterials','categoryitems'));
-
+        return view('rawMaterial', compact('rawMaterials', 'categoryitems'));
     }
+
 
     /**
      * Show the form for creating a new resource.

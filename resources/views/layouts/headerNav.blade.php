@@ -11,8 +11,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Favicons -->
-    <link href="{{ asset('assets/img/favicon.png') }}" rel="icon">
-    <link href="{{ asset('assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
+    <link href="{{ asset('/assets/img/favicon.png') }}" rel="icon">
+    <link href="{{ asset('/assets/img/newlogo.png') }}" rel="newlogo">
 
     <!-- Google Fonts -->
     <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -55,11 +55,12 @@
     <header id="header" class="header fixed-top d-flex align-items-center">
 
         <div class="d-flex align-items-center justify-content-between">
-            <a href="/" class="logo d-flex align-items-center">
-                <img src="assets/img/logo_.png" alt="">
+
+            <a href="#" class="logo d-flex align-items-center" style="text-decoration: none;">
+                <img src="assets/img/emblem.png" alt="">
                 <span class="d-none d-lg-block">
-                    <span style="color: rgb(186, 234, 249);">Recipe</span>
-                    <span style="color: rgb(102,100,100);">Management System</span>
+                    <span style="color: rgb(186, 234, 249);font-size:20px;">Recipe</span>
+                    <span style="color: rgb(102,100,100);font-size:20px;">Management System</span>
                 </span>
             </a>
             <!-- <i class="bi bi-list toggle-sidebar-btn"></i> -->
@@ -165,9 +166,6 @@
 
                 </li><!-- End Notification Nav -->
 
-
-
-
                 <li>
                     <a class="nav-link nav-icon" href="login.html" ">
                                 <i class=" bi bi-person"></i>
@@ -188,43 +186,43 @@
     </header><!-- End Header -->
 
     <!-- ======= Sidebar ======= -->
-    <aside id="sidebar" class="sidebar" style="background-color: rgb(186, 234, 249);">
+    <aside id="sidebar" class="sidebar" style="background-color: #BAEAF9;">
 
         <ul class="sidebar-nav" id="sidebar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="{{ 'dashboard' }}" style="background-color: rgb(186, 234, 249); color: black;">
+                <a class="nav-link" href="{{ 'dashboard' }}" style="background-color: rgb(186, 234, 249); color: black;font-size:18px;">
                     <i class="bi bi-grid"></i>
                     <span>Dashboard</span>
                 </a>
             </li><!-- End Dashboard Nav -->
 
             <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); color: black;">
+                <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); color: black;font-size:18px;text-decoration: none;">
                     <i class="bi bi-menu-button-wide"></i><span>Masters</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="{{ 'rawmaterial' }}" style="background-color: rgb(186, 234, 249); color: black;">
+                        <a href="{{ 'rawmaterial' }}" style="background-color: rgb(186, 234, 249); color: black;font-size:16px;text-decoration: none;">
                             <i class="bi bi-circle"></i><span>Raw Materials</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" style="background-color: rgb(186, 234, 249); color: black;">
+                        <a href="#" style="background-color: rgb(186, 234, 249); color: black;font-size:16px;text-decoration: none;">
                             <i class="bi bi-circle"></i><span>Packing Materials</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" style="background-color: rgb(186, 234, 249); color: black;">
+                        <a href="#" style="background-color: rgb(186, 234, 249); color: black;font-size:16px;text-decoration: none;">
                             <i class="bi bi-circle"></i><span>Overheads</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" style="background-color: rgb(186, 234, 249); color: black;">
+                        <a href="#" style="background-color: rgb(186, 234, 249); color: black;font-size:16px;text-decoration: none;">
                             <i class="bi bi-circle"></i><span>Products</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ 'category' }}" style="background-color: rgb(186, 234, 249); color: black;">
+                        <a href="{{ 'category' }}" style="background-color: rgb(186, 234, 249); color: black;font-size:16px;text-decoration: none">
                             <i class="bi bi-circle"></i><span>Category</span>
                         </a>
                     </li>
@@ -232,17 +230,17 @@
             </li><!-- End Masters Nav -->
 
             <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); color: black;">
+                <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); color: black;font-size:18px;text-decoration: none;">
                     <i class="bi bi-journal-text"></i><span>Recipe</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="forms-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="forms-elements.html" style="background-color: rgb(186, 234, 249); color: black;">
+                        <a href="forms-elements.html" style="background-color: rgb(186, 234, 249); color: black;font-size:16px;text-decoration: none;">
                             <i class="bi bi-circle"></i><span>Details & Description</span>
                         </a>
                     </li>
                     <li>
-                        <a href="forms-layouts.html" style="background-color: rgb(186, 234, 249); color: black;">
+                        <a href="forms-layouts.html" style="background-color: rgb(186, 234, 249); color: black;font-size:16px;text-decoration: none;">
                             <i class="bi bi-circle"></i><span>Pricing</span>
                         </a>
                     </li>
