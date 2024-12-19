@@ -46,5 +46,4 @@ Route::post('/saverawmaterial', [RawMaterialController::class, 'store'])->name('
 Route::get('/rawmaterial', [RawMaterialController::class, 'index'])->name('rawmaterials.index');
 Route::post('/update-material-price/{id}', [RawMaterialController::class, 'updatePrice']);
 
-
-
+Route::post('/update-raw-material-prices', [RawMaterialController::class, 'updatePrices'])->name('rawMaterial.updatePrices');
