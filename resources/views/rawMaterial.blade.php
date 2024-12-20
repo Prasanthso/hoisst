@@ -75,8 +75,8 @@
                                 <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
                                 </td>
-                                <td>{{ $index + 1 }}</td> <!-- Auto-increment S.NO -->
-                                <td>{{ $material->name }}</td> <!-- Raw Material Name -->
+                                <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO -->
+                                <td><a href="{{ route('rawMaterial.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
                                 <td>{{ $material->rmcode }}</td> <!-- RM Code -->
                                 <td>
                                     {{ $material->category_name1 ?? '' }}
@@ -109,7 +109,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <table class="table table-bordered">
+                    <table class="table table-bordered table-price">
                         <thead class="custom-header table-primary">
                             <tr>
                                 <th>Effective From</th>
@@ -369,31 +369,52 @@
         editTableBtn.addEventListener("click", enableEditing);
 
 
-        // Attach a click event to each Price column
-        table.querySelectorAll("tr").forEach(row => {
-            const priceColumn = row.querySelector(".price-text"); // Price column
-            if (priceColumn) {
-                priceColumn.addEventListener("click", function() {
-                    // Fetch data for the modal
-                    const effectiveFrom = "2024-01-01"; // Example static value
-                    const price = priceColumn.textContent.trim();
-                    const updatedBy = "Admin"; // Example static value
 
-                    // Inject data into the modal table
+        const priceModal = new bootstrap.Modal(document.getElementById("priceModal")); // Initialize Bootstrap Modal
+
+        const showPriceModal = (materialId) => {
+            const url = `{{ route('rawMaterial.priceHistory', ':id') }}`.replace(':id', materialId);
+
+            fetch(url) // API endpoint to fetch price details
+                .then((response) => response.json())
+                .then((data) => {
                     const modalTableBody = document.getElementById("priceDetailsTable");
-                    modalTableBody.innerHTML = `
-                    <tr>
-                        <td>${effectiveFrom}</td>
-                        <td>${price}</td>
-                        <td>${updatedBy}</td>
-                    </tr>
-                `;
+                    modalTableBody.innerHTML = ""; // Clear previous data
 
-                    // Show the modal
-                    const priceModal = new bootstrap.Modal(document.getElementById("priceModal"));
-                    priceModal.show();
+                    if (data.priceDetails.length > 0) {
+                        data.priceDetails.forEach((detail) => {
+                            modalTableBody.innerHTML += `
+                                    <tr>
+                                        <td>${detail.updated_at}</td>
+                                        <td>${detail.new_price}</td>
+                                        <td>${detail.updated_by}</td>
+                                    </tr>
+                                `;
+                        });
+                    } else {
+                        modalTableBody.innerHTML = `
+                                <tr>
+                                    <td colspan="3" class="text-center">No price details available</td>
+                                </tr>
+                            `;
+                    }
+
+                    priceModal.show(); // Show modal after populating
+                })
+                .catch((error) => {
+                    console.error("Error fetching price details:", error);
+                    alert("Unable to fetch price details. Please try again.");
                 });
-            }
+        };
+
+        // Attach click event listener to each price column
+        table.querySelectorAll(".price-text").forEach((priceElement) => {
+            const row = priceElement.closest("tr");
+            const materialId = row.getAttribute("data-id");
+
+            priceElement.addEventListener("click", () => {
+                showPriceModal(materialId);
+            });
         });
     });
 </script>
