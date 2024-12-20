@@ -70,7 +70,7 @@
         <div class="d-flex align-items-center justify-content-between">
 
             <a href="#" class="logo d-flex align-items-center" style="text-decoration: none;">
-                <img src="assets/img/emblem.png" alt="">
+                <img src="assets/img/rmslogo1.jpeg" alt="" style="width: 30px; height: 60px;">
                 <span class="d-none d-lg-block">
                     <span style="color: rgb(186, 234, 249);font-size:20px;">Recipe</span>
                     <span style="color: rgb(102,100,100);font-size:20px;">Management System</span>
