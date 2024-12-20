@@ -203,7 +203,7 @@
 
         <ul class="sidebar-nav" id="sidebar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="{{ 'dashboard' }}" style="background-color: rgb(186, 234, 249); font-size:17px;">
+                <a class="nav-link" href="/dashboard" style="background-color: rgb(186, 234, 249); font-size:17px;">
                     {{-- <i class="bi bi-grid"></i> --}}
                     <img src="/assets/img/dashboard_pic.svg" alt="dashboard Icon" style="width: 1.2em; height: auto; margin-right: 4px;">
                     <span>Dashboard</span>
@@ -218,7 +218,7 @@
                 </a>
                 <ul id="components-nav" class="nav-content collapse {{ Request::is('rawmaterial') || Request::is('category') ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="{{ 'rawmaterial' }}"  class="{{ Request::is('rawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                        <a href="/rawmaterial"  class="{{ Request::is('rawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                            <span>Raw Materials</span>
                         </a>
                     </li>
@@ -238,7 +238,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ 'category' }}" class="{{ Request::is('category') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none">
+                        <a href="/category" class="{{ Request::is('category') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none">
                             <span>Category</span>
                         </a>
                     </li>
