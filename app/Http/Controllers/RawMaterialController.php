@@ -21,8 +21,8 @@ class RawMaterialController extends Controller
         // If it's an AJAX request for filtered raw materials
         if ($request->ajax()) {
             // Get selected category IDs from the request
-            $selectedCategoryIds = $request->input('category_ids', []);
-                dd($selectedCategoryIds);
+            // $selectedCategoryIds = $request->input('category_ids', []);
+            $selectedCategoryIds = explode(',', $selectedCategoryIds);
             // If no categories are selected, return all raw materials
             if (empty($selectedCategoryIds)) {
                 $rawMaterials = DB::table('raw_materials as rm')
