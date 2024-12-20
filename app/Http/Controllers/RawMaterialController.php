@@ -199,9 +199,11 @@ class RawMaterialController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function getRmPriceHistory($id)
     {
-        //
+        $priceHistory = DB::table('rm_price_histories')
+        ->where('raw_material_id', $id)->get();
+        return response()->json(['priceDetails' => $priceHistory]);
     }
 
     /**
@@ -209,16 +211,63 @@ class RawMaterialController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        // Fetch all categories
+        $rawMaterialCategories = DB::table('categoryitems')->get();
+
+        // Fetch the specific raw material by its ID
+        $rawMaterial = DB::table('raw_materials')->where('id', $id)->first(); // Fetch the single raw material entry
+
+        // Return the view with raw material data and categories
+        return view('editRawMaterial', compact('rawMaterial', 'rawMaterialCategories'));
     }
+
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
-        //
+        // Find the existing raw material by ID
+        $rawMaterial = RawMaterial::findOrFail($id);
+
+        // Validate the incoming request data
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'uom' => 'required|string|in:Ltr,Kgs',
+            'category_ids' => 'required|array',
+            'category_ids.*' => 'integer|exists:categoryitems,id',
+            'price' => 'required|string',
+            'price_update_frequency' => 'required|string',
+            'price_threshold' => 'required|string'
+        ]);
+
+        $categoryIds = $request->category_ids;
+
+        try {
+            // Update the raw material record
+            $rawMaterial->update([
+                'name' => $request->name,
+                'uom' => $request->uom,
+                'category_id1' => $categoryIds[0] ?? null,
+                'category_id2' => $categoryIds[1] ?? null,
+                'category_id3' => $categoryIds[2] ?? null,
+                'category_id4' => $categoryIds[3] ?? null,
+                'category_id5' => $categoryIds[4] ?? null,
+                'price' => $request->price,
+                'price_update_frequency' => $request->price_update_frequency,
+                'price_threshold' => $request->price_threshold,
+            ]);
+        } catch (\Exception $e) {
+            // Handle the error gracefully (e.g., log it and show an error message)
+            // \Log::error('Error updating raw material: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'There was an issue updating the raw material.');
+        }
+
+        // Return a success message and redirect back
+        return redirect()->route('rawMaterials.index')->with('success', 'Raw Material updated successfully.');
     }
+
+
 
     /**
      * Remove the specified resource from storage.

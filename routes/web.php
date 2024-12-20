@@ -42,8 +42,12 @@ Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('ca
 
 Route::get('/addrawmaterial', [RawMaterialController::class, 'create'])->name('rawmaterial.create');
 Route::post('/saverawmaterial', [RawMaterialController::class, 'store'])->name('rawmaterials.store');
+Route::get('/editrawmaterial/{id}', [RawMaterialController::class, 'edit'])->name('rawMaterial.edit');
+// Route to update a raw material
+Route::put('/editrawmaterial/{id}', [RawMaterialController::class, 'update'])->name('rawMaterial.edit');
 
-Route::get('/rawmaterial', [RawMaterialController::class, 'index'])->name('rawmaterials.index');
+Route::get('/rawmaterial', [RawMaterialController::class, 'index'])->name('rawMaterials.index');
 Route::post('/update-material-price/{id}', [RawMaterialController::class, 'updatePrice']);
 
 Route::post('/update-raw-material-prices', [RawMaterialController::class, 'updatePrices'])->name('rawMaterial.updatePrices');
+Route::get('/raw-material/price-details/{id}', [RawMaterialController::class, 'getRmPriceHistory'])->name('rawMaterial.priceHistory');
