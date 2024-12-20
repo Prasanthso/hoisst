@@ -205,7 +205,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{ 'dashboard' }}" style="background-color: rgb(186, 234, 249); font-size:17px;">
                     {{-- <i class="bi bi-grid"></i> --}}
-                    <img src="/assets/img/dashboard_pic.svg" alt="dashboard Icon" style="width: 1.3em; height: auto; margin-right: 4px;">
+                    <img src="/assets/img/dashboard_pic.svg" alt="dashboard Icon" style="width: 1.2em; height: auto; margin-right: 4px;">
                     <span>Dashboard</span>
                 </a>
             </li><!-- End Dashboard Nav -->
