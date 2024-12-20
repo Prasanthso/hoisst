@@ -47,11 +47,11 @@
                                     <input type="text" class="form-control" id="inputNanme4" name="price">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Pricing update frequency</label>
+                                    <label for="inputNanme4" class="form-label">Pricing update frequency in days</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="price_update_frequency">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Price threshold</label>
+                                    <label for="inputNanme4" class="form-label">Price threshold in percentage</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="price_threshold">
                                 </div>
                                 <div>

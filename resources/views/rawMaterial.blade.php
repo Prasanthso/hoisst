@@ -110,11 +110,11 @@
                 </div>
                 <div class="modal-body">
                     <table class="table table-bordered table-price">
-                        <thead class="custom-header table-primary">
+                        <thead class="custom-header">
                             <tr>
-                                <th>Effective From</th>
-                                <th>Price</th>
-                                <th>Updated By</th>
+                                <th style="color:white;">Effective From</th>
+                                <th style="color:white;">Price</th>
+                                <th style="color:white;">Updated By</th>
                             </tr>
                         </thead>
                         <tbody id="priceDetailsTable">

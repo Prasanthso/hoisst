@@ -38,6 +38,7 @@
                                         <option selected>{{ $rawMaterial->uom}}</option>
                                         <option>Ltr</option>
                                         <option>Kgs</option>
+                                        <option>Nos</option>
                                     </select>
                                 </div>
                                 <div class="col-md-12">
@@ -64,11 +65,11 @@
                                     <input type="text" class="form-control" id="inputNanme4" name="price" value="{{ $rawMaterial->price}}" disabled>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Pricing update frequency</label>
+                                    <label for="inputNanme4" class="form-label">Pricing update frequency in Days</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="price_update_frequency" value="{{ $rawMaterial->price_update_frequency}}" disabled>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Price threshold</label>
+                                    <label for="inputNanme4" class="form-label">Price threshold in percentage</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="price_threshold" value="{{ $rawMaterial->price_threshold}}" disabled>
                                 </div>
                                 <div>

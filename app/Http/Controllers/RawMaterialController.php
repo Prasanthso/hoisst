@@ -202,7 +202,9 @@ class RawMaterialController extends Controller
     public function getRmPriceHistory($id)
     {
         $priceHistory = DB::table('rm_price_histories')
-        ->where('raw_material_id', $id)->get();
+        ->where('raw_material_id', $id)
+        ->orderBy('updated_at', 'desc') // Replace 'id' with the column you want to sort by
+        ->get();
         return response()->json(['priceDetails' => $priceHistory]);
     }
 
