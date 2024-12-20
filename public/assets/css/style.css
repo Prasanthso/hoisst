@@ -6,6 +6,7 @@
   scroll-behavior: smooth;
 }
 
+
 body {
   font-family: "Poppins", serif;
   background: #f6f9ff;
@@ -13,7 +14,8 @@ body {
 }
 
 a {
-  color: #4154f1;
+  /* color: #4154f1; */
+  color:#3A494E;
   text-decoration: none;
 }
 
@@ -30,6 +32,7 @@ h5,
 h6 {
   font-family: "Poppins", serif;
 }
+
 
 /*--------------------------------------------------------------
 # Main
@@ -604,6 +607,7 @@ h6 {
   scrollbar-color: #aab7cf transparent;
   box-shadow: 0px 0px 20px rgba(1, 41, 112, 0.1);
   background-color: #fff;
+
 }
 
 @media (max-width: 1199px) {
@@ -658,6 +662,7 @@ h6 {
   padding: 0;
   margin: 0;
   list-style: none;
+
 }
 
 .sidebar-nav .nav-item {
@@ -668,7 +673,7 @@ h6 {
   font-size: 11px;
   text-transform: uppercase;
   color: #899bbd;
-  font-weight: 600;
+  font-weight: 500;
   margin: 10px 0 5px 15px;
 }
 
@@ -676,22 +681,26 @@ h6 {
   display: flex;
   align-items: center;
   font-size: 15px;
-  font-weight: 600;
-  color: #4154f1;
+  font-weight: 500;
+  /* color: #4154f1; */
+  color: #3A494E;
   transition: 0.3;
   background: #f6f9ff;
   padding: 10px 15px;
   border-radius: 4px;
+
 }
 
 .sidebar-nav .nav-link i {
   font-size: 16px;
   margin-right: 10px;
-  color: #4154f1;
+  /* color: #4154f1; */
+  color:#8F9699;
 }
 
 .sidebar-nav .nav-link.collapsed {
-  color: #012970;
+  /* color: #012970; */
+  color: #3A494E;
   background: #fff;
 }
 
@@ -700,12 +709,15 @@ h6 {
 }
 
 .sidebar-nav .nav-link:hover {
-  color: #4154f1;
+  /* color: #4154f1; */
+  color:#8F9699;
   background: #f6f9ff;
 }
 
 .sidebar-nav .nav-link:hover i {
-  color: #4154f1;
+  /* color: #4154f1; */
+  color:#8F9699;
+
 }
 
 .sidebar-nav .nav-link .bi-chevron-down {
@@ -721,17 +733,20 @@ h6 {
   padding: 5px 0 0 0;
   margin: 0;
   list-style: none;
-}
+  font-family: "Poppins", serif;
+  }
 
 .sidebar-nav .nav-content a {
   display: flex;
   align-items: center;
   font-size: 14px;
-  font-weight: 600;
-  color: #012970;
+  font-weight: 500;
+  /* color: #012970; */
+  color:#8F9699;
   transition: 0.3;
   padding: 10px 0 10px 40px;
   transition: 0.3s;
+  text-decoration: none;
 }
 
 .sidebar-nav .nav-content a i {
@@ -743,10 +758,13 @@ h6 {
 
 .sidebar-nav .nav-content a:hover,
 .sidebar-nav .nav-content a.active {
-  color: #4154f1;
+  /* color: #4154f1; */
+  color:#3A494E;
+  text-decoration: none;
 }
 
 .sidebar-nav .nav-content a.active i {
+    color:#3A494E;
   background-color: #4154f1;
 }
 

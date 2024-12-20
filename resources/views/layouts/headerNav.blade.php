@@ -51,6 +51,13 @@
         * {
             font-family: "Poppins", serif;
         }
+        /* dashboard left side bar  */
+        .btn-primary {
+            background-color: #0079AD !important;
+            border-color: #0079AD !important;
+            color: white !important;
+        }
+
     </style>
 </head>
 
@@ -196,58 +203,63 @@
 
         <ul class="sidebar-nav" id="sidebar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="{{ 'dashboard' }}" style="background-color: rgb(186, 234, 249); color: black;font-size:18px;">
-                    <i class="bi bi-grid"></i>
+                <a class="nav-link" href="{{ 'dashboard' }}" style="background-color: rgb(186, 234, 249); font-size:17px;">
+                    {{-- <i class="bi bi-grid"></i> --}}
+                    <img src="/assets/img/dashboard_pic.svg" alt="dashboard Icon" style="width: 1.2em; height: auto; margin-right: 4px;">
                     <span>Dashboard</span>
                 </a>
             </li><!-- End Dashboard Nav -->
 
             <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); color: black;font-size:18px;text-decoration: none;">
-                    <i class="bi bi-menu-button-wide"></i><span>Masters</span><i class="bi bi-chevron-down ms-auto"></i>
+                <a class="nav-link {{ Request::is('rawmaterial') || Request::is('category') ? '' : 'collapsed' }}" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); font-size:17px;text-decoration: none;">
+                    {{-- <i class="bi bi-menu-button-wide"></i> --}}
+                    <img src="/assets/img/master_pic.svg" alt="master Icon" style="width: 0.8em; height: auto; margin-right: 10px;">
+                    <span>Masters</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
-                <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                <ul id="components-nav" class="nav-content collapse {{ Request::is('rawmaterial') || Request::is('category') ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="{{ 'rawmaterial' }}" style="background-color: rgb(186, 234, 249); color: black;font-size:16px;text-decoration: none;">
-                            <i class="bi bi-circle"></i><span>Raw Materials</span>
+                        <a href="{{ 'rawmaterial' }}"  class="{{ Request::is('rawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                           <span>Raw Materials</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" style="background-color: rgb(186, 234, 249); color: black;font-size:16px;text-decoration: none;">
-                            <i class="bi bi-circle"></i><span>Packing Materials</span>
+                        <a href="#" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                            <span>Packing Materials</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" style="background-color: rgb(186, 234, 249); color: black;font-size:16px;text-decoration: none;">
-                            <i class="bi bi-circle"></i><span>Overheads</span>
+                        <a href="#" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                            <span>Overheads</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" style="background-color: rgb(186, 234, 249); color: black;font-size:16px;text-decoration: none;">
-                            <i class="bi bi-circle"></i><span>Products</span>
+                        <a href="#" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                            <span>Products</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ 'category' }}" style="background-color: rgb(186, 234, 249); color: black;font-size:16px;text-decoration: none">
-                            <i class="bi bi-circle"></i><span>Category</span>
+                        <a href="{{ 'category' }}" class="{{ Request::is('category') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none">
+                            <span>Category</span>
                         </a>
                     </li>
                 </ul>
             </li><!-- End Masters Nav -->
 
             <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); color: black;font-size:18px;text-decoration: none;">
-                    <i class="bi bi-journal-text"></i><span>Recipe</span><i class="bi bi-chevron-down ms-auto"></i>
+                <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); font-size:17px;text-decoration: none;">
+                    {{-- <i class="bi bi-journal-text"></i> --}}
+                    <img src="/assets/img/receipe_pic.svg" alt="receipe Icon" style="width: 1em; height: auto; margin-right:10px;">
+                    <span>Recipe</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="forms-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="forms-elements.html" style="background-color: rgb(186, 234, 249); color: black;font-size:16px;text-decoration: none;">
-                            <i class="bi bi-circle"></i><span>Details & Description</span>
+                        <a href="#" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                            <span>Details & Description</span>
                         </a>
                     </li>
                     <li>
-                        <a href="forms-layouts.html" style="background-color: rgb(186, 234, 249); color: black;font-size:16px;text-decoration: none;">
-                            <i class="bi bi-circle"></i><span>Pricing</span>
+                        <a href="#" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                            <span>Pricing</span>
                         </a>
                     </li>
                 </ul>
@@ -305,6 +317,7 @@
             const input = document.querySelector("#search-box input");
             alert(`Searching for: ${input.value}`);
         }
+
     </script>
 
 </body>
