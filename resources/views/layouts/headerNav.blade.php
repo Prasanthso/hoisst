@@ -51,13 +51,13 @@
         * {
             font-family: "Poppins", serif;
         }
+
         /* dashboard left side bar  */
         .btn-primary {
             background-color: #0079AD !important;
             border-color: #0079AD !important;
             color: white !important;
         }
-
     </style>
 </head>
 
@@ -68,16 +68,12 @@
     <header id="header" class="header fixed-top d-flex align-items-center">
 
         <div class="d-flex align-items-center justify-content-between">
-
             <a href="#" class="logo d-flex align-items-center" style="text-decoration: none;">
-                <img src="assets/img/emblem.png" alt="">
-                <span class="d-none d-lg-block">
-                    <span style="color: rgb(186, 234, 249);font-size:20px;">Recipe</span>
-                    <span style="color: rgb(102,100,100);font-size:20px;">Management System</span>
-                </span>
+                <img src="assets/img/logo.jpeg" alt="Recipe Management System Logo" style="height: 100%; width: 70%;">
             </a>
             <!-- <i class="bi bi-list toggle-sidebar-btn"></i> -->
         </div>
+
         <!-- End Logo -->
 
 
@@ -274,14 +270,14 @@
     </main>
 
     <!-- ======= Footer ======= -->
-    <footer id="footer" class="footer">
+    <!-- <footer id="footer" class="footer">
         <div class="copyright">
             &copy; Copyright <strong><span>RMS</span></strong>. All Rights Reserved
         </div>
         <div class="credits">
             Designed by <a href="https://www.hoisst.in/rms">Hoisst</a>
         </div>
-    </footer>
+    </footer> -->
 
     <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
         <i class="bi bi-arrow-up-short"></i>
@@ -317,7 +313,6 @@
             const input = document.querySelector("#search-box input");
             alert(`Searching for: ${input.value}`);
         }
-
     </script>
 
 </body>
