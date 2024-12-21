@@ -99,7 +99,7 @@ class RawMaterialController extends Controller
                 'c4.itemname as category_name4',
                 'c5.itemname as category_name5'
             )
-            ->get();
+            ->paginate(3);
 
         return view('rawMaterial', compact('rawMaterials', 'categoryitems'));
     }

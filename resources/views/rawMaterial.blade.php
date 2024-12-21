@@ -76,7 +76,8 @@
                                 <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
                                 </td>
-                                <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO -->
+                                {{-- <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO --> --}}
+                                <td>{{ $rawMaterials->firstItem() + $index }}</td>
                                 <td><a href="{{ route('rawMaterial.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
                                 <td>{{ $material->rmcode }}</td> <!-- RM Code -->
                                 <td>
@@ -95,6 +96,17 @@
                             @endforeach
                         </tbody>
                     </table>
+                    <!-- Pagination Links -->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <!-- Content like "Showing 1 to 10 of 50 entries" -->
+                            Showing {{ $rawMaterials->firstItem() }} to {{ $rawMaterials->lastItem() }} of {{ $rawMaterials->total() }} entries
+                        </div>
+                        <div>
+                            <!-- Pagination Links -->
+                            {{ $rawMaterials->links('pagination::bootstrap-5') }}
+                        </div>
+                    </div>
                     <!-- End Bordered Table -->
                 </div>
             </div><!-- End Right side columns -->
@@ -133,6 +145,7 @@
 <!-- Vendor JS Files -->
 <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
+{{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
 
 <!-- Template Main JS File -->
 <script src="{{ asset('js/main.js') }}"></script>
@@ -146,7 +159,10 @@
         const rows = document.querySelectorAll('#rawMaterialTable tr');
         const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
         let isEditing = false; // Track if edit mode is active
+        const paginationControls = document.getElementById("paginationControls");
 
+        let currentPage = 1;
+        const rowsPerPage = 3;
         // Function to get all row checkboxes dynamically
         const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
 
@@ -203,6 +219,7 @@
 
             // Reassign the edit button functionality
             document.querySelector(".edit-table-btn").addEventListener("click", enableEditing);
+
         };
 
         // Function to save changes
@@ -368,9 +385,6 @@
 
         // Initialize Edit button functionality
         editTableBtn.addEventListener("click", enableEditing);
-
-
-
         const priceModal = new bootstrap.Modal(document.getElementById("priceModal")); // Initialize Bootstrap Modal
 
         const showPriceModal = (materialId) => {
@@ -418,12 +432,13 @@
             });
         });
 
+            /* For filter section*/
           // Listen for change events on category checkboxes
         categoryCheckboxes.forEach(checkbox => {
             checkbox.addEventListener('change', filterRawMaterials);
         });
-
-        function filterRawMaterials() {
+         /* For filter Functions*/
+    function filterRawMaterials() {
             // Get all selected categories
             const selectedCategories = Array.from(categoryCheckboxes)
                 .filter(checkbox => checkbox.checked)
@@ -448,7 +463,102 @@
                     row.style.display = 'none';  // Hide row
                 }
             });
+            updateSerialNumbers();
+
+        }
+
+        function updateSerialNumbers() {
+            // Get all visible rows
+            const visibleRows = Array.from(document.querySelectorAll("#rawMaterialTable tr"))
+                .filter(row => row.style.display !== 'none');
+
+            // Update serial numbers for visible rows only
+            visibleRows.forEach((row, index) => {
+                const snoCell = row.querySelector("td:nth-child(2)"); // Adjust the column index for S.NO
+                if (snoCell) {
+                    snoCell.textContent = `${index + 1}.`; // Update the serial number
+                }
+            });
         }
 
     });
+    /* end DomLoad section*/
+
+
+
+        /* For pagination section */
+        function renderTable() {
+        // Filter visible rows based on the current page
+        const visibleRows = rows.filter(row => row.style.display !== "none");
+
+        // Calculate start and end indices for the current page
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        // Hide all rows and update S.NO for visible rows
+        visibleRows.forEach((row, index) => {
+            if (index >= start && index < end) {
+                row.style.display = ""; // Show row in the current page range
+                const snoCell = row.querySelector("td:nth-child(2)"); // Adjust column index for S.NO
+                if (snoCell) {
+                    snoCell.textContent = `${start + index + 1}.`; // Update S.NO for the page
+                }
+            } else {
+                row.style.display = "none"; // Hide rows not in the current page
+            }
+        });
+
+        // Render pagination controls
+        renderPaginationControls(visibleRows.length);
+    }
+
+function renderPaginationControls(totalRows) {
+    const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+    // Update showing info
+    const showingInfo = document.getElementById("showingInfo");
+    const start = (currentPage - 1) * rowsPerPage + 1;
+    const end = Math.min(start + rowsPerPage - 1, totalRows);
+    showingInfo.textContent = `Showing ${start} to ${end} of ${totalRows} entries`;
+
+    // Clear existing controls
+    paginationControls.innerHTML = "";
+
+    // Add Previous button
+    const prevButton = document.createElement("button");
+    prevButton.textContent = "Previous";
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+        }
+    });
+    paginationControls.appendChild(prevButton);
+
+    // Add page number buttons
+    for (let i = 1; i <= totalPages; i++) {
+        const button = document.createElement("button");
+        button.textContent = i;
+        button.className = i === currentPage ? "active" : "";
+        button.addEventListener("click", () => {
+            currentPage = i;
+            renderTable();
+        });
+        paginationControls.appendChild(button);
+    }
+
+    // Add Next button
+    const nextButton = document.createElement("button");
+    nextButton.textContent = "Next";
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.addEventListener("click", () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderTable();
+        }
+    });
+    paginationControls.appendChild(nextButton);
+}
+
 </script>
