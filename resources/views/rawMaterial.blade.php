@@ -23,11 +23,12 @@
                                 @foreach($categoryitems as $category)
                                 <div class="form-check">
                                     <input
-                                        class="form-check-input"
+                                        class="form-check-input category-checkbox"
                                         type="checkbox"
-                                        id="category_{{ $category->id }}"
-                                        {{-- @if($category->is_checked) checked @endif
-                                    > --}}
+                                        data-id="category_{{ $category->id }}"
+                                        value="{{ $category->itemname }}"
+                                        {{-- data-category-name="{{ $category->itemname }}" --}}
+                                        >
                                         <label class="form-check-label" for="category_{{ $category->id }}">
                                     {{ $category->itemname }}
                                     </label>
@@ -143,6 +144,7 @@
         const deleteTableBtn = document.querySelector(".delete-table-btn");
         const selectAllCheckbox = document.getElementById('select-all');
         const rows = document.querySelectorAll('#rawMaterialTable tr');
+        const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
         let isEditing = false; // Track if edit mode is active
 
         // Function to get all row checkboxes dynamically
@@ -286,7 +288,6 @@
                     // Revert input value to original price text for selected row
                     priceInput.value = priceText.textContent;
                 }
-
             });
             exitEditingMode();
         };
@@ -416,5 +417,38 @@
                 showPriceModal(materialId);
             });
         });
+
+          // Listen for change events on category checkboxes
+        categoryCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', filterRawMaterials);
+        });
+
+        function filterRawMaterials() {
+            // Get all selected categories
+            const selectedCategories = Array.from(categoryCheckboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value.toLowerCase().trim());
+
+            rows.forEach(row => {
+                const categoryCells = row.querySelector('td:nth-child(5)').textContent.toLowerCase().split(', ');
+                let matches = false;
+
+                // Check if any of the selected categories match the categories of the raw material row
+                selectedCategories.forEach(selectedCategory => {
+                    // Check if the selected category exists in the row's categories
+                    if (categoryCells.some(category => category.trim() === selectedCategory)) {
+                        matches = true;
+                    }
+                });
+
+                // Show or hide the row based on the match
+                if (selectedCategories.length === 0 || matches) {
+                    row.style.display = '';  // Show row
+                } else {
+                    row.style.display = 'none';  // Hide row
+                }
+            });
+        }
+
     });
 </script>

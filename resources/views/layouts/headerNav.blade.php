@@ -214,8 +214,8 @@
                 </a>
                 <ul id="components-nav" class="nav-content collapse {{ Request::is('rawmaterial') || Request::is('category') ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="/rawmaterial" class="{{ Request::is('rawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
-                            <span>Raw Materials</span>
+                        <a href="/rawmaterial"  class="{{ Request::is('rawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                           <span>Raw Materials</span>
                         </a>
                     </li>
                     <li>

@@ -25,28 +25,28 @@ class RawMaterial extends Model
         'price_threshold'
     ];
 
-    public function category1()
-    {
-        return $this->belongsTo(Category::class, 'category_id1');
-    }
+    // public function category1()
+    // {
+    //     return $this->belongsTo(Category::class, 'category_id1');
+    // }
 
-    public function category2()
-    {
-        return $this->belongsTo(Category::class, 'category_id2');
-    }
+    // public function category2()
+    // {
+    //     return $this->belongsTo(Category::class, 'category_id2');
+    // }
 
-    public function category3()
-    {
-        return $this->belongsTo(Category::class, 'category_id3');
-    }
+    // public function category3()
+    // {
+    //     return $this->belongsTo(Category::class, 'category_id3');
+    // }
 
-    public function category4()
-    {
-        return $this->belongsTo(Category::class, 'category_id4');
-    }
+    // public function category4()
+    // {
+    //     return $this->belongsTo(Category::class, 'category_id4');
+    // }
 
-    public function category5()
-    {
-        return $this->belongsTo(Category::class, 'category_id5');
-    }
+    // public function category5()
+    // {
+    //     return $this->belongsTo(Category::class, 'category_id5');
+    // }
 }
