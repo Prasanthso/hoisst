@@ -25,7 +25,9 @@
                                     <input
                                         class="form-check-input category-checkbox"
                                         type="checkbox"
-                                        data-id="category_{{ $category->id }}"
+                                        name=category_ids[]
+                                        data-category-id="{{ $category->id }}"
+                                        {{-- value="{{ $category->id }}" --}}
                                         value="{{ $category->itemname }}"
                                         {{-- data-category-name="{{ $category->itemname }}" --}}
                                         >
@@ -71,7 +73,7 @@
                             </tr>
                         </thead>
                         <tbody id="rawMaterialTable">
-                            @foreach ($rawMaterials as $index => $material)
+                            @forelse ($rawMaterials as $index => $material)
                             <tr data-id="{{ $material->id }}">
                                 <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
@@ -93,7 +95,11 @@
                                 </td>
                                 <td>{{ $material->uom }}</td> <!-- UoM -->
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr>
+                                <td colspan="6">No raw materials found.</td>
+                            </tr>
+                        @endforelse
                         </tbody>
                     </table>
                     <!-- Pagination Links -->
@@ -149,6 +155,8 @@
 
 <!-- Template Main JS File -->
 <script src="{{ asset('js/main.js') }}"></script>
+<!-- jQuery CDN -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -159,10 +167,7 @@
         const rows = document.querySelectorAll('#rawMaterialTable tr');
         const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
         let isEditing = false; // Track if edit mode is active
-        const paginationControls = document.getElementById("paginationControls");
 
-        let currentPage = 1;
-        const rowsPerPage = 3;
         // Function to get all row checkboxes dynamically
         const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
 
@@ -432,12 +437,13 @@
             });
         });
 
-            /* For filter section*/
+         /* For filter section*/
           // Listen for change events on category checkboxes
         categoryCheckboxes.forEach(checkbox => {
             checkbox.addEventListener('change', filterRawMaterials);
         });
-         /* For filter Functions*/
+
+        /* For filter Functions*/
     function filterRawMaterials() {
             // Get all selected categories
             const selectedCategories = Array.from(categoryCheckboxes)
@@ -464,7 +470,6 @@
                 }
             });
             updateSerialNumbers();
-
         }
 
         function updateSerialNumbers() {
@@ -480,85 +485,47 @@
                 }
             });
         }
+/*
+    function sorting() {
+    // Get selected category IDs
+    const selectedCategories = Array.from(categoryCheckboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value);
 
+        fetch(`/rawmaterial?rawMaterials=${selectedCategories.join(',')}`, {
+        method: 'GET',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }, // Important for Laravel AJAX detection
+        })
+    .then((response) => response.json())
+    .then((data) => {
+        const rawMaterials = data.rawMaterials;
+        const tbody = document.querySelector('#rawMaterialTable tbody');
+        tbody.innerHTML = ''; // Clear existing rows
+
+        rawMaterials.forEach((item, index) => {
+            const row = `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${item.name}</td>
+                    <td>${item.rmcode}</td>
+                     <td>
+                                    ${ $item->category_name1 ?? '' }}
+                                    ${ $item->category_name2 ? ', ' . $item->category_name2 : '' }}
+                                    ${ $item->category_name3 ? ', ' . $item->category_name3 : '' }}
+                                    ${ $item->category_name4 ? ', ' . $item->category_name4 : '' }}
+                                    ${ $item->category_name5 ? ', ' . $item->category_name5 : '' }}
+                                </td>
+                    <td>${item.price}</td>
+                    <td>${item.uom}</td>
+                </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', row);
+        });
+    })
+    .catch((error) => console.error('Error fetching data:', error));
+
+    }
+    */
     });
     /* end DomLoad section*/
-
-
-
-        /* For pagination section */
-        function renderTable() {
-        // Filter visible rows based on the current page
-        const visibleRows = rows.filter(row => row.style.display !== "none");
-
-        // Calculate start and end indices for the current page
-        const start = (currentPage - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-
-        // Hide all rows and update S.NO for visible rows
-        visibleRows.forEach((row, index) => {
-            if (index >= start && index < end) {
-                row.style.display = ""; // Show row in the current page range
-                const snoCell = row.querySelector("td:nth-child(2)"); // Adjust column index for S.NO
-                if (snoCell) {
-                    snoCell.textContent = `${start + index + 1}.`; // Update S.NO for the page
-                }
-            } else {
-                row.style.display = "none"; // Hide rows not in the current page
-            }
-        });
-
-        // Render pagination controls
-        renderPaginationControls(visibleRows.length);
-    }
-
-function renderPaginationControls(totalRows) {
-    const totalPages = Math.ceil(totalRows / rowsPerPage);
-
-    // Update showing info
-    const showingInfo = document.getElementById("showingInfo");
-    const start = (currentPage - 1) * rowsPerPage + 1;
-    const end = Math.min(start + rowsPerPage - 1, totalRows);
-    showingInfo.textContent = `Showing ${start} to ${end} of ${totalRows} entries`;
-
-    // Clear existing controls
-    paginationControls.innerHTML = "";
-
-    // Add Previous button
-    const prevButton = document.createElement("button");
-    prevButton.textContent = "Previous";
-    prevButton.disabled = currentPage === 1;
-    prevButton.addEventListener("click", () => {
-        if (currentPage > 1) {
-            currentPage--;
-            renderTable();
-        }
-    });
-    paginationControls.appendChild(prevButton);
-
-    // Add page number buttons
-    for (let i = 1; i <= totalPages; i++) {
-        const button = document.createElement("button");
-        button.textContent = i;
-        button.className = i === currentPage ? "active" : "";
-        button.addEventListener("click", () => {
-            currentPage = i;
-            renderTable();
-        });
-        paginationControls.appendChild(button);
-    }
-
-    // Add Next button
-    const nextButton = document.createElement("button");
-    nextButton.textContent = "Next";
-    nextButton.disabled = currentPage === totalPages;
-    nextButton.addEventListener("click", () => {
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderTable();
-        }
-    });
-    paginationControls.appendChild(nextButton);
-}
-
 </script>

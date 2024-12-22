@@ -21,7 +21,7 @@ class RawMaterialController extends Controller
         // If it's an AJAX request for filtered raw materials
         if ($request->ajax()) {
             // Get selected category IDs from the request
-            // $selectedCategoryIds = $request->input('category_ids', []);
+            $selectedCategoryIds = $request->input('category_ids', []);
             $selectedCategoryIds = explode(',', $selectedCategoryIds);
             // If no categories are selected, return all raw materials
             if (empty($selectedCategoryIds)) {
@@ -99,7 +99,7 @@ class RawMaterialController extends Controller
                 'c4.itemname as category_name4',
                 'c5.itemname as category_name5'
             )
-            ->paginate(3);
+            ->paginate(10);
 
         return view('rawMaterial', compact('rawMaterials', 'categoryitems'));
     }
