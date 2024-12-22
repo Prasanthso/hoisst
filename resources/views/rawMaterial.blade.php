@@ -485,6 +485,7 @@
                 }
             });
         }
+    });
 /*
     function sorting() {
     // Get selected category IDs
@@ -526,6 +527,6 @@
 
     }
     */
-    });
+
     /* end DomLoad section*/
 </script>
