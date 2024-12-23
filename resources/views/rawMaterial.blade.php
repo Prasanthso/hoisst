@@ -25,7 +25,9 @@
                                     <input
                                         class="form-check-input category-checkbox"
                                         type="checkbox"
-                                        data-id="category_{{ $category->id }}"
+                                        name=category_ids[]
+                                        data-category-id="{{ $category->id }}"
+                                        {{-- value="{{ $category->id }}" --}}
                                         value="{{ $category->itemname }}"
                                         {{-- data-category-name="{{ $category->itemname }}" --}}
                                         >
@@ -71,12 +73,13 @@
                             </tr>
                         </thead>
                         <tbody id="rawMaterialTable">
-                            @foreach ($rawMaterials as $index => $material)
+                            @forelse ($rawMaterials as $index => $material)
                             <tr data-id="{{ $material->id }}">
                                 <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
                                 </td>
-                                <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO -->
+                                {{-- <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO --> --}}
+                                <td>{{ $rawMaterials->firstItem() + $index }}</td>
                                 <td><a href="{{ route('rawMaterial.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
                                 <td>{{ $material->rmcode }}</td> <!-- RM Code -->
                                 <td>
@@ -92,9 +95,24 @@
                                 </td>
                                 <td>{{ $material->uom }}</td> <!-- UoM -->
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr>
+                                <td colspan="6">No raw materials found.</td>
+                            </tr>
+                        @endforelse
                         </tbody>
                     </table>
+                    <!-- Pagination Links -->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <!-- Content like "Showing 1 to 10 of 50 entries" -->
+                            Showing {{ $rawMaterials->firstItem() }} to {{ $rawMaterials->lastItem() }} of {{ $rawMaterials->total() }} entries
+                        </div>
+                        <div>
+                            <!-- Pagination Links -->
+                            {{ $rawMaterials->links('pagination::bootstrap-5') }}
+                        </div>
+                    </div>
                     <!-- End Bordered Table -->
                 </div>
             </div><!-- End Right side columns -->
@@ -133,9 +151,12 @@
 <!-- Vendor JS Files -->
 <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
+{{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
 
 <!-- Template Main JS File -->
 <script src="{{ asset('js/main.js') }}"></script>
+<!-- jQuery CDN -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -203,6 +224,7 @@
 
             // Reassign the edit button functionality
             document.querySelector(".edit-table-btn").addEventListener("click", enableEditing);
+
         };
 
         // Function to save changes
@@ -368,9 +390,6 @@
 
         // Initialize Edit button functionality
         editTableBtn.addEventListener("click", enableEditing);
-
-
-
         const priceModal = new bootstrap.Modal(document.getElementById("priceModal")); // Initialize Bootstrap Modal
 
         const showPriceModal = (materialId) => {
@@ -418,12 +437,14 @@
             });
         });
 
+         /* For filter section*/
           // Listen for change events on category checkboxes
         categoryCheckboxes.forEach(checkbox => {
             checkbox.addEventListener('change', filterRawMaterials);
         });
 
-        function filterRawMaterials() {
+        /* For filter Functions*/
+    function filterRawMaterials() {
             // Get all selected categories
             const selectedCategories = Array.from(categoryCheckboxes)
                 .filter(checkbox => checkbox.checked)
@@ -448,7 +469,64 @@
                     row.style.display = 'none';  // Hide row
                 }
             });
+            updateSerialNumbers();
         }
 
+        function updateSerialNumbers() {
+            // Get all visible rows
+            const visibleRows = Array.from(document.querySelectorAll("#rawMaterialTable tr"))
+                .filter(row => row.style.display !== 'none');
+
+            // Update serial numbers for visible rows only
+            visibleRows.forEach((row, index) => {
+                const snoCell = row.querySelector("td:nth-child(2)"); // Adjust the column index for S.NO
+                if (snoCell) {
+                    snoCell.textContent = `${index + 1}.`; // Update the serial number
+                }
+            });
+        }
     });
+/*
+    function sorting() {
+    // Get selected category IDs
+    const selectedCategories = Array.from(categoryCheckboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value);
+
+        fetch(`/rawmaterial?rawMaterials=${selectedCategories.join(',')}`, {
+        method: 'GET',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }, // Important for Laravel AJAX detection
+        })
+    .then((response) => response.json())
+    .then((data) => {
+        const rawMaterials = data.rawMaterials;
+        const tbody = document.querySelector('#rawMaterialTable tbody');
+        tbody.innerHTML = ''; // Clear existing rows
+
+        rawMaterials.forEach((item, index) => {
+            const row = `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${item.name}</td>
+                    <td>${item.rmcode}</td>
+                     <td>
+                                    ${ $item->category_name1 ?? '' }}
+                                    ${ $item->category_name2 ? ', ' . $item->category_name2 : '' }}
+                                    ${ $item->category_name3 ? ', ' . $item->category_name3 : '' }}
+                                    ${ $item->category_name4 ? ', ' . $item->category_name4 : '' }}
+                                    ${ $item->category_name5 ? ', ' . $item->category_name5 : '' }}
+                                </td>
+                    <td>${item.price}</td>
+                    <td>${item.uom}</td>
+                </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', row);
+        });
+    })
+    .catch((error) => console.error('Error fetching data:', error));
+
+    }
+    */
+
+    /* end DomLoad section*/
 </script>
