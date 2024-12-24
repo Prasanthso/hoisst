@@ -27,10 +27,9 @@
                                         type="checkbox"
                                         data-id="category_{{ $category->id }}"
                                         value="{{ $category->itemname }}"
-                                        {{-- data-category-name="{{ $category->itemname }}" --}}
-                                        >
-                                        <label class="form-check-label" for="category_{{ $category->id }}">
-                                    {{ $category->itemname }}
+                                        {{-- data-category-name="{{ $category->itemname }}" --}}>
+                                    <label class="form-check-label" for="category_{{ $category->id }}">
+                                        {{ $category->itemname }}
                                     </label>
                                 </div>
                                 @endforeach
@@ -418,7 +417,7 @@
             });
         });
 
-          // Listen for change events on category checkboxes
+        // Listen for change events on category checkboxes
         categoryCheckboxes.forEach(checkbox => {
             checkbox.addEventListener('change', filterRawMaterials);
         });
@@ -443,9 +442,9 @@
 
                 // Show or hide the row based on the match
                 if (selectedCategories.length === 0 || matches) {
-                    row.style.display = '';  // Show row
+                    row.style.display = ''; // Show row
                 } else {
-                    row.style.display = 'none';  // Hide row
+                    row.style.display = 'none'; // Hide row
                 }
             });
         }
