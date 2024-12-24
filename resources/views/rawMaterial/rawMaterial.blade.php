@@ -94,6 +94,17 @@
                             @endforeach
                         </tbody>
                     </table>
+                    <!-- Pagination Links -->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <!-- Content like "Showing 1 to 10 of 50 entries" -->
+                            Showing {{ $rawMaterials->firstItem() }} to {{ $rawMaterials->lastItem() }} of {{ $rawMaterials->total() }} entries
+                        </div>
+                        <div>
+                            <!-- Pagination Links -->
+                            {{ $rawMaterials->links('pagination::bootstrap-5') }}
+                        </div>
+                    </div>
                     <!-- End Bordered Table -->
                 </div>
             </div><!-- End Right side columns -->
@@ -445,6 +456,21 @@
                     row.style.display = ''; // Show row
                 } else {
                     row.style.display = 'none'; // Hide row
+                }
+            });
+            updateSerialNumbers();
+        }
+
+        function updateSerialNumbers() {
+            // Get all visible rows
+            const visibleRows = Array.from(document.querySelectorAll("#rawMaterialTable tr"))
+                .filter(row => row.style.display !== 'none');
+
+            // Update serial numbers for visible rows only
+            visibleRows.forEach((row, index) => {
+                const snoCell = row.querySelector("td:nth-child(2)"); // Adjust the column index for S.NO
+                if (snoCell) {
+                    snoCell.textContent = `${index + 1}.`; // Update the serial number
                 }
             });
         }

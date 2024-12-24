@@ -101,6 +101,27 @@ class PackingMaterialController extends Controller
             )
             ->get();
 
+        // Default view, return all packing materials and category items
+        $packingMaterials = DB::table('packing_materials as pm')
+        ->leftJoin('categoryitems as c1', 'pm.category_id1', '=', 'c1.id')
+        ->leftJoin('categoryitems as c2', 'pm.category_id2', '=', 'c2.id')
+        ->leftJoin('categoryitems as c3', 'pm.category_id3', '=', 'c3.id')
+        ->leftJoin('categoryitems as c4', 'pm.category_id4', '=', 'c4.id')
+        ->leftJoin('categoryitems as c5', 'pm.category_id5', '=', 'c5.id')
+        ->select(
+            'pm.id',
+            'pm.name',
+            'pm.pmcode',
+            'pm.price',
+            'pm.uom',
+            'c1.itemname as category_name1',
+            'c2.itemname as category_name2',
+            'c3.itemname as category_name3',
+            'c4.itemname as category_name4',
+            'c5.itemname as category_name5'
+        )
+        ->paginate(10);
+
         return view('packingMaterial.packingMaterial', compact('packingMaterials', 'categoryitems'));
     }
 
