@@ -51,3 +51,13 @@ Route::post('/update-material-price/{id}', [RawMaterialController::class, 'updat
 
 Route::post('/update-raw-material-prices', [RawMaterialController::class, 'updatePrices'])->name('rawMaterial.updatePrices');
 Route::get('/raw-material/price-details/{id}', [RawMaterialController::class, 'getRmPriceHistory'])->name('rawMaterial.priceHistory');
+
+Route::get('/receipe-details-description', function () {
+    return view('receipeDetails_Description');
+})->name('receipedd');
+
+Route::get('/pricing', function () {
+    return view('pricing');
+})->name('pricing');
+
+Route::get('/addreceipedetails', function(){return view('addReceipeDetails');})->name('recipesdetails.store');

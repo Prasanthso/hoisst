@@ -111,6 +111,8 @@
                         <div>
                             <!-- Pagination Links -->
                             {{ $rawMaterials->links('pagination::bootstrap-5') }}
+                            {{-- {{ $rawMaterials->appends(['category_ids' => implode(',', request()->input('category_ids', []))])->links('pagination::bootstrap-5') }} --}}
+
                         </div>
                     </div>
                     <!-- End Bordered Table -->
@@ -443,6 +445,44 @@
             checkbox.addEventListener('change', filterRawMaterials);
         });
 
+        function filterRawMaterials2() {
+    // Get selected categories
+    const selectedCategories = Array.from(categoryCheckboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value);
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    // Send an AJAX request to the server with the selected categories
+    fetch(`/rawmaterial?category_ids=${selectedCategories.join(',')}`, {
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': token,  // Add CSRF token
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Assuming your table rows are in a tbody element
+        const tbody = document.querySelector('#raw-materials-table tbody');
+        tbody.innerHTML = ''; // Clear existing rows
+
+        // Loop through the returned raw materials and update the table
+        data.rawMaterials.forEach(material => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${material.name}</td>
+                <td>${material.rmcode}</td>
+                <td>${material.price}</td>
+                <td>${material.uom}</td>
+                <td>${material.category_name1}, ${material.category_name2}, ${material.category_name3}, ${material.category_name4}, ${material.category_name5}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    })
+    .catch(error => {
+        console.error("Error fetching filtered data:", error);
+    });
+}
+
         /* For filter Functions*/
     function filterRawMaterials() {
             // Get all selected categories
@@ -450,7 +490,7 @@
                 .filter(checkbox => checkbox.checked)
                 .map(checkbox => checkbox.value.toLowerCase().trim());
 
-            rows.forEach(row => {
+             rows.forEach(row => {
                 const categoryCells = row.querySelector('td:nth-child(5)').textContent.toLowerCase().split(', ');
                 let matches = false;
 
@@ -486,6 +526,29 @@
             });
         }
     });
+
+    function updateRawMaterialsTable(rawMaterials) {
+    const tableBody = document.querySelector('#rawMaterialTable tbody');
+    tableBody.innerHTML = '';  // Clear the existing table rows
+
+    rawMaterials.forEach(rawMaterial => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+         <td>${rawMaterial.name}</td>
+            <td>${rawMaterial.rmcode}</td>
+            <td>${rawMaterial.price}</td>
+            <td>${rawMaterial.uom}</td>
+            <td>${rawMaterial.category_name1}
+            ${rawMaterial.category_name2}
+            ${rawMaterial.category_name3}
+            ${rawMaterial.category_name4}
+            ${rawMaterial.category_name5}</td>
+             <td>${rawMaterial.uom}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
 /*
     function sorting() {
     // Get selected category IDs
