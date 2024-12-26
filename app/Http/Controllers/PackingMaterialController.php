@@ -173,7 +173,7 @@ class PackingMaterialController extends Controller
         }
 
 
-        return redirect()->back()->with('success', 'Packing Material created successfully.');
+        return redirect()->route('packingMaterials.index')->with('success', 'Packing Material created successfully.');
     }
 
     public function updatePrices(Request $request)

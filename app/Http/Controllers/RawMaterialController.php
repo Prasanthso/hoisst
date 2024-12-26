@@ -154,7 +154,7 @@ class RawMaterialController extends Controller
         }
 
 
-        return redirect()->back()->with('success', 'Raw Material created successfully.');
+        return redirect()->route('rawMaterials.index')->with('success', 'Raw Material created successfully.');
     }
 
 
