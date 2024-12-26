@@ -232,7 +232,7 @@ class OverheadController extends Controller
     public function edit(string $id)
     {
         // / Fetch all categories
-        $overheadsCategories = DB::table('categoryitems')->get();
+        $overheadsCategories = CategoryItems::ohCategoryItem();
 
         // Fetch the specific raw material by its ID
         $overheads = DB::table('overheads')->where('id', $id)->first(); // Fetch the single raw material entry

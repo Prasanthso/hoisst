@@ -45,7 +45,7 @@
                                     <label for="categorySelect" class="form-label">Raw Material Category</label>
 
                                     <!-- The dropdown list for selecting categories (hidden initially) -->
-                                    <select class="form-select" id="categorySelect" name="category_ids[]" multiple style="display: none;" disabled>
+                                    <select class="form-select" id="categorySelect" name="category_ids[]" multiple disabled>
                                         @foreach($packingMaterialCategories as $categories)
                                         <option value="{{ $categories->id }}"
                                             @foreach(range(1, 5) as $i)

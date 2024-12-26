@@ -214,7 +214,7 @@ class RawMaterialController extends Controller
     public function edit(string $id)
     {
         // Fetch all categories
-        $rawMaterialCategories = DB::table('categoryitems')->get();
+        $rawMaterialCategories = CategoryItems::rmCategoryItem();
 
         // Fetch the specific raw material by its ID
         $rawMaterial = DB::table('raw_materials')->where('id', $id)->first(); // Fetch the single raw material entry
