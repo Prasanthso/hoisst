@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CategoryItemController;
 use App\Http\Controllers\RawMaterialController;
+use App\Http\Controllers\RecipeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,4 +61,5 @@ Route::get('/pricing', function () {
     return view('pricing');
 })->name('pricing');
 
-Route::get('/addreceipedetails', function(){return view('addReceipeDetails');})->name('recipesdetails.store');
+Route::get('/addreceipedetails', [RecipeController::class, 'index'])->name('addreceipedetails.index');
+Route::get('/savereceipedetails', [RecipeController::class, 'store'])->name('addreceipedetails.store');

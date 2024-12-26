@@ -53,7 +53,7 @@
                 <iframe
                   width="80%"
                   height="215"
-                  src="https://www.youtube.com/embed/VIDEO_ID"
+                  src="https://youtu.be/3OZn-iCGf5s?si=QGsQ9YIuyApDGCd5"
                   title="Recipe Video"
                   frameborder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -67,7 +67,7 @@
             <div class="col-md-6">
               <h6 class="fw-bold">Watch Related Videos:</h6>
               <ul class="list-unstyled">
-                <li><a href="https://www.youtube.com/watch?v=VIDEO1" target="_blank" class="text-decoration-none">How to Make Samosa - Video 1</a></li>
+                <li><a href="#" target="_blank" class="text-decoration-none">How to Make Samosa - Video 1</a></li>
                 {{-- <li><a href="https://www.youtube.com/watch?v=VIDEO2" target="_blank" class="text-decoration-none">Samosa Recipe Tips - Video 2</a></li>
                 <li><a href="https://www.youtube.com/watch?v=VIDEO3" target="_blank" class="text-decoration-none">Perfect Samosa Techniques - Video 3</a></li> --}}
               </ul>

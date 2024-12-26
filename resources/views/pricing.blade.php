@@ -41,7 +41,7 @@
                 </div>
             </div>
 
-            <div class="row mb-4">
+            <div class="row mb-2">
                 <div class="col-auto">
                     <label for="pricingrawmaterial" class="form-label text-primary">Ram material</label>
                 </div>
@@ -58,28 +58,71 @@
                     <option value="Rawmaterial3">Cake</option>
                   </select>
                 </div>
-                <div class="col-1">
+                <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="rmQuantity" class="form-label">Quantity</label>
                     <input type="text" class="form-control rounded" id="rmQuantity" name="rmQuantity">
                 </div>
-                <div class="col-1">
+                <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="rmCode" class="form-label">RmCode</label>
                     <input type="text" class="form-control rounded" id="rmCode" name="rmCode">
                     </div>
-                <div class="col-1">
+                    <div class="d-flex flex-column" style="flex: 1.5;">
                         <label for="rmUoM" class="form-label">UoM</label>
                         <input type="text" class="form-control" id="rmUoM" name="rmUoM">
-                </div>
-                <div class="col-1">
+                    </div>
+                <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="rmPrice" class="form-label">Price</label>
                     <input type="text" class="form-control rounded" id="rmPrice" name="rmPrice">
                     </div>
-                <div class="col-1">
+                <div class="d-flex flex-column" style="flex: 1.5;">
                         <label for="rmAmount" class="form-label">Amount</label>
                         <input type="text" class="form-control" id="rmAmount" name="rmAmount">
                 </div>
-                
+                <div class="d-flex flex-column" style="flex: 2;">
+                <a href="#" class='text-decoration-none ps-add-btn text-white py-4 px-4'>
+                    <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
+                </a>
+                </div>
             </div>
+            {{-- <div class="container-fluid mt-4"> --}}
+                <div class="row mb-4">
+                    <div class="col-12 col-md-12 mx-auto"> <!-- Use col-md-11 for slightly left alignment -->
+                        <table class="table table-bordered text-center" style="width:84%; background-color: #eaf8ff;">
+                            <thead>
+                                <tr>
+                                    <th>Raw Material</th>
+                                    <th>Quantity</th>
+                                    <th>RM Code</th>
+                                    <th>UoM</th>
+                                    <th>Price</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rawMaterialTable">
+                                <tr>
+                                    <td>Raw material 1</td>
+                                    <td>10</td>
+                                    <td>RM00001</td>
+                                    <td>Kgs</td>
+                                    <td>100</td>
+                                    <td>1000</td>
+                                </tr>
+                                <tr>
+                                    <td>Raw material 1</td>
+                                    <td>10</td>
+                                    <td>RM00001</td>
+                                    <td>Kgs</td>
+                                    <td>100</td>
+                                    <td>1000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-end mt-2">
+                            <strong>RM Cost(A):</strong> <span id="totalCost">2000</span>
+                        </div>
+                    </div>
+                </div>
+            {{-- </div> --}}
 
         </div>
     </section>
@@ -98,3 +141,22 @@
 
 <!-- Template Main JS File -->
 <script src="{{ asset('js/main.js') }}"></script>
+<script>
+    function calculateTotalCost() {
+        let total = 0;
+        const table = document.getElementById('rawMaterialTable');
+        const rows = table.getElementsByTagName('tr');
+
+        for (const row of rows) {
+            const amountCell = row.cells[5]; // Amount is the 6th column (index 5)
+            const amount = parseFloat(amountCell.textContent) || 0;
+            total += amount;
+        }
+
+        document.getElementById('totalCost').textContent = total.toFixed(2);
+    }
+
+    // Call the function on page load or when the table updates dynamically
+    calculateTotalCost();
+</script>
+

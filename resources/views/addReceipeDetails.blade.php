@@ -13,14 +13,14 @@
                     <div class="card">
                         <div class="card-body">
                             <!-- Vertical Form -->
-                            <form method="POST" action="action="{{ route('recipesdetails.store') }}"" class="row g-3 mt-2" enctype="multipart/form-data">
+                            <form method="POST" action="action="{{ route('addreceipedetails.store') }}"" class="row g-3 mt-2" enctype="multipart/form-data">
                                 @csrf
                                 <div class="col-12">
                                     <label for="recipeSelect" class="form-label">Select Recipe</label>
 
                                     <select id="recipeSelect" class="form-select" name="recipe">
                                         @foreach($recipes as $recipe)
-                                            <option value="{{ $recipe->id }}">{{ $recipe->name }}</option>
+                                            <option value="{{ $recipe->id }}">{{ $recipe->recipesname }}</option>
                                         @endforeach
                                     </select>
                                 </div>
