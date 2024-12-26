@@ -25,17 +25,17 @@
                         <div class="card-body">
 
                             <!-- Vertical Form -->
-                            <form method="POST" action="{{ route('rawMaterial.edit', $rawMaterial->id) }}" class="row g-3 mt-2" id="rawMaterialForm">
+                            <form method="POST" action="{{ route('overheads.edit', $overheads->id) }}" class="row g-3 mt-2" id="rawMaterialForm">
                                 @csrf
                                 @method('PUT')
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Name</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name" value="{{ $rawMaterial->name}}" disabled>
+                                    <input type="text" class="form-control" id="inputNanme4" name="name" value="{{ $overheads->name}}" disabled>
                                 </div>
                                 <div class="col-md-12">
                                     <label for="inputNanme4" class="form-label">Choose Category For</label>
                                     <select id="inputState" class="form-select" name="uom" disabled>
-                                        <option selected>{{ $rawMaterial->uom}}</option>
+                                        <option selected>{{ $overheads->uom}}</option>
                                         <option>Ltr</option>
                                         <option>Kgs</option>
                                         <option>Nos</option>
@@ -46,13 +46,13 @@
 
                                     <!-- The dropdown list for selecting categories (hidden initially) -->
                                     <select class="form-select" id="categorySelect" name="category_ids[]" multiple style="display: none;" disabled>
-                                        @foreach($rawMaterialCategories as $categories)
+                                        @foreach($overheadsCategories as $categories)
                                         <option value="{{ $categories->id }}"
                                             @foreach(range(1, 5) as $i)
                                             @php
                                             $categoryId='category_id' . $i;
                                             @endphp
-                                            @if($rawMaterial->$categoryId == $categories->id) selected @endif
+                                            @if($overheads->$categoryId == $categories->id) selected @endif
                                             @endforeach
                                             >{{ $categories->itemname }}</option>
                                         @endforeach
@@ -62,15 +62,15 @@
 
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="price" value="{{ $rawMaterial->price}}" disabled>
+                                    <input type="text" class="form-control" id="inputNanme4" name="price" value="{{ $overheads->price}}" disabled>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Pricing update frequency in Days</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="price_update_frequency" value="{{ $rawMaterial->price_update_frequency}}" disabled>
+                                    <input type="text" class="form-control" id="inputNanme4" name="price_update_frequency" value="{{ $overheads->price_update_frequency}}" disabled>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Price threshold in percentage</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="price_threshold" value="{{ $rawMaterial->price_threshold}}" disabled>
+                                    <input type="text" class="form-control" id="inputNanme4" name="price_threshold" value="{{ $overheads->price_threshold}}" disabled>
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="saveButton" style="display: none;">

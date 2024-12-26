@@ -4,14 +4,17 @@
 <main id="main" class="main">
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
-        <h1>Raw Material</h1>
-        <a href="{{ 'addrawmaterial' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
+        <h1>Overheads</h1>
+        <a href="{{ 'addoverheads' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
             <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
         </a>
     </div><!-- End Page Title -->
 
     <section class="section dashboard">
         <div class="row">
+            @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
             <!-- Left side columns -->
             <div class="col-lg-2 px-4">
                 <!-- Categories Section -->
@@ -62,22 +65,22 @@
                                     <input type="checkbox" id="select-all" class="form-check-input">
                                 </th>
                                 <th scope="col" style="color:white;">S.NO</th>
-                                <th scope="col" style="color:white;">Raw Materials</th>
-                                <th scope="col" style="color:white;">RM Code</th>
-                                <th scope="col" style="color:white;">Raw Material Category</th>
+                                <th scope="col" style="color:white;">Overheads</th>
+                                <th scope="col" style="color:white;">OH Code</th>
+                                <th scope="col" style="color:white;">Overheads Category</th>
                                 <th scope="col" style="color:white;">Price(Rs)</th>
                                 <th scope="col" style="color:white;">UoM</th>
                             </tr>
                         </thead>
                         <tbody id="rawMaterialTable">
-                            @foreach ($rawMaterials as $index => $material)
+                            @foreach ($overheads as $index => $material)
                             <tr data-id="{{ $material->id }}">
                                 <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
                                 </td>
                                 <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO -->
-                                <td><a href="{{ route('rawMaterial.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
-                                <td>{{ $material->rmcode }}</td> <!-- RM Code -->
+                                <td><a href="{{ route('overheads.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
+                                <td>{{ $material->ohcode }}</td> <!-- RM Code -->
                                 <td>
                                     {{ $material->category_name1 ?? '' }}
                                     {{ $material->category_name2 ? ', ' . $material->category_name2 : '' }}
@@ -94,6 +97,17 @@
                             @endforeach
                         </tbody>
                     </table>
+                    <!-- Pagination Links -->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <!-- Content like "Showing 1 to 10 of 50 entries" -->
+                            Showing {{ $overheads->firstItem() }} to {{ $overheads->lastItem() }} of {{ $overheads->total() }} entries
+                        </div>
+                        <div>
+                            <!-- Pagination Links -->
+                            {{ $overheads->links('pagination::bootstrap-5') }}
+                        </div>
+                    </div>
                     <!-- End Bordered Table -->
                 </div>
             </div><!-- End Right side columns -->
@@ -228,7 +242,7 @@
 
             // Send data to the server via AJAX
             if (updatedData.length > 0) {
-                fetch("{{ route('rawMaterial.updatePrices') }}", {
+                fetch("{{ route('overheads.updatePrices') }}", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -373,7 +387,7 @@
         const priceModal = new bootstrap.Modal(document.getElementById("priceModal")); // Initialize Bootstrap Modal
 
         const showPriceModal = (materialId) => {
-            const url = `{{ route('rawMaterial.priceHistory', ':id') }}`.replace(':id', materialId);
+            const url = `{{ route('overheads.priceHistory', ':id') }}`.replace(':id', materialId);
 
             fetch(url) // API endpoint to fetch price details
                 .then((response) => response.json())
@@ -445,6 +459,21 @@
                     row.style.display = ''; // Show row
                 } else {
                     row.style.display = 'none'; // Hide row
+                }
+            });
+            updateSerialNumbers();
+        }
+
+        function updateSerialNumbers() {
+            // Get all visible rows
+            const visibleRows = Array.from(document.querySelectorAll("#rawMaterialTable tr"))
+                .filter(row => row.style.display !== 'none');
+
+            // Update serial numbers for visible rows only
+            visibleRows.forEach((row, index) => {
+                const snoCell = row.querySelector("td:nth-child(2)"); // Adjust the column index for S.NO
+                if (snoCell) {
+                    snoCell.textContent = `${index + 1}.`; // Update the serial number
                 }
             });
         }

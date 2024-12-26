@@ -41,4 +41,19 @@ class UniqueCode extends Model
         return 'PM' . $newNumber;
     }
 
+    public static function generateOhCode()
+    {
+        // Fetch the last inserted code from the raw_materials table
+        $lastCode = \DB::table('overheads')->orderBy('id', 'desc')->value('ohcode');
+
+        // Extract the numeric part of the code
+        $number = $lastCode ? intval(substr($lastCode, 2)) : 0;
+
+        // Increment the number and format it with leading zeros
+        $newNumber = str_pad($number + 1, 4, '0', STR_PAD_LEFT);
+
+        // Return the formatted code
+        return 'OH' . $newNumber;
+    }
+
 }

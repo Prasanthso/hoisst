@@ -212,19 +212,19 @@
                     <img src="/assets/img/master_pic.svg" alt="master Icon" style="width: 0.8em; height: auto; margin-right: 10px;">
                     <span>Masters</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
-                <ul id="components-nav" class="nav-content collapse {{ Request::is('rawmaterial') || Request::is('category') ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
+                <ul id="components-nav" class="nav-content collapse {{ Request::is('rawmaterial') || Request::is('category') || Request::is('packingmaterial') || Request::is('overheads') ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
                     <li>
                         <a href="/rawmaterial" class="{{ Request::is('rawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Raw Materials</span>
                         </a>
                     </li>
                     <li>
-                        <a href="/packingmaterial" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                        <a href="/packingmaterial" class="{{ Request::is('packingmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Packing Materials</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                        <a href="/overheads" class="{{ Request::is('overheads') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Overheads</span>
                         </a>
                     </li>
