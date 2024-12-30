@@ -42,7 +42,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-12">
-                                    <label for="categorySelect" class="form-label">Raw Material Category</label>
+                                    <label for="categorySelect" class="form-label">Packing Material Category</label>
 
                                     <!-- The dropdown list for selecting categories (hidden initially) -->
                                     <select class="form-select" id="categorySelect" name="category_ids[]" multiple disabled>

@@ -5,7 +5,7 @@
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
         <!-- Initially displaying "View Raw Material" -->
-        <h1 id="pageTitle">View Raw Material</h1>
+        <h1 id="pageTitle">View Overheads</h1>
         <div class="d-flex justify-content-end mb-2 action-buttons">
             <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;" id="editButton">
                 <i class="fas fa-edit" style="color: black;"></i>
@@ -42,7 +42,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-12">
-                                    <label for="categorySelect" class="form-label">Raw Material Category</label>
+                                    <label for="categorySelect" class="form-label">Overheads Category</label>
 
                                     <!-- The dropdown list for selecting categories (hidden initially) -->
                                     <select class="form-select" id="categorySelect" name="category_ids[]" multiple disabled>
@@ -114,7 +114,7 @@
         // Toggle edit mode
         $('#editButton').on('click', function() {
             // Change the page title text
-            $('#pageTitle').text('Edit Raw Material');
+            $('#pageTitle').text('Edit Overheads');
 
             // Enable form fields
             $('#rawMaterialForm input, #rawMaterialForm select').prop('disabled', false);
