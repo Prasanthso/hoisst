@@ -12,6 +12,9 @@
 
     <section class="section dashboard">
         <div class="row">
+            @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
             <!-- Left side columns -->
             <div class="col-lg-2 px-4">
                 <!-- Categories Section -->
@@ -25,14 +28,11 @@
                                     <input
                                         class="form-check-input category-checkbox"
                                         type="checkbox"
-                                        name=category_ids[]
-                                        data-category-id="{{ $category->id }}"
-                                        {{-- value="{{ $category->id }}" --}}
+                                        data-id="category_{{ $category->id }}"
                                         value="{{ $category->itemname }}"
-                                        {{-- data-category-name="{{ $category->itemname }}" --}}
-                                        >
-                                        <label class="form-check-label" for="category_{{ $category->id }}">
-                                    {{ $category->itemname }}
+                                        {{-- data-category-name="{{ $category->itemname }}" --}}>
+                                    <label class="form-check-label" for="category_{{ $category->id }}">
+                                        {{ $category->itemname }}
                                     </label>
                                 </div>
                                 @endforeach
@@ -73,13 +73,12 @@
                             </tr>
                         </thead>
                         <tbody id="rawMaterialTable">
-                            @forelse ($rawMaterials as $index => $material)
+                            @foreach ($rawMaterials as $index => $material)
                             <tr data-id="{{ $material->id }}">
                                 <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
                                 </td>
-                                {{-- <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO --> --}}
-                                <td>{{ $rawMaterials->firstItem() + $index }}</td>
+                                <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO -->
                                 <td><a href="{{ route('rawMaterial.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
                                 <td>{{ $material->rmcode }}</td> <!-- RM Code -->
                                 <td>
@@ -95,11 +94,7 @@
                                 </td>
                                 <td>{{ $material->uom }}</td> <!-- UoM -->
                             </tr>
-                            @empty
-                            <tr>
-                                <td colspan="6">No raw materials found.</td>
-                            </tr>
-                        @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                     <!-- Pagination Links -->
@@ -153,12 +148,9 @@
 <!-- Vendor JS Files -->
 <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
-{{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
 
 <!-- Template Main JS File -->
 <script src="{{ asset('js/main.js') }}"></script>
-<!-- jQuery CDN -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -226,7 +218,6 @@
 
             // Reassign the edit button functionality
             document.querySelector(".edit-table-btn").addEventListener("click", enableEditing);
-
         };
 
         // Function to save changes
@@ -392,6 +383,9 @@
 
         // Initialize Edit button functionality
         editTableBtn.addEventListener("click", enableEditing);
+
+
+
         const priceModal = new bootstrap.Modal(document.getElementById("priceModal")); // Initialize Bootstrap Modal
 
         const showPriceModal = (materialId) => {
@@ -439,8 +433,7 @@
             });
         });
 
-         /* For filter section*/
-          // Listen for change events on category checkboxes
+        // Listen for change events on category checkboxes
         categoryCheckboxes.forEach(checkbox => {
             checkbox.addEventListener('change', filterRawMaterials);
         });
@@ -504,9 +497,9 @@
 
                 // Show or hide the row based on the match
                 if (selectedCategories.length === 0 || matches) {
-                    row.style.display = '';  // Show row
+                    row.style.display = ''; // Show row
                 } else {
-                    row.style.display = 'none';  // Hide row
+                    row.style.display = 'none'; // Hide row
                 }
             });
             updateSerialNumbers();
@@ -525,6 +518,7 @@
                 }
             });
         }
+
     });
 
     function updateRawMaterialsTable(rawMaterials) {

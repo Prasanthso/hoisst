@@ -7,6 +7,11 @@ use App\Http\Controllers\CategoryItemController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RecipeController;
 
+use App\Http\Controllers\PackingMaterialController;
+use App\Http\Controllers\OverheadController;
+use App\Http\Controllers\ProductController;
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -41,17 +46,45 @@ Route::get('/dashboard', function () {
 Route::get('/category', [CategoryItemController::class, 'create'])->name('category.create');
 Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('categoryitem.store');
 
+Route::get('/rawmaterial', [RawMaterialController::class, 'index'])->name('rawMaterials.index');
 Route::get('/addrawmaterial', [RawMaterialController::class, 'create'])->name('rawmaterial.create');
 Route::post('/saverawmaterial', [RawMaterialController::class, 'store'])->name('rawmaterials.store');
 Route::get('/editrawmaterial/{id}', [RawMaterialController::class, 'edit'])->name('rawMaterial.edit');
-// Route to update a raw material
 Route::put('/editrawmaterial/{id}', [RawMaterialController::class, 'update'])->name('rawMaterial.edit');
 
-Route::get('/rawmaterial', [RawMaterialController::class, 'index'])->name('rawMaterials.index');
 Route::post('/update-material-price/{id}', [RawMaterialController::class, 'updatePrice']);
 
 Route::post('/update-raw-material-prices', [RawMaterialController::class, 'updatePrices'])->name('rawMaterial.updatePrices');
 Route::get('/raw-material/price-details/{id}', [RawMaterialController::class, 'getRmPriceHistory'])->name('rawMaterial.priceHistory');
+
+Route::get('/packingmaterial', [PackingMaterialController::class, 'index'])->name('packingMaterials.index');
+Route::get('/addpackingmaterial', [PackingMaterialController::class, 'create'])->name('packingmaterial.create');
+Route::post('/savepackingmaterial', [PackingMaterialController::class, 'store'])->name('packingmaterials.store');
+Route::get('/editpackingmaterial/{id}', [PackingMaterialController::class, 'edit'])->name('packingMaterial.edit');
+Route::put('/editpackingmaterial/{id}', [PackingMaterialController::class, 'update'])->name('packingMaterial.edit');
+
+Route::post('/update-packing-material-prices', [PackingMaterialController::class, 'updatePrices'])->name('packingMaterial.updatePrices');
+Route::get('/packing-material/price-details/{id}', [PackingMaterialController::class, 'getPmPriceHistory'])->name('packingMaterial.priceHistory');
+
+
+Route::get('/overheads', [OverheadController::class, 'index'])->name('overheads.index');
+Route::get('/addoverheads', [OverheadController::class, 'create'])->name('overheads.create');
+Route::post('/saveoverheads', [OverheadController::class, 'store'])->name('overheads.store');
+Route::get('/editoverheads/{id}', [OverheadController::class, 'edit'])->name('overheads.edit');
+Route::put('/editoverheads/{id}', [OverheadController::class, 'update'])->name('overheads.edit');
+
+Route::post('/update-overheads-prices', [OverheadController::class, 'updatePrices'])->name('overheads.updatePrices');
+Route::get('/overheads/price-details/{id}', [OverheadController::class, 'getOhPriceHistory'])->name('overheads.priceHistory');
+
+
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/addproducts', [ProductController::class, 'create'])->name('products.create');
+Route::post('/saveproducts', [ProductController::class, 'store'])->name('products.store');
+Route::get('/editproducts/{id}', [ProductController::class, 'edit'])->name('products.edit');
+Route::put('/editproducts/{id}', [ProductController::class, 'update'])->name('products.edit');
+
+Route::post('/update-products-prices', [ProductController::class, 'updatePrices'])->name('products.updatePrices');
+Route::get('/products/price-details/{id}', [ProductController::class, 'getPdPriceHistory'])->name('products.priceHistory');
 
 Route::get('/receipe-details-description', function () {
     return view('receipeDetails_Description');

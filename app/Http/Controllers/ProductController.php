@@ -7,8 +7,7 @@ use App\Models\RawMaterial;
 use App\Models\UniqueCode;
 use Illuminate\Http\Request;
 
-
-class RawMaterialController extends Controller
+class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,7 +21,7 @@ class RawMaterialController extends Controller
         if ($request->ajax()) {
             // Get selected category IDs from the request
             $selectedCategoryIds = $request->input('category_ids', []);
-
+            $selectedCategoryIds = explode(',', $selectedCategoryIds);
             // If no categories are selected, return all raw materials
             if (empty($selectedCategoryIds)) {
                 $rawMaterials = DB::table('raw_materials as rm')
@@ -43,7 +42,7 @@ class RawMaterialController extends Controller
                         'c4.itemname as category_name4',
                         'c5.itemname as category_name5'
                     )
-                    ->paginate(10);
+                    ->get();
             } else {
                 // Fetch raw materials filtered by the selected category IDs
                 $rawMaterials = DB::table('raw_materials as rm')
@@ -66,12 +65,12 @@ class RawMaterialController extends Controller
                     )
                     ->where(function ($query) use ($selectedCategoryIds) {
                         $query->whereIn('c1.id', $selectedCategoryIds)
-                              ->orWhereIn('c2.id', $selectedCategoryIds)
-                              ->orWhereIn('c3.id', $selectedCategoryIds)
-                              ->orWhereIn('c4.id', $selectedCategoryIds)
-                              ->orWhereIn('c5.id', $selectedCategoryIds);
+                            ->orWhereIn('c2.id', $selectedCategoryIds)
+                            ->orWhereIn('c3.id', $selectedCategoryIds)
+                            ->orWhereIn('c4.id', $selectedCategoryIds)
+                            ->orWhereIn('c5.id', $selectedCategoryIds);
                     })
-                    ->paginate(10);
+                    ->get();
             }
 
             // Return filtered raw materials as JSON response
@@ -202,9 +201,9 @@ class RawMaterialController extends Controller
     public function getRmPriceHistory($id)
     {
         $priceHistory = DB::table('rm_price_histories')
-        ->where('raw_material_id', $id)
-        ->orderBy('updated_at', 'desc') // Replace 'id' with the column you want to sort by
-        ->get();
+            ->where('raw_material_id', $id)
+            ->orderBy('updated_at', 'desc') // Replace 'id' with the column you want to sort by
+            ->get();
         return response()->json(['priceDetails' => $priceHistory]);
     }
 
@@ -214,7 +213,7 @@ class RawMaterialController extends Controller
     public function edit(string $id)
     {
         // Fetch all categories
-        $rawMaterialCategories = CategoryItems::rmCategoryItem();
+        $rawMaterialCategories = DB::table('categoryitems')->get();
 
         // Fetch the specific raw material by its ID
         $rawMaterial = DB::table('raw_materials')->where('id', $id)->first(); // Fetch the single raw material entry
@@ -268,8 +267,6 @@ class RawMaterialController extends Controller
         // Return a success message and redirect back
         return redirect()->route('rawMaterials.index')->with('success', 'Raw Material updated successfully.');
     }
-
-
 
     /**
      * Remove the specified resource from storage.
