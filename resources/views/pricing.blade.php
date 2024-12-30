@@ -226,6 +226,13 @@
                     <div class="col-auto">
                         <label for="pricingoverheads" class="form-label text-primary">Overheads</label>
                     </div>
+                    <div class="col-2 form-check">
+                        <input type="checkbox" class="form-check-input" id="frommasters"> <label class="form-check-label" for="frommasters"> From Masters </label>
+
+                    </div>
+                    <div class="col-2 form-check">
+                        <input type="checkbox" class="form-check-input" id="entermanually"> <label class="form-check-label" for="entermanually"> Enter Manually </label>
+                    </div>
                     <div class="col">
                         <hr />
                     </div>
@@ -314,7 +321,7 @@
                     </div>
                     <div class="row mb-2">
                         <div class="col-auto fw-bold">
-                            <label for="totalcost" class="form-label">Total Cost: </label>
+                            <label for="totalcost" class="form-label">Total Cost (A+B+C): </label>
                         </div>
                         <div class="col-6">
                             <input type="text" class="form-control" id="totalcost">
