@@ -6,6 +6,10 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CategoryItemController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\PackingMaterialController;
+use App\Http\Controllers\OverheadController;
+use App\Http\Controllers\ProductController;
+
+
 
 use App\Models\PackingMaterial;
 
@@ -63,3 +67,23 @@ Route::put('/editpackingmaterial/{id}', [PackingMaterialController::class, 'upda
 
 Route::post('/update-packing-material-prices', [PackingMaterialController::class, 'updatePrices'])->name('packingMaterial.updatePrices');
 Route::get('/packing-material/price-details/{id}', [PackingMaterialController::class, 'getPmPriceHistory'])->name('packingMaterial.priceHistory');
+
+
+Route::get('/overheads', [OverheadController::class, 'index'])->name('overheads.index');
+Route::get('/addoverheads', [OverheadController::class, 'create'])->name('overheads.create');
+Route::post('/saveoverheads', [OverheadController::class, 'store'])->name('overheads.store');
+Route::get('/editoverheads/{id}', [OverheadController::class, 'edit'])->name('overheads.edit');
+Route::put('/editoverheads/{id}', [OverheadController::class, 'update'])->name('overheads.edit');
+
+Route::post('/update-overheads-prices', [OverheadController::class, 'updatePrices'])->name('overheads.updatePrices');
+Route::get('/overheads/price-details/{id}', [OverheadController::class, 'getOhPriceHistory'])->name('overheads.priceHistory');
+
+
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/addproducts', [ProductController::class, 'create'])->name('products.create');
+Route::post('/saveproducts', [ProductController::class, 'store'])->name('products.store');
+Route::get('/editproducts/{id}', [ProductController::class, 'edit'])->name('products.edit');
+Route::put('/editproducts/{id}', [ProductController::class, 'update'])->name('products.edit');
+
+Route::post('/update-products-prices', [ProductController::class, 'updatePrices'])->name('products.updatePrices');
+Route::get('/products/price-details/{id}', [ProductController::class, 'getPdPriceHistory'])->name('products.priceHistory');

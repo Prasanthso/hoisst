@@ -20,25 +20,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 
     <!-- Vendor CSS Files -->
-    <link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/vendor/quill/quill.snow.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/vendor/quill/quill.bubble.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/vendor/remixicon/remixicon.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/vendor/simple-datatables/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
+    <link href="{{ asset('/assets/vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('/assets/vendor/quill/quill.snow.css') }}" rel="stylesheet">
+    <link href="{{ asset('/assets/vendor/quill/quill.bubble.css') }}" rel="stylesheet">
+    <link href="{{ asset('/assets/vendor/remixicon/remixicon.css') }}" rel="stylesheet">
+    <link href="{{ asset('/assets/vendor/simple-datatables/style.css') }}" rel="stylesheet">
 
     <!-- Laravel Mix CSS -->
-    <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+    <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
 
     <!-- Template Main CSS File -->
-    <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('/assets/css/style.css') }}" rel="stylesheet">
 
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Laravel Mix JS -->
-    <script src="{{ mix('js/app.js') }}" defer></script>
+    <script src="{{ mix('/js/app.js') }}" defer></script>
 
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
@@ -69,7 +69,7 @@
 
         <div class="d-flex align-items-center justify-content-between">
             <a href="#" class="logo d-flex align-items-center" style="text-decoration: none;">
-                <img src="assets/img/logo.jpeg" alt="Recipe Management System Logo" style="height: 100%; width: 70%;">
+                <img src="/assets/img/logo.jpeg" alt="Recipe Management System Logo" style="height: 100%; width: 70%;">
             </a>
             <!-- <i class="bi bi-list toggle-sidebar-btn"></i> -->
         </div>
@@ -212,24 +212,24 @@
                     <img src="/assets/img/master_pic.svg" alt="master Icon" style="width: 0.8em; height: auto; margin-right: 10px;">
                     <span>Masters</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
-                <ul id="components-nav" class="nav-content collapse {{ Request::is('rawmaterial') || Request::is('category') ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
+                <ul id="components-nav" class="nav-content collapse {{ Request::is('rawmaterial') || Request::is('category') || Request::is('packingmaterial') || Request::is('overheads') ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
                     <li>
                         <a href="/rawmaterial" class="{{ Request::is('rawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Raw Materials</span>
                         </a>
                     </li>
                     <li>
-                        <a href="/packingmaterial" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                        <a href="/packingmaterial" class="{{ Request::is('packingmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Packing Materials</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                        <a href="/overheads" class="{{ Request::is('overheads') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Overheads</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                        <a href="/product" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Products</span>
                         </a>
                     </li>
@@ -284,17 +284,17 @@
     </a>
 
     <!-- Vendor JS Files -->
-    <script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/chart.js/chart.umd.js') }}"></script>
-    <script src="{{ asset('assets/vendor/echarts/echarts.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/quill/quill.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
-    <script src="{{ asset('assets/vendor/tinymce/tinymce.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/php-email-form/validate.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/chart.js/chart.umd.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/quill/quill.min.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/tinymce/tinymce.min.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/php-email-form/validate.js') }}"></script>
 
     <!-- Template Main JS File -->
-    <script src="{{ asset('js/main.js') }}"></script>
+    <script src="{{ asset('/js/main.js') }}"></script>
 
 
     <script>

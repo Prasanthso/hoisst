@@ -12,6 +12,9 @@
 
     <section class="section dashboard">
         <div class="row">
+            @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
             <!-- Left side columns -->
             <div class="col-lg-2 px-4">
                 <!-- Categories Section -->

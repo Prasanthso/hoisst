@@ -122,7 +122,7 @@ class RawMaterialController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'uom' => 'required|string|in:Ltr,Kgs',
+            'uom' => 'required|string|in:Ltr,Kgs,Nos',
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
             'price' => 'required|string',
@@ -154,7 +154,7 @@ class RawMaterialController extends Controller
         }
 
 
-        return redirect()->back()->with('success', 'Raw Material created successfully.');
+        return redirect()->route('rawMaterials.index')->with('success', 'Raw Material created successfully.');
     }
 
 
@@ -214,7 +214,7 @@ class RawMaterialController extends Controller
     public function edit(string $id)
     {
         // Fetch all categories
-        $rawMaterialCategories = DB::table('categoryitems')->get();
+        $rawMaterialCategories = CategoryItems::rmCategoryItem();
 
         // Fetch the specific raw material by its ID
         $rawMaterial = DB::table('raw_materials')->where('id', $id)->first(); // Fetch the single raw material entry

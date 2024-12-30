@@ -32,6 +32,7 @@
                                         <option selected>UoM</option>
                                         <option>Ltr</option>
                                         <option>Kgs</option>
+                                        <option>Nos</option>
                                     </select>
                                 </div>
                                 <div class="col-md-12">
