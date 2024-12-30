@@ -5,13 +5,12 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CategoryItemController;
 use App\Http\Controllers\RawMaterialController;
+use App\Http\Controllers\RecipeController;
+
 use App\Http\Controllers\PackingMaterialController;
 use App\Http\Controllers\OverheadController;
 use App\Http\Controllers\ProductController;
 
-
-
-use App\Models\PackingMaterial;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,7 +57,6 @@ Route::post('/update-material-price/{id}', [RawMaterialController::class, 'updat
 Route::post('/update-raw-material-prices', [RawMaterialController::class, 'updatePrices'])->name('rawMaterial.updatePrices');
 Route::get('/raw-material/price-details/{id}', [RawMaterialController::class, 'getRmPriceHistory'])->name('rawMaterial.priceHistory');
 
-
 Route::get('/packingmaterial', [PackingMaterialController::class, 'index'])->name('packingMaterials.index');
 Route::get('/addpackingmaterial', [PackingMaterialController::class, 'create'])->name('packingmaterial.create');
 Route::post('/savepackingmaterial', [PackingMaterialController::class, 'store'])->name('packingmaterials.store');
@@ -87,3 +85,14 @@ Route::put('/editproducts/{id}', [ProductController::class, 'update'])->name('pr
 
 Route::post('/update-products-prices', [ProductController::class, 'updatePrices'])->name('products.updatePrices');
 Route::get('/products/price-details/{id}', [ProductController::class, 'getPdPriceHistory'])->name('products.priceHistory');
+
+Route::get('/receipe-details-description', function () {
+    return view('receipeDetails_Description');
+})->name('receipedd');
+
+Route::get('/pricing', function () {
+    return view('pricing');
+})->name('pricing');
+
+Route::get('/addreceipedetails', [RecipeController::class, 'index'])->name('addreceipedetails.index');
+Route::get('/savereceipedetails', [RecipeController::class, 'store'])->name('addreceipedetails.store');

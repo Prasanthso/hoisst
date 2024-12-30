@@ -22,7 +22,7 @@ class RawMaterialController extends Controller
         if ($request->ajax()) {
             // Get selected category IDs from the request
             $selectedCategoryIds = $request->input('category_ids', []);
-            $selectedCategoryIds = explode(',', $selectedCategoryIds);
+
             // If no categories are selected, return all raw materials
             if (empty($selectedCategoryIds)) {
                 $rawMaterials = DB::table('raw_materials as rm')
@@ -43,7 +43,7 @@ class RawMaterialController extends Controller
                         'c4.itemname as category_name4',
                         'c5.itemname as category_name5'
                     )
-                    ->get();
+                    ->paginate(10);
             } else {
                 // Fetch raw materials filtered by the selected category IDs
                 $rawMaterials = DB::table('raw_materials as rm')
@@ -71,7 +71,7 @@ class RawMaterialController extends Controller
                               ->orWhereIn('c4.id', $selectedCategoryIds)
                               ->orWhereIn('c5.id', $selectedCategoryIds);
                     })
-                    ->get();
+                    ->paginate(10);
             }
 
             // Return filtered raw materials as JSON response
