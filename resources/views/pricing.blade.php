@@ -87,7 +87,7 @@
             {{-- <div class="container-fluid mt-4"> --}}
                 <div class="row mb-4">
                     <div class="col-12 col-md-12 mx-auto"> <!-- Use col-md-11 for slightly left alignment -->
-                        <table class="table table-bordered text-center" style="width:84%; background-color: #eaf8ff;">
+                        <table class="table text-center" style="width:84%; background-color: #eaf8ff;">
                             <thead class="no border">
                                 <tr>
                                     <th>Raw Material</th>
@@ -178,7 +178,7 @@
             {{-- <div class="container-fluid mt-4"> --}}
                 <div class="row mb-4">
                     <div class="col-12 col-md-12 mx-auto"> <!-- Use col-md-11 for slightly left alignment -->
-                        <table class="table table-bordered text-center" style="width:84%; background-color: #eaf8ff;">
+                        <table class="table text-center" style="width:84%; background-color: #eaf8ff;">
                             <thead class="no border">
                                 <tr>
                                     <th>Packing Material</th>
@@ -275,7 +275,7 @@
                 {{-- <div class="container-fluid mt-4"> --}}
                     <div class="row mb-4">
                         <div class="col-12 col-md-12 mx-auto"> <!-- Use col-md-11 for slightly left alignment -->
-                            <table class="table table-bordered text-center" style="width:84%; background-color: #eaf8ff;">
+                            <table class="table text-center" style="width:84%; background-color: #eaf8ff;">
                                 <thead class="no border">
                                     <tr>
                                         <th>Overheads</th>
