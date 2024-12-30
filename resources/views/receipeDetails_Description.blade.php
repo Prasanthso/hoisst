@@ -5,19 +5,21 @@
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
         <h1>Details & Description</h1>
-        <a href="{{ 'receipedetails' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
+        <a href="{{ 'addreceipedetails' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
             <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
         </a>
     </div><!-- End Page Title -->
     <section class="section">
         <div class="container mt-5">
             <div class="mb-4">
+            @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+            </div>
+            <div class="mb-4">
                 <label for="recipeSelect" class="form-label">Select Recipe</label>
                 <div class="col-6">
-                    <select id="recipeSelect" class="form-select">
-                    {{-- <option value="samosa" selected>Samosa</option>
-                    <option value="Puff">Puff</option>
-                    <option value="Cake">Cake</option> --}}
+                    <select id="recipeSelect" class="form-select" aria-labelledby="recipeSelectLabel">
                     <option selected disabled>Choose...</option>
                     @foreach($recipes as $recipesitems)
                     <option value="{{ $recipesitems->id }}">{{ $recipesitems->recipesname }}</option>
@@ -31,7 +33,7 @@
 
             <div class="mt-4">
               <h5 class="fw-bold mb-4">
-                <label for="selectedrecipesname" id="selectedrecipesname"> </label> - DETAILS</h5>
+                <label id="selectedrecipesname"></label> </h5>
 
               <h6 class="fw-bold">Recipe Description</h6>
               <p>
@@ -54,7 +56,7 @@
         <hr />
 
          <!-- Normal-sized Video -->
-         <div class="row">
+        <div class="row">
             <!-- Video on the Left -->
             <div class="col-md-6">
               <div style="width: 100%; height: auto;">
@@ -67,25 +69,64 @@
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowfullscreen>
                 </iframe>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#videoDetailsModal">Video Details</a></li>
+                </ul>
               </div>
 
             </div>
-
+            {{-- <div class="col-md-6"> --}}
+                {{-- <h6 class="fw-bold">Video Details</h6> --}}
+                {{-- <ul class="list-unstyled">
+                    <li><a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#videoDetailsModal">Video Details</a></li>
+                </ul> --}}
+            {{-- </div> --}}
             <!-- Video Links on the Right -->
-            <div class="col-md-6">
-              <h6 class="fw-bold">Watch Related Videos:</h6>
-              <ul class="list-unstyled">
-                <li><a href="#" target="_blank" class="text-decoration-none">How to Make Samosa - Video 1</a></li>
+            {{-- <div class="col-md-6"> --}}
+              {{-- <h6 class="fw-bold">Videos Details:</h6> --}}
+              {{-- <ul class="list-unstyled"> --}}
+                {{-- <li><a href="#" target="_blank" class="text-decoration-none">How to Make Samosa - Video 1</a></li> --}}
                 {{-- <li><a href="https://www.youtube.com/watch?v=VIDEO2" target="_blank" class="text-decoration-none">Samosa Recipe Tips - Video 2</a></li>
                 <li><a href="https://www.youtube.com/watch?v=VIDEO3" target="_blank" class="text-decoration-none">Perfect Samosa Techniques - Video 3</a></li> --}}
-              </ul>
-            </div>
-          </div>
+              {{-- </ul> --}}
+            {{-- </div> --}}
+        </div>
 
         </div>
         </div>
     </section>
 </main><!-- End #main -->
+<!-- Modal for Video Details -->
+<div class="modal fade" id="videoDetailsModal" tabindex="-1" aria-labelledby="videoDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="videoDetailsModalLabel">Video Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-bordered">
+              <thead class="custom-header">
+                  <tr>
+                      <th style="color:white;">Changed By</th>
+                      <th style="color:white;">Approved By</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                      <td>Demo name</td>
+                      <td>Demo name</td>
+                  </tr>
+              </tbody>
+          </table>
+        </div>
+        {{-- <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div> --}}
+      </div>
+    </div>
+  </div>
+
 @endsection
 
 <!-- Vendor JS Files -->
@@ -101,13 +142,23 @@
 <!-- Template Main JS File -->
 <script src="{{ asset('js/main.js') }}"></script>
 <script>
-    const recipeSelect = document.getElementById('recipeSelect');
-    const selectedRecipesName = document.getElementById('selectedrecipesname');
+    document.addEventListener("DOMContentLoaded", () => {
+        const recipeSelect = document.getElementById('recipeSelect');
+        const selectedRecipesName = document.getElementById('selectedrecipesname');
 
-    recipeSelect.addEventListener('change', () => {
-        const selectedText = recipeSelect.options[recipeSelect.selectedIndex].text; // Get the selected text
+        if (recipeSelect && selectedRecipesName) {
+            recipeSelect.addEventListener('change', () => {
+                const selectedText = recipeSelect.options[recipeSelect.selectedIndex].text.trim(); // Get the selected text
 
-        // Update the label with the selected recipe name
-        selectedRecipesName.innerText = selectedText;
+                // Check if a valid option is selected (not the disabled one)
+                if (selectedText !== "Choose...") {
+                    selectedRecipesName.innerText = selectedText + '- DETAILS';
+                } else {
+                    selectedRecipesName.innerText = ""; // Reset if "Choose..." is selected
+                }
+            });
+
+        }
     });
 </script>
+

@@ -13,19 +13,24 @@
                     <div class="card">
                         <div class="card-body">
                             <!-- Vertical Form -->
-                            <form method="POST" action="action="{{ route('addreceipedetails.store') }}"" class="row g-3 mt-2" enctype="multipart/form-data">
+                            <form method="POST" action="{{ route('savereceipedetails.store') }}" class="row g-3 mt-2" enctype="multipart/form-data">
                                 @csrf
                                 <div class="col-12">
                                     <label for="recipeSelect" class="form-label">Select Recipe</label>
-
-                                    <select id="recipeSelect" class="form-select" name="recipe">
-                                        @foreach($recipes as $recipe)
-                                            <option value="{{ $recipe->id }}">{{ $recipe->recipesname }}</option>
+                                    <div class="col-6">
+                                        <select id="recipeSelect" class="form-select" name="recipeId" aria-labelledby="recipeSelectLabel">
+                                        <option selected disabled>Choose...</option>
+                                        @foreach($recipes as $recipesitems)
+                                        <option value="{{ $recipesitems->id }}">{{ $recipesitems->recipesname }}</option>
                                         @endforeach
-                                    </select>
+                                        </select>
+                                        @error('recipeId')
+                                        <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
                                 </div>
                                 <div class="col-12">
-                                    <label class="fw-bold mb-2">SAMOSA - Enter Details</label>
+                                    <label class="fw-bold mb-2" id="selectedrecipesname"></label>
                                 </div>
                                 <div class="col-12">
                                     <label for="recipeDescription" class="form-label fw-bold">Recipe Description</label>
@@ -71,3 +76,23 @@
 
 <!-- Template Main JS File -->
 <script src="{{ asset('js/main.js') }}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const recipeSelect = document.getElementById('recipeSelect');
+        const selectedRecipesName = document.getElementById('selectedrecipesname');
+
+        if (recipeSelect && selectedRecipesName) {
+            recipeSelect.addEventListener('change', () => {
+                const selectedText = recipeSelect.options[recipeSelect.selectedIndex].text.trim(); // Get the selected text
+
+                // Check if a valid option is selected (not the disabled one)
+                if (selectedText !== "Choose...") {
+                    selectedRecipesName.innerText = selectedText + '-Enter DETAILS';
+                } else {
+                    selectedRecipesName.innerText = ""; // Reset if "Choose..." is selected
+                }
+            });
+
+        }
+    });
+</script>

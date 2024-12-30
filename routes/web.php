@@ -95,4 +95,5 @@ Route::get('/pricing', function () {
 })->name('pricing');
 
 Route::get('/receipedetails', [RecipeController::class, 'index'])->name('receipedetails.index');
-Route::get('/savereceipedetails', [RecipeController::class, 'store'])->name('addreceipedetails.store');
+Route::get('/addreceipedetails', [RecipeController::class, 'create'])->name('addreceipedetails.create');
+Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('savereceipedetails.store');
