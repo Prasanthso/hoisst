@@ -86,13 +86,13 @@ Route::put('/editproducts/{id}', [ProductController::class, 'update'])->name('pr
 Route::post('/update-products-prices', [ProductController::class, 'updatePrices'])->name('products.updatePrices');
 Route::get('/products/price-details/{id}', [ProductController::class, 'getPdPriceHistory'])->name('products.priceHistory');
 
-Route::get('/receipe-details-description', function () {
-    return view('receipeDetails_Description');
-})->name('receipedd');
+// Route::get('/receipe-details-description', function () {
+//     return view('receipeDetails_Description');
+// })->name('receipedd');
 
 Route::get('/pricing', function () {
     return view('pricing');
 })->name('pricing');
 
-Route::get('/addreceipedetails', [RecipeController::class, 'index'])->name('addreceipedetails.index');
+Route::get('/receipedetails', [RecipeController::class, 'index'])->name('receipedetails.index');
 Route::get('/savereceipedetails', [RecipeController::class, 'store'])->name('addreceipedetails.store');

@@ -5,25 +5,33 @@
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
         <h1>Details & Description</h1>
-        <a href="{{ 'addreceipedetails' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
+        <a href="{{ 'receipedetails' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
             <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
         </a>
     </div><!-- End Page Title -->
     <section class="section">
         <div class="container mt-5">
             <div class="mb-4">
-              <label for="recipeSelect" class="form-label">Select Recipe</label>
-              <div class="col-6">
-              <select id="recipeSelect" class="form-select">
-                <option value="samosa" selected>Samosa</option>
-                <option value="Puff">Puff</option>
-                <option value="Cake">Cake</option>
-              </select>
-            </div>
+                <label for="recipeSelect" class="form-label">Select Recipe</label>
+                <div class="col-6">
+                    <select id="recipeSelect" class="form-select">
+                    {{-- <option value="samosa" selected>Samosa</option>
+                    <option value="Puff">Puff</option>
+                    <option value="Cake">Cake</option> --}}
+                    <option selected disabled>Choose...</option>
+                    @foreach($recipes as $recipesitems)
+                    <option value="{{ $recipesitems->id }}">{{ $recipesitems->recipesname }}</option>
+                    @endforeach
+                    </select>
+                    @error('recipeId')
+                    <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
             </div>
 
             <div class="mt-4">
-              <h5 class="fw-bold mb-4">SAMOSA - DETAILS</h5>
+              <h5 class="fw-bold mb-4">
+                <label for="selectedrecipesname" id="selectedrecipesname"> </label> - DETAILS</h5>
 
               <h6 class="fw-bold">Recipe Description</h6>
               <p>
@@ -92,3 +100,14 @@
 
 <!-- Template Main JS File -->
 <script src="{{ asset('js/main.js') }}"></script>
+<script>
+    const recipeSelect = document.getElementById('recipeSelect');
+    const selectedRecipesName = document.getElementById('selectedrecipesname');
+
+    recipeSelect.addEventListener('change', () => {
+        const selectedText = recipeSelect.options[recipeSelect.selectedIndex].text; // Get the selected text
+
+        // Update the label with the selected recipe name
+        selectedRecipesName.innerText = selectedText;
+    });
+</script>
