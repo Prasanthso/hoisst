@@ -122,6 +122,10 @@
                       <td>Demo name</td>
                       <td>Demo name</td>
                   </tr>
+                  <tr>
+                    <td>Demo name</td>
+                    <td>Demo name</td>
+                </tr>
               </tbody>
           </table>
         </div>
