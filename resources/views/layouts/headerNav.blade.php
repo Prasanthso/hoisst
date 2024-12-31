@@ -213,10 +213,10 @@
                     <span>Masters</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="components-nav"
-                 class="nav-content collapse {{ Request::is('rawmaterial') || Request::is('category') || Request::is('addrawmaterial') || Request::is('editrawmaterial/{id}')  ? 'show' : '' }}"
+                 class="nav-content collapse {{ Request::is('rawmaterial') || Request::is('category') || Request::is('addrawmaterial') || Request::is('editrawmaterial')  ? 'show' : '' }}"
                  data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="/rawmaterial"  class="{{ Request::is('rawmaterial') || Request::is('addrawmaterial') || Request::is('editrawmaterial/{id}') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                        <a href="/rawmaterial"  class="{{ Request::is('rawmaterial') || Request::is('addrawmaterial') || Request::is('editrawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                            <span>Raw Materials</span>
                         </a>
                     </li>

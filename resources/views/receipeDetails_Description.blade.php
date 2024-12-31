@@ -36,20 +36,24 @@
                 <label id="selectedrecipesname"></label> </h5>
 
               <h6 class="fw-bold">Recipe Description</h6>
-              <p>
+              {{-- <p>
                 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborom et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.
-              </p>
+              </p> --}}
+              <p id="recipeDescription">
+                 {{-- {{ $recipe->description }} --}}
 
+              </p>
               <h6 class="fw-bold mt-4">Recipe Making Instruction</h6>
-              <ul>
-                <li>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum</li>
+              <ul id="recipeInstructions">
+                {{-- <li>{{ $recipe->instructions }}</li> --}}
+                {{-- <li>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum</li>
                 <li>deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate</li>
                 <li>non provident, similique sunt in culpa qui officia deserunt mollitia animi,</li>
                 <li>id est laborom et dolorum fuga. Et harum quidem rerum facilis</li>
-                <li>est et expedita distinctio.</li>
+                <li>est et expedita distinctio.</li> --}}
+
               </ul>
             </div>
-
                <!-- Video Section -->
     <div class="mt-5">
         <h6 class="fw-bold">Recipe Making Video</h6>
@@ -69,11 +73,12 @@
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowfullscreen>
                 </iframe>
+              </div>
+                <div>
                 <ul class="list-unstyled">
                     <li><a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#videoDetailsModal">Video Details</a></li>
                 </ul>
-              </div>
-
+                </div>
             </div>
             {{-- <div class="col-md-6"> --}}
                 {{-- <h6 class="fw-bold">Video Details</h6> --}}
@@ -146,19 +151,78 @@
         const recipeSelect = document.getElementById('recipeSelect');
         const selectedRecipesName = document.getElementById('selectedrecipesname');
 
-        if (recipeSelect && selectedRecipesName) {
-            recipeSelect.addEventListener('change', () => {
-                const selectedText = recipeSelect.options[recipeSelect.selectedIndex].text.trim(); // Get the selected text
+        const description = document.getElementById('recipeDescription');
+        const instructionsList = document.getElementById('recipeInstructions');
+        const videoIframe = document.querySelector('iframe');
 
-                // Check if a valid option is selected (not the disabled one)
-                if (selectedText !== "Choose...") {
-                    selectedRecipesName.innerText = selectedText + '- DETAILS';
-                } else {
-                    selectedRecipesName.innerText = ""; // Reset if "Choose..." is selected
+        if (recipeSelect) {
+            recipeSelect.addEventListener('change', async () => {
+                const recipeId = recipeSelect.value;
+
+                if (recipeId) {
+                    try {
+                        const response = await fetch(`/recipes/${recipeId}`);
+                        if (!response.ok) throw new Error('Recipe not found');
+                        const recipe = await response.json();
+
+                        const selectedText = recipeSelect.options[recipeSelect.selectedIndex].text.trim();
+                        if(selectedText == null)
+                        {
+                            selectedRecipesName.innerText = 'No recipe - DETAILS';
+                            description.innerText = recipe.description || 'No description available.';
+                        }
+                        else{
+                        // Update UI with fetched data
+                        selectedRecipesName.innerText = selectedText + ' - DETAILS';
+                        description.innerText = recipe.description || 'No description available.';
+
+                        // Update Instructions
+                        instructionsList.innerHTML = '';
+                        if (recipe.instructions) {
+                            const instructions = recipe.instructions.split('.'); // Assuming instructions are period-separated
+                            instructions.forEach(instruction => {
+                                if (instruction.trim()) {
+                                    const li = document.createElement('li');
+                                    li.innerText = instruction.trim();
+                                    instructionsList.appendChild(li);
+                                }
+                            });
+                        }
+                        }
+                        // Update Video
+                        if (recipe.video_path) {
+                            videoIframe.src = recipe.video_path;
+                        } else {
+                            videoIframe.src = '';
+                            videoIframe.innerText = 'No video available.';
+                        }
+
+                    } catch (error) {
+                        console.error(error);
+                        selectedRecipesName.innerText = 'No recipe details.';
+                        description.innerText = '';
+                        instructionsList.innerHTML = '';
+                        videoIframe.src = '';
+                    }
                 }
-            });
 
+            });
         }
     });
+
+        // if (recipeSelect && selectedRecipesName) {
+        //     recipeSelect.addEventListener('change', () => {
+        //         const selectedText = recipeSelect.options[recipeSelect.selectedIndex].text.trim(); // Get the selected text
+
+        //         // Check if a valid option is selected (not the disabled one)
+        //         if (selectedText !== "Choose...") {
+        //             selectedRecipesName.innerText = selectedText + '- DETAILS';
+        //         } else {
+        //             selectedRecipesName.innerText = ""; // Reset if "Choose..." is selected
+        //         }
+        //     });
+
+        // }
+    // });
 </script>
 

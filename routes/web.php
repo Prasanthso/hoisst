@@ -97,3 +97,5 @@ Route::get('/pricing', function () {
 Route::get('/receipedetails', [RecipeController::class, 'index'])->name('receipedetails.index');
 Route::get('/addreceipedetails', [RecipeController::class, 'create'])->name('addreceipedetails.create');
 Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('savereceipedetails.store');
+// Route::get('/recipe/{id}', [RecipeController::class, 'show'])->name('recipe.show');
+Route::get('/recipes/{id}', [RecipeController::class, 'fetchRecipeDetails'])->name('recipe.fetchDetails');
