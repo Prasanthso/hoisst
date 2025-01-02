@@ -231,7 +231,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="/product" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                        <a href="/products" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Products</span>
                         </a>
                     </li>

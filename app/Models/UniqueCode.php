@@ -56,4 +56,19 @@ class UniqueCode extends Model
         return 'OH' . $newNumber;
     }
 
+    public static function generatePdCode()
+    {
+        // Fetch the last inserted code from the raw_materials table
+        $lastCode = \DB::table('product_master')->orderBy('id', 'desc')->value('pdcode');
+
+        // Extract the numeric part of the code
+        $number = $lastCode ? intval(substr($lastCode, 2)) : 0;
+
+        // Increment the number and format it with leading zeros
+        $newNumber = str_pad($number + 1, 4, '0', STR_PAD_LEFT);
+
+        // Return the formatted code
+        return 'PD' . $newNumber;
+    }
+
 }
