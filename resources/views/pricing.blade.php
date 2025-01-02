@@ -125,8 +125,8 @@
                                 </tr> --}}
                             </tbody>
                         </table>
-                        <div class="text-end mt-2 col-10" style="background-color:#eaf8ff;">
-                            <strong>RM Cost(A):</strong> <span id="totalCost1">2000</span>
+                        <div class="text-end col-10" style="background-color:#eaf8ff;width:84%;">
+                            <strong>RM Cost(A) : </strong> <span id="totalCost1"> 2000 </span>
                         </div>
                     </div>
                 </div>
@@ -178,7 +178,7 @@
             {{-- <div class="container-fluid mt-4"> --}}
                 <div class="row mb-4">
                     <div class="col-12 col-md-12 mx-auto"> <!-- Use col-md-11 for slightly left alignment -->
-                        <table class="table text-center" style="width:84%; background-color: #eaf8ff;">
+                        <table class="table text-center" style="width:84%; background-color: #F1F1F1;">
                             <thead class="no border">
                                 <tr>
                                     <th>Packing Material</th>
@@ -216,8 +216,8 @@
                                 </tr> --}}
                             </tbody>
                         </table>
-                        <div class="text-end mt-2 col-10" style="background-color:#eaf8ff; ">
-                            <strong>PM Cost(B):</strong> <span id="totalCost2">2000</span>
+                        <div class="text-end col-10" style="background-color:#F1F1F1; width:84%; ">
+                            <strong>PM Cost(B): </strong> <span id="totalCost2"> 2000 </span>
                         </div>
                     </div>
                 </div>
@@ -268,14 +268,14 @@
                     </div>
                     <div class="d-flex flex-column" style="flex: 2;">
                     {{-- <a href="#" class='text-decoration-none oh-ps-add-btn text-white py-4 px-4'> --}}
-                        <button type="button" class="btn btn-primary" id="ohaddbtn"><i class="fas fa-plus"></i> Add</button>
+                        <button type="button" class="btn btn-primary ohaddbtn" id="ohaddbtn"><i class="fas fa-plus"></i> Add</button>
                     {{-- </a> --}}
                     </div>
                 </div>
                 {{-- <div class="container-fluid mt-4"> --}}
                     <div class="row mb-4">
                         <div class="col-12 col-md-12 mx-auto"> <!-- Use col-md-11 for slightly left alignment -->
-                            <table class="table text-center" style="width:84%; background-color: #eaf8ff;">
+                            <table class="table text-center" style="width:84%; background-color: #D7E1E4;">
                                 <thead class="no border">
                                     <tr>
                                         <th>Overheads</th>
@@ -314,13 +314,13 @@
                                 </tbody>
 
                             </table>
-                            <div class="text-end mt-2 col-10" style="background-color:#eaf8ff;">
-                                <strong>OH Cost(C):</strong> <span id="totalCost3">2000</span>
+                            <div class="text-end col-10" style="background-color:#D7E1E4; width:84%;">
+                                <strong>OH Cost(C): </strong> <span id="totalCost3">2000</span>
                             </div>
                         </div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-auto fw-bold">
+                    <div class="col mb-2">
+                        <div class="col-auto">
                             <label for="totalcost" class="form-label">Total Cost (A+B+C): </label>
                         </div>
                         <div class="col-6">
