@@ -4,8 +4,8 @@
  <main id="main" class="main">
 
      <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
-         <h1>Raw Material</h1>
-         <a href="{{ 'addrawmaterial' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
+         <h1>Products</h1>
+         <a href="{{ 'addproduct' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
              <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
          </a>
      </div><!-- End Page Title -->
@@ -62,22 +62,22 @@
                                      <input type="checkbox" id="select-all" class="form-check-input">
                                  </th>
                                  <th scope="col" style="color:white;">S.NO</th>
-                                 <th scope="col" style="color:white;">Raw Materials</th>
-                                 <th scope="col" style="color:white;">RM Code</th>
-                                 <th scope="col" style="color:white;">Raw Material Category</th>
+                                 <th scope="col" style="color:white;">Product</th>
+                                 <th scope="col" style="color:white;">PD Code</th>
+                                 <th scope="col" style="color:white;">Product Category</th>
                                  <th scope="col" style="color:white;">Price(Rs)</th>
                                  <th scope="col" style="color:white;">UoM</th>
                              </tr>
                          </thead>
                          <tbody id="rawMaterialTable">
-                             @foreach ($rawMaterials as $index => $material)
+                             @foreach ($product as $index => $material)
                              <tr data-id="{{ $material->id }}">
                                  <td>
                                      <input type="checkbox" class="form-check-input row-checkbox">
                                  </td>
                                  <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO -->
-                                 <td><a href="{{ route('rawMaterial.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
-                                 <td>{{ $material->rmcode }}</td> <!-- RM Code -->
+                                 <td><a href="{{ route('products.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
+                                 <td>{{ $material->pdcode }}</td> <!-- RM Code -->
                                  <td>
                                      {{ $material->category_name1 ?? '' }}
                                      {{ $material->category_name2 ? ', ' . $material->category_name2 : '' }}
@@ -113,7 +113,8 @@
                          <thead class="custom-header">
                              <tr>
                                  <th style="color:white;">Effective From</th>
-                                 <th style="color:white;">Price</th>
+                                 <th style="color:white;">Old Price</th>
+                                 <th style="color:white;">New Price</th>
                                  <th style="color:white;">Updated By</th>
                              </tr>
                          </thead>
@@ -228,7 +229,7 @@
 
              // Send data to the server via AJAX
              if (updatedData.length > 0) {
-                 fetch("{{ route('rawMaterial.updatePrices') }}", {
+                 fetch("{{ route('products.updatePrices') }}", {
                          method: "POST",
                          headers: {
                              "Content-Type": "application/json",
@@ -373,7 +374,7 @@
          const priceModal = new bootstrap.Modal(document.getElementById("priceModal")); // Initialize Bootstrap Modal
 
          const showPriceModal = (materialId) => {
-             const url = `{{ route('rawMaterial.priceHistory', ':id') }}`.replace(':id', materialId);
+             const url = `{{ route('products.priceHistory', ':id') }}`.replace(':id', materialId);
 
              fetch(url) // API endpoint to fetch price details
                  .then((response) => response.json())
@@ -386,6 +387,7 @@
                              modalTableBody.innerHTML += `
                                     <tr>
                                         <td>${detail.updated_at}</td>
+                                        <td>${detail.old_price}</td>
                                         <td>${detail.new_price}</td>
                                         <td>${detail.updated_by}</td>
                                     </tr>

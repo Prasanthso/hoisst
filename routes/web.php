@@ -78,10 +78,10 @@ Route::get('/overheads/price-details/{id}', [OverheadController::class, 'getOhPr
 
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('/addproducts', [ProductController::class, 'create'])->name('products.create');
-Route::post('/saveproducts', [ProductController::class, 'store'])->name('products.store');
-Route::get('/editproducts/{id}', [ProductController::class, 'edit'])->name('products.edit');
-Route::put('/editproducts/{id}', [ProductController::class, 'update'])->name('products.edit');
+Route::get('/addproduct', [ProductController::class, 'create'])->name('products.create');
+Route::post('/saveproduct', [ProductController::class, 'store'])->name('products.store');
+Route::get('/editproduct/{id}', [ProductController::class, 'edit'])->name('products.edit');
+Route::put('/editproduct/{id}', [ProductController::class, 'update'])->name('products.edit');
 
 Route::post('/update-products-prices', [ProductController::class, 'updatePrices'])->name('products.updatePrices');
 Route::get('/products/price-details/{id}', [ProductController::class, 'getPdPriceHistory'])->name('products.priceHistory');

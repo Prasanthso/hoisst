@@ -4,7 +4,7 @@
 <main id="main" class="main">
 
     <div class="pagetitle">
-        <h1>Add Raw Materials</h1>
+        <h1>Add Product</h1>
     </div><!-- End Page Title -->
 
     <section class="section">
@@ -16,7 +16,7 @@
                         <div class="card-body">
 
                             <!-- Vertical Form -->
-                            <form method="POST" action="{{ route('rawmaterials.store') }}" class="row g-3 mt-2">
+                            <form method="POST" action="{{ route('products.store') }}" class="row g-3 mt-2">
                                 @csrf
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Name</label>
@@ -32,12 +32,13 @@
                                         <option selected>UoM</option>
                                         <option>Ltr</option>
                                         <option>Kgs</option>
+                                        <option>Nos</option>
                                     </select>
                                 </div>
                                 <div class="col-md-12">
-                                    <label for="categorySelect" class="form-label">Raw Material Category</label>
+                                    <label for="categorySelect" class="form-label">Product Category</label>
                                     <select id="categorySelect" class="form-select select2" name="category_ids[]" multiple>
-                                        @foreach($rawMaterialCategories as $categories)
+                                        @foreach($product as $categories)
                                         <option value="{{ $categories->id }}">{{ $categories->itemname }}</option>
                                         @endforeach
                                     </select>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use App\Models\CategoryItems;
+use App\Models\Product;
 use App\Models\RawMaterial;
 use App\Models\UniqueCode;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         // Fetch all category items
-        $categoryitems = CategoryItems::rmCategoryItem();
+        $categoryitems = CategoryItems::pdCategoryItem();
 
         // If it's an AJAX request for filtered raw materials
         if ($request->ajax()) {
@@ -24,18 +25,18 @@ class ProductController extends Controller
             $selectedCategoryIds = explode(',', $selectedCategoryIds);
             // If no categories are selected, return all raw materials
             if (empty($selectedCategoryIds)) {
-                $rawMaterials = DB::table('raw_materials as rm')
-                    ->leftJoin('categoryitems as c1', 'rm.category_id1', '=', 'c1.id')
-                    ->leftJoin('categoryitems as c2', 'rm.category_id2', '=', 'c2.id')
-                    ->leftJoin('categoryitems as c3', 'rm.category_id3', '=', 'c3.id')
-                    ->leftJoin('categoryitems as c4', 'rm.category_id4', '=', 'c4.id')
-                    ->leftJoin('categoryitems as c5', 'rm.category_id5', '=', 'c5.id')
+                $products = DB::table('product_master as pd')
+                    ->leftJoin('categoryitems as c1', 'pd.category_id1', '=', 'c1.id')
+                    ->leftJoin('categoryitems as c2', 'pd.category_id2', '=', 'c2.id')
+                    ->leftJoin('categoryitems as c3', 'pd.category_id3', '=', 'c3.id')
+                    ->leftJoin('categoryitems as c4', 'pd.category_id4', '=', 'c4.id')
+                    ->leftJoin('categoryitems as c5', 'pd.category_id5', '=', 'c5.id')
                     ->select(
-                        'rm.id',
-                        'rm.name',
-                        'rm.rmcode',
-                        'rm.price',
-                        'rm.uom',
+                        'pd.id',
+                        'pd.name',
+                        'pd.pdcode',
+                        'pd.price',
+                        'pd.uom',
                         'c1.itemname as category_name1',
                         'c2.itemname as category_name2',
                         'c3.itemname as category_name3',
@@ -45,18 +46,18 @@ class ProductController extends Controller
                     ->get();
             } else {
                 // Fetch raw materials filtered by the selected category IDs
-                $rawMaterials = DB::table('raw_materials as rm')
-                    ->leftJoin('categoryitems as c1', 'rm.category_id1', '=', 'c1.id')
-                    ->leftJoin('categoryitems as c2', 'rm.category_id2', '=', 'c2.id')
-                    ->leftJoin('categoryitems as c3', 'rm.category_id3', '=', 'c3.id')
-                    ->leftJoin('categoryitems as c4', 'rm.category_id4', '=', 'c4.id')
-                    ->leftJoin('categoryitems as c5', 'rm.category_id5', '=', 'c5.id')
+                $product = DB::table('product_master as pd')
+                    ->leftJoin('categoryitems as c1', 'pd.category_id1', '=', 'c1.id')
+                    ->leftJoin('categoryitems as c2', 'pd.category_id2', '=', 'c2.id')
+                    ->leftJoin('categoryitems as c3', 'pd.category_id3', '=', 'c3.id')
+                    ->leftJoin('categoryitems as c4', 'pd.category_id4', '=', 'c4.id')
+                    ->leftJoin('categoryitems as c5', 'pd.category_id5', '=', 'c5.id')
                     ->select(
-                        'rm.id',
-                        'rm.name',
-                        'rm.rmcode',
-                        'rm.price',
-                        'rm.uom',
+                        'pd.id',
+                        'pd.name',
+                        'pd.pdcode',
+                        'pd.price',
+                        'pd.uom',
                         'c1.itemname as category_name1',
                         'c2.itemname as category_name2',
                         'c3.itemname as category_name3',
@@ -75,23 +76,23 @@ class ProductController extends Controller
 
             // Return filtered raw materials as JSON response
             return response()->json([
-                'rawMaterials' => $rawMaterials
+                'product' => $product
             ]);
         }
 
         // Default view, return all raw materials and category items
-        $rawMaterials = DB::table('raw_materials as rm')
-            ->leftJoin('categoryitems as c1', 'rm.category_id1', '=', 'c1.id')
-            ->leftJoin('categoryitems as c2', 'rm.category_id2', '=', 'c2.id')
-            ->leftJoin('categoryitems as c3', 'rm.category_id3', '=', 'c3.id')
-            ->leftJoin('categoryitems as c4', 'rm.category_id4', '=', 'c4.id')
-            ->leftJoin('categoryitems as c5', 'rm.category_id5', '=', 'c5.id')
+        $product = DB::table('product_master as pd')
+            ->leftJoin('categoryitems as c1', 'pd.category_id1', '=', 'c1.id')
+            ->leftJoin('categoryitems as c2', 'pd.category_id2', '=', 'c2.id')
+            ->leftJoin('categoryitems as c3', 'pd.category_id3', '=', 'c3.id')
+            ->leftJoin('categoryitems as c4', 'pd.category_id4', '=', 'c4.id')
+            ->leftJoin('categoryitems as c5', 'pd.category_id5', '=', 'c5.id')
             ->select(
-                'rm.id',
-                'rm.name',
-                'rm.rmcode',
-                'rm.price',
-                'rm.uom',
+                'pd.id',
+                'pd.name',
+                'pd.pdcode',
+                'pd.price',
+                'pd.uom',
                 'c1.itemname as category_name1',
                 'c2.itemname as category_name2',
                 'c3.itemname as category_name3',
@@ -100,7 +101,7 @@ class ProductController extends Controller
             )
             ->paginate(10);
 
-        return view('rawMaterial.rawMaterial', compact('rawMaterials', 'categoryitems'));
+        return view('product.products', compact('product', 'categoryitems'));
     }
 
 
@@ -109,8 +110,8 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $rawMaterialCategories = CategoryItems::rmCategoryItem();
-        return view('rawMaterial.addRawMaterial', compact('rawMaterialCategories')); // Match view name
+        $product = CategoryItems::pdCategoryItem();
+        return view('product.addProduct', compact('product')); // Match view name
     }
 
     /**
@@ -131,12 +132,12 @@ class ProductController extends Controller
 
         $categoryIds = $request->category_ids;
 
-        $rmCode = UniqueCode::generateRmCode();
+        $pdCode = UniqueCode::generatePdCode();
 
         try {
-            RawMaterial::create([
+            Product::create([
                 'name' => $request->name,
-                'rmcode' => $rmCode,
+                'pdcode' => $pdCode,
                 'uom' => $request->uom,
                 'category_id1' => $categoryIds[0] ?? null,
                 'category_id2' => $categoryIds[1] ?? null,
@@ -153,7 +154,7 @@ class ProductController extends Controller
         }
 
 
-        return redirect()->route('rawMaterials.index')->with('success', 'Raw Material created successfully.');
+        return redirect()->route('products.index')->with('success', 'Raw Material created successfully.');
     }
 
 
@@ -161,7 +162,7 @@ class ProductController extends Controller
     {
         $validatedData = $request->validate([
             'updatedMaterials' => 'required|array',
-            'updatedMaterials.*.id' => 'required|exists:raw_materials,id',
+            'updatedMaterials.*.id' => 'required|exists:product_master,id',
             'updatedMaterials.*.price' => 'required|numeric|min:0',
         ]);
 
@@ -169,13 +170,13 @@ class ProductController extends Controller
             DB::transaction(function () use ($validatedData) {
                 foreach ($validatedData['updatedMaterials'] as $material) {
                     // Fetch the current material
-                    $currentMaterial = RawMaterial::find($material['id']);
+                    $currentMaterial = Product::find($material['id']);
 
                     // Check if the price has changed
                     if ($currentMaterial->price != $material['price']) {
                         // Log the price update in the rm_price_histories table
-                        DB::table('rm_price_histories')->insert([
-                            'raw_material_id' => $currentMaterial->id,
+                        DB::table('pd_price_histories')->insert([
+                            'product_id' => $currentMaterial->id,
                             'old_price' => $currentMaterial->price,
                             'new_price' => $material['price'],
                             'updated_by' => 1, // Ensure user is authenticated
@@ -198,10 +199,10 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function getRmPriceHistory($id)
+    public function getPdPriceHistory($id)
     {
-        $priceHistory = DB::table('rm_price_histories')
-            ->where('raw_material_id', $id)
+        $priceHistory = DB::table('pd_price_histories')
+            ->where('product_id', $id)
             ->orderBy('updated_at', 'desc') // Replace 'id' with the column you want to sort by
             ->get();
         return response()->json(['priceDetails' => $priceHistory]);
@@ -213,13 +214,13 @@ class ProductController extends Controller
     public function edit(string $id)
     {
         // Fetch all categories
-        $rawMaterialCategories = DB::table('categoryitems')->get();
+        $productCategories = DB::table('categoryitems')->get();
 
         // Fetch the specific raw material by its ID
-        $rawMaterial = DB::table('raw_materials')->where('id', $id)->first(); // Fetch the single raw material entry
+        $product = DB::table('product_master')->where('id', $id)->first(); // Fetch the single raw material entry
 
         // Return the view with raw material data and categories
-        return view('rawMaterial.editRawMaterial', compact('rawMaterial', 'rawMaterialCategories'));
+        return view('product.editProduct', compact('product', 'productCategories'));
     }
 
 
@@ -229,12 +230,12 @@ class ProductController extends Controller
     public function update(Request $request, string $id)
     {
         // Find the existing raw material by ID
-        $rawMaterial = RawMaterial::findOrFail($id);
+        $product = Product::findOrFail($id);
 
         // Validate the incoming request data
         $request->validate([
             'name' => 'required|string|max:255',
-            'uom' => 'required|string|in:Ltr,Kgs',
+            'uom' => 'required|string|in:Ltr,Kgs,Nos',
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
             'price' => 'required|string',
@@ -246,7 +247,7 @@ class ProductController extends Controller
 
         try {
             // Update the raw material record
-            $rawMaterial->update([
+            $product->update([
                 'name' => $request->name,
                 'uom' => $request->uom,
                 'category_id1' => $categoryIds[0] ?? null,
@@ -265,7 +266,7 @@ class ProductController extends Controller
         }
 
         // Return a success message and redirect back
-        return redirect()->route('rawMaterials.index')->with('success', 'Raw Material updated successfully.');
+        return redirect()->route('products.index')->with('success', 'Raw Material updated successfully.');
     }
 
     /**
