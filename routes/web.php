@@ -86,13 +86,16 @@ Route::put('/editproduct/{id}', [ProductController::class, 'update'])->name('pro
 Route::post('/update-products-prices', [ProductController::class, 'updatePrices'])->name('products.updatePrices');
 Route::get('/products/price-details/{id}', [ProductController::class, 'getPdPriceHistory'])->name('products.priceHistory');
 
-Route::get('/receipe-details-description', function () {
-    return view('receipeDetails_Description');
-})->name('receipedd');
+// Route::get('/receipe-details-description', function () {
+//     return view('receipeDetails_Description');
+// })->name('receipedd');
 
 Route::get('/pricing', function () {
     return view('pricing');
 })->name('pricing');
 
-Route::get('/addreceipedetails', [RecipeController::class, 'index'])->name('addreceipedetails.index');
-Route::get('/savereceipedetails', [RecipeController::class, 'store'])->name('addreceipedetails.store');
+Route::get('/receipedetails', [RecipeController::class, 'index'])->name('receipedetails.index');
+Route::get('/addreceipedetails', [RecipeController::class, 'create'])->name('addreceipedetails.create');
+Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('savereceipedetails.store');
+// Route::get('/recipe/{id}', [RecipeController::class, 'show'])->name('recipe.show');
+Route::get('/recipes/{id}', [RecipeController::class, 'fetchRecipeDetails'])->name('recipe.fetchDetails');
