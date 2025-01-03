@@ -9,7 +9,7 @@
             <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
         </a>
     </div><!-- End Page Title -->
-    <section class="section">
+    <section class="section dashboard">
         <div class="container mt-5">
             <div class="mb-4">
             @if(session('success'))
