@@ -17,8 +17,11 @@
             </div>
         </div>
     </div><!-- End Page Title -->
-    <section class="section">
+    <section class="section dashboard">
         <div class="container mt-5">
+            @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
             <div class="mb-4">
               <label for="recipeSelect" class="form-label">Select Recipe</label>
               <div class="col-6">
@@ -31,11 +34,11 @@
             </div>
 
             <div class="row mb-4">
-                <div class="col-3">
+                <div class="col-md-3 col-sm-10 mb-2">
                 <label for="recipeOutput" class="form-label">Output</label>
                 <input type="text" class="form-control rounded" id="recipeOutput" name="recipeOutput">
                 </div>
-                <div class="col-2">
+                <div class="col-md-2 col-sm-10">
                     <label for="recipeUoM" class="form-label">UoM</label>
                     <input type="text" class="form-control rounded" id="recipeUoM" name="recipeUoM">
                 </div>
@@ -50,7 +53,7 @@
                 </div>
             </div>
             <div class="row mb-4">
-                <div class="col-3">
+                <div class="col-md-3">
                 <label for="rawmaterial" class="form-label">Raw material</label>
                 <select id="rawmaterial" class="form-select">
                     <option value="Rawmaterial1" selected>Rawmaterial1</option>
@@ -86,8 +89,8 @@
             </div>
             {{-- <div class="container-fluid mt-4"> --}}
                 <div class="row mb-4">
-                    <div class="col-12 col-md-12 mx-auto"> <!-- Use col-md-11 for slightly left alignment -->
-                        <table class="table text-center" style="width:84%; background-color: #eaf8ff;">
+                    <div class="col-12 col-md-12 mx-auto table-responsive"> <!-- Use col-md-11 for slightly left alignment -->
+                        <table class="table table-bordered text-center" style="width:84%; background-color: #eaf8ff;">
                             <thead class="no border">
                                 <tr>
                                     <th>Raw Material</th>
@@ -125,8 +128,8 @@
                                 </tr> --}}
                             </tbody>
                         </table>
-                        <div class="text-end mt-2 col-10" style="background-color:#eaf8ff;">
-                            <strong>RM Cost(A):</strong> <span id="totalCost1">2000</span>
+                        <div class="text-end col-10" style="background-color:#eaf8ff;width:84%;">
+                            <strong>RM Cost(A) : </strong> <span id="totalCost1"> 2000 </span>
                         </div>
                     </div>
                 </div>
@@ -141,7 +144,7 @@
                 </div>
             </div>
             <div class="row mb-4">
-                <div class="col-3">
+                <div class="col-md-3">
                 <label for="packingmaterial" class="form-label">Packing material</label>
                 <select id="packingmaterial" class="form-select">
                     <option value="packingmaterial1" selected>packingmaterial1</option>
@@ -177,8 +180,8 @@
             </div>
             {{-- <div class="container-fluid mt-4"> --}}
                 <div class="row mb-4">
-                    <div class="col-12 col-md-12 mx-auto"> <!-- Use col-md-11 for slightly left alignment -->
-                        <table class="table text-center" style="width:84%; background-color: #eaf8ff;">
+                    <div class="col-12 col-md-12 mx-auto table-responsive"> <!-- Use col-md-11 for slightly left alignment -->
+                        <table class="table table-bordered text-center" style="width:84%; background-color: #F1F1F1;">
                             <thead class="no border">
                                 <tr>
                                     <th>Packing Material</th>
@@ -216,8 +219,8 @@
                                 </tr> --}}
                             </tbody>
                         </table>
-                        <div class="text-end mt-2 col-10" style="background-color:#eaf8ff; ">
-                            <strong>PM Cost(B):</strong> <span id="totalCost2">2000</span>
+                        <div class="text-end col-10" style="background-color:#F1F1F1; width:84%; ">
+                            <strong>PM Cost(B): </strong> <span id="totalCost2"> 2000 </span>
                         </div>
                     </div>
                 </div>
@@ -238,7 +241,7 @@
                     </div>
                 </div>
                 <div class="row mb-4">
-                    <div class="col-3">
+                    <div class="col-md-3">
                     <label for="overheads" class="form-label">Overheads</label>
                     <select id="overheads" class="form-select">
                         <option value="overheads1" selected>Overhead1</option>
@@ -268,14 +271,14 @@
                     </div>
                     <div class="d-flex flex-column" style="flex: 2;">
                     {{-- <a href="#" class='text-decoration-none oh-ps-add-btn text-white py-4 px-4'> --}}
-                        <button type="button" class="btn btn-primary" id="ohaddbtn"><i class="fas fa-plus"></i> Add</button>
+                        <button type="button" class="btn btn-primary ohaddbtn" id="ohaddbtn"><i class="fas fa-plus"></i> Add</button>
                     {{-- </a> --}}
                     </div>
                 </div>
                 {{-- <div class="container-fluid mt-4"> --}}
                     <div class="row mb-4">
-                        <div class="col-12 col-md-12 mx-auto"> <!-- Use col-md-11 for slightly left alignment -->
-                            <table class="table text-center" style="width:84%; background-color: #eaf8ff;">
+                        <div class="col-12 col-md-12 mx-auto table-responsive"> <!-- Use col-md-11 for slightly left alignment -->
+                            <table class="table table-bordered text-center" style="width:84%; background-color: #D7E1E4;">
                                 <thead class="no border">
                                     <tr>
                                         <th>Overheads</th>
@@ -314,16 +317,16 @@
                                 </tbody>
 
                             </table>
-                            <div class="text-end mt-2 col-10" style="background-color:#eaf8ff;">
-                                <strong>OH Cost(C):</strong> <span id="totalCost3">2000</span>
+                            <div class="text-end col-md-10" style="width:84%;background-color:#D7E1E4;">
+                                <strong>OH Cost(C): </strong> <span id="totalCost3">2000</span>
                             </div>
                         </div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-auto fw-bold">
+                    <div class="col mb-2">
+                        <div class="col-auto">
                             <label for="totalcost" class="form-label">Total Cost (A+B+C): </label>
                         </div>
-                        <div class="col-6">
+                        <div class="col-md-6">
                             <input type="text" class="form-control" id="totalcost">
                         </div>
                     </div>

@@ -12,6 +12,9 @@
 
      <section class="section dashboard">
          <div class="row">
+            @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
              <!-- Left side columns -->
              <div class="col-lg-2 px-4">
                  <!-- Categories Section -->
@@ -449,7 +452,22 @@
                      row.style.display = 'none'; // Hide row
                  }
              });
+             updateSerialNumbers();
          }
+
+         function updateSerialNumbers() {
+            // Get all visible rows
+            const visibleRows = Array.from(document.querySelectorAll("#rawMaterialTable tr"))
+                .filter(row => row.style.display !== 'none');
+
+            // Update serial numbers for visible rows only
+            visibleRows.forEach((row, index) => {
+                const snoCell = row.querySelector("td:nth-child(2)"); // Adjust the column index for S.NO
+                if (snoCell) {
+                    snoCell.textContent = `${index + 1}.`; // Update the serial number
+                }
+            });
+        }
 
      });
  </script>
