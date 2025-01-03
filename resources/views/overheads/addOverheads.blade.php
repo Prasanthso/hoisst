@@ -48,7 +48,13 @@
                                     <input type="text" class="form-control" id="inputNanme4" name="price">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Pricing update frequency in days</label>
+                                    <label for="inputNanme4" class="form-label">Pricing update frequency</label>
+                                    <select class="form-select mb-2" id="update_frequency" name="update_frequency">
+                                        <option selected>Days</option>
+                                        <option>Weeks</option>
+                                        <option>Monthly</option>
+                                        <option>Yearly</option>
+                                    </select>
                                     <input type="text" class="form-control" id="inputNanme4" name="price_update_frequency">
                                 </div>
                                 <div class="col-12">
