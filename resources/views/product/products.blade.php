@@ -70,6 +70,7 @@
                                  <th scope="col" style="color:white;">Product Category</th>
                                  <th scope="col" style="color:white;">Price(Rs)</th>
                                  <th scope="col" style="color:white;">UoM</th>
+                                 <th scope="col" style="color:white;">Cost</th>
                              </tr>
                          </thead>
                          <tbody id="rawMaterialTable">
@@ -87,6 +88,11 @@
                                      {{ $material->category_name3 ? ', ' . $material->category_name3 : '' }}
                                      {{ $material->category_name4 ? ', ' . $material->category_name4 : '' }}
                                      {{ $material->category_name5 ? ', ' . $material->category_name5 : '' }}
+                                     {{ $material->category_name6 ? ', ' . $material->category_name6 : '' }}
+                                     {{ $material->category_name7 ? ', ' . $material->category_name7 : '' }}
+                                     {{ $material->category_name8 ? ', ' . $material->category_name8 : '' }}
+                                     {{ $material->category_name9 ? ', ' . $material->category_name9 : '' }}
+                                     {{ $material->category_name10 ? ', ' . $material->category_name10 : '' }}
                                  </td>
                                  <td>
                                      <span class="price-text">{{ $material->price }}</span>
