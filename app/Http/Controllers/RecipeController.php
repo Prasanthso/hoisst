@@ -20,14 +20,19 @@ class RecipeController extends Controller
     {
     // Fetch the recipe by ID
     $recipe = Recipe::findOrFail($id);
-
-    // Pass the recipe to the view
+//    $recipe = DB::table('recipedetails')
+//     ->where('product_id', $id)
+//     ->get();
+      // Pass the recipe to the view
     return view('receipeDetails_Description', compact('recipe'));
     }
 
     public function fetchRecipeDetails($id)
     {
         $recipe = Recipe::find($id);
+        // $recipe = DB::table('recipedetails')
+        // ->where('product_id', $id)
+        // ->get();
 
         if (!$recipe) {
             return response()->json(['error' => 'Recipe not found'], 404);
