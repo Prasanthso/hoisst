@@ -87,6 +87,11 @@
                                     {{ $material->category_name3 ? ', ' . $material->category_name3 : '' }}
                                     {{ $material->category_name4 ? ', ' . $material->category_name4 : '' }}
                                     {{ $material->category_name5 ? ', ' . $material->category_name5 : '' }}
+                                    {{ $material->category_name6 ? ', ' . $material->category_name6 : '' }}
+                                    {{ $material->category_name7 ? ', ' . $material->category_name7 : '' }}
+                                    {{ $material->category_name8 ? ', ' . $material->category_name8 : '' }}
+                                    {{ $material->category_name9 ? ', ' . $material->category_name9 : '' }}
+                                    {{ $material->category_name10 ? ', ' . $material->category_name10 : '' }}
                                 </td>
                                 <td>
                                     <span class="price-text">{{ $material->price }}</span>

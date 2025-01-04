@@ -20,7 +20,13 @@ class Overhead extends Model
         'category_id3',
         'category_id4',
         'category_id5',
+        'category_id6',
+        'category_id7',
+        'category_id8',
+        'category_id9',
+        'category_id10',
         'price',
+        'update_frequency',
         'price_update_frequency',
         'price_threshold'
     ];

@@ -31,6 +31,11 @@ class PackingMaterialController extends Controller
                     ->leftJoin('categoryitems as c3', 'pm.category_id3', '=', 'c3.id')
                     ->leftJoin('categoryitems as c4', 'pm.category_id4', '=', 'c4.id')
                     ->leftJoin('categoryitems as c5', 'pm.category_id5', '=', 'c5.id')
+                    ->leftJoin('categoryitems as c6', 'pm.category_id6', '=', 'c6.id')
+                    ->leftJoin('categoryitems as c7', 'pm.category_id7', '=', 'c7.id')
+                    ->leftJoin('categoryitems as c8', 'pm.category_id8', '=', 'c8.id')
+                    ->leftJoin('categoryitems as c9', 'pm.category_id9', '=', 'c9.id')
+                    ->leftJoin('categoryitems as c10', 'pm.category_id10', '=', 'c10.id')
                     ->select(
                         'pm.id',
                         'pm.name',
@@ -41,7 +46,12 @@ class PackingMaterialController extends Controller
                         'c2.itemname as category_name2',
                         'c3.itemname as category_name3',
                         'c4.itemname as category_name4',
-                        'c5.itemname as category_name5'
+                        'c5.itemname as category_name5',
+                        'c6.itemname as category_name6',
+                        'c7.itemname as category_name7',
+                        'c8.itemname as category_name8',
+                        'c9.itemname as category_name9',
+                        'c10.itemname as category_name10'
                     )
                     ->get();
             } else {
@@ -52,6 +62,11 @@ class PackingMaterialController extends Controller
                     ->leftJoin('categoryitems as c3', 'pm.category_id3', '=', 'c3.id')
                     ->leftJoin('categoryitems as c4', 'pm.category_id4', '=', 'c4.id')
                     ->leftJoin('categoryitems as c5', 'pm.category_id5', '=', 'c5.id')
+                    ->leftJoin('categoryitems as c6', 'pm.category_id6', '=', 'c6.id')
+                    ->leftJoin('categoryitems as c7', 'pm.category_id7', '=', 'c7.id')
+                    ->leftJoin('categoryitems as c8', 'pm.category_id8', '=', 'c8.id')
+                    ->leftJoin('categoryitems as c9', 'pm.category_id9', '=', 'c9.id')
+                    ->leftJoin('categoryitems as c10', 'pm.category_id10', '=', 'c10.id')
                     ->select(
                         'pm.id',
                         'pm.name',
@@ -62,14 +77,24 @@ class PackingMaterialController extends Controller
                         'c2.itemname as category_name2',
                         'c3.itemname as category_name3',
                         'c4.itemname as category_name4',
-                        'c5.itemname as category_name5'
+                        'c5.itemname as category_name5',
+                        'c6.itemname as category_name6',
+                        'c7.itemname as category_name7',
+                        'c8.itemname as category_name8',
+                        'c9.itemname as category_name9',
+                        'c10.itemname as category_name10'
                     )
                     ->where(function ($query) use ($selectedCategoryIds) {
                         $query->whereIn('c1.id', $selectedCategoryIds)
                             ->orWhereIn('c2.id', $selectedCategoryIds)
                             ->orWhereIn('c3.id', $selectedCategoryIds)
                             ->orWhereIn('c4.id', $selectedCategoryIds)
-                            ->orWhereIn('c5.id', $selectedCategoryIds);
+                            ->orWhereIn('c5.id', $selectedCategoryIds)
+                            ->orWhereIn('c6.id', $selectedCategoryIds)
+                            ->orWhereIn('c7.id', $selectedCategoryIds)
+                            ->orWhereIn('c8.id', $selectedCategoryIds)
+                            ->orWhereIn('c9.id', $selectedCategoryIds)
+                            ->orWhereIn('c10.id', $selectedCategoryIds);
                     })
                     ->get();
             }
@@ -87,6 +112,11 @@ class PackingMaterialController extends Controller
             ->leftJoin('categoryitems as c3', 'pm.category_id3', '=', 'c3.id')
             ->leftJoin('categoryitems as c4', 'pm.category_id4', '=', 'c4.id')
             ->leftJoin('categoryitems as c5', 'pm.category_id5', '=', 'c5.id')
+            ->leftJoin('categoryitems as c6', 'pm.category_id6', '=', 'c6.id')
+            ->leftJoin('categoryitems as c7', 'pm.category_id7', '=', 'c7.id')
+            ->leftJoin('categoryitems as c8', 'pm.category_id8', '=', 'c8.id')
+            ->leftJoin('categoryitems as c9', 'pm.category_id9', '=', 'c9.id')
+            ->leftJoin('categoryitems as c10', 'pm.category_id10', '=', 'c10.id')
             ->select(
                 'pm.id',
                 'pm.name',
@@ -97,7 +127,12 @@ class PackingMaterialController extends Controller
                 'c2.itemname as category_name2',
                 'c3.itemname as category_name3',
                 'c4.itemname as category_name4',
-                'c5.itemname as category_name5'
+                'c5.itemname as category_name5',
+                'c6.itemname as category_name6',
+                'c7.itemname as category_name7',
+                'c8.itemname as category_name8',
+                'c9.itemname as category_name9',
+                'c10.itemname as category_name10'
             )
             ->get();
 
@@ -108,6 +143,11 @@ class PackingMaterialController extends Controller
         ->leftJoin('categoryitems as c3', 'pm.category_id3', '=', 'c3.id')
         ->leftJoin('categoryitems as c4', 'pm.category_id4', '=', 'c4.id')
         ->leftJoin('categoryitems as c5', 'pm.category_id5', '=', 'c5.id')
+        ->leftJoin('categoryitems as c6', 'pm.category_id6', '=', 'c6.id')
+        ->leftJoin('categoryitems as c7', 'pm.category_id7', '=', 'c7.id')
+        ->leftJoin('categoryitems as c8', 'pm.category_id8', '=', 'c8.id')
+        ->leftJoin('categoryitems as c9', 'pm.category_id9', '=', 'c9.id')
+        ->leftJoin('categoryitems as c10', 'pm.category_id10', '=', 'c10.id')
         ->select(
             'pm.id',
             'pm.name',
@@ -118,7 +158,12 @@ class PackingMaterialController extends Controller
             'c2.itemname as category_name2',
             'c3.itemname as category_name3',
             'c4.itemname as category_name4',
-            'c5.itemname as category_name5'
+            'c5.itemname as category_name5',
+            'c6.itemname as category_name6',
+            'c7.itemname as category_name7',
+            'c8.itemname as category_name8',
+            'c9.itemname as category_name9',
+            'c10.itemname as category_name10'
         )
         ->paginate(10);
 
@@ -145,6 +190,7 @@ class PackingMaterialController extends Controller
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
             'price' => 'required|string',
+            'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string'
         ]);
@@ -163,7 +209,13 @@ class PackingMaterialController extends Controller
                 'category_id3' => $categoryIds[2] ?? null,
                 'category_id4' => $categoryIds[3] ?? null,
                 'category_id5' => $categoryIds[4] ?? null,
+                'category_id6' => $categoryIds[5] ?? null,
+                'category_id7' => $categoryIds[6] ?? null,
+                'category_id8' => $categoryIds[7] ?? null,
+                'category_id9' => $categoryIds[8] ?? null,
+                'category_id10' => $categoryIds[9] ?? null,
                 'price' => $request->price,
+                'update_frequency' => $request->update_frequency,
                 'price_update_frequency' => $request->price_update_frequency,
                 'price_threshold' => $request->price_threshold,
             ]);
@@ -254,6 +306,7 @@ class PackingMaterialController extends Controller
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
             'price' => 'required|string',
+            'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string'
         ]);
@@ -270,7 +323,13 @@ class PackingMaterialController extends Controller
                 'category_id3' => $categoryIds[2] ?? null,
                 'category_id4' => $categoryIds[3] ?? null,
                 'category_id5' => $categoryIds[4] ?? null,
+                'category_id6' => $categoryIds[5] ?? null,
+                'category_id7' => $categoryIds[6] ?? null,
+                'category_id8' => $categoryIds[7] ?? null,
+                'category_id9' => $categoryIds[8] ?? null,
+                'category_id10' => $categoryIds[9] ?? null,
                 'price' => $request->price,
+                'update_frequency' => $request->update_frequency,
                 'price_update_frequency' => $request->price_update_frequency,
                 'price_threshold' => $request->price_threshold,
             ]);

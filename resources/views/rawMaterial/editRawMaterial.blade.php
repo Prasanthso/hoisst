@@ -48,7 +48,7 @@
                                     <select class="form-select" id="categorySelect" name="category_ids[]" multiple disabled>
                                         @foreach($rawMaterialCategories as $categories)
                                         <option value="{{ $categories->id }}"
-                                            @foreach(range(1, 5) as $i)
+                                            @foreach(range(1, 10) as $i)
                                             @php
                                             $categoryId='category_id' . $i;
                                             @endphp
@@ -60,19 +60,24 @@
                                 </div>
 
 
-                                <div class="col-12">
+                                <div class="col-12 mb-2">
                                     <label for="inputNanme4" class="form-label">Price</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="price" value="{{ $rawMaterial->price}}" disabled>
                                 </div>
-                                <div class="col-12">
+                                <div class="row">
                                     <label for="inputNanme4" class="form-label">Pricing update frequency</label>
-                                    <select class="form-select mb-2" id="UpdateFrequency" name="UpdateFrequency">
-                                        <option selected value="days">Days</option>
-                                        <option value="weeks">Weeks</option>
-                                        <option value="monthly">Monthly</option>
-                                        <option value="yearly">Yearly</option>
-                                    </select>
-                                    <input type="text" class="form-control" id="inputNanme4" name="price_update_frequency" value="{{ $rawMaterial->price_update_frequency}}" disabled>
+                                    <div class="col-md-3">
+                                        <select class="form-select mb-2" id="update_frequency" name="update_frequency" disabled>
+                                            <option selected>{{ $rawMaterial->update_frequency}}</option>
+                                            <option>Days</option>
+                                            <option>Weeks</option>
+                                            <option>Monthly</option>
+                                            <option>Yearly</option>
+                                        </select>
+                                    </div>
+                                     <div class="col-md-9">
+                                        <input type="text" class="form-control" id="inputNanme4" name="price_update_frequency" value="{{ $rawMaterial->price_update_frequency}}" disabled>
+                                    </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Price threshold in percentage</label>

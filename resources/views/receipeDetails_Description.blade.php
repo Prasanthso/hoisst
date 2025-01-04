@@ -35,7 +35,7 @@
               <h5 class="fw-bold mb-4">
                 <label id="selectedrecipesname"></label> </h5>
 
-              <h6 class="fw-bold">Recipe Description</h6>
+              <h6 class="fw-bold">  <label id="recipedesc">Recipe Description</label></h6>
               {{-- <p>
                 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborom et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.
               </p> --}}
@@ -154,6 +154,7 @@
     document.addEventListener("DOMContentLoaded", () => {
         const recipeSelect = document.getElementById('recipeSelect');
         const selectedRecipesName = document.getElementById('selectedrecipesname');
+        const recipedesc = document.getElementById('recipedesc');
 
         const description = document.getElementById('recipeDescription');
         const instructionsList = document.getElementById('recipeInstructions');

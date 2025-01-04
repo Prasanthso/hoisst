@@ -48,7 +48,7 @@
                                     <select class="form-select" id="categorySelect" name="category_ids[]" multiple disabled>
                                         @foreach($packingMaterialCategories as $categories)
                                         <option value="{{ $categories->id }}"
-                                            @foreach(range(1, 5) as $i)
+                                            @foreach(range(1, 10) as $i)
                                             @php
                                             $categoryId='category_id' . $i;
                                             @endphp
@@ -60,13 +60,24 @@
                                 </div>
 
 
-                                <div class="col-12">
+                                <div class="col-12 mb-2">
                                     <label for="inputNanme4" class="form-label">Price</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="price" value="{{ $packingMaterial->price}}" disabled>
                                 </div>
-                                <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Pricing update frequency in Days</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="price_update_frequency" value="{{ $packingMaterial->price_update_frequency}}" disabled>
+                                <div class="row">
+                                    <label for="inputNanme4" class="form-label">Pricing update frequency</label>
+                                    <div class="col-md-3">
+                                        <select class="form-select mb-2" id="update_frequency" name="update_frequency" disabled>
+                                            <option selected>{{ $packingMaterial->update_frequency}}</option>
+                                            <option>Days</option>
+                                            <option>Weeks</option>
+                                            <option>Monthly</option>
+                                            <option>Yearly</option>
+                                        </select>
+                                    </div>
+                                     <div class="col-md-9">
+                                        <input type="text" class="form-control" id="inputNanme4" name="price_update_frequency" value="{{ $packingMaterial->price_update_frequency}}" disabled>
+                                    </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Price threshold in percentage</label>

@@ -5,7 +5,7 @@
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
         <!-- Initially displaying "View Raw Material" -->
-        <h1 id="pageTitle">View Raw Material</h1>
+        <h1 id="pageTitle">View Packing Material</h1>
         <div class="d-flex justify-content-end mb-2 action-buttons">
             <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;" id="editButton">
                 <i class="fas fa-edit" style="color: black;"></i>
@@ -42,10 +42,10 @@
                                     </select>
                                 </div>
                                 <div class="col-md-12">
-                                    <label for="categorySelect" class="form-label">Raw Material Category</label>
+                                    <label for="categorySelect" class="form-label">Packing Material Category</label>
 
                                     <!-- The dropdown list for selecting categories (hidden initially) -->
-                                    <select class="form-select" id="categorySelect" name="category_ids[]" multiple style="display: none;" disabled>
+                                    <select class="form-select " id="categorySelect" name="category_ids[]" multiple style="display: none;" disabled>
                                         @foreach($productCategories as $categories)
                                         <option value="{{ $categories->id }}"
                                             @foreach(range(1, 5) as $i)
@@ -60,13 +60,24 @@
                                 </div>
 
 
-                                <div class="col-12">
+                                <div class="col-12 mb-2">
                                     <label for="inputNanme4" class="form-label">Price</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="price" value="{{ $product->price}}" disabled>
                                 </div>
-                                <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Pricing update frequency in Days</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="price_update_frequency" value="{{ $product->price_update_frequency}}" disabled>
+                                <div class="row">
+                                    <label for="inputNanme4" class="form-label">Pricing update frequency</label>
+                                    <div class="col-md-3">
+                                        <select class="form-select mb-2" id="update_frequency" name="update_frequency" disabled>
+                                            <option selected>{{ $product->update_frequency}}</option>
+                                            <option>Days</option>
+                                            <option>Weeks</option>
+                                            <option>Monthly</option>
+                                            <option>Yearly</option>
+                                        </select>
+                                    </div>
+                                     <div class="col-md-9">
+                                        <input type="text" class="form-control" id="inputNanme4" name="price_update_frequency" value="{{ $product->price_update_frequency}}" disabled>
+                                    </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Price threshold in percentage</label>
