@@ -25,7 +25,7 @@
                     <option value="{{ $recipesitems->id }}">{{ $recipesitems->name }}</option>
                     @endforeach
                     </select>
-                    @error('recipeId')
+                    @error('productId')
                     <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
@@ -35,7 +35,7 @@
               <h5 class="fw-bold mb-4">
                 <label id="selectedrecipesname"></label> </h5>
 
-              <h6 class="fw-bold">  <label id="recipedesc">Recipe Description</label></h6>
+              <h6 class="fw-bold"> <label id="recipedesc"></label></h6>
               {{-- <p>
                 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborom et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.
               </p> --}}
@@ -43,7 +43,7 @@
                  {{-- {{ $recipe->description }} --}}
 
               </p>
-              <h6 class="fw-bold mt-4">Recipe Making Instruction</h6>
+              <h6 class="fw-bold mt-4"><label id="recipeins"></label></h6>
               <ul id="recipeInstructions">
                 {{-- <li>{{ $recipe->instructions }}</li> --}}
                 {{-- <li>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum</li>
@@ -51,53 +51,52 @@
                 <li>non provident, similique sunt in culpa qui officia deserunt mollitia animi,</li>
                 <li>id est laborom et dolorum fuga. Et harum quidem rerum facilis</li>
                 <li>est et expedita distinctio.</li> --}}
-
               </ul>
             </div>
                <!-- Video Section -->
-    <div class="mt-5">
-        <h6 class="fw-bold">Recipe Making Video</h6>
-        <hr />
+            <div class="mt-5">
+                 <h6 class="fw-bold"><label id="recipevideo"></label></h6>
+                    {{-- <hr /> --}}
 
-         <!-- Normal-sized Video -->
-        <div class="row">
-            <!-- Video on the Left -->
-            <div class="col-md-6">
-              <div style="width: 100%; height: auto;">
-                <iframe
-                  width="80%"
-                  height="215"
-                  src="https://youtu.be/3OZn-iCGf5s?si=QGsQ9YIuyApDGCd5"
-                  title="Recipe Video"
-                  frameborder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen>
-                </iframe>
-              </div>
-                <div>
-                <ul class="list-unstyled">
-                    <li><a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#videoDetailsModal">Video Details</a></li>
-                </ul>
+                    <!-- Normal-sized Video -->
+                <div class="row">
+                    <!-- Video on the Left -->
+                    <div class="col-md-6">
+                        <div style="width: 100%; height: auto;">
+                            <iframe
+                            width="80%"
+                            height="215"
+                            src=""
+                            title="Recipe Video"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                            </iframe>
+                        </div>
+                        <div>
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#videoDetailsModal"><label id="videolinks"></label></a></li>
+                        </ul>
+                        </div>
+                    </div>
+                        {{-- <div class="col-md-6"> --}}
+                            {{-- <h6 class="fw-bold">Video Details</h6> --}}
+                            {{-- <ul class="list-unstyled">
+                                <li><a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#videoDetailsModal">Video Details</a></li>
+                            </ul> --}}
+                        {{-- </div> --}}
+                        <!-- Video Links on the Right -->
+                        {{-- <div class="col-md-6"> --}}
+                        {{-- <h6 class="fw-bold">Videos Details:</h6> --}}
+                        {{-- <ul class="list-unstyled"> --}}
+                            {{-- <li><a href="#" target="_blank" class="text-decoration-none">How to Make Samosa - Video 1</a></li> --}}
+                            {{-- <li><a href="https://www.youtube.com/watch?v=VIDEO2" target="_blank" class="text-decoration-none">Samosa Recipe Tips - Video 2</a></li>
+                            <li><a href="https://www.youtube.com/watch?v=VIDEO3" target="_blank" class="text-decoration-none">Perfect Samosa Techniques - Video 3</a></li> --}}
+                        {{-- </ul> --}}
+                        {{-- </div> --}}
                 </div>
-            </div>
-            {{-- <div class="col-md-6"> --}}
-                {{-- <h6 class="fw-bold">Video Details</h6> --}}
-                {{-- <ul class="list-unstyled">
-                    <li><a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#videoDetailsModal">Video Details</a></li>
-                </ul> --}}
-            {{-- </div> --}}
-            <!-- Video Links on the Right -->
-            {{-- <div class="col-md-6"> --}}
-              {{-- <h6 class="fw-bold">Videos Details:</h6> --}}
-              {{-- <ul class="list-unstyled"> --}}
-                {{-- <li><a href="#" target="_blank" class="text-decoration-none">How to Make Samosa - Video 1</a></li> --}}
-                {{-- <li><a href="https://www.youtube.com/watch?v=VIDEO2" target="_blank" class="text-decoration-none">Samosa Recipe Tips - Video 2</a></li>
-                <li><a href="https://www.youtube.com/watch?v=VIDEO3" target="_blank" class="text-decoration-none">Perfect Samosa Techniques - Video 3</a></li> --}}
-              {{-- </ul> --}}
-            {{-- </div> --}}
-        </div>
 
-        </div>
+            </div>
         </div>
     </section>
 </main><!-- End #main -->
@@ -154,19 +153,23 @@
     document.addEventListener("DOMContentLoaded", () => {
         const recipeSelect = document.getElementById('recipeSelect');
         const selectedRecipesName = document.getElementById('selectedrecipesname');
-        const recipedesc = document.getElementById('recipedesc');
+        const lblrecipedesc = document.getElementById('recipedesc');
+        const lblrecipeins = document.getElementById('recipeins');
+        const lblrecipevideo = document.getElementById('recipevideo');
+        const lblvideolinks= document.getElementById('videolinks');
 
         const description = document.getElementById('recipeDescription');
         const instructionsList = document.getElementById('recipeInstructions');
         const videoIframe = document.querySelector('iframe');
+        console.log(recipeSelect); // Check if null
 
         if (recipeSelect) {
             recipeSelect.addEventListener('change', async () => {
-                const recipeId = recipeSelect.value;
+                const productId = recipeSelect.value;
 
-                if (recipeId) {
+                if (productId) {
                     try {
-                        const response = await fetch(`/recipes/${recipeId}`);
+                        const response = await fetch(`/recipes/${productId}`);
                         if (!response.ok) throw new Error('Recipe not found');
                         const recipe = await response.json();
 
@@ -179,8 +182,12 @@
                         else{
                         // Update UI with fetched data
                         selectedRecipesName.innerText = selectedText + ' - DETAILS';
-                        description.innerText = recipe.description || 'No description available.';
 
+                        lblrecipedesc.innerText = "Recipe Decsription";
+                        description.innerText = recipe.description;
+                        lblrecipeins.innerText = "Recipe Making Instruction";
+                        lblrecipevideo.innerText = "Recipe Making Video";
+                        lblvideolinks.innerText = "Video Details";
                         // Update Instructions
                         instructionsList.innerHTML = '';
                         if (recipe.instructions) {
