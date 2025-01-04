@@ -22,6 +22,8 @@ return new class extends Migration
             $table->integer('category_id4')->nullable();
             $table->integer('category_id5')->nullable();
             $table->string('price');
+            $table->string('cost')->nullable();
+            $table->enum('recipe_created_status', ['yes', 'no'])->default('no');
             $table->string('price_update_frequency');
             $table->string('price_threshold');
             $table->timestamps();

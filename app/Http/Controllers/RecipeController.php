@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +12,7 @@ class RecipeController extends Controller
 {
     public function index()
     {
-        $recipes = DB::table('recipes')->get();
+        $recipes = DB::table('product_master')->where('recipe_created_status', 'yes')->get();
         return view('receipeDetails_Description', compact('recipes'));
     }
 
@@ -36,13 +38,14 @@ class RecipeController extends Controller
 
     public function create()
     {
-        $recipes = DB::table('recipes')->get();
+        $recipes = DB::table('product_master')->where('recipe_created_status', 'no')->get();
         return view('addReceipeDetails', compact('recipes'));
     }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'recipeId' => 'required|exists:recipes,id',
+            'productId' => 'required|exists:product_master,id',
             'recipeDescription' => 'required|string',
             'receipeInstruction' => 'required|string',
             'receipevideo' => 'nullable|file|mimes:mp4,avi,flv|max:10240', // Adjust MIME types and size limit
@@ -65,11 +68,15 @@ class RecipeController extends Controller
 
         // Create a new recipe
         Recipe::create([
-            'receipe_id' => $request->recipeId,
+            'product_id' => $request->productId,
             'description' => $request->recipeDescription,
             'instructions' => $request->receipeInstruction,
             'video_path' => $validated['receipevideo'] ?? null,
         ]);
+
+        DB::table('product_master')
+        ->where('id', $request->productId) // Replace $id with the actual ID
+        ->update(['recipe_created_status' => 'yes']);
 
         return redirect()->route('receipedetails.index')->with('success', 'Recipe details added successfully!');
     }

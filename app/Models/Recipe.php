@@ -12,7 +12,7 @@ class Recipe extends Model
     protected $table = 'recipedetails';
 
     protected $fillable = [
-        'receipe_id',
+        'product_id',
         'description',
         'instructions',
         'video_path'

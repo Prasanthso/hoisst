@@ -27,6 +27,8 @@ class Product extends Model
         'category_id10',
         'price',
         'update_frequency',
+        'cost',
+        'recipe_crated_status',
         'price_update_frequency',
         'price_threshold'
     ];

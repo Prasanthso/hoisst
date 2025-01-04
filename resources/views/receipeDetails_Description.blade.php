@@ -22,7 +22,7 @@
                     <select id="recipeSelect" class="form-select" aria-labelledby="recipeSelectLabel">
                     <option selected disabled>Choose...</option>
                     @foreach($recipes as $recipesitems)
-                    <option value="{{ $recipesitems->id }}">{{ $recipesitems->recipesname }}</option>
+                    <option value="{{ $recipesitems->id }}">{{ $recipesitems->name }}</option>
                     @endforeach
                     </select>
                     @error('recipeId')

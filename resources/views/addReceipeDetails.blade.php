@@ -18,13 +18,13 @@
                                 <div class="col-12">
                                     <label for="recipeSelect" class="form-label">Select Recipe</label>
                                     <div class="col-6">
-                                        <select id="recipeSelect" class="form-select" name="recipeId" aria-labelledby="recipeSelectLabel">
+                                        <select id="recipeSelect" class="form-select" name="productId" aria-labelledby="recipeSelectLabel">
                                         <option selected disabled>Choose...</option>
                                         @foreach($recipes as $recipesitems)
-                                        <option value="{{ $recipesitems->id }}">{{ $recipesitems->recipesname }}</option>
+                                        <option value="{{ $recipesitems->id }}">{{ $recipesitems->name }}</option>
                                         @endforeach
                                         </select>
-                                        @error('recipeId')
+                                        @error('productId')
                                         <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
