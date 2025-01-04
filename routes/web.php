@@ -10,6 +10,8 @@ use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\PackingMaterialController;
 use App\Http\Controllers\OverheadController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RecipePricingController;
+
 
 
 /*
@@ -90,11 +92,18 @@ Route::get('/products/price-details/{id}', [ProductController::class, 'getPdPric
 //     return view('receipeDetails_Description');
 // })->name('receipedd');
 
-Route::get('/pricing', function () {
-    return view('pricing');
-})->name('pricing');
+// Route::get('/pricing', function () {
+//     return view('pricing');
+// })->name('pricing');
 
 Route::get('/receipedetails', [RecipeController::class, 'index'])->name('receipedetails.index');
+Route::get('/addreceipedetails', [RecipeController::class, 'create'])->name('addreceipedetails.create');
+Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('savereceipedetails.store');
+// Route::get('/recipe/{id}', [RecipeController::class, 'show'])->name('recipe.show');
+Route::get('/recipes/{id}', [RecipeController::class, 'fetchRecipeDetails'])->name('recipe.fetchDetails');
+
+
+Route::get('/pricing', [RecipePricingController::class, 'index'])->name('receipepricing.index');
 Route::get('/addreceipedetails', [RecipeController::class, 'create'])->name('addreceipedetails.create');
 Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('savereceipedetails.store');
 // Route::get('/recipe/{id}', [RecipeController::class, 'show'])->name('recipe.show');

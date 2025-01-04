@@ -23,20 +23,24 @@
             <div class="alert alert-success">{{ session('success') }}</div>
             @endif
             <div class="mb-4">
-              <label for="recipeSelect" class="form-label">Select Recipe</label>
-              <div class="col-6">
-              <select id="recipeSelect" class="form-select">
-                <option value="samosa" selected>Samosa</option>
-                <option value="Puff">Puff</option>
-                <option value="Cake">Cake</option>
-              </select>
-              </div>
+                <label for="recipeSelect" class="form-label">Select Recipe</label>
+                <div class="col-6">
+                    <select id="recipeSelect" class="form-select" aria-labelledby="recipeSelectLabel">
+                        <option selected disabled>Choose...</option>
+                        @foreach($products as $productItem)
+                        <option value="{{ $productItem->id }}">{{ $productItem->name }}</option>
+                        @endforeach
+                    </select>
+                    <!-- @error('recipeId')
+                    <span class="text-danger">{{ $message }}</span>
+                    @enderror -->
+                </div>
             </div>
 
             <div class="row mb-4">
                 <div class="col-md-3 col-sm-10 mb-2">
-                <label for="recipeOutput" class="form-label">Output</label>
-                <input type="text" class="form-control rounded" id="recipeOutput" name="recipeOutput">
+                    <label for="recipeOutput" class="form-label">Output</label>
+                    <input type="text" class="form-control rounded" id="recipeOutput" name="recipeOutput">
                 </div>
                 <div class="col-md-2 col-sm-10">
                     <label for="recipeUoM" class="form-label">UoM</label>
@@ -46,7 +50,7 @@
 
             <div class="row mb-2">
                 <div class="col-auto">
-                    <label for="pricingrawmaterial" class="form-label text-primary">Ram material</label>
+                    <label for="pricingrawmaterial" class="form-label text-primary">Raw Material</label>
                 </div>
                 <div class="col">
                     <hr />
@@ -54,85 +58,68 @@
             </div>
             <div class="row mb-4">
                 <div class="col-md-3">
-                <label for="rawmaterial" class="form-label">Raw material</label>
-                <select id="rawmaterial" class="form-select">
-                    <option value="Rawmaterial1" selected>Rawmaterial1</option>
-                    <option value="Rawmaterial2">Puff</option>
-                    <option value="Rawmaterial3">Cake</option>
-                  </select>
+                    <label for="rawmaterial" class="form-label">Raw Material</label>
+                    <select id="rawmaterial" class="form-select">
+                        <option selected disabled>Choose...</option>
+                        @foreach($rawMaterials as $rawMaterialItem)
+                        <option
+                            value="{{ $rawMaterialItem->id }}"
+                            data-code="{{ $rawMaterialItem->rmcode }}"
+                            data-uom="{{ $rawMaterialItem->uom }}"
+                            data-price="{{ $rawMaterialItem->price }}">
+                            {{ $rawMaterialItem->name }}
+                        </option>
+                        @endforeach
+                    </select>
+
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="rmQuantity" class="form-label">Quantity</label>
                     <input type="text" class="form-control rounded" id="rmQuantity" name="rmQuantity">
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
-                    <label for="rmCode" class="form-label">RmCode</label>
-                    <input type="text" class="form-control rounded" id="rmCode" name="rmCode">
-                    </div>
-                    <div class="d-flex flex-column" style="flex: 1.5;">
-                        <label for="rmUoM" class="form-label">UoM</label>
-                        <input type="text" class="form-control" id="rmUoM" name="rmUoM">
-                    </div>
+                    <label for="rmCode" class="form-label">RM Code</label>
+                    <input type="text" class="form-control rounded" id="rmCode" name="rmCode" readonly>
+                </div>
+                <div class="d-flex flex-column" style="flex: 1.5;">
+                    <label for="rmUoM" class="form-label">UoM</label>
+                    <input type="text" class="form-control" id="rmUoM" name="rmUoM" readonly>
+                </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="rmPrice" class="form-label">Price</label>
-                    <input type="text" class="form-control rounded" id="rmPrice" name="rmPrice">
-                    </div>
+                    <input type="text" class="form-control rounded" id="rmPrice" name="rmPrice" readonly>
+                </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
-                        <label for="rmAmount" class="form-label">Amount</label>
-                        <input type="text" class="form-control" id="rmAmount" name="rmAmount">
+                    <label for="rmAmount" class="form-label">Amount</label>
+                    <input type="text" class="form-control" id="rmAmount" name="rmAmount">
                 </div>
                 <div class="d-flex flex-column" style="flex: 2;">
-                {{-- <a href="#" class='text-decoration-none rm-ps-add-btn text-white py-4 px-4'> --}}
+                    {{-- <a href="#" class='text-decoration-none rm-ps-add-btn text-white py-4 px-4'> --}}
                     <button type="button" class="btn btn-primary rmaddbtn" id="rmaddbtn"><i class="fas fa-plus"></i> Add</button>
-                {{-- </a> --}}
+                    {{-- </a> --}}
                 </div>
             </div>
             {{-- <div class="container-fluid mt-4"> --}}
-                <div class="row mb-4">
-                    <div class="col-12 col-md-12 mx-auto table-responsive"> <!-- Use col-md-11 for slightly left alignment -->
-                        <table class="table table-bordered text-center" style="width:84%; background-color: #eaf8ff;">
-                            <thead class="no border">
-                                <tr>
-                                    <th>Raw Material</th>
-                                    <th>Quantity</th>
-                                    <th>RM Code</th>
-                                    <th>UoM</th>
-                                    <th>Price</th>
-                                    <th>Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody id="rawMaterialTable">
-                                <tr>
-                                    <td>Raw material 1</td>
-                                    <td>10</td>
-                                    <td>RM00001</td>
-                                    <td>Kgs</td>
-                                    <td>100</td>
-                                    <td>1000</td>
-                                </tr>
-                                <tr>
-                                    <td>Raw material 2</td>
-                                    <td>10</td>
-                                    <td>RM00002</td>
-                                    <td>Kgs</td>
-                                    <td>100</td>
-                                    <td>1000</td>
-                                </tr>
-                                {{-- <tr id="rmCostRow">
-                                    <td colspan="5"></td> <!-- Empty cells for the first 5 columns -->
-                                    <td>
-                                        <div class="text-end mt-2">
-                                            <strong>RM Cost(A):</strong> <span id="totalCost1">2000</span>
-                                        </div>
-                                    </td>
-                                </tr> --}}
-                            </tbody>
-                        </table>
-                        <div class="text-end col-10" style="background-color:#eaf8ff;width:84%;">
-                            <strong>RM Cost(A) : </strong> <span id="totalCost1"> 2000 </span>
-                        </div>
+            <div class="row mb-4">
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center" style="background-color: #eaf8ff;">
+                        <thead>
+                            <tr>
+                                <th>Raw Material</th>
+                                <th>Quantity</th>
+                                <th>RM Code</th>
+                                <th>UoM</th>
+                                <th>Price</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rawMaterialTable"></tbody>
+                    </table>
+                    <div class="text-end" style="background-color: #eaf8ff;">
+                        <strong>RM Cost: </strong> <span id="totalCost">0.00</span>
                     </div>
                 </div>
+            </div>
             {{-- </div> --}}
             {{-- Packing materials --}}
             <div class="row mb-2">
@@ -145,12 +132,12 @@
             </div>
             <div class="row mb-4">
                 <div class="col-md-3">
-                <label for="packingmaterial" class="form-label">Packing material</label>
-                <select id="packingmaterial" class="form-select">
-                    <option value="packingmaterial1" selected>packingmaterial1</option>
-                    <option value="packingmaterial2">packingmaterial2</option>
-                    <option value="packingmaterial3">packingmaterial3</option>
-                  </select>
+                    <label for="packingmaterial" class="form-label">Packing material</label>
+                    <select id="packingmaterial" class="form-select">
+                        <option value="packingmaterial1" selected>packingmaterial1</option>
+                        <option value="packingmaterial2">packingmaterial2</option>
+                        <option value="packingmaterial3">packingmaterial3</option>
+                    </select>
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="pmQuantity" class="form-label">Quantity</label>
@@ -159,57 +146,57 @@
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="pmCode" class="form-label">PmCode</label>
                     <input type="text" class="form-control rounded" id="pmCode" name="pmCode">
-                    </div>
-                    <div class="d-flex flex-column" style="flex: 1.5;">
-                        <label for="pmUoM" class="form-label">UoM</label>
-                        <input type="text" class="form-control" id="pmUoM" name="pmUoM">
-                    </div>
+                </div>
+                <div class="d-flex flex-column" style="flex: 1.5;">
+                    <label for="pmUoM" class="form-label">UoM</label>
+                    <input type="text" class="form-control" id="pmUoM" name="pmUoM">
+                </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="pmPrice" class="form-label">Price</label>
                     <input type="text" class="form-control rounded" id="pmPrice" name="pmPrice">
-                    </div>
+                </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
-                        <label for="pmAmount" class="form-label">Amount</label>
-                        <input type="text" class="form-control" id="pmAmount" name="pmAmount">
+                    <label for="pmAmount" class="form-label">Amount</label>
+                    <input type="text" class="form-control" id="pmAmount" name="pmAmount">
                 </div>
                 <div class="d-flex flex-column" style="flex: 2;">
-                {{-- <a href="#" class='text-decoration-none pm-ps-add-btn text-white py-4 px-4'> --}}
+                    {{-- <a href="#" class='text-decoration-none pm-ps-add-btn text-white py-4 px-4'> --}}
                     <button type="button" class="btn btn-primary pmaddbtn" id="pmaddbtn"><i class="fas fa-plus"></i> Add</button>
-                {{-- </a> --}}
+                    {{-- </a> --}}
                 </div>
             </div>
             {{-- <div class="container-fluid mt-4"> --}}
-                <div class="row mb-4">
-                    <div class="col-12 col-md-12 mx-auto table-responsive"> <!-- Use col-md-11 for slightly left alignment -->
-                        <table class="table table-bordered text-center" style="width:84%; background-color: #F1F1F1;">
-                            <thead class="no border">
-                                <tr>
-                                    <th>Packing Material</th>
-                                    <th>Quantity</th>
-                                    <th>PM Code</th>
-                                    <th>UoM</th>
-                                    <th>Price</th>
-                                    <th>Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody id="packingMaterialTable">
-                                <tr>
-                                    <td>Packing material 1</td>
-                                    <td>10</td>
-                                    <td>PM00001</td>
-                                    <td>Kgs</td>
-                                    <td>100</td>
-                                    <td>1000</td>
-                                </tr>
-                                <tr>
-                                    <td>Packing material 2</td>
-                                    <td>10</td>
-                                    <td>PM00002</td>
-                                    <td>Kgs</td>
-                                    <td>100</td>
-                                    <td>1000</td>
-                                </tr>
-                                {{-- <tr>
+            <div class="row mb-4">
+                <div class="col-12 col-md-12 mx-auto table-responsive"> <!-- Use col-md-11 for slightly left alignment -->
+                    <table class="table table-bordered text-center" style="width:84%; background-color: #F1F1F1;">
+                        <thead class="no border">
+                            <tr>
+                                <th>Packing Material</th>
+                                <th>Quantity</th>
+                                <th>PM Code</th>
+                                <th>UoM</th>
+                                <th>Price</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="packingMaterialTable">
+                            <tr>
+                                <td>Packing material 1</td>
+                                <td>10</td>
+                                <td>PM00001</td>
+                                <td>Kgs</td>
+                                <td>100</td>
+                                <td>1000</td>
+                            </tr>
+                            <tr>
+                                <td>Packing material 2</td>
+                                <td>10</td>
+                                <td>PM00002</td>
+                                <td>Kgs</td>
+                                <td>100</td>
+                                <td>1000</td>
+                            </tr>
+                            {{-- <tr>
                                     <td colspan="5"></td> <!-- Empty cells for the first 5 columns -->
                                     <td>
                                         <div class="text-end mt-2">
@@ -217,96 +204,96 @@
                                         </div>
                                     </td>
                                 </tr> --}}
-                            </tbody>
-                        </table>
-                        <div class="text-end col-10" style="background-color:#F1F1F1; width:84%; ">
-                            <strong>PM Cost(B): </strong> <span id="totalCost2"> 2000 </span>
-                        </div>
+                        </tbody>
+                    </table>
+                    <div class="text-end col-10" style="background-color:#F1F1F1; width:84%; ">
+                        <strong>PM Cost(B): </strong> <span id="totalCost2"> 2000 </span>
                     </div>
                 </div>
-                {{-- Overheads --}}
-                <div class="row mb-2">
-                    <div class="col-auto">
-                        <label for="pricingoverheads" class="form-label text-primary">Overheads</label>
-                    </div>
-                    <div class="col-2 form-check">
-                        <input type="checkbox" class="form-check-input" id="frommasters"> <label class="form-check-label" for="frommasters"> From Masters </label>
+            </div>
+            {{-- Overheads --}}
+            <div class="row mb-2">
+                <div class="col-auto">
+                    <label for="pricingoverheads" class="form-label text-primary">Overheads</label>
+                </div>
+                <div class="col-2 form-check">
+                    <input type="checkbox" class="form-check-input" id="frommasters"> <label class="form-check-label" for="frommasters"> From Masters </label>
 
-                    </div>
-                    <div class="col-2 form-check">
-                        <input type="checkbox" class="form-check-input" id="entermanually"> <label class="form-check-label" for="entermanually"> Enter Manually </label>
-                    </div>
-                    <div class="col">
-                        <hr />
-                    </div>
                 </div>
-                <div class="row mb-4">
-                    <div class="col-md-3">
+                <div class="col-2 form-check">
+                    <input type="checkbox" class="form-check-input" id="entermanually"> <label class="form-check-label" for="entermanually"> Enter Manually </label>
+                </div>
+                <div class="col">
+                    <hr />
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-md-3">
                     <label for="overheads" class="form-label">Overheads</label>
                     <select id="overheads" class="form-select">
                         <option value="overheads1" selected>Overhead1</option>
                         <option value="overheads2">Overhead2</option>
                         <option value="overheads3">Overhead3</option>
-                      </select>
-                    </div>
-                    <div class="d-flex flex-column" style="flex: 1.5;">
-                        <label for="ohQuantity" class="form-label">Quantity</label>
-                        <input type="text" class="form-control rounded" id="ohQuantity" name="ohQuantity">
-                    </div>
-                    <div class="d-flex flex-column" style="flex: 1.5;">
-                        <label for="ohCode" class="form-label">OhCode</label>
-                        <input type="text" class="form-control rounded" id="ohCode" name="ohCode">
-                        </div>
-                        <div class="d-flex flex-column" style="flex: 1.5;">
-                            <label for="ohUoM" class="form-label">UoM</label>
-                            <input type="text" class="form-control" id="ohUoM" name="ohUoM">
-                        </div>
-                    <div class="d-flex flex-column" style="flex: 1.5;">
-                        <label for="ohPrice" class="form-label">Price</label>
-                        <input type="text" class="form-control rounded" id="ohPrice" name="ohPrice">
-                        </div>
-                    <div class="d-flex flex-column" style="flex: 1.5;">
-                            <label for="ohAmount" class="form-label">Amount</label>
-                            <input type="text" class="form-control" id="ohAmount" name="ohAmount">
-                    </div>
-                    <div class="d-flex flex-column" style="flex: 2;">
-                    {{-- <a href="#" class='text-decoration-none oh-ps-add-btn text-white py-4 px-4'> --}}
-                        <button type="button" class="btn btn-primary ohaddbtn" id="ohaddbtn"><i class="fas fa-plus"></i> Add</button>
-                    {{-- </a> --}}
-                    </div>
+                    </select>
                 </div>
-                {{-- <div class="container-fluid mt-4"> --}}
-                    <div class="row mb-4">
-                        <div class="col-12 col-md-12 mx-auto table-responsive"> <!-- Use col-md-11 for slightly left alignment -->
-                            <table class="table table-bordered text-center" style="width:84%; background-color: #D7E1E4;">
-                                <thead class="no border">
-                                    <tr>
-                                        <th>Overheads</th>
-                                        <th>Quantity</th>
-                                        <th>OhCode</th>
-                                        <th>UoM</th>
-                                        <th>Price</th>
-                                        <th>Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="overheadsTable">
-                                    <tr>
-                                        <td>overheads1</td>
-                                        <td>10</td>
-                                        <td>oh00001</td>
-                                        <td>Kgs</td>
-                                        <td>100</td>
-                                        <td>1000</td>
-                                    </tr>
-                                    <tr>
-                                        <td>overheads2</td>
-                                        <td>10</td>
-                                        <td>oh00002</td>
-                                        <td>Kgs</td>
-                                        <td>100</td>
-                                        <td>1000</td>
-                                    </tr>
-                                    {{-- <tr>
+                <div class="d-flex flex-column" style="flex: 1.5;">
+                    <label for="ohQuantity" class="form-label">Quantity</label>
+                    <input type="text" class="form-control rounded" id="ohQuantity" name="ohQuantity">
+                </div>
+                <div class="d-flex flex-column" style="flex: 1.5;">
+                    <label for="ohCode" class="form-label">OhCode</label>
+                    <input type="text" class="form-control rounded" id="ohCode" name="ohCode">
+                </div>
+                <div class="d-flex flex-column" style="flex: 1.5;">
+                    <label for="ohUoM" class="form-label">UoM</label>
+                    <input type="text" class="form-control" id="ohUoM" name="ohUoM">
+                </div>
+                <div class="d-flex flex-column" style="flex: 1.5;">
+                    <label for="ohPrice" class="form-label">Price</label>
+                    <input type="text" class="form-control rounded" id="ohPrice" name="ohPrice">
+                </div>
+                <div class="d-flex flex-column" style="flex: 1.5;">
+                    <label for="ohAmount" class="form-label">Amount</label>
+                    <input type="text" class="form-control" id="ohAmount" name="ohAmount">
+                </div>
+                <div class="d-flex flex-column" style="flex: 2;">
+                    {{-- <a href="#" class='text-decoration-none oh-ps-add-btn text-white py-4 px-4'> --}}
+                    <button type="button" class="btn btn-primary ohaddbtn" id="ohaddbtn"><i class="fas fa-plus"></i> Add</button>
+                    {{-- </a> --}}
+                </div>
+            </div>
+            {{-- <div class="container-fluid mt-4"> --}}
+            <div class="row mb-4">
+                <div class="col-12 col-md-12 mx-auto table-responsive"> <!-- Use col-md-11 for slightly left alignment -->
+                    <table class="table table-bordered text-center" style="width:84%; background-color: #D7E1E4;">
+                        <thead class="no border">
+                            <tr>
+                                <th>Overheads</th>
+                                <th>Quantity</th>
+                                <th>OhCode</th>
+                                <th>UoM</th>
+                                <th>Price</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="overheadsTable">
+                            <tr>
+                                <td>overheads1</td>
+                                <td>10</td>
+                                <td>oh00001</td>
+                                <td>Kgs</td>
+                                <td>100</td>
+                                <td>1000</td>
+                            </tr>
+                            <tr>
+                                <td>overheads2</td>
+                                <td>10</td>
+                                <td>oh00002</td>
+                                <td>Kgs</td>
+                                <td>100</td>
+                                <td>1000</td>
+                            </tr>
+                            {{-- <tr>
                                         <td colspan="5"></td> <!-- Empty cells for the first 5 columns -->
                                         <td>
                                             <div class="text-end mt-2">
@@ -314,22 +301,24 @@
                                             </div>
                                         </td>
                                     </tr> --}}
-                                </tbody>
+                        </tbody>
 
-                            </table>
-                            <div class="text-end col-md-10" style="width:84%;background-color:#D7E1E4;">
-                                <strong>OH Cost(C): </strong> <span id="totalCost3">2000</span>
-                            </div>
-                        </div>
+                    </table>
+                    <div class="text-end col-md-10" style="width:84%;background-color:#D7E1E4;">
+                        <strong>OH Cost(C): </strong> <span id="totalCost3">2000</span>
                     </div>
-                    <div class="col mb-2">
-                        <div class="col-auto">
-                            <label for="totalcost" class="form-label">Total Cost (A+B+C): </label>
-                        </div>
-                        <div class="col-md-6">
-                            <input type="text" class="form-control" id="totalcost">
-                        </div>
-                    </div>
+                </div>
+            </div>
+            <div class="col mb-2">
+                <div class="col-auto">
+                    <label for="totalcost" class="form-label">Total Cost (A+B+C): </label>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" id="totalcost">
+                </div>
+            </div>
+        </div>
+        </div>
         </div>
     </section>
 </main><!-- End #main -->
@@ -352,139 +341,92 @@
  --}}
 
 <script>
- document.addEventListener('DOMContentLoaded', function () {
-    const rmaddButton = document.getElementById('rmaddbtn');
-    const rawMaterialTable = document.getElementById('rawMaterialTable');
+    document.addEventListener('DOMContentLoaded', function() {
+        const rawMaterialSelect = document.getElementById('rawmaterial');
+        const quantityInput = document.getElementById('rmQuantity');
+        const codeInput = document.getElementById('rmCode');
+        const uomInput = document.getElementById('rmUoM');
+        const priceInput = document.getElementById('rmPrice');
+        const amountInput = document.getElementById('rmAmount');
+        const addButton = document.getElementById('rmaddbtn');
+        const tableBody = document.getElementById('rawMaterialTable');
+        const totalCostSpan = document.getElementById('totalCost');
 
-    const packingMaterialTable = document.getElementById('packingMaterialTable');
-    const pmaddButton = document.getElementById('pmaddbtn');
+        // Update fields when raw material is selected
+        rawMaterialSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
 
-    const overheadsTable = document.getElementById('overheadsTable');
-    const ohaddButton = document.getElementById('ohaddbtn');
+            if (selectedOption.disabled) {
+                clearFields();
+                return;
+            }
 
-    // const costRow = document.getElementById('rmCostRow');
+            const code = selectedOption.getAttribute('data-code');
+            const uom = selectedOption.getAttribute('data-uom');
+            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
 
-    rmaddButton.addEventListener('click', function () {
-        // Gather input values
-        const rawMaterial = document.getElementById('rawmaterial').value;
-        const quantity = document.getElementById('rmQuantity').value;
-        const rmCode = document.getElementById('rmCode').value;
-        const uom = document.getElementById('rmUoM').value;
-        const price = document.getElementById('rmPrice').value;
-        const amount = document.getElementById('rmAmount').value;
+            codeInput.value = code || '';
+            uomInput.value = uom || '';
+            priceInput.value = price.toFixed(2);
 
-        // Validate inputs (optional)
-        if (!rawMaterial || !quantity || !rmCode || !uom || !price || !amount) {
-            alert('Please fill all fields before adding a row.');
-            return;
+            updateAmount();
+        });
+
+        // Update amount on quantity input
+        quantityInput.addEventListener('input', updateAmount);
+
+        // Add raw material row to the table
+        addButton.addEventListener('click', function() {
+            const rawMaterialName = rawMaterialSelect.options[rawMaterialSelect.selectedIndex]?.text;
+            const quantity = parseFloat(quantityInput.value) || 0;
+            const code = codeInput.value;
+            const uom = uomInput.value;
+            const price = parseFloat(priceInput.value) || 0;
+            const amount = parseFloat(amountInput.value) || 0;
+
+            if (!rawMaterialName || !quantity || !code || !uom || !price || !amount) {
+                alert('Please fill all fields before adding.');
+                return;
+            }
+
+            // Append new row
+            const row = `
+                <tr>
+                    <td>${rawMaterialName}</td>
+                    <td>${quantity.toFixed(2)}</td>
+                    <td>${code}</td>
+                    <td>${uom}</td>
+                    <td>${price.toFixed(2)}</td>
+                    <td>${amount.toFixed(2)}</td>
+                </tr>`;
+            tableBody.insertAdjacentHTML('beforeend', row);
+
+            // Update total cost
+            updateTotalCost(amount);
+
+            // Clear fields
+            clearFields();
+        });
+
+        // Helper functions
+        function updateAmount() {
+            const price = parseFloat(priceInput.value) || 0;
+            const quantity = parseFloat(quantityInput.value) || 0;
+            amountInput.value = (price * quantity).toFixed(2);
         }
 
-        // Create a new table row
-        const newRow = `
-            <tr>
-                <td>${rawMaterial}</td>
-                <td>${quantity}</td>
-                <td>${rmCode}</td>
-                <td>${uom}</td>
-                <td>${price}</td>
-                <td>${amount}</td>
-            </tr>
-        `;
-
-        // Append the new row to the table
-        rawMaterialTable.insertAdjacentHTML('beforeend', newRow);
-        // costRow.parentNode.insertBefore(newRow, costRow);
-
-        // Clear input fields
-        document.getElementById('rawmaterial').value = '';
-        document.getElementById('rmQuantity').value = '';
-        document.getElementById('rmCode').value = '';
-        document.getElementById('rmUoM').value = '';
-        document.getElementById('rmPrice').value = '';
-        document.getElementById('rmAmount').value = '';
-    });
-
-
-    // packingmaterials
-    pmaddButton.addEventListener('click', function () {
-        // Gather input values
-        const packingmaterial = document.getElementById('packingmaterial').value;
-        const pmquantity = document.getElementById('pmQuantity').value;
-        const pmCode = document.getElementById('pmCode').value;
-        const pmuom = document.getElementById('pmUoM').value;
-        const pmprice = document.getElementById('pmPrice').value;
-        const pmamount = document.getElementById('pmAmount').value;
-
-        // Validate inputs (optional)
-        if (!packingmaterial || !pmquantity || !pmCode || !pmuom || !pmprice || !pmamount) {
-            alert('Please fill all fields before adding a row.');
-            return;
+        function updateTotalCost(newAmount) {
+            const currentTotal = parseFloat(totalCostSpan.textContent) || 0;
+            totalCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
         }
 
-        // Create a new table row
-        const pmnewRow = `
-            <tr>
-                <td>${packingmaterial}</td>
-                <td>${pmquantity}</td>
-                <td>${pmCode}</td>
-                <td>${pmuom}</td>
-                <td>${pmprice}</td>
-                <td>${pmamount}</td>
-            </tr>
-        `;
-
-        // Append the new row to the table
-        packingMaterialTable.insertAdjacentHTML('beforeend', pmnewRow);
-        // costRow.parentNode.insertBefore(newRow, costRow);
-
-        // Clear input fields
-        document.getElementById('packingmaterial').value = '';
-        document.getElementById('pmQuantity').value = '';
-        document.getElementById('pmCode').value = '';
-        document.getElementById('pmUoM').value = '';
-        document.getElementById('pmPrice').value = '';
-        document.getElementById('pmAmount').value = '';
-    });
-
-    // Overheads
-    ohaddButton.addEventListener('click', function () {
-        // Gather input values
-        const overheads = document.getElementById('overheads').value;
-        const ohquantity = document.getElementById('ohQuantity').value;
-        const ohCode = document.getElementById('ohCode').value;
-        const ohuom = document.getElementById('ohUoM').value;
-        const ohprice = document.getElementById('ohPrice').value;
-        const ohamount = document.getElementById('ohAmount').value;
-
-        // Validate inputs (optional)
-        if (!overheads || !ohquantity || !ohCode || !ohuom || !ohprice || !ohamount) {
-            alert('Please fill all fields before adding a row.');
-            return;
+        function clearFields() {
+            rawMaterialSelect.value = '';
+            quantityInput.value = '';
+            codeInput.value = '';
+            uomInput.value = '';
+            priceInput.value = '';
+            amountInput.value = '';
         }
-
-        // Create a new table row
-        const ohnewRow = `
-            <tr>
-                <td>${overheads}</td>
-                <td>${ohquantity}</td>
-                <td>${ohCode}</td>
-                <td>${ohuom}</td>
-                <td>${ohprice}</td>
-                <td>${ohamount}</td>
-            </tr>
-        `;
-
-        // Append the new row to the table
-        overheadsTable.insertAdjacentHTML('beforeend', ohnewRow);
-        // costRow.parentNode.insertBefore(newRow, costRow);
-
-        // Clear input fields
-        document.getElementById('overheads').value = '';
-        document.getElementById('ohQuantity').value = '';
-        document.getElementById('ohCode').value = '';
-        document.getElementById('ohUoM').value = '';
-        document.getElementById('ohPrice').value = '';
-        document.getElementById('ohAmount').value = '';
     });
-});
 </script>
