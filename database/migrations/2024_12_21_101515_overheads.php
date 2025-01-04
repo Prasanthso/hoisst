@@ -21,7 +21,13 @@ return new class extends Migration
             $table->integer('category_id3')->nullable();
             $table->integer('category_id4')->nullable();
             $table->integer('category_id5')->nullable();
+            $table->integer('category_id6')->nullable();
+            $table->integer('category_id7')->nullable();
+            $table->integer('category_id8')->nullable();
+            $table->integer('category_id9')->nullable();
+            $table->integer('category_id10')->nullable();
             $table->string('price');
+            $table->string('update_frequency');
             $table->string('price_update_frequency');
             $table->string('price_threshold');
             $table->timestamps();
