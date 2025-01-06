@@ -99,3 +99,7 @@ Route::get('/addreceipedetails', [RecipeController::class, 'create'])->name('add
 Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('savereceipedetails.store');
 Route::get('/recipes/{id}', [RecipeController::class, 'show'])->name('recipe.show');
 Route::get('/recipes/{id}', [RecipeController::class, 'fetchRecipeDetails'])->name('recipe.fetchDetails');
+// Route::get('/editreceipedetails/{id}', [RecipeController::class, 'edit'])->name('receipedetails.edit');
+
+Route::get('/editrecipedetails/{id}', [RecipeController::class, 'edit'])->name('editrecipedetails.edit');
+Route::put('/editreceipedetails/{id}', [RecipeController::class, 'update'])->name('editrecipedetails.edit');
