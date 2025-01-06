@@ -102,7 +102,7 @@
             {{-- <div class="container-fluid mt-4"> --}}
             <div class="row mb-4">
                 <div class="table-responsive">
-                    <table class="table table-bordered text-center" style="background-color: #eaf8ff;">
+                    <table class="table table-bordered text-center" style="background-color: #eaf8ff; width:85%;">
                         <thead>
                             <tr>
                                 <th>Raw Material</th>
@@ -115,8 +115,8 @@
                         </thead>
                         <tbody id="rawMaterialTable"></tbody>
                     </table>
-                    <div class="text-end" style="background-color: #eaf8ff;">
-                        <strong>RM Cost: </strong> <span id="totalCost">0.00</span>
+                    <div class="text-end" style="background-color: #eaf8ff; width:85%;">
+                        <strong>RM Cost (A) : </strong> <span id="totalRmCost">0.00</span>
                     </div>
                 </div>
             </div>
@@ -124,7 +124,7 @@
             {{-- Packing materials --}}
             <div class="row mb-2">
                 <div class="col-auto">
-                    <label for="pricingpackingmaterial" class="form-label text-primary">Packing material</label>
+                    <label for="pricingpackingmaterial" class="form-label text-primary">Packing Material</label>
                 </div>
                 <div class="col">
                     <hr />
@@ -132,11 +132,18 @@
             </div>
             <div class="row mb-4">
                 <div class="col-md-3">
-                    <label for="packingmaterial" class="form-label">Packing material</label>
+                    <label for="packingmaterial" class="form-label">Packing Material</label>
                     <select id="packingmaterial" class="form-select">
-                        <option value="packingmaterial1" selected>packingmaterial1</option>
-                        <option value="packingmaterial2">packingmaterial2</option>
-                        <option value="packingmaterial3">packingmaterial3</option>
+                        <option selected disabled>Choose...</option>
+                        @foreach($packingMaterials as $packingMaterialItem)
+                        <option
+                            value="{{ $packingMaterialItem->id }}"
+                            data-code="{{ $packingMaterialItem->pmcode }}"
+                            data-uom="{{ $packingMaterialItem->uom }}"
+                            data-price="{{ $packingMaterialItem->price }}">
+                            {{ $packingMaterialItem->name }}
+                        </option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
@@ -144,16 +151,16 @@
                     <input type="text" class="form-control rounded" id="pmQuantity" name="pmQuantity">
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
-                    <label for="pmCode" class="form-label">PmCode</label>
-                    <input type="text" class="form-control rounded" id="pmCode" name="pmCode">
+                    <label for="pmCode" class="form-label">PM Code</label>
+                    <input type="text" class="form-control rounded" id="pmCode" name="pmCode" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="pmUoM" class="form-label">UoM</label>
-                    <input type="text" class="form-control" id="pmUoM" name="pmUoM">
+                    <input type="text" class="form-control" id="pmUoM" name="pmUoM" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="pmPrice" class="form-label">Price</label>
-                    <input type="text" class="form-control rounded" id="pmPrice" name="pmPrice">
+                    <input type="text" class="form-control rounded" id="pmPrice" name="pmPrice" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="pmAmount" class="form-label">Amount</label>
@@ -168,7 +175,7 @@
             {{-- <div class="container-fluid mt-4"> --}}
             <div class="row mb-4">
                 <div class="col-12 col-md-12 mx-auto table-responsive"> <!-- Use col-md-11 for slightly left alignment -->
-                    <table class="table table-bordered text-center" style="width:84%; background-color: #F1F1F1;">
+                    <table class="table table-bordered text-center" style="background-color: #F1F1F1; width:85%;">
                         <thead class="no border">
                             <tr>
                                 <th>Packing Material</th>
@@ -180,35 +187,14 @@
                             </tr>
                         </thead>
                         <tbody id="packingMaterialTable">
-                            <tr>
-                                <td>Packing material 1</td>
-                                <td>10</td>
-                                <td>PM00001</td>
-                                <td>Kgs</td>
-                                <td>100</td>
-                                <td>1000</td>
-                            </tr>
-                            <tr>
-                                <td>Packing material 2</td>
-                                <td>10</td>
-                                <td>PM00002</td>
-                                <td>Kgs</td>
-                                <td>100</td>
-                                <td>1000</td>
-                            </tr>
-                            {{-- <tr>
-                                    <td colspan="5"></td> <!-- Empty cells for the first 5 columns -->
-                                    <td>
-                                        <div class="text-end mt-2">
-                                            <strong>PM Cost(B):</strong> <span id="totalCost2">2000</span>
-                                        </div>
-                                    </td>
-                                </tr> --}}
                         </tbody>
                     </table>
-                    <div class="text-end col-10" style="background-color:#F1F1F1; width:84%; ">
-                        <strong>PM Cost(B): </strong> <span id="totalCost2"> 2000 </span>
+                    <div class="text-end" style="background-color:#F1F1F1; width:85%;">
+                        <strong>PM Cost (B) : </strong> <span id="totalPmCost">0.00</span>
                     </div>
+                    <!-- <div class="text-end col-10" style="background-color:#F1F1F1; width:84%; ">
+                        <strong>PM Cost(B): </strong> <span id="totalCost2"> 2000 </span>
+                    </div> -->
                 </div>
             </div>
             {{-- Overheads --}}
@@ -231,9 +217,16 @@
                 <div class="col-md-3">
                     <label for="overheads" class="form-label">Overheads</label>
                     <select id="overheads" class="form-select">
-                        <option value="overheads1" selected>Overhead1</option>
-                        <option value="overheads2">Overhead2</option>
-                        <option value="overheads3">Overhead3</option>
+                        <option selected disabled>Choose...</option>
+                        @foreach($overheads as $overheadsItem)
+                        <option
+                            value="{{ $overheadsItem->id }}"
+                            data-code="{{ $overheadsItem->ohcode }}"
+                            data-uom="{{ $overheadsItem->uom }}"
+                            data-price="{{ $overheadsItem->price }}">
+                            {{ $overheadsItem->name }}
+                        </option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
@@ -241,16 +234,16 @@
                     <input type="text" class="form-control rounded" id="ohQuantity" name="ohQuantity">
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
-                    <label for="ohCode" class="form-label">OhCode</label>
-                    <input type="text" class="form-control rounded" id="ohCode" name="ohCode">
+                    <label for="ohCode" class="form-label">OH Code</label>
+                    <input type="text" class="form-control rounded" id="ohCode" name="ohCode" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="ohUoM" class="form-label">UoM</label>
-                    <input type="text" class="form-control" id="ohUoM" name="ohUoM">
+                    <input type="text" class="form-control" id="ohUoM" name="ohUoM" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="ohPrice" class="form-label">Price</label>
-                    <input type="text" class="form-control rounded" id="ohPrice" name="ohPrice">
+                    <input type="text" class="form-control rounded" id="ohPrice" name="ohPrice" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="ohAmount" class="form-label">Amount</label>
@@ -265,56 +258,32 @@
             {{-- <div class="container-fluid mt-4"> --}}
             <div class="row mb-4">
                 <div class="col-12 col-md-12 mx-auto table-responsive"> <!-- Use col-md-11 for slightly left alignment -->
-                    <table class="table table-bordered text-center" style="width:84%; background-color: #D7E1E4;">
+                    <table class="table table-bordered text-center" style=" background-color: #D7E1E4; width:85%;">
                         <thead class="no border">
                             <tr>
                                 <th>Overheads</th>
                                 <th>Quantity</th>
-                                <th>OhCode</th>
+                                <th>OH Code</th>
                                 <th>UoM</th>
                                 <th>Price</th>
                                 <th>Amount</th>
                             </tr>
                         </thead>
                         <tbody id="overheadsTable">
-                            <tr>
-                                <td>overheads1</td>
-                                <td>10</td>
-                                <td>oh00001</td>
-                                <td>Kgs</td>
-                                <td>100</td>
-                                <td>1000</td>
-                            </tr>
-                            <tr>
-                                <td>overheads2</td>
-                                <td>10</td>
-                                <td>oh00002</td>
-                                <td>Kgs</td>
-                                <td>100</td>
-                                <td>1000</td>
-                            </tr>
-                            {{-- <tr>
-                                        <td colspan="5"></td> <!-- Empty cells for the first 5 columns -->
-                                        <td>
-                                            <div class="text-end mt-2">
-                                                <strong>Oh Cost(C):</strong> <span id="totalCost3">2000</span>
-                                            </div>
-                                        </td>
-                                    </tr> --}}
                         </tbody>
 
                     </table>
-                    <div class="text-end col-md-10" style="width:84%;background-color:#D7E1E4;">
-                        <strong>OH Cost(C): </strong> <span id="totalCost3">2000</span>
+                    <div class="text-end" style="background-color: #D7E1E4; width:85%;">
+                        <strong>OH Cost (C) : </strong> <span id="totalohCost">0.00</span>
                     </div>
                 </div>
             </div>
-            <div class="col mb-2">
-                <div class="col-auto">
-                    <label for="totalcost" class="form-label">Total Cost (A+B+C): </label>
+            <div class="row mb-2">
+                <div class="col-md-2 mt-2">
+                    <label for="totalcost" class="form-label">Total Cost (A+B+C):
                 </div>
-                <div class="col-md-6">
-                    <input type="text" class="form-control" id="totalcost">
+                <div class="col-md-3">
+                    </label> <input type="text" class="form-control" id="totalcost" disabled>
                 </div>
             </div>
         </div>
@@ -350,7 +319,29 @@
         const amountInput = document.getElementById('rmAmount');
         const addButton = document.getElementById('rmaddbtn');
         const tableBody = document.getElementById('rawMaterialTable');
-        const totalCostSpan = document.getElementById('totalCost');
+        const totalCostSpan = document.getElementById('totalRmCost');
+
+        const packingMaterialSelect = document.getElementById('packingmaterial');
+        const pmQuantityInput = document.getElementById('pmQuantity');
+        const pmCodeInput = document.getElementById('pmCode');
+        const pmUoMInput = document.getElementById('pmUoM');
+        const pmPriceInput = document.getElementById('pmPrice');
+        const pmAmountInput = document.getElementById('pmAmount');
+        const pmAddButton = document.getElementById('pmaddbtn');
+        const packingMaterialTable = document.getElementById('packingMaterialTable');
+        const totalPmCostSpan = document.getElementById('totalPmCost');
+
+        const overheadsSelect = document.getElementById('overheads');
+        const ohQuantityInput = document.getElementById('ohQuantity');
+        const ohCodeInput = document.getElementById('ohCode');
+        const ohUoMInput = document.getElementById('ohUoM');
+        const ohPriceInput = document.getElementById('ohPrice');
+        const ohAmountInput = document.getElementById('ohAmount');
+        const ohAddButton = document.getElementById('ohaddbtn');
+        const overheadsTable = document.getElementById('overheadsTable');
+        const totalohCostSpan = document.getElementById('totalohCost');
+
+        const totalCostInput = document.getElementById('totalcost'); // Total Cost (A+B+C)
 
         // Update fields when raw material is selected
         rawMaterialSelect.addEventListener('change', function() {
@@ -393,7 +384,7 @@
             const row = `
                 <tr>
                     <td>${rawMaterialName}</td>
-                    <td>${quantity.toFixed(2)}</td>
+                    <td>${quantity}</td>
                     <td>${code}</td>
                     <td>${uom}</td>
                     <td>${price.toFixed(2)}</td>
@@ -406,6 +397,8 @@
 
             // Clear fields
             clearFields();
+
+            updateGrandTotal();
         });
 
         // Helper functions
@@ -427,6 +420,170 @@
             uomInput.value = '';
             priceInput.value = '';
             amountInput.value = '';
+        }
+
+        // Event listeners
+        packingMaterialSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+
+            if (selectedOption.disabled) {
+                clearPmFields();
+                return;
+            }
+
+            const code = selectedOption.getAttribute('data-code');
+            const uom = selectedOption.getAttribute('data-uom');
+            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+
+            pmCodeInput.value = code || '';
+            pmUoMInput.value = uom || '';
+            pmPriceInput.value = price.toFixed(2);
+
+            updatePmAmount();
+        });
+
+        pmQuantityInput.addEventListener('input', updatePmAmount);
+
+        pmAddButton.addEventListener('click', function() {
+            const packingMaterialName = packingMaterialSelect.options[packingMaterialSelect.selectedIndex]?.text;
+            const quantity = parseFloat(pmQuantityInput.value) || 0;
+            const code = pmCodeInput.value;
+            const uom = pmUoMInput.value;
+            const price = parseFloat(pmPriceInput.value) || 0;
+            const amount = parseFloat(pmAmountInput.value) || 0;
+
+            if (!packingMaterialName || !quantity || !code || !uom || !price || !amount) {
+                alert('Please fill all fields before adding.');
+                return;
+            }
+
+            // Append new row
+            const row = `
+        <tr>
+            <td>${packingMaterialName}</td>
+            <td>${quantity}</td>
+            <td>${code}</td>
+            <td>${uom}</td>
+            <td>${price.toFixed(2)}</td>
+            <td>${amount.toFixed(2)}</td>
+        </tr>`;
+            packingMaterialTable.insertAdjacentHTML('beforeend', row);
+
+            // Update total PM cost
+            updatePmTotalCost(amount);
+
+            // Clear fields
+            clearPmFields();
+
+            updateGrandTotal();
+        });
+
+        // Helper functions
+        function updatePmAmount() {
+            const price = parseFloat(pmPriceInput.value) || 0;
+            const quantity = parseFloat(pmQuantityInput.value) || 0;
+            pmAmountInput.value = (price * quantity).toFixed(2);
+        }
+
+        function updatePmTotalCost(newAmount) {
+            const currentTotal = parseFloat(totalPmCostSpan.textContent) || 0;
+            totalPmCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
+        }
+
+        function clearPmFields() {
+            packingMaterialSelect.value = '';
+            pmQuantityInput.value = '';
+            pmCodeInput.value = '';
+            pmUoMInput.value = '';
+            pmPriceInput.value = '';
+            pmAmountInput.value = '';
+        }
+
+
+        // Event listeners
+        overheadsSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+
+            if (selectedOption.disabled) {
+                clearOhFields();
+                return;
+            }
+
+            const code = selectedOption.getAttribute('data-code');
+            const uom = selectedOption.getAttribute('data-uom');
+            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+
+            ohCodeInput.value = code || '';
+            ohUoMInput.value = uom || '';
+            ohPriceInput.value = price.toFixed(2);
+
+            updateOhAmount();
+        });
+
+        ohQuantityInput.addEventListener('input', updateOhAmount);
+
+        ohAddButton.addEventListener('click', function() {
+            const overheadsName = overheadsSelect.options[overheadsSelect.selectedIndex]?.text;
+            const quantity = parseFloat(ohQuantityInput.value) || 0;
+            const code = ohCodeInput.value;
+            const uom = ohUoMInput.value;
+            const price = parseFloat(ohPriceInput.value) || 0;
+            const amount = parseFloat(ohAmountInput.value) || 0;
+
+            if (!overheadsName || !quantity || !code || !uom || !price || !amount) {
+                alert('Please fill all fields before adding.');
+                return;
+            }
+
+            // Append new row
+            const row = `
+        <tr>
+            <td>${overheadsName}</td>
+            <td>${quantity}</td>
+            <td>${code}</td>
+            <td>${uom}</td>
+            <td>${price.toFixed(2)}</td>
+            <td>${amount.toFixed(2)}</td>
+        </tr>`;
+            overheadsTable.insertAdjacentHTML('beforeend', row);
+
+            // Update total PM cost
+            updateOhTotalCost(amount);
+
+            // Clear fields
+            clearOhFields();
+            updateGrandTotal();
+        });
+
+        // Helper functions
+        function updateOhAmount() {
+            const price = parseFloat(ohPriceInput.value) || 0;
+            const quantity = parseFloat(ohQuantityInput.value) || 0;
+            ohAmountInput.value = (price * quantity).toFixed(2);
+        }
+
+        function updateOhTotalCost(newAmount) {
+            const currentTotal = parseFloat(totalohCostSpan.textContent) || 0;
+            totalohCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
+        }
+
+        function clearOhFields() {
+            overheadsSelect.value = '';
+            ohQuantityInput.value = '';
+            ohCodeInput.value = '';
+            ohUoMInput.value = '';
+            ohPriceInput.value = '';
+            ohAmountInput.value = '';
+        }
+
+        function updateGrandTotal() {
+            const rawMaterialTotal = parseFloat(totalCostSpan.textContent) || 0;
+            const packingMaterialTotal = parseFloat(totalPmCostSpan.textContent) || 0;
+            const overheadTotal = parseFloat(totalohCostSpan.textContent) || 0;
+
+            const grandTotal = rawMaterialTotal + packingMaterialTotal + overheadTotal;
+
+            totalCostInput.value = grandTotal.toFixed(2); // Display in Total Cost (A+B+C)
         }
     });
 </script>
