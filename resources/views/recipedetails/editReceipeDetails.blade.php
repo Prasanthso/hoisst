@@ -13,7 +13,7 @@
                     <div class="card">
                         <div class="card-body">
                             <!-- Vertical Form -->
-                            <form action="{{ route('editrecipedetails.edit', $editrecipe->id) }}" method="POST" class="row g-3 mt-2" enctype="multipart/form-data"  id="recipeDetailsDescForm">
+                            <form action="{{ route('editrecipedetails.update', $editrecipe->id) }}" method="POST" class="row g-3 mt-2" enctype="multipart/form-data"  id="recipeDetailsDescForm">
                                 @csrf
                                 @method('PUT')
                                 <div class="col-12">
@@ -47,7 +47,7 @@
                                     <label for="receipevideo" class="form-label fw-bold">Recipe Making Video</label>
                                     <input type="file" name="receipevideo" class="form-control" id="receipevideo">
                                     @if($editrecipe->video_path)
-                                    <small class="text-muted">
+                                    <small class="text-muted" id="old_receipevideo">
                                         Current Recipe: <a href="{{ asset($editrecipe->video_path) }}" target="_blank">View Recipe Video</a>
                                     </small>
                                 @endif

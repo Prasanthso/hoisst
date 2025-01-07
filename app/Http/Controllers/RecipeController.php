@@ -107,30 +107,91 @@ class RecipeController extends Controller
             'receipevideo' => 'nullable|file|mimes:mp4,avi,flv|max:10240', // Adjust MIME types and size limit
         ]);
 
-        // Handle video upload
+        $oldVideo = $editrecipe->video_path; // Store the current video path before updating
+        $newVideoPath = null;
+
+    // Check if the request contains a file for 'receipevideo'
         if ($request->hasFile('receipevideo')) {
-            // Save file directly to 'public/uploads'
-            $filePath = $request->file('receipevideo')->move(public_path('uploads'), $request->file('receipevideo')->getClientOriginalName());
-            $validated['receipevideo'] = 'uploads/' . $request->file('receipevideo')->getClientOriginalName();
+            // Validate that the file is valid
+            if ($request->file('receipevideo')->isValid()) {
+                // Get the original filename
+                $originalName = $request->file('receipevideo')->getClientOriginalName();
+                 $filePath = $request->file('receipevideo')->move(public_path('uploads'), $originalName);
+                // Save the relative path to the validated data
+                $validated['receipevideo'] = 'uploads/' . $originalName;
+                $newVideoPath = 'uploads/' . $originalName;
+            }
+            // else {
+            //     // Handle invalid file error
+            //     return response()->json(['error' => 'Uploaded file is not valid'], 400);
+            // }
         }
-       else {
-            return back()->withErrors(['receipevideo' => 'Failed to upload video.']);
-        }
+        //  else {
+        //     // Handle missing file error
+        //     return response()->json(['error' => 'No file uploaded'], 400);
+        // }
 
         try {
-            // Update the raw material record
-            $rawMaterial->update([
-                'description' => $request->recipeDescription,
-                'instructions' => $request->receipeInstruction,
-                'video_path' => $validated['receipevideo'] ?? null,
+            // Update the recipe record
+            $editrecipe->update([
+                'description' => $request['recipeDescription'],
+                'instructions' => $request['receipeInstruction'],
+                'video_path' => $newVideoPath ?? $oldVideo,
             ]);
+
+            // // Call updateRecipedetails() to log the changes
+            // $this->updateRecipedetails(new Request([
+            //     'id' => $id,
+            //     'old_receipevideo' => $oldVideo,
+            //     'receipevideo' => $newVideoPath,
+            // ]));
+
+            // Prepare data for updateRecipedetails()
+            $updateDetailsData = [
+                'id' => $id,
+                'old_receipevideo' => $oldVideo,
+                'receipevideo' => $newVideoPath,
+            ];
+
+        // Call updateRecipedetails() with data
+        $this->updateRecipedetails(new Request($updateDetailsData));
+
         } catch (\Exception $e) {
-            // Handle the error gracefully (e.g., log it and show an error message)
-            // \Log::error('Error updating recipe: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'There was an issue updating the recipe details.');
+                return redirect()->back()->with('error', 'There was an issue updating the recipe details.');
         }
         // $editrecipe->update($request->all()); // Update recipe details
 
         return redirect()->route('receipedetails.index')->with('success', 'Recipe updated successfully.');
     }
+
+    public function updateRecipedetails(Request $request)
+    {
+        $validatedData = $request->validate([
+            'id' => 'required|exists:recipedetails,id',
+            'receipevideo' => 'nullable|file|mimes:mp4,avi,flv|max:10240',
+            'old_receipevideo' => 'nullable|string', // Expect a file path, not a file
+        ]);
+
+        // $newVideoPath = null;
+        // if ($request->hasFile('receipevideo') && $request->file('receipevideo')->isValid()) {
+        //     $newVideoPath = 'uploads/' . time() . '_' . $request->file('receipevideo')->getClientOriginalName();
+        //     $request->file('receipevideo')->move(public_path('uploads'), $newVideoPath);
+        // }
+
+        try {
+            DB::table('recipedetails_histories')->insert([
+                'recipe_id' => $validatedData['id'],
+                'old_video' => $validatedData['old_receipevideo'],
+                'new_video' => $validatedData['receipevideo'],
+                'changed_by' => 1, //auth()->id(),
+                'approved_by' => 1, // auth()->id(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error while logging the recipe details.');
+        }
+
+        return true;
+    }
+
 }
