@@ -103,4 +103,4 @@ Route::get('/recipes/{id}', [RecipeController::class, 'fetchRecipeDetails'])->na
 
 Route::get('/editrecipedetails/{id}', [RecipeController::class, 'edit'])->name('editrecipedetails.edit');
 Route::put('/editreceipedetails/{id}', [RecipeController::class, 'update'])->name('editrecipedetails.update');
-Route::get('/receipedetails/recipe-history/{id}', [RecipeController::class, 'getRecipedetailsHistory'])->name('recipe.recipeHistory');
+Route::get('/recipe-history/{id}', [RecipeController::class, 'getRecipedetailsHistory']);

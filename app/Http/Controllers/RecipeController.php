@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Recipe;
+use Illuminate\Support\Facades\Validator;
 
 class RecipeController extends Controller
 {
@@ -155,7 +156,7 @@ class RecipeController extends Controller
                 ]);
             });
         } catch (\Exception $e) {
-            \Log::error('Error updating recipe details: ' . $e->getMessage());
+            // \Log::error('Error updating recipe details: ' . $e->getMessage());
             return redirect()->back()->with('error', 'There was an issue updating the recipe details.');
         }
 
@@ -188,7 +189,7 @@ class RecipeController extends Controller
             // ->orderBy('updated_at', 'desc')
             ->get();
 
-        return response()->json(['recipeDetailsHistory' => $recipeHistory]);
+        return response()->json($recipeHistory);
     }
 
 

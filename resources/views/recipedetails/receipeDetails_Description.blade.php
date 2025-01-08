@@ -159,7 +159,7 @@
         const description = document.getElementById('recipeDescription');
         const instructionsList = document.getElementById('recipeInstructions');
         const videoIframe = document.querySelector('iframe');
-        console.log(recipeSelect); // Check if null
+        // console.log(recipeSelect); // Check if null
 
         if (recipeSelect) {
             recipeSelect.addEventListener('change', async () => {
@@ -251,10 +251,10 @@
 
     try {
         // Fetch Recipe History
-        const historyResponse = await fetch(`/receipedetails/recipe-history/${productId}`);
+        const historyResponse = await fetch(`/recipe-history/${productId}`);
         if (!historyResponse.ok) throw new Error('History not found');
         const history = await historyResponse.json();
-
+        // console.log(history);
         // Populate History Table
         recipeHistoryTable.innerHTML = ''; // Clear table first
         if (history.length > 0) {
