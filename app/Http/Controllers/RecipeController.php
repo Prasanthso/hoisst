@@ -20,9 +20,6 @@ class RecipeController extends Controller
     {
     // Fetch the recipe by ID
     $recipe = Recipe::findOrFail($id);
-//    $recipe = DB::table('recipedetails')
-//     ->where('product_id', $id)
-//     ->get();
       // Pass the recipe to the view
     return view('recipedetails.receipeDetails_Description', compact('recipe'));
     }
@@ -30,9 +27,6 @@ class RecipeController extends Controller
     public function fetchRecipeDetails($id)
     {
         $recipe = Recipe::find($id);
-        // $recipe = DB::table('recipedetails')
-        // ->where('product_id', $id)
-        // ->get();
 
         if (!$recipe) {
             return response()->json(['error' => 'Recipe not found'], 404);
@@ -114,8 +108,7 @@ class RecipeController extends Controller
         if ($request->hasFile('receipevideo')) {
             // Validate that the file is valid
             if ($request->file('receipevideo')->isValid()) {
-                // Get the original filename
-                $originalName = $request->file('receipevideo')->getClientOriginalName();
+                 $originalName = $request->file('receipevideo')->getClientOriginalName();
                  $filePath = $request->file('receipevideo')->move(public_path('uploads'), $originalName);
                 // Save the relative path to the validated data
                 $validated['receipevideo'] = 'uploads/' . $originalName;
@@ -131,39 +124,75 @@ class RecipeController extends Controller
         //     return response()->json(['error' => 'No file uploaded'], 400);
         // }
 
+        $updateDetailsData = [
+            'id' => $id,
+            'old_receipevideo' => $oldVideo,
+            'receipevideo' => $newVideoPath,
+        ];
+
+        $validatedData = Validator::make($updateDetailsData, [
+            'id' => 'required|exists:recipedetails,id',
+            'receipevideo' => 'nullable|string',
+            'old_receipevideo' => 'nullable|string',
+        ])->validate();
+
         try {
-            // Update the recipe record
-            $editrecipe->update([
-                'description' => $request['recipeDescription'],
-                'instructions' => $request['receipeInstruction'],
-                'video_path' => $newVideoPath ?? $oldVideo,
-            ]);
+            DB::transaction(function () use ($editrecipe, $request, $oldVideo, $newVideoPath, $validatedData) {
+                $editrecipe->update([
+                    'description' => $request['recipeDescription'],
+                    'instructions' => $request['receipeInstruction'],
+                    'video_path' => $newVideoPath ?? $oldVideo,
+                ]);
 
-            // // Call updateRecipedetails() to log the changes
-            // $this->updateRecipedetails(new Request([
-            //     'id' => $id,
-            //     'old_receipevideo' => $oldVideo,
-            //     'receipevideo' => $newVideoPath,
-            // ]));
-
-            // Prepare data for updateRecipedetails()
-            $updateDetailsData = [
-                'id' => $id,
-                'old_receipevideo' => $oldVideo,
-                'receipevideo' => $newVideoPath,
-            ];
-
-        // Call updateRecipedetails() with data
-        $this->updateRecipedetails(new Request($updateDetailsData));
-
+                DB::table('recipedetails_histories')->insert([
+                    'recipe_id' => $validatedData['id'],
+                    'old_video' => $validatedData['old_receipevideo'] ?? '',
+                    'new_video' => $validatedData['receipevideo'] ?? '',
+                    'changed_by' => 1, // auth()->id(),
+                    'approved_by' => 1, // auth()->id(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            });
         } catch (\Exception $e) {
-                return redirect()->back()->with('error', 'There was an issue updating the recipe details.');
+            \Log::error('Error updating recipe details: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'There was an issue updating the recipe details.');
         }
-        // $editrecipe->update($request->all()); // Update recipe details
 
         return redirect()->route('receipedetails.index')->with('success', 'Recipe updated successfully.');
     }
 
+    // public function getRecipedetailsHistory($id)
+    // {
+    //     $recipeHistory = DB::table('recipedetails_histories')
+    //     ->where('recipe_id', $id)
+    //     ->orderBy('updated_at', 'desc') // Replace 'id' with the column you want to sort by
+    //     ->get();
+    //     return response()->json(['recipeDetails' => $recipeHistory]);
+    // }
+
+    public function getRecipedetailsHistory($productId)
+    {
+        // Get the recipe ID from the receipedetails table using product_id
+        $recipe = DB::table('recipedetails')
+            ->where('product_id', $productId)
+            ->first();
+
+        if (!$recipe) {
+            return response()->json(['message' => 'Recipe not found'], 404);
+        }
+
+        // Fetch the history for the specific recipe ID
+        $recipeHistory = DB::table('recipedetails_histories')
+            ->where('recipe_id', $recipe->id)
+            // ->orderBy('updated_at', 'desc')
+            ->get();
+
+        return response()->json(['recipeDetailsHistory' => $recipeHistory]);
+    }
+
+
+    /*
     public function updateRecipedetails(Request $request)
     {
         $validatedData = $request->validate([
@@ -193,5 +222,5 @@ class RecipeController extends Controller
 
         return true;
     }
-
+    */
 }

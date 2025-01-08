@@ -88,21 +88,7 @@
                         </ul>
                         </div>
                     </div>
-                        {{-- <div class="col-md-6"> --}}
-                            {{-- <h6 class="fw-bold">Video Details</h6> --}}
-                            {{-- <ul class="list-unstyled">
-                                <li><a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#videoDetailsModal">Video Details</a></li>
-                            </ul> --}}
-                        {{-- </div> --}}
-                        <!-- Video Links on the Right -->
-                        {{-- <div class="col-md-6"> --}}
-                        {{-- <h6 class="fw-bold">Videos Details:</h6> --}}
-                        {{-- <ul class="list-unstyled"> --}}
-                            {{-- <li><a href="#" target="_blank" class="text-decoration-none">How to Make Samosa - Video 1</a></li> --}}
-                            {{-- <li><a href="https://www.youtube.com/watch?v=VIDEO2" target="_blank" class="text-decoration-none">Samosa Recipe Tips - Video 2</a></li>
-                            <li><a href="https://www.youtube.com/watch?v=VIDEO3" target="_blank" class="text-decoration-none">Perfect Samosa Techniques - Video 3</a></li> --}}
-                        {{-- </ul> --}}
-                        {{-- </div> --}}
+
                 </div>
 
             </div>
@@ -125,15 +111,15 @@
                       <th style="color:white;">Approved By</th>
                   </tr>
               </thead>
-              <tbody>
-                  <tr>
+              <tbody id="recipehistroyTable">
+                  {{-- <tr>
                       <td>Demo name</td>
                       <td>Demo name</td>
                   </tr>
                   <tr>
                     <td>Demo name</td>
                     <td>Demo name</td>
-                </tr>
+                </tr> --}}
               </tbody>
           </table>
         </div>
@@ -166,6 +152,7 @@
         const lblrecipeins = document.getElementById('recipeins');
         const lblrecipevideo = document.getElementById('recipevideo');
         const lblvideolinks= document.getElementById('videolinks');
+        const videoDetailsModalBody = document.querySelector('#videoDetailsModal .modal-body');
 
         const editRecipeBtn = document.getElementById('editRecipeBtn');
 
@@ -214,6 +201,9 @@
                                 }
                             });
                         }
+
+                        await recipehistory(productId);
+
                         }
                         // Update Video
                         if (recipe.video_path) {
@@ -252,19 +242,38 @@
         });
     });
 
-        // if (recipeSelect && selectedRecipesName) {
-        //     recipeSelect.addEventListener('change', () => {
-        //         const selectedText = recipeSelect.options[recipeSelect.selectedIndex].text.trim(); // Get the selected text
+    async function recipehistory(productId) {
+    const recipeHistoryTable = document.getElementById('recipehistroyTable');
+    if (!productId) {
+        alert('Please select a recipe first.');
+        return;
+    }
 
-        //         // Check if a valid option is selected (not the disabled one)
-        //         if (selectedText !== "Choose...") {
-        //             selectedRecipesName.innerText = selectedText + '- DETAILS';
-        //         } else {
-        //             selectedRecipesName.innerText = ""; // Reset if "Choose..." is selected
-        //         }
-        //     });
+    try {
+        // Fetch Recipe History
+        const historyResponse = await fetch(`/receipedetails/recipe-history/${productId}`);
+        if (!historyResponse.ok) throw new Error('History not found');
+        const history = await historyResponse.json();
 
-        // }
-    // });
+        // Populate History Table
+        recipeHistoryTable.innerHTML = ''; // Clear table first
+        if (history.length > 0) {
+            history.forEach(item => {
+                const row = `
+                    <tr>
+                        <td>${item.changed_by}</td>
+                        <td>${item.approved_by}</td>
+                    </tr>
+                `;
+                recipeHistoryTable.innerHTML += row;
+            });
+        } else {
+            recipeHistoryTable.innerHTML = '<tr><td colspan="2">No history available.</td></tr>';
+        }
+    } catch (error) {
+        // console.error("Error fetching history:", error);
+        recipeHistoryTable.innerHTML = '<tr><td colspan="2">Error fetching history.</td></tr>';
+    }
+}
+
 </script>
-
