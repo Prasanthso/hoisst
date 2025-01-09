@@ -37,35 +37,46 @@ class RmForRecipeController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
+        try {
+            // Validate the request
+            $request->validate([
+                'raw_material_id' => 'required|exists:raw_materials,id',
+                'quantity' => 'required|numeric',
+                'amount' => 'required|numeric',
+                'code' => 'required|string',
+            ]);
 
-        $request->validate([
-            'raw_material_id' => 'required|exists:raw_materials,id',
-            'quantity' => 'required|numeric',
-            'code' => 'required|string',
-            'uom' => 'required|string',
-            'price' => 'required|numeric',
-            'amount' => 'required|numeric',
-        ]);
+            // Create the record
+            $rmForRecipe = RmForRecipe::create([
+                'raw_material_id' => $request->raw_material_id,
+                'product_id' => $request->product_id ?? 1,
+                'quantity' => $request->quantity,
+                'code' => $request->code,
+                'uom' => $request->uom ?? 'default_uom',
+                'price' => $request->price ?? 0,
+                'amount' => $request->amount,
+            ]);
 
-        RmForRecipe::create([
-            'raw_material_id' => $request->raw_material_id,
-            'product_id' => 1,
-            'quantity' => $request->quantity,
-            'code' => $request->code,
-            'uom' => $request->uom,
-            'price' => $request->price,
-            'amount' => $request->amount,
-        ]);
+            // Return success response
+            return response()->json([
+                'success' => true,
+                'message' => 'Raw Material updated successfully.',
+                'data' => $rmForRecipe
+            ]);
+        } catch (\Exception $e) {
+            // Handle the error gracefully
+            \Log::error('Error storing raw material: ' . $e->getMessage());
 
-        $rmRecipe = DB::table('rm_for_recipe')->get();
-
-        return redirect()->back()->with([
-            'success' => 'Data saved successfully!',
-            'rmRecipe' => $rmRecipe,
-        ]);
-       
+            return response()->json([
+                'success' => false,
+                'message' => 'There was an issue updating the raw material.',
+                'error' => $e->getMessage()
+            ], 500); // Internal Server Error
+        }
     }
+
+
+
 
     public function saveRawMaterials(Request $request)
     {

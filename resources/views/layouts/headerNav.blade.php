@@ -9,6 +9,8 @@
     <meta content="" name="description">
     <meta content="" name="keywords">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
 
     <!-- Favicons -->
     <link href="{{ asset('/assets/img/favicon.png') }}" rel="icon">
@@ -216,7 +218,7 @@
                     class="nav-content collapse {{ Request::is('rawmaterial') || Request::is('category') || Request::is('addrawmaterial') || Request::is('editrawmaterial')  ? 'show' : '' }}"
                     data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="/rawmaterial"  class="{{ Request::is('rawmaterial') || Request::is('addrawmaterial') || Request::is('editrawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                        <a href="/rawmaterial" class="{{ Request::is('rawmaterial') || Request::is('addrawmaterial') || Request::is('editrawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Raw Materials</span>
                         </a>
                     </li>
