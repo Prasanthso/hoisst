@@ -46,4 +46,17 @@ class CategoryItemController extends Controller
 
         return redirect()->back()->with('success', 'Category item created successfully.');
     }
+
+    public function show()
+    {
+    $categories = DB::table('categories')->get(); // Fetch all category data
+    $categoriesitems = DB::table('categoryitems')->paginate(10);
+    return view('categories', compact('categories', 'categoriesitems')); // Match view name
+    }
+
+    // public function getCategoriesItems($categoryId)
+    // {
+    //     $categoriesitems = DB::table('categoryitems')->where('categoryId',$categoryId)->get(); // Fetch all category data
+    //     return view('categories', compact('categoriesitems'));
+    // }
 }

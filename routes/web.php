@@ -45,6 +45,8 @@ Route::get('/dashboard', function () {
 
 Route::get('/category', [CategoryItemController::class, 'create'])->name('category.create');
 Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('categoryitem.store');
+Route::get('/showcategoryitem', [CategoryItemController::class, 'show'])->name('categoryitem.show');
+
 
 Route::get('/rawmaterial', [RawMaterialController::class, 'index'])->name('rawMaterials.index');
 Route::get('/addrawmaterial', [RawMaterialController::class, 'create'])->name('rawmaterial.create');
