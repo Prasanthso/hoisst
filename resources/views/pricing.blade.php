@@ -23,9 +23,9 @@
             <div class="alert alert-success">{{ session('success') }}</div>
             @endif
             <div class="mb-4">
-                <label for="recipeSelect" class="form-label">Select Recipe</label>
+                <label for="productSelect" class="form-label">Select Product</label>
                 <div class="col-6">
-                    <select id="recipeSelect" class="form-select" aria-labelledby="recipeSelectLabel">
+                    <select id="productSelect" class="form-select" aria-labelledby="productSelectLabel">
                         <option selected disabled>Choose...</option>
                         @foreach($products as $productItem)
                         <option value="{{ $productItem->id }}">{{ $productItem->name }}</option>
@@ -94,15 +94,15 @@
                     <input type="text" class="form-control" id="rmAmount" name="rmAmount">
                 </div>
                 <div class="d-flex flex-column" style="flex: 2;">
-                    {{-- <a href="#" class='text-decoration-none rm-ps-add-btn text-white py-4 px-4'> --}}
-                    <button type="button" class="btn btn-primary rmaddbtn" id="rmaddbtn"><i class="fas fa-plus"></i> Add</button>
-                    {{-- </a> --}}
+                    <button type="button" class="btn btn-primary rmaddbtn" id="rmaddbtn">
+                        <i class="fas fa-plus"></i> Add
+                    </button>
                 </div>
             </div>
             {{-- <div class="container-fluid mt-4"> --}}
             <div class="row mb-4">
                 <div class="table-responsive">
-                    <table class="table table-bordered text-center" style="background-color: #eaf8ff; width:85%;">
+                    <table class="table table-bordered text-center" style="background-color: #eaf8ff; width:90%;">
                         <thead>
                             <tr>
                                 <th>Raw Material</th>
@@ -115,7 +115,7 @@
                         </thead>
                         <tbody id="rawMaterialTable"></tbody>
                     </table>
-                    <div class="text-end" style="background-color: #eaf8ff; width:85%;">
+                    <div class="text-end" style="background-color: #eaf8ff; width:90%;">
                         <strong>RM Cost (A) : </strong> <span id="totalRmCost">0.00</span>
                     </div>
                 </div>
@@ -175,7 +175,7 @@
             {{-- <div class="container-fluid mt-4"> --}}
             <div class="row mb-4">
                 <div class="col-12 col-md-12 mx-auto table-responsive"> <!-- Use col-md-11 for slightly left alignment -->
-                    <table class="table table-bordered text-center" style="background-color: #F1F1F1; width:85%;">
+                    <table class="table table-bordered text-center" style="background-color: #F1F1F1; width:90%;">
                         <thead class="no border">
                             <tr>
                                 <th>Packing Material</th>
@@ -189,7 +189,7 @@
                         <tbody id="packingMaterialTable">
                         </tbody>
                     </table>
-                    <div class="text-end" style="background-color:#F1F1F1; width:85%;">
+                    <div class="text-end" style="background-color:#F1F1F1; width:90%;">
                         <strong>PM Cost (B) : </strong> <span id="totalPmCost">0.00</span>
                     </div>
                     <!-- <div class="text-end col-10" style="background-color:#F1F1F1; width:84%; ">
@@ -258,7 +258,7 @@
             {{-- <div class="container-fluid mt-4"> --}}
             <div class="row mb-4">
                 <div class="col-12 col-md-12 mx-auto table-responsive"> <!-- Use col-md-11 for slightly left alignment -->
-                    <table class="table table-bordered text-center" style=" background-color: #D7E1E4; width:85%;">
+                    <table class="table table-bordered text-center" style=" background-color: #D7E1E4; width:90%;">
                         <thead class="no border">
                             <tr>
                                 <th>Overheads</th>
@@ -273,7 +273,7 @@
                         </tbody>
 
                     </table>
-                    <div class="text-end" style="background-color: #D7E1E4; width:85%;">
+                    <div class="text-end" style="background-color: #D7E1E4; width:90%;">
                         <strong>OH Cost (C) : </strong> <span id="totalohCost">0.00</span>
                     </div>
                 </div>
@@ -380,6 +380,15 @@
                 return;
             }
 
+            const rows = Array.from(tableBody.querySelectorAll('tr'));
+            const isAlreadyAdded = rows.some(row => row.cells[0].textContent === rawMaterialName);
+
+            if (isAlreadyAdded) {
+                alert('This raw material has already been added to the table.');
+                clearFields();
+                return;
+            }
+
             // Append new row
             const row = `
                 <tr>
@@ -389,6 +398,9 @@
                     <td>${uom}</td>
                     <td>${price.toFixed(2)}</td>
                     <td>${amount.toFixed(2)}</td>
+                    <td>
+                    <span class="delete-icon" style="cursor: pointer; color: red;" title="Remove Row">&#x1F5D1; <!-- Unicode for delete/trash icon --></span>
+                    </td>
                 </tr>`;
             tableBody.insertAdjacentHTML('beforeend', row);
 
@@ -457,16 +469,27 @@
                 return;
             }
 
-            // Append new row
+            const rows = Array.from(packingMaterialTable.querySelectorAll('tr'));
+            const isAlreadyAdded = rows.some(row => row.cells[0].textContent === packingMaterialName);
+
+            if (isAlreadyAdded) {
+                alert('This packing material has already been added to the table.');
+                clearPmFields();
+                return;
+            }
+
             const row = `
-        <tr>
+            <tr>
             <td>${packingMaterialName}</td>
             <td>${quantity}</td>
             <td>${code}</td>
             <td>${uom}</td>
             <td>${price.toFixed(2)}</td>
             <td>${amount.toFixed(2)}</td>
-        </tr>`;
+            <td>
+                <span class="delete-icon" style="cursor: pointer; color: red;" title="Remove Row">&#x1F5D1; <!-- Unicode for delete/trash icon --></span>
+            </td>
+    </tr>`;
             packingMaterialTable.insertAdjacentHTML('beforeend', row);
 
             // Update total PM cost
@@ -535,6 +558,15 @@
                 return;
             }
 
+            const rows = Array.from(overheadsTable.querySelectorAll('tr'));
+            const isAlreadyAdded = rows.some(row => row.cells[0].textContent === overheadsName);
+
+            if (isAlreadyAdded) {
+                alert('This overheads has already been added to the table.');
+                clearOhFields();
+                return;
+            }
+
             // Append new row
             const row = `
         <tr>
@@ -544,6 +576,9 @@
             <td>${uom}</td>
             <td>${price.toFixed(2)}</td>
             <td>${amount.toFixed(2)}</td>
+            <td>
+                <span class="delete-icon" style="cursor: pointer; color: red;" title="Remove Row">&#x1F5D1; <!-- Unicode for delete/trash icon --></span>
+            </td>
         </tr>`;
             overheadsTable.insertAdjacentHTML('beforeend', row);
 
