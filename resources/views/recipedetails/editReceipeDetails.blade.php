@@ -4,7 +4,7 @@
 <main id="main" class="main">
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
-        <h1>Add Details & Description</h1>
+        <h1>Edit Details & Description</h1>
     </div><!-- End Page Title -->
     <section class="section">
         <div class="row">

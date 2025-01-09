@@ -45,8 +45,9 @@ Route::get('/dashboard', function () {
 
 Route::get('/category', [CategoryItemController::class, 'create'])->name('category.create');
 Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('categoryitem.store');
-Route::get('/showcategoryitem', [CategoryItemController::class, 'show'])->name('categoryitem.show');
-
+Route::get('/showcategoryitem', [CategoryItemController::class, 'index'])->name('categoryitem.index');
+Route::get('/editcategoryitem/{id}', [CategoryItemController::class, 'edit'])->name('categoryitem.edit');
+Route::put('/editcategoryitem/{id}', [CategoryItemController::class, 'update'])->name('categoryitem.update');
 
 Route::get('/rawmaterial', [RawMaterialController::class, 'index'])->name('rawMaterials.index');
 Route::get('/addrawmaterial', [RawMaterialController::class, 'create'])->name('rawmaterial.create');

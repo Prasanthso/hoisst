@@ -163,15 +163,6 @@ class RecipeController extends Controller
         return redirect()->route('receipedetails.index')->with('success', 'Recipe updated successfully.');
     }
 
-    // public function getRecipedetailsHistory($id)
-    // {
-    //     $recipeHistory = DB::table('recipedetails_histories')
-    //     ->where('recipe_id', $id)
-    //     ->orderBy('updated_at', 'desc') // Replace 'id' with the column you want to sort by
-    //     ->get();
-    //     return response()->json(['recipeDetails' => $recipeHistory]);
-    // }
-
     public function getRecipedetailsHistory($productId)
     {
         // Get the recipe ID from the receipedetails table using product_id
