@@ -11,6 +11,7 @@ use App\Http\Controllers\PackingMaterialController;
 use App\Http\Controllers\OverheadController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RecipePricingController;
+use App\Http\Controllers\RmForRecipeController;
 
 
 
@@ -108,3 +109,11 @@ Route::get('/addreceipedetails', [RecipeController::class, 'create'])->name('add
 Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('savereceipedetails.store');
 // Route::get('/recipe/{id}', [RecipeController::class, 'show'])->name('recipe.show');
 Route::get('/recipes/{id}', [RecipeController::class, 'fetchRecipeDetails'])->name('recipe.fetchDetails');
+
+// Route::post('/rm-for-recipe', [RmForRecipeController::class, 'rmstore'])->name('rm.for.recipe');
+// Route::post('/rm-for-recipe', [RmForRecipeController::class, 'store']);
+
+
+Route::post('/rm-for-recipe', [RmForRecipeController::class, 'store'])->name('rm.store');
+// In routes/web.php or routes/api.php
+Route::post('/save-raw-materials', [RmForRecipeController::class, 'saveRawMaterials']);
