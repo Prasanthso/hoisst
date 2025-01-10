@@ -180,7 +180,7 @@
                 data.categoriesitems.forEach((item, index) => {
                     tableBody.innerHTML += `
                         <tr>
-                            <td><input type="checkbox" class="form-check-input category-checkbox" value="${item.id}"></td>
+                            <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${index + 1}.</td>
                             <td><a href="/categoryitem/edit/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
                             <td>${item.description}</td>
@@ -205,6 +205,8 @@
             }
         });
 
+    });
+
         /*editdelete icons */
            // Function to restore Edit/Delete buttons
            const showEditDeleteButtons = () => {
@@ -220,7 +222,7 @@
         `;
 
             // Reassign the edit button functionality
-            document.querySelector(".edit-table-btn").addEventListener("click", enableEditing);
+            // document.querySelector(".edit-table-btn").addEventListener("click", enableEditing);
         };
 
           // Event listener for Select All checkbox
@@ -230,6 +232,7 @@
             // Toggle all row checkboxes
             getRowCheckboxes().forEach((checkbox) => {
                 checkbox.checked = isChecked;
+                updateSelectAllState();
             });
             // Automatically enable edit mode if at least one row is selected
             // if (isChecked && isEditing) {
@@ -238,7 +241,7 @@
             //     exitEditingMode();
             // }
         });
-    });
+
 
       // Event listener for individual row checkboxes
       const updateSelectAllState = () => {
