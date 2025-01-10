@@ -50,9 +50,9 @@
                 <div class="row">
                     <!-- Action Buttons -->
                     <div class="d-flex justify-content-end mb-2 action-buttons">
-                        <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                       <!-- <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-edit" style="color: black;"></i>
-                        </button>
+                        </button>-->
                         <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-trash" style="color: red;"></i>
                         </button>
@@ -92,7 +92,7 @@
                             <!-- Content like "Showing 1 to 10 of 50 entries" -->
                             Showing {{ $categoriesitems->firstItem() }} to {{ $categoriesitems->lastItem() }} of {{ $categoriesitems->total() }} entries
                         </div>
-                        <div>
+                        <div class="pagination-container">
                             <!-- Pagination Links -->
                             {{ $categoriesitems->links('pagination::bootstrap-5') }}
                             {{-- {{ $rawMaterials->appends(['category_ids' => implode(',', request()->input('category_ids', []))])->links('pagination::bootstrap-5') }} --}}
@@ -138,6 +138,12 @@
     document.addEventListener("DOMContentLoaded", function() {
     const tableBody = document.getElementById("catagoriesTable");
     const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+        const deleteTableBtn = document.querySelector(".delete-table-btn");
+        const selectAllCheckbox = document.getElementById('select-all');
+        const rows = document.querySelectorAll('#catagoriesTable tr');
+
+        const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
+        let isEditing = false; // Track if edit mode is active
 
     // Listen for changes to any category checkbox
     categoryCheckboxes.forEach(checkbox => {
@@ -146,6 +152,8 @@
                 document.querySelectorAll('.category-checkbox:checked')
             ).map(cb => cb.value);
 
+        if(selectedCategories.length > 0)
+        {
             const queryParams = new URLSearchParams({
                 category_ids: selectedCategories.join(','),
             });
@@ -167,9 +175,9 @@
             .then(data => {
                 // Clear existing table content
                 tableBody.innerHTML = '';
-
+                console.log('Fetched Data:', data);
                 // Populate the table with new data
-                data.categoriesitems.data.forEach((item, index) => {
+                data.categoriesitems.forEach((item, index) => {
                     tableBody.innerHTML += `
                         <tr>
                             <td><input type="checkbox" class="form-check-input category-checkbox" value="${item.id}"></td>
@@ -181,25 +189,90 @@
                     `;
                 });
 
-                // Re-attach event listeners for dynamically added checkboxes
-                document.querySelectorAll('.category-checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', updateSelectedCategories);
-                });
+                // // Re-attach event listeners for dynamically added checkboxes
+                // document.querySelectorAll('.category-checkbox').forEach(checkbox => {
+                //     checkbox.addEventListener('change', updateSelectedCategories);
+                // });
             })
             .catch(error => {
                 console.error('Error:', error);
                 alert('An error occurred while fetching category items.');
             });
+        }
+         else
+            {
+                location.reload();
+            }
+        });
+
+        /*editdelete icons */
+           // Function to restore Edit/Delete buttons
+           const showEditDeleteButtons = () => {
+            isEditing = false;
+            const actionButtonsContainer = document.querySelector(".action-buttons");
+            actionButtonsContainer.innerHTML = `
+            <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                <i class="fas fa-edit" style="color: black;"></i>
+            </button>
+            <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                <i class="fas fa-trash" style="color: red;"></i>
+            </button>
+        `;
+
+            // Reassign the edit button functionality
+            document.querySelector(".edit-table-btn").addEventListener("click", enableEditing);
+        };
+
+          // Event listener for Select All checkbox
+          selectAllCheckbox.addEventListener('change', function() {
+            const isChecked = this.checked;
+
+            // Toggle all row checkboxes
+            getRowCheckboxes().forEach((checkbox) => {
+                checkbox.checked = isChecked;
+            });
+            // Automatically enable edit mode if at least one row is selected
+            // if (isChecked && isEditing) {
+            //     enableEditing();
+            // } else {
+            //     exitEditingMode();
+            // }
         });
     });
 
-    // Optionally, a function to update selected category values in the URL
-    const updateSelectedCategories = () => {
-        const selectedCategories = Array.from(
-            document.querySelectorAll('.category-checkbox:checked')
-        ).map(cb => cb.value);
-        console.log("Selected categories: ", selectedCategories);
-    };
+      // Event listener for individual row checkboxes
+      const updateSelectAllState = () => {
+            const allCheckboxes = getRowCheckboxes();
+            const allChecked = Array.from(allCheckboxes).every((checkbox) => checkbox.checked);
+
+            // Update Select All checkbox state
+            selectAllCheckbox.checked = allChecked;
+
+            // Automatically enable or disable edit mode based on selections
+            const anyChecked = Array.from(allCheckboxes).some((checkbox) => checkbox.checked);
+
+            // if (anyChecked && isEditing) {
+            //     // editTableBtn.addEventListener("click", enableEditing);
+            //     enableEditing();
+            // } else {
+            //     exitEditingMode();
+            //     // cancelEditing();
+            // }
+        };
+
+        getRowCheckboxes().forEach((checkbox) => {
+            checkbox.addEventListener('change', () => {
+                updateSelectAllState();
+            });
+        });
+
+    // // Optionally, a function to update selected category values in the URL
+    // const updateSelectedCategories = () => {
+    //     const selectedCategories = Array.from(
+    //         document.querySelectorAll('.category-checkbox:checked')
+    //     ).map(cb => cb.value);
+    //     // console.log("Selected categories: ", selectedCategories);
+    // };
 
     setTimeout(function () {
         const successMessage = document.getElementById('success-message');

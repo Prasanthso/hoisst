@@ -21,22 +21,22 @@ class CategoryItemController extends Controller
     public function index(Request $request)
     {
         $categories = DB::table('categories')->get();
-
         $categoryIds = $request->input('category_ids');
+
         if (!empty($categoryIds)) {
             // Convert comma-separated string to an array
             $categoryIds = explode(',', $categoryIds);
-        }
 
-        if (!empty($categoryIds)) {
+            // Fetch items matching the category IDs
             $categoriesitems = CategoryItems::whereIn('categoryId', $categoryIds)->get();
         } else {
-            $categoriesitems = DB::table('categoryitems')->paginate(10);
+            // Fetch all items when no categories are selected
+            $categoriesitems = CategoryItems::paginate(10);
         }
 
         if ($request->ajax()) {
             return response()->json([
-                'categoriesitems' => $categoriesitems->toArray(),
+                'categoriesitems' => $categoriesitems,
             ]);
         }
 
