@@ -5,7 +5,7 @@
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
         <h1>Categories</h1>
-        <a href="{{ 'category' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
+        <a href="{{ 'addcategory' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
             <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
         </a>
     </div><!-- End Page Title -->

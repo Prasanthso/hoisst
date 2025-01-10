@@ -43,7 +43,7 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
-Route::get('/category', [CategoryItemController::class, 'create'])->name('category.create');
+Route::get('/addcategory', [CategoryItemController::class, 'create'])->name('category.create');
 Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('categoryitem.store');
 Route::get('/showcategoryitem', [CategoryItemController::class, 'index'])->name('categoryitem.index');
 Route::get('/editcategoryitem/{id}', [CategoryItemController::class, 'edit'])->name('categoryitem.edit');
