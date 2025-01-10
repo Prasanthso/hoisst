@@ -249,10 +249,10 @@
                     <img src="/assets/img/receipe_pic.svg" alt="receipe Icon" style="width: 1em; height: auto; margin-right:10px;">
                     <span>Recipe</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
-                <ul id="forms-nav" class="nav-content collapse {{ Request::is('receipedetails') ||  Request::is('addreceipedetails') || Request::is('pricing') ? 'show' :'' }}"
+                <ul id="forms-nav" class="nav-content collapse {{ Request::is('receipedetails') ||  Request::is('addreceipedetails') || Request::routeIs('editrecipedetails.edit') || Request::is('pricing') ? 'show' :'' }}"
                 data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="/receipedetails" class="{{ Request::is('receipedetails') || Request::is('addreceipedetails') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                        <a href="/receipedetails" class="{{ Request::is('receipedetails') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Details & Description</span>
                         </a>
                     </li>
