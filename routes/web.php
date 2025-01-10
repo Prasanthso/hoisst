@@ -10,6 +10,13 @@ use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\PackingMaterialController;
 use App\Http\Controllers\OverheadController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RecipePricingController;
+use App\Http\Controllers\RmForRecipeController;
+use App\Http\Controllers\PmForRecipeController;
+use App\Http\Controllers\OhForRecipeController;
+
+
+
 
 
 /*
@@ -93,17 +100,36 @@ Route::get('/products/price-details/{id}', [ProductController::class, 'getPdPric
 //     return view('receipeDetails_Description');
 // })->name('receipedd');
 
-Route::get('/pricing', function () {
-    return view('pricing');
-})->name('pricing');
+// Route::get('/pricing', function () {
+//     return view('pricing');
+// })->name('pricing');
 
 Route::get('/receipedetails', [RecipeController::class, 'index'])->name('receipedetails.index');
 Route::get('/addreceipedetails', [RecipeController::class, 'create'])->name('addreceipedetails.create');
 Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('savereceipedetails.store');
 Route::get('/recipes/{id}', [RecipeController::class, 'show'])->name('recipe.show');
 Route::get('/recipes/{id}', [RecipeController::class, 'fetchRecipeDetails'])->name('recipe.fetchDetails');
-// Route::get('/editreceipedetails/{id}', [RecipeController::class, 'edit'])->name('receipedetails.edit');
+
+
+Route::get('/pricing', [RecipePricingController::class, 'index'])->name('receipepricing.index');
+Route::get('/addreceipedetails', [RecipeController::class, 'create'])->name('addreceipedetails.create');
+Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('savereceipedetails.store');
+// Route::get('/recipe/{id}', [RecipeController::class, 'show'])->name('recipe.show');
+Route::get('/recipes/{id}', [RecipeController::class, 'fetchRecipeDetails'])->name('recipe.fetchDetails');
+
+// Route::post('/rm-for-recipe', [RmForRecipeController::class, 'rmstore'])->name('rm.for.recipe');
+// Route::post('/rm-for-recipe', [RmForRecipeController::class, 'store']);
+
+
+Route::post('/rm-for-recipe', [RmForRecipeController::class, 'store'])->name('rm.store');
+Route::delete('/rm-for-recipe/{id}', [RmForRecipeController::class, 'destroy'])->name('rm.delete');
+Route::post('/pm-for-recipe', [PmForRecipeController::class, 'store'])->name('pm.store');
+Route::delete('/pm-for-recipe/{id}', [PmForRecipeController::class, 'destroy'])->name('pm.delete');
+Route::post('/oh-for-recipe', [OhForRecipeController::class, 'store'])->name('oh.store');
+Route::delete('/oh-for-recipe/{id}', [OhForRecipeController::class, 'destroy'])->name('oh.delete');
+
 
 Route::get('/editrecipedetails/{id}', [RecipeController::class, 'edit'])->name('editrecipedetails.edit');
 Route::put('/editreceipedetails/{id}', [RecipeController::class, 'update'])->name('editrecipedetails.update');
 Route::get('/recipe-history/{id}', [RecipeController::class, 'getRecipedetailsHistory']);
+
