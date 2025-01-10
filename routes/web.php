@@ -43,8 +43,11 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
-Route::get('/category', [CategoryItemController::class, 'create'])->name('category.create');
+Route::get('/addcategory', [CategoryItemController::class, 'create'])->name('category.create');
 Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('categoryitem.store');
+Route::get('/showcategoryitem', [CategoryItemController::class, 'index'])->name('categoryitem.index');
+Route::get('/editcategoryitem/{id}', [CategoryItemController::class, 'edit'])->name('categoryitem.edit');
+Route::put('/editcategoryitem/{id}', [CategoryItemController::class, 'update'])->name('categoryitem.update');
 
 Route::get('/rawmaterial', [RawMaterialController::class, 'index'])->name('rawMaterials.index');
 Route::get('/addrawmaterial', [RawMaterialController::class, 'create'])->name('rawmaterial.create');
@@ -99,3 +102,8 @@ Route::get('/addreceipedetails', [RecipeController::class, 'create'])->name('add
 Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('savereceipedetails.store');
 Route::get('/recipes/{id}', [RecipeController::class, 'show'])->name('recipe.show');
 Route::get('/recipes/{id}', [RecipeController::class, 'fetchRecipeDetails'])->name('recipe.fetchDetails');
+// Route::get('/editreceipedetails/{id}', [RecipeController::class, 'edit'])->name('receipedetails.edit');
+
+Route::get('/editrecipedetails/{id}', [RecipeController::class, 'edit'])->name('editrecipedetails.edit');
+Route::put('/editreceipedetails/{id}', [RecipeController::class, 'update'])->name('editrecipedetails.update');
+Route::get('/recipe-history/{id}', [RecipeController::class, 'getRecipedetailsHistory']);

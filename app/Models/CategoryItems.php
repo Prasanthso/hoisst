@@ -19,7 +19,7 @@ class CategoryItems extends Model
         'description',
         'created_user'
     ];
-    
+
     public static function rmCategoryItem()
     {
         $rmCategoryItems = DB::table('categoryitems')->where('categoryId', 1)->get();
@@ -42,5 +42,10 @@ class CategoryItems extends Model
     {
         $pdCategoryItem = DB::table('categoryitems')->where('categoryId', 4)->get();
         return $pdCategoryItem;
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'categoryId', 'id');
     }
 }
