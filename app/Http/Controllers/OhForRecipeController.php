@@ -4,17 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\CategoryItems;
-use App\Models\RmForRecipe;
+use App\Models\OhForRecipe;
 use App\Models\UniqueCode;
 use Illuminate\Http\Request;
 
-class RmForRecipeController extends Controller
+class OhForRecipeController extends Controller
 {
-    public function rmstore(Request $request)
-    {
-        dd($request->all());  // To see the incoming data
-    }
-
     /**
      * Display a listing of the resource.
      */
@@ -23,7 +18,6 @@ class RmForRecipeController extends Controller
         //
     }
 
-    
     /**
      * Show the form for creating a new resource.
      */
@@ -37,10 +31,11 @@ class RmForRecipeController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         try {
             // Validate the request
             $request->validate([
-                'raw_material_id' => 'required|exists:raw_materials,id',
+                'overheads_id' => 'required|exists:overheads,id',
                 'product_id' => 'required|exists:product_master,id',
                 'quantity' => 'required|numeric',
                 'amount' => 'required|numeric',
@@ -48,8 +43,8 @@ class RmForRecipeController extends Controller
             ]);
 
             // Create the record
-            $rmForRecipe = RmForRecipe::create([
-                'raw_material_id' => $request->raw_material_id,
+            $ohForRecipe = OhForRecipe::create([
+                'overheads_id' => $request->overheads_id,
                 'product_id' => $request->product_id,
                 'quantity' => $request->quantity,
                 'code' => $request->code,
@@ -61,46 +56,20 @@ class RmForRecipeController extends Controller
             // Return success response
             return response()->json([
                 'success' => true,
-                'message' => 'Raw Material updated successfully.',
-                'data' => $rmForRecipe,
-                'rmInserted_id' => $rmForRecipe->id,
+                'message' => 'overheads updated successfully.',
+                'data' => $ohForRecipe,
+                'inserted_id' => $ohForRecipe->id,
             ]);
         } catch (\Exception $e) {
             // Handle the error gracefully
-            \Log::error('Error storing raw material: ' . $e->getMessage());
+            \Log::error('Error storing overheads: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,
-                'message' => 'There was an issue updating the raw material.',
+                'message' => 'There was an issue updating the overheads.',
                 'error' => $e->getMessage()
             ], 500); // Internal Server Error
         }
-    }
-
-
-
-
-    public function saveRawMaterials(Request $request)
-    {
-         dd($request->all());
-
-        $request->validate([
-            'raw_material_id' => 'required|exists:raw_materials,id',
-        ]);
-
-        // Store the data in the database
-        RmForRecipe::create([
-            'raw_material_id' => $request->raw_material_id,
-            'product_id' => 1,
-        ]);
-
-        $rmRecipe = DB::table('rm_for_recipe')->get();
-
-    return redirect()->back()->with([
-        'success' => 'Data saved successfully!',
-        'rmRecipe' => $rmRecipe,
-    ]);
-
     }
 
     /**
@@ -131,28 +100,29 @@ class RmForRecipeController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id)
-    {
-        try {
-            // Find the record by ID
-            $rmForRecipe = RmForRecipe::findOrFail($id);
+{
+    try {
+        // Find the record by ID
+        $ohForRecipe = OhForRecipe::findOrFail($id);
 
-            // Delete the record
-            $rmForRecipe->delete();
+        // Delete the record
+        $ohForRecipe->delete();
 
-            // Return success response
-            return response()->json([
-                'success' => true,
-                'message' => 'Record deleted successfully.',
-            ]);
-        } catch (\Exception $e) {
-            // Handle the error gracefully
-            \Log::error('Error deleting record: ' . $e->getMessage());
+        // Return success response
+        return response()->json([
+            'success' => true,
+            'message' => 'Record deleted successfully.',
+        ]);
+    } catch (\Exception $e) {
+        // Handle the error gracefully
+        \Log::error('Error deleting record: ' . $e->getMessage());
 
-            return response()->json([
-                'success' => false,
-                'message' => 'There was an issue deleting the record.',
-                'error' => $e->getMessage()
-            ], 500); // Internal Server Error
-        }
+        return response()->json([
+            'success' => false,
+            'message' => 'There was an issue deleting the record.',
+            'error' => $e->getMessage()
+        ], 500); // Internal Server Error
     }
+}
+
 }

@@ -12,6 +12,10 @@ use App\Http\Controllers\OverheadController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RecipePricingController;
 use App\Http\Controllers\RmForRecipeController;
+use App\Http\Controllers\PmForRecipeController;
+use App\Http\Controllers\OhForRecipeController;
+
+
 
 
 
@@ -115,5 +119,9 @@ Route::get('/recipes/{id}', [RecipeController::class, 'fetchRecipeDetails'])->na
 
 
 Route::post('/rm-for-recipe', [RmForRecipeController::class, 'store'])->name('rm.store');
-// In routes/web.php or routes/api.php
-Route::post('/save-raw-materials', [RmForRecipeController::class, 'saveRawMaterials']);
+Route::delete('/rm-for-recipe/{id}', [RmForRecipeController::class, 'destroy'])->name('rm.delete');
+Route::post('/pm-for-recipe', [PmForRecipeController::class, 'store'])->name('pm.store');
+Route::delete('/pm-for-recipe/{id}', [PmForRecipeController::class, 'destroy'])->name('pm.delete');
+Route::post('/oh-for-recipe', [OhForRecipeController::class, 'store'])->name('oh.store');
+Route::delete('/oh-for-recipe/{id}', [OhForRecipeController::class, 'destroy'])->name('oh.delete');
+
