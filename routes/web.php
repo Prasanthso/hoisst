@@ -50,8 +50,11 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
-Route::get('/category', [CategoryItemController::class, 'create'])->name('category.create');
+Route::get('/addcategory', [CategoryItemController::class, 'create'])->name('category.create');
 Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('categoryitem.store');
+Route::get('/showcategoryitem', [CategoryItemController::class, 'index'])->name('categoryitem.index');
+Route::get('/editcategoryitem/{id}', [CategoryItemController::class, 'edit'])->name('categoryitem.edit');
+Route::put('/editcategoryitem/{id}', [CategoryItemController::class, 'update'])->name('categoryitem.update');
 
 Route::get('/rawmaterial', [RawMaterialController::class, 'index'])->name('rawMaterials.index');
 Route::get('/addrawmaterial', [RawMaterialController::class, 'create'])->name('rawmaterial.create');
@@ -104,7 +107,7 @@ Route::get('/products/price-details/{id}', [ProductController::class, 'getPdPric
 Route::get('/receipedetails', [RecipeController::class, 'index'])->name('receipedetails.index');
 Route::get('/addreceipedetails', [RecipeController::class, 'create'])->name('addreceipedetails.create');
 Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('savereceipedetails.store');
-// Route::get('/recipe/{id}', [RecipeController::class, 'show'])->name('recipe.show');
+Route::get('/recipes/{id}', [RecipeController::class, 'show'])->name('recipe.show');
 Route::get('/recipes/{id}', [RecipeController::class, 'fetchRecipeDetails'])->name('recipe.fetchDetails');
 
 
@@ -124,4 +127,9 @@ Route::post('/pm-for-recipe', [PmForRecipeController::class, 'store'])->name('pm
 Route::delete('/pm-for-recipe/{id}', [PmForRecipeController::class, 'destroy'])->name('pm.delete');
 Route::post('/oh-for-recipe', [OhForRecipeController::class, 'store'])->name('oh.store');
 Route::delete('/oh-for-recipe/{id}', [OhForRecipeController::class, 'destroy'])->name('oh.delete');
+
+
+Route::get('/editrecipedetails/{id}', [RecipeController::class, 'edit'])->name('editrecipedetails.edit');
+Route::put('/editreceipedetails/{id}', [RecipeController::class, 'update'])->name('editrecipedetails.update');
+Route::get('/recipe-history/{id}', [RecipeController::class, 'getRecipedetailsHistory']);
 

@@ -209,17 +209,18 @@
             </li><!-- End Dashboard Nav -->
 
             <li class="nav-item">
-                <a class="nav-link {{ Request::is('rawmaterial') || Request::is('category') || Request::is('addrawmaterial') || Request::is('editrawmaterial') ? '' : 'collapsed' }}" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); font-size:17px;text-decoration: none;">
+                <a class="nav-link {{ Request::is('rawmaterial') || Request::is('showcategoryitem') || Request::is('products') || Request::is('overheads') || Request::is('packingmaterial') ? '' : 'collapsed' }}" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); font-size:17px;text-decoration: none;">
                     {{-- <i class="bi bi-menu-button-wide"></i> --}}
                     <img src="/assets/img/master_pic.svg" alt="master Icon" style="width: 0.8em; height: auto; margin-right: 10px;">
                     <span>Masters</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="components-nav"
-                    class="nav-content collapse {{ Request::is('rawmaterial') || Request::is('category') || Request::is('addrawmaterial') || Request::is('editrawmaterial')  ? 'show' : '' }}"
-                    data-bs-parent="#sidebar-nav">
+
+                 class="nav-content collapse {{ Request::is('rawmaterial') ||  Request::routeIs('rawMaterial.edit') || Request::is('showcategoryitem') || Request::is('addcategory') || Request::routeIs('categoryitem.edit') || Request::is('addrawmaterial') || Request::routeIs('packingMaterial.edit') || Request::is('packingmaterial') || Request::is('addpackingmaterial') || Request::is('overheads') ||  Request::is('addoverheads') ||  Request::routeIs('overheads.edit') || Request::is('products') || Request::routeIs('products.edit') || Request::is('addproduct')   ? 'show' : '' }}"
+                 data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="/rawmaterial" class="{{ Request::is('rawmaterial') || Request::is('addrawmaterial') || Request::is('editrawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
-                            <span>Raw Materials</span>
+                        <a href="/rawmaterial"  class="{{ Request::is('rawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                           <span>Raw Materials</span>
                         </a>
                     </li>
                     <li>
@@ -233,12 +234,12 @@
                         </a>
                     </li>
                     <li>
-                        <a href="/products" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                        <a href="/products" class="{{ Request::is('products') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Products</span>
                         </a>
                     </li>
                     <li>
-                        <a href="/category" class="{{ Request::is('category') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none">
+                        <a href="/showcategoryitem" class="{{ Request::is('showcategoryitem') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none">
                             <span>Category</span>
                         </a>
                     </li>
@@ -251,10 +252,10 @@
                     <img src="/assets/img/receipe_pic.svg" alt="receipe Icon" style="width: 1em; height: auto; margin-right:10px;">
                     <span>Recipe</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
-                <ul id="forms-nav" class="nav-content collapse {{ Request::is('receipedetails') ||  Request::is('addreceipedetails') || Request::is('pricing') ? 'show' :'' }}"
-                    data-bs-parent="#sidebar-nav">
+                <ul id="forms-nav" class="nav-content collapse {{ Request::is('receipedetails') ||  Request::is('addreceipedetails') || Request::routeIs('editrecipedetails.edit') || Request::is('pricing') ? 'show' :'' }}"
+                data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="/receipedetails" class="{{ Request::is('receipedetails') || Request::is('addreceipedetails') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                        <a href="/receipedetails" class="{{ Request::is('receipedetails') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Details & Description</span>
                         </a>
                     </li>

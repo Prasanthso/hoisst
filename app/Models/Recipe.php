@@ -17,4 +17,9 @@ class Recipe extends Model
         'instructions',
         'video_path'
     ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
 }

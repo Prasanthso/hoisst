@@ -27,6 +27,7 @@ return new class extends Migration
             $table->integer('category_id9')->nullable();
             $table->integer('category_id10')->nullable();
             $table->string('price');
+            $table->string('update_frequency');
             $table->string('price_update_frequency');
             $table->string('price_threshold');
             $table->string('update_frequency');
