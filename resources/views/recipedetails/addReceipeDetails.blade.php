@@ -6,7 +6,7 @@
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
         <h1>Add Details & Description</h1>
     </div><!-- End Page Title -->
-    
+
     <section class="section">
         <div class="row">
             <div class="col-lg-12">
@@ -18,7 +18,7 @@
                                 @csrf
                                 <div class="col-12">
                                     <label for="recipeSelect" class="form-label">Select Recipe</label>
-                                    <div class="col-6">
+                                    <div class="col-12">
                                         <select id="recipeSelect" class="form-select" name="productId" aria-labelledby="recipeSelectLabel">
                                         <option selected disabled>Choose...</option>
                                         @foreach($recipes as $recipesitems)
@@ -77,10 +77,20 @@
 
 <!-- Template Main JS File -->
 <script src="{{ asset('js/main.js') }}"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const recipeSelect = document.getElementById('recipeSelect');
         const selectedRecipesName = document.getElementById('selectedrecipesname');
+
+        $('#recipeSelect').select2({
+            theme: 'bootstrap-5',
+            placeholder: "Type or select a recipe...",
+            allowClear: true
+        });
 
         if (recipeSelect && selectedRecipesName) {
             recipeSelect.addEventListener('change', () => {
