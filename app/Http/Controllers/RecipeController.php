@@ -17,6 +17,12 @@ class RecipeController extends Controller
         return view('recipedetails.receipeDetails_Description', compact('recipes'));
     }
 
+    public function recipeDetails()
+    {
+        $recipes = DB::table('product_master')->where('recipe_created_status', 'yes')->get();
+        return view('recipedetails.receipeDetails_Description', compact('recipes'));
+    }
+
     public function show($id)
     {
     // Fetch the recipe by ID

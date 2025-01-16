@@ -41,7 +41,13 @@
                 </div>
                 <div class="col-md-2 col-sm-10">
                     <label for="recipeUoM" class="form-label">UoM</label>
-                    <input type="text" class="form-control rounded" id="recipeUoM" name="recipeUoM">
+                    <select id="recipeUoM" class="form-select" name="recipeUoM">
+                        <option selected>UoM</option>
+                        <option>Ltr</option>
+                        <option>Kgs</option>
+                        <option>Nos</option>
+                    </select>
+                    
                 </div>
             </div>
 
