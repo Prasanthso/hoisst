@@ -19,8 +19,8 @@ class RecipeMaster extends Model
         'singleCost',
     ];
 
-    public function product()
-    {
-        return $this->belongsTo(ProductMaster::class, 'product_id');
-    }
+    // public function product()
+    // {
+    //     return $this->belongsTo(ProductMaster::class, 'product_id');
+    // }
 }

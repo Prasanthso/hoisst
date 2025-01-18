@@ -4,7 +4,7 @@
 <main id="main" class="main">
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
-        <h1>Pricing</h1>
+        <h1>Add Pricing</h1>
         <div class="row">
             <!-- Action Buttons -->
             <div class="d-flex justify-content-end mb-2 action-buttons">
@@ -14,6 +14,7 @@
                 <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                     <i class="fas fa-trash" style="color: red;"></i>
                 </button>
+               <!-- <a href="{{ 'showpricing' }}"> <button class="btn btn-primary">View</button></a>-->
             </div>
         </div>
     </div><!-- End Page Title -->
@@ -43,9 +44,9 @@
                     <label for="recipeUoM" class="form-label">UoM</label>
                     <select id="recipeUoM" class="form-select" name="recipeUoM">
                         <option selected>UoM</option>
-                        <option>Ltr</option>
-                        <option>Kgs</option>
-                        <option>Nos</option>
+                        <option value="Ltr">Ltr</option>
+                        <option value="Kgs">Kgs</option>
+                        <option value="Nos">Nos</option>
                     </select>
 
                 </div>
@@ -346,6 +347,11 @@
         const totalOhCostSpan = document.getElementById('totalohCost');
         let isaddRp = false;
 
+        const rpoutputInput = document.getElementById('recipeOutput');
+        const rpuomInput = document.getElementById('recipeUoM');
+        const rpoutput = rpoutputInput.value.trim(); // Convert to number
+        const rpuom = rpuomInput.value;
+
         productSelect.addEventListener('change', function() {
             product_id = this.value; // Update product_id with the selected value
             console.log('Selected product ID:', product_id); // Debug log to check the selected value
@@ -390,11 +396,11 @@
             const amount = parseFloat(amountInput.value) || 0;
 
             const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
             if (!token) {
                 console.error('CSRF token not found.');
                 return;
             }
-
 
             if (!rawMaterialName || !quantity || !code || !uom || !price || !amount) {
                 alert('Please fill all fields before adding.');
@@ -409,8 +415,7 @@
                 clearFields();
                 return;
             }
-
-            console.log(product_id);
+            // console.log(product_id);
 
             fetch('/rm-for-recipe', {
                     method: 'POST',
@@ -455,11 +460,11 @@
 
                 })
                 .catch(error => console.error('Error:', error.message));
-                if(isaddRp!=true)
-                {
-                    recipePricing();
-                    isaddRp = true;
-                }
+
+                // if(isaddRp == false)
+                // {
+                //     recipePricing();
+                // }
         });
 
         // Delete row functionality
@@ -865,18 +870,6 @@
             }
         });
 
-        totalCostInput.addEventListener('input', function(e) {
-            console.log('Total cost changed to:', totalCostInput.value);
-            recipePricing();
-        });
-        //  {
-        //     if(isaddRp!=true)
-        //         {
-        //             recipePricing();
-        //             isaddRp = true;
-        //         }
-        // });
-
         // Helper functions
 
         function updateOhAmount() {
@@ -909,66 +902,66 @@
             totalCostInput.value = grandTotal.toFixed(2); // Display in Total Cost (A+B+C)
         }
 
-        function recipePricing()
-        {
-            const outputInput = document.getElementById('recipeOutput');
-            const uomInput = document.getElementById('recipeUoM');
-            const totalCostInput = document.getElementById('totalcost');
+        function recipePricing() {
+            const rpoutputInput = document.getElementById('recipeOutput');
+            const rpuomInput = document.getElementById('recipeUoM');
 
-            const rpoutput = parseFloat(outputInput.value); // Convert to number
-            const rpuom = uomInput.value;
-            const rptotalCost = parseFloat(totalCostInput.value); // Convert to number
-            let rpsingleCost = 0;
-            // Check if the values are valid numbers and not zero
-            if (isNaN(rpoutput) || isNaN(rptotalCost) || rpoutput === 0) {
+            const rpoutput = rpoutputInput.value.trim(); // Convert to number
+            const rpuom = rpuomInput.value;
+            // Validate inputs
+            if (rpoutput <= 0 || rpoutput <= 0) {
+                console.log(rpoutput, rpuom);
                 alert('Invalid input values. Please check your data.');
-            } else {
-                rpsingleCost = rptotalCost / rpoutput;
-                console.log('Single Cost:', rpsingleCost);
+                return;
             }
-            // CSRF token
-            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                if (!token) {
-                    console.error('CSRF token not found.');
-                    return;
-                }
+
+            // Retrieve CSRF token
+            const tokenElement = document.querySelector('meta[name="csrf-token"]');
+            if (!tokenElement) {
+                console.error('CSRF token not found.');
+                alert('A CSRF token is required for this action.');
+                return;
+            }
+            const csrfToken = tokenElement.getAttribute('content');
+
+            // Product ID
+            // const productIdInput = document.getElementById('productId'); // Adjust as needed
+            // const product_id = productIdInput ? parseInt(productIdInput.value) : null;
+            if (!product_id) {
+                alert('Product ID is missing or invalid.');
+                return;
+            }
+
             // Send the data to the server using fetch API
             fetch('/recipepricing', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': token,  // Include CSRF token for security
+                    'X-CSRF-TOKEN': csrfToken, // Include CSRF token for security
                 },
                 body: JSON.stringify({
                     product_id: product_id,
                     rpoutput: rpoutput,
                     rpuom: rpuom,
-                    rptotalCost: rptotalCost,
-                    singleCost: rpsingleCost,
                 }),
             })
             .then(response => {
+                console.log('Rp Response:', response);
                 if (!response.ok) {
-                    throw new Error('Server response not OK');
+                    throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-                return response.json();
             })
             .then(data => {
                 console.log('Success:', data);
                 alert('Recipe-pricing added successfully');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('There was an error adding the recipe-pricing');
-            });
 
-            // Clear the input fields after adding data
-            // productIdInput.value = '';
-            outputInput.value = '';
-            uomInput.value = '';
-            totalCostInput.value = '';
-            singleCostInput.value = '';
+                // Clear input fields
+                // rpoutputInput.value = '';
+                // rpuomInput.value = '';
+            })
+            .catch(error => console.error('Error:', error.message));
         }
+
 
     });
 </script>
