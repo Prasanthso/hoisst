@@ -23,8 +23,17 @@
                         <h5 class="card-title">Categories</h5>
                         <div class="row mb-3">
                             <div class="col-sm-10">
+                                <div>
+                                    <input
+                                    type="text"
+                                    id="categorySearch"
+                                    class="form-control mb-3"
+                                    placeholder="Search categories..."
+                                    onkeyup="filterCategories()"
+                                />
+                                </div>
                                 @foreach($categoryitems as $category)
-                                <div class="form-check">
+                                <div class="form-check category-item">
                                     <input
                                         class="form-check-input category-checkbox"
                                         type="checkbox"
@@ -484,4 +493,31 @@
         }
 
     });
+
+    function filterCategories() {
+        // Get the search input value
+        const searchValue = document.getElementById('categorySearch').value.toLowerCase();
+        const keywords = searchValue.split(',').map(keyword => keyword.trim()).filter(keyword => keyword);
+        // Get all category items
+        const categoryItems = document.querySelectorAll('.category-item');
+
+        // If the search box is empty, show all categories
+        if (keywords.length === 0) {
+                    categoryItems.forEach((item) => {
+                        item.style.display = ''; // Show all items
+                    });
+                    return;
+            }
+        // Loop through category items and filter them
+        categoryItems.forEach((item) => {
+            const label = item.querySelector('.form-check-label').textContent.toLowerCase();
+
+            // Check if any of the keywords match the label
+            const isVisible = keywords.some(keyword => label.includes(keyword));
+
+            // Show or hide the category item based on the match
+            item.style.display = isVisible ? '' : 'none';
+        });
+    }
+
 </script>

@@ -26,7 +26,7 @@
             @endif
             </div>
             <div class="mb-4">
-                <label for="recipeSelect" class="form-label">Select Recipe</label>
+                <label for="recipeSelect" id="recipeSelectLabel" class="form-label">Select Recipe</label>
                 <div class="col-6">
                     <select id="recipeSelect" class="form-select" aria-labelledby="recipeSelectLabel">
                     <option selected disabled>Choose...</option>
@@ -142,8 +142,11 @@
 <script src="{{ asset('assets/vendor/tinymce/tinymce.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/php-email-form/validate.js') }}"></script>
 
-<!-- Template Main JS File -->
-<script src="{{ asset('js/main.js') }}"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const recipeSelect = document.getElementById('recipeSelect');
@@ -161,73 +164,21 @@
         const videoIframe = document.querySelector('iframe');
         // console.log(recipeSelect); // Check if null
 
-        if (recipeSelect) {
-            recipeSelect.addEventListener('change', async () => {
-                const productId = recipeSelect.value;
+        $('#recipeSelect').select2({
+            theme: 'bootstrap-5',
+            placeholder: "Type or select a recipe...",
+            allowClear: true
+        });
+        $('#recipeSelect').on('change', function () {
+        const selectedValue = $(this).val();
+        // console.log("Selected value:", selectedValue); // Debugging
 
-                if (productId) {
-                    try {
-
-                        editRecipeBtn.setAttribute('data-id', productId);
-
-                        const response = await fetch(`/recipes/${productId}`);
-                        if (!response.ok) throw new Error('Recipe not found');
-                        const recipe = await response.json();
-
-                        const selectedText = recipeSelect.options[recipeSelect.selectedIndex].text.trim();
-                        if(selectedText == null)
-                        {
-                            selectedRecipesName.innerText = 'No recipe - DETAILS';
-                            description.innerText = recipe.description || 'No description available.';
-                        }
-                        else{
-                        // Update UI with fetched data
-                        selectedRecipesName.innerText = selectedText + ' - DETAILS';
-
-                        lblrecipedesc.innerText = "Recipe Decsription";
-                        description.innerText = recipe.description;
-                        lblrecipeins.innerText = "Recipe Making Instruction";
-                        lblrecipevideo.innerText = "Recipe Making Video";
-                        lblvideolinks.innerText = "Video Details";
-                        // Update Instructions
-                        instructionsList.innerHTML = '';
-                        if (recipe.instructions) {
-                            const instructions = recipe.instructions.split('.'); // Assuming instructions are period-separated
-                            instructions.forEach(instruction => {
-                                if (instruction.trim()) {
-                                    const li = document.createElement('li');
-                                    li.innerText = instruction.trim();
-                                    instructionsList.appendChild(li);
-                                }
-                            });
-                        }
-
-                        await recipehistory(productId);
-
-                        }
-                        // Update Video
-                        if (recipe.video_path) {
-                            videoIframe.src = recipe.video_path;
-                        } else {
-                            videoIframe.src = '';
-                            videoIframe.innerText = 'No video available.';
-                        }
-
-                    } catch (error) {
-                        console.error(error);
-                        selectedRecipesName.innerText = 'No recipe details.';
-                        description.innerText = '';
-                        instructionsList.innerHTML = '';
-                        videoIframe.src = '';
-                    }
-                }
-                else
-                {
-                    editRecipeBtn.setAttribute('data-id', '');
-                }
-
-            });
+        if (selectedValue) {
+            recipedata(selectedValue);
+        } else {
+            console.log("No recipe selected.");
         }
+        });
 
         /* if edit icon clicked */
             editRecipeBtn.addEventListener('click', () => {
@@ -240,7 +191,71 @@
                 alert('Please select a recipe to edit.');
             }
         });
-    });
+
+    async function recipedata(productId)
+    {
+        // const productId = recipeSelect.value;
+        if (productId) {
+            try {
+
+                editRecipeBtn.setAttribute('data-id', productId);
+
+                const response = await fetch(`/recipes/${productId}`);
+                if (!response.ok) throw new Error('Recipe not found');
+                const recipe = await response.json();
+
+                const selectedText = recipeSelect.options[recipeSelect.selectedIndex].text.trim();
+                if(selectedText == null)
+                {
+                    selectedRecipesName.innerText = 'No recipe - DETAILS';
+                    description.innerText = recipe.description || 'No description available.';
+                }
+                else{
+                // Update UI with fetched data
+                selectedRecipesName.innerText = selectedText + ' - DETAILS';
+
+                lblrecipedesc.innerText = "Recipe Decsription";
+                description.innerText = recipe.description;
+                lblrecipeins.innerText = "Recipe Making Instruction";
+                lblrecipevideo.innerText = "Recipe Making Video";
+                lblvideolinks.innerText = "Video Details";
+                // Update Instructions
+                instructionsList.innerHTML = '';
+                if (recipe.instructions) {
+                    const instructions = recipe.instructions.split('.'); // Assuming instructions are period-separated
+                    instructions.forEach(instruction => {
+                        if (instruction.trim()) {
+                            const li = document.createElement('li');
+                            li.innerText = instruction.trim();
+                            instructionsList.appendChild(li);
+                        }
+                    });
+                }
+
+                await recipehistory(productId);
+
+                }
+                // Update Video
+                if (recipe.video_path) {
+                    videoIframe.src = recipe.video_path;
+                } else {
+                    videoIframe.src = '';
+                    videoIframe.innerText = 'No video available.';
+                }
+
+            } catch (error) {
+                console.error(error);
+                selectedRecipesName.innerText = 'No recipe details.';
+                description.innerText = '';
+                instructionsList.innerHTML = '';
+                videoIframe.src = '';
+            }
+        }
+        else
+        {
+            editRecipeBtn.setAttribute('data-id', '');
+        }
+    }
 
     async function recipehistory(productId) {
     const recipeHistoryTable = document.getElementById('recipehistroyTable');
@@ -275,5 +290,80 @@
         recipeHistoryTable.innerHTML = '<tr><td colspan="2">Error fetching history.</td></tr>';
     }
 }
+});
 
 </script>
+
+<!-- Template Main JS File -->
+<script src="{{ asset('js/main.js') }}"></script>
+
+<!--
+if (recipeSelect) {
+    recipeSelect.addEventListener('input', async () => {
+
+        const productId = recipeSelect.value;
+
+        if (productId) {
+            try {
+
+                editRecipeBtn.setAttribute('data-id', productId);
+
+                const response = await fetch(`/recipes/${productId}`);
+                if (!response.ok) throw new Error('Recipe not found');
+                const recipe = await response.json();
+
+                const selectedText = recipeSelect.options[recipeSelect.selectedIndex].text.trim();
+                if(selectedText == null)
+                {
+                    selectedRecipesName.innerText = 'No recipe - DETAILS';
+                    description.innerText = recipe.description || 'No description available.';
+                }
+                else{
+                // Update UI with fetched data
+                selectedRecipesName.innerText = selectedText + ' - DETAILS';
+
+                lblrecipedesc.innerText = "Recipe Decsription";
+                description.innerText = recipe.description;
+                lblrecipeins.innerText = "Recipe Making Instruction";
+                lblrecipevideo.innerText = "Recipe Making Video";
+                lblvideolinks.innerText = "Video Details";
+                // Update Instructions
+                instructionsList.innerHTML = '';
+                if (recipe.instructions) {
+                    const instructions = recipe.instructions.split('.'); // Assuming instructions are period-separated
+                    instructions.forEach(instruction => {
+                        if (instruction.trim()) {
+                            const li = document.createElement('li');
+                            li.innerText = instruction.trim();
+                            instructionsList.appendChild(li);
+                        }
+                    });
+                }
+
+                await recipehistory(productId);
+
+                }
+                // Update Video
+                if (recipe.video_path) {
+                    videoIframe.src = recipe.video_path;
+                } else {
+                    videoIframe.src = '';
+                    videoIframe.innerText = 'No video available.';
+                }
+
+            } catch (error) {
+                console.error(error);
+                selectedRecipesName.innerText = 'No recipe details.';
+                description.innerText = '';
+                instructionsList.innerHTML = '';
+                videoIframe.src = '';
+            }
+        }
+        else
+        {
+            editRecipeBtn.setAttribute('data-id', '');
+        }
+
+    });
+} -->
+
