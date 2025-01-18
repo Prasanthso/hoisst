@@ -104,7 +104,8 @@ Route::get('/products/price-details/{id}', [ProductController::class, 'getPdPric
 //     return view('pricing');
 // })->name('pricing');
 
-Route::get('/receipedetails', [RecipeController::class, 'index'])->name('receipedetails.index');
+Route::get('/recipe', [RecipeController::class, 'index'])->name('receipedetails.index');
+Route::get('/receipedetails', [RecipeController::class, 'recipeDetails'])->name('receipedetails.index');
 Route::get('/addreceipedetails', [RecipeController::class, 'create'])->name('addreceipedetails.create');
 Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('savereceipedetails.store');
 Route::get('/recipes/{id}', [RecipeController::class, 'show'])->name('recipe.show');
