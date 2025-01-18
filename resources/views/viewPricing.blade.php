@@ -28,7 +28,6 @@
                         <a href="{{ 'pricing' }}" class="btn btn-primary">Add</a>
                     </div>
                 </div>
-
             </div>
 
             @if(isset($pricingData) && $pricingData->isNotEmpty())
