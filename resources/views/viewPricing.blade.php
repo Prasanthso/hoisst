@@ -10,23 +10,25 @@
         <div class="container mt-5">
             <div class="mb-4">
                 <label for="productSelect" class="form-label">Select Product</label>
-                <div class="d-flex px-4 pt-4 justify-content-between">
+                <div class="row align-items-center">
                     <div class="col-6">
-                        <form action="{{ route('receipepricing.form') }}" method="GET">
-
-                            <select id="productSelect" class="form-select mb-2" name="product_id" aria-labelledby="productSelect">
+                        <form action="{{ route('receipepricing.form') }}" method="GET" class="d-flex">
+                            <select id="productSelect" class="form-select me-2" name="product_id" aria-labelledby="productSelect">
                                 <option selected disabled>Choose...</option>
                                 @foreach($products as $productItem)
-                                <option value="{{ $productItem->id }}" @if(request('product_id') == $productItem->id) selected @endif>{{ $productItem->name }}</option>
+                                <option value="{{ $productItem->id }}" @if(request('product_id') == $productItem->id) selected @endif>
+                                    {{ $productItem->name }}
+                                </option>
                                 @endforeach
                             </select>
                             <button type="submit" class="btn btn-primary">Submit</button>
-                            <a href="{{ 'pricing' }}">
-                                <button type="button" class="btn btn-primary"> Add</button>
-                            </a>
                         </form>
                     </div>
+                    <div class="col-auto">
+                        <a href="{{ 'pricing' }}" class="btn btn-primary">Add</a>
+                    </div>
                 </div>
+
             </div>
 
             @if(isset($pricingData) && $pricingData->isNotEmpty())
