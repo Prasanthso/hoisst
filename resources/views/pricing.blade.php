@@ -4,7 +4,7 @@
 <main id="main" class="main">
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
-        <h1>Pricing</h1>
+        <h1>Add Pricing</h1>
         <div class="row">
             <!-- Action Buttons -->
             <div class="d-flex justify-content-end mb-2 action-buttons">
@@ -14,6 +14,7 @@
                 <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                     <i class="fas fa-trash" style="color: red;"></i>
                 </button>
+               <!-- <a href="{{ 'showpricing' }}"> <button class="btn btn-primary">View</button></a>-->
             </div>
         </div>
     </div><!-- End Page Title -->
@@ -25,7 +26,7 @@
             <div class="mb-4">
                 <label for="productSelect" class="form-label">Select Product</label>
                 <div class="col-6">
-                    <select id="productSelect" class="form-select" aria-labelledby="productSelectLabel">
+                    <select id="productSelect" class="form-select" aria-labelledby="productSelect">
                         <option selected disabled>Choose...</option>
                         @foreach($products as $productItem)
                         <option value="{{ $productItem->id }}">{{ $productItem->name }}</option>
@@ -43,17 +44,17 @@
                     <label for="recipeUoM" class="form-label">UoM</label>
                     <select id="recipeUoM" class="form-select" name="recipeUoM">
                         <option selected>UoM</option>
-                        <option>Ltr</option>
-                        <option>Kgs</option>
-                        <option>Nos</option>
+                        <option value="Ltr">Ltr</option>
+                        <option value="Kgs">Kgs</option>
+                        <option value="Nos">Nos</option>
                     </select>
-                    
+
                 </div>
             </div>
 
             <div class="row mb-2">
                 <div class="col-auto">
-                    <label for="pricingrawmaterial" class="form-label text-primary">Raw Material</label>
+                    <label for="pricingrawmaterial" class="form-label text-primary" name="pricingrawmaterial" id="pricingrawmaterial">Raw Material</label>
                 </div>
                 <div class="col">
                     <hr />
@@ -127,7 +128,7 @@
             {{-- Packing materials --}}
             <div class="row mb-2">
                 <div class="col-auto">
-                    <label for="pricingpackingmaterial" class="form-label text-primary">Packing Material</label>
+                    <label for="pricingpackingmaterial" class="form-label text-primary" id="pricingpackingmaterial">Packing Material</label>
                 </div>
                 <div class="col">
                     <hr />
@@ -135,7 +136,7 @@
             </div>
             <div class="row mb-4">
                 <div class="col-md-3">
-                    <label for="packingmaterial" class="form-label">Packing Material</label>
+                    <label for="packingmaterial" class="form-label" id="packingmaterial">Packing Material</label>
                     <select id="packingmaterial" class="form-select">
                         <option selected disabled>Choose...</option>
                         @foreach($packingMaterials as $packingMaterialItem)
@@ -203,7 +204,7 @@
             {{-- Overheads --}}
             <div class="row mb-2">
                 <div class="col-auto">
-                    <label for="pricingoverheads" class="form-label text-primary">Overheads</label>
+                    <label for="pricingoverheads" class="form-label text-primary" id="pricingoverheads">Overheads</label>
                 </div>
                 <div class="col-2 form-check">
                     <input type="checkbox" class="form-check-input" id="frommasters"> <label class="form-check-label" for="frommasters"> From Masters </label>
@@ -218,7 +219,7 @@
             </div>
             <div class="row mb-4">
                 <div class="col-md-3">
-                    <label for="overheads" class="form-label">Overheads</label>
+                    <label for="overheads" class="form-label" id="overheads">Overheads</label>
                     <select id="overheads" class="form-select">
                         <option selected disabled>Choose...</option>
                         @foreach($overheads as $overheadsItem)
@@ -306,8 +307,6 @@
 <script src="{{ asset('assets/vendor/tinymce/tinymce.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/php-email-form/validate.js') }}"></script>
 
-<!-- Template Main JS File -->
-<script src="{{ asset('js/main.js') }}"></script>
 {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
  --}}
@@ -346,6 +345,12 @@
         const ohAddButton = document.getElementById('ohaddbtn');
         const overheadsTable = document.getElementById('overheadsTable');
         const totalOhCostSpan = document.getElementById('totalohCost');
+        let isaddRp = false;
+
+        const rpoutputInput = document.getElementById('recipeOutput');
+        const rpuomInput = document.getElementById('recipeUoM');
+        const rpoutput = rpoutputInput.value.trim(); // Convert to number
+        const rpuom = rpuomInput.value;
 
         productSelect.addEventListener('change', function() {
             product_id = this.value; // Update product_id with the selected value
@@ -391,11 +396,11 @@
             const amount = parseFloat(amountInput.value) || 0;
 
             const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
             if (!token) {
                 console.error('CSRF token not found.');
                 return;
             }
-
 
             if (!rawMaterialName || !quantity || !code || !uom || !price || !amount) {
                 alert('Please fill all fields before adding.');
@@ -410,8 +415,7 @@
                 clearFields();
                 return;
             }
-
-            console.log(product_id);
+            // console.log(product_id);
 
             fetch('/rm-for-recipe', {
                     method: 'POST',
@@ -456,6 +460,11 @@
 
                 })
                 .catch(error => console.error('Error:', error.message));
+
+                // if(isaddRp == false)
+                // {
+                //     recipePricing();
+                // }
         });
 
         // Delete row functionality
@@ -634,6 +643,7 @@
 
                 })
                 .catch(error => console.error('Error:', error.message));
+
         });
 
         packingMaterialTable.addEventListener('click', function(e) {
@@ -811,6 +821,7 @@
 
                 })
                 .catch(error => console.error('Error:', error.message));
+
         });
 
         overheadsTable.addEventListener('click', function(e) {
@@ -859,7 +870,6 @@
             }
         });
 
-
         // Helper functions
 
         function updateOhAmount() {
@@ -892,5 +902,69 @@
             totalCostInput.value = grandTotal.toFixed(2); // Display in Total Cost (A+B+C)
         }
 
+        function recipePricing() {
+            const rpoutputInput = document.getElementById('recipeOutput');
+            const rpuomInput = document.getElementById('recipeUoM');
+
+            const rpoutput = rpoutputInput.value.trim(); // Convert to number
+            const rpuom = rpuomInput.value;
+            // Validate inputs
+            if (rpoutput <= 0 || rpoutput <= 0) {
+                console.log(rpoutput, rpuom);
+                alert('Invalid input values. Please check your data.');
+                return;
+            }
+
+            // Retrieve CSRF token
+            const tokenElement = document.querySelector('meta[name="csrf-token"]');
+            if (!tokenElement) {
+                console.error('CSRF token not found.');
+                alert('A CSRF token is required for this action.');
+                return;
+            }
+            const csrfToken = tokenElement.getAttribute('content');
+
+            // Product ID
+            // const productIdInput = document.getElementById('productId'); // Adjust as needed
+            // const product_id = productIdInput ? parseInt(productIdInput.value) : null;
+            if (!product_id) {
+                alert('Product ID is missing or invalid.');
+                return;
+            }
+
+            // Send the data to the server using fetch API
+            fetch('/recipepricing', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken, // Include CSRF token for security
+                },
+                body: JSON.stringify({
+                    product_id: product_id,
+                    rpoutput: rpoutput,
+                    rpuom: rpuom,
+                }),
+            })
+            .then(response => {
+                console.log('Rp Response:', response);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+            })
+            .then(data => {
+                console.log('Success:', data);
+                alert('Recipe-pricing added successfully');
+
+                // Clear input fields
+                // rpoutputInput.value = '';
+                // rpuomInput.value = '';
+            })
+            .catch(error => console.error('Error:', error.message));
+        }
+
+
     });
 </script>
+
+<!-- Template Main JS File -->
+<script src="{{ asset('js/main.js') }}"></script>
