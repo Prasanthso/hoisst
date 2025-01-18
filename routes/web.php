@@ -134,3 +134,4 @@ Route::get('/editrecipedetails/{id}', [RecipeController::class, 'edit'])->name('
 Route::put('/editreceipedetails/{id}', [RecipeController::class, 'update'])->name('editrecipedetails.update');
 Route::get('/recipe-history/{id}', [RecipeController::class, 'getRecipedetailsHistory']);
 
+Route::get('/recipepricing', [RecipePricingController::class, 'showRecipePricingList'])->name('showRecipePricingList');

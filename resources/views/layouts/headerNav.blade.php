@@ -216,11 +216,11 @@
                 </a>
                 <ul id="components-nav"
 
-                 class="nav-content collapse {{ Request::is('rawmaterial') ||  Request::routeIs('rawMaterial.edit') || Request::is('showcategoryitem') || Request::is('addcategory') || Request::routeIs('categoryitem.edit') || Request::is('addrawmaterial') || Request::routeIs('packingMaterial.edit') || Request::is('packingmaterial') || Request::is('addpackingmaterial') || Request::is('overheads') ||  Request::is('addoverheads') ||  Request::routeIs('overheads.edit') || Request::is('products') || Request::routeIs('products.edit') || Request::is('addproduct')   ? 'show' : '' }}"
-                 data-bs-parent="#sidebar-nav">
+                    class="nav-content collapse {{ Request::is('rawmaterial') ||  Request::routeIs('rawMaterial.edit') || Request::is('showcategoryitem') || Request::is('addcategory') || Request::routeIs('categoryitem.edit') || Request::is('addrawmaterial') || Request::routeIs('packingMaterial.edit') || Request::is('packingmaterial') || Request::is('addpackingmaterial') || Request::is('overheads') ||  Request::is('addoverheads') ||  Request::routeIs('overheads.edit') || Request::is('products') || Request::routeIs('products.edit') || Request::is('addproduct')   ? 'show' : '' }}"
+                    data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="/rawmaterial"  class="{{ Request::is('rawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
-                           <span>Raw Materials</span>
+                        <a href="/rawmaterial" class="{{ Request::is('rawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                            <span>Raw Materials</span>
                         </a>
                     </li>
                     <li>
@@ -253,7 +253,7 @@
                     <span>Recipe</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="forms-nav" class="nav-content collapse {{ Request::is('receipedetails') ||  Request::is('addreceipedetails') || Request::routeIs('editrecipedetails.edit') || Request::is('pricing') ? 'show' :'' }}"
-                data-bs-parent="#sidebar-nav">
+                    data-bs-parent="#sidebar-nav">
                     <li>
                         <a href="/receipedetails" class="{{ Request::is('receipedetails') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Details & Description</span>
@@ -266,6 +266,14 @@
                     </li>
                 </ul>
             </li><!-- End Recipe Nav -->
+
+            <li class="nav-item">
+                <a class="nav-link" href="/recipepricing" style="background-color: rgb(186, 234, 249); font-size:17px;">
+                    {{-- <i class="bi bi-grid"></i> --}}
+                    <img src="/assets/img/dashboard_pic.svg" alt="dashboard Icon" style="width: 1.2em; height: auto; margin-right: 4px;">
+                    <span>Recipe Pricing</span>
+                </a>
+            </li>
         </ul>
     </aside>
 

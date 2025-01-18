@@ -24,6 +24,11 @@ class RecipePricingController extends Controller
         return view('pricing' , compact('rawMaterials', 'packingMaterials', 'overheads', 'products'));
     } 
 
+
+    public function showRecipePricingList(){
+        return view('recipePricing');
+    }
+
     /**
      * Show the form for creating a new resource.
      */
