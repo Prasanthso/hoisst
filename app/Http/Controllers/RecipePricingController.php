@@ -22,7 +22,7 @@ class RecipePricingController extends Controller
 
 
         return view('pricing' , compact('rawMaterials', 'packingMaterials', 'overheads', 'products'));
-    } 
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -30,6 +30,7 @@ class RecipePricingController extends Controller
     public function create()
     {
         //
+
     }
 
     /**
@@ -37,7 +38,34 @@ class RecipePricingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validate incoming data
+        $validated = $request->validate([
+            'product_id' => 'required|exists:product_master,id',
+            'rpoutput' => 'required|string|max:255',
+            'rpuom' => 'required|string|max:255',
+            'rptotalCost' => 'required|numeric|min:0',
+            'singleCost' => 'required|numeric|min:0',
+        ]);
+        $rpCode = UniqueCode::generateRpCode();
+
+        try{
+        // Create a new recipe
+        RecipeMaster::create([
+            'product_id' => $request->product_id,
+            'rpcode' => $rpCode,
+            'Output' => $rpoutput,
+            'uom' => $request->rpuom,
+            'totalCost' => $request->rptotalCost,
+            'singleCost' => $request->singleCost,
+            ]);
+        } catch (\Exception $e) {
+            // \Log::error('Error inserting data: ' . $e->getMessage());
+            dd($e->getMessage());
+        }
+
+        // Redirect back with a success message
+        return redirect()->route('receipepricing.index')->with('success', 'Recipe-pricing added successfully.');
+
     }
 
     /**

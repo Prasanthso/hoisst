@@ -70,5 +70,18 @@ class UniqueCode extends Model
         // Return the formatted code
         return 'PD' . $newNumber;
     }
+    public static function generateRpCode()
+    {
+        // Fetch the last inserted code from the raw_materials table
+        $lastCode = \DB::table('recipe_master')->orderBy('id', 'desc')->value('rpcode');
 
+        // Extract the numeric part of the code
+        $number = $lastCode ? intval(substr($lastCode, 2)) : 0;
+
+        // Increment the number and format it with leading zeros
+        $newNumber = str_pad($number + 1, 4, '0', STR_PAD_LEFT);
+
+        // Return the formatted code
+        return 'RP' . $newNumber;
+    }
 }

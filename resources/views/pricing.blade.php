@@ -25,7 +25,7 @@
             <div class="mb-4">
                 <label for="productSelect" class="form-label">Select Product</label>
                 <div class="col-6">
-                    <select id="productSelect" class="form-select" aria-labelledby="productSelectLabel">
+                    <select id="productSelect" class="form-select" aria-labelledby="productSelect">
                         <option selected disabled>Choose...</option>
                         @foreach($products as $productItem)
                         <option value="{{ $productItem->id }}">{{ $productItem->name }}</option>
@@ -47,13 +47,13 @@
                         <option>Kgs</option>
                         <option>Nos</option>
                     </select>
-                    
+
                 </div>
             </div>
 
             <div class="row mb-2">
                 <div class="col-auto">
-                    <label for="pricingrawmaterial" class="form-label text-primary">Raw Material</label>
+                    <label for="pricingrawmaterial" class="form-label text-primary" name="pricingrawmaterial" id="pricingrawmaterial">Raw Material</label>
                 </div>
                 <div class="col">
                     <hr />
@@ -127,7 +127,7 @@
             {{-- Packing materials --}}
             <div class="row mb-2">
                 <div class="col-auto">
-                    <label for="pricingpackingmaterial" class="form-label text-primary">Packing Material</label>
+                    <label for="pricingpackingmaterial" class="form-label text-primary" id="pricingpackingmaterial">Packing Material</label>
                 </div>
                 <div class="col">
                     <hr />
@@ -135,7 +135,7 @@
             </div>
             <div class="row mb-4">
                 <div class="col-md-3">
-                    <label for="packingmaterial" class="form-label">Packing Material</label>
+                    <label for="packingmaterial" class="form-label" id="packingmaterial">Packing Material</label>
                     <select id="packingmaterial" class="form-select">
                         <option selected disabled>Choose...</option>
                         @foreach($packingMaterials as $packingMaterialItem)
@@ -203,7 +203,7 @@
             {{-- Overheads --}}
             <div class="row mb-2">
                 <div class="col-auto">
-                    <label for="pricingoverheads" class="form-label text-primary">Overheads</label>
+                    <label for="pricingoverheads" class="form-label text-primary" id="pricingoverheads">Overheads</label>
                 </div>
                 <div class="col-2 form-check">
                     <input type="checkbox" class="form-check-input" id="frommasters"> <label class="form-check-label" for="frommasters"> From Masters </label>
@@ -218,7 +218,7 @@
             </div>
             <div class="row mb-4">
                 <div class="col-md-3">
-                    <label for="overheads" class="form-label">Overheads</label>
+                    <label for="overheads" class="form-label" id="overheads">Overheads</label>
                     <select id="overheads" class="form-select">
                         <option selected disabled>Choose...</option>
                         @foreach($overheads as $overheadsItem)
@@ -306,8 +306,6 @@
 <script src="{{ asset('assets/vendor/tinymce/tinymce.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/php-email-form/validate.js') }}"></script>
 
-<!-- Template Main JS File -->
-<script src="{{ asset('js/main.js') }}"></script>
 {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
  --}}
@@ -346,6 +344,7 @@
         const ohAddButton = document.getElementById('ohaddbtn');
         const overheadsTable = document.getElementById('overheadsTable');
         const totalOhCostSpan = document.getElementById('totalohCost');
+        let isaddRp = false;
 
         productSelect.addEventListener('change', function() {
             product_id = this.value; // Update product_id with the selected value
@@ -456,6 +455,11 @@
 
                 })
                 .catch(error => console.error('Error:', error.message));
+                if(isaddRp!=true)
+                {
+                    recipePricing();
+                    isaddRp = true;
+                }
         });
 
         // Delete row functionality
@@ -634,6 +638,7 @@
 
                 })
                 .catch(error => console.error('Error:', error.message));
+
         });
 
         packingMaterialTable.addEventListener('click', function(e) {
@@ -811,6 +816,7 @@
 
                 })
                 .catch(error => console.error('Error:', error.message));
+
         });
 
         overheadsTable.addEventListener('click', function(e) {
@@ -859,6 +865,17 @@
             }
         });
 
+        totalCostInput.addEventListener('input', function(e) {
+            console.log('Total cost changed to:', totalCostInput.value);
+            recipePricing();
+        });
+        //  {
+        //     if(isaddRp!=true)
+        //         {
+        //             recipePricing();
+        //             isaddRp = true;
+        //         }
+        // });
 
         // Helper functions
 
@@ -892,5 +909,69 @@
             totalCostInput.value = grandTotal.toFixed(2); // Display in Total Cost (A+B+C)
         }
 
+        function recipePricing()
+        {
+            const outputInput = document.getElementById('recipeOutput');
+            const uomInput = document.getElementById('recipeUoM');
+            const totalCostInput = document.getElementById('totalcost');
+
+            const rpoutput = parseFloat(outputInput.value); // Convert to number
+            const rpuom = uomInput.value;
+            const rptotalCost = parseFloat(totalCostInput.value); // Convert to number
+            let rpsingleCost = 0;
+            // Check if the values are valid numbers and not zero
+            if (isNaN(rpoutput) || isNaN(rptotalCost) || rpoutput === 0) {
+                alert('Invalid input values. Please check your data.');
+            } else {
+                rpsingleCost = rptotalCost / rpoutput;
+                console.log('Single Cost:', rpsingleCost);
+            }
+            // CSRF token
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                if (!token) {
+                    console.error('CSRF token not found.');
+                    return;
+                }
+            // Send the data to the server using fetch API
+            fetch('/recipepricing', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,  // Include CSRF token for security
+                },
+                body: JSON.stringify({
+                    product_id: product_id,
+                    rpoutput: rpoutput,
+                    rpuom: rpuom,
+                    rptotalCost: rptotalCost,
+                    singleCost: rpsingleCost,
+                }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Server response not OK');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                alert('Recipe-pricing added successfully');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('There was an error adding the recipe-pricing');
+            });
+
+            // Clear the input fields after adding data
+            // productIdInput.value = '';
+            outputInput.value = '';
+            uomInput.value = '';
+            totalCostInput.value = '';
+            singleCostInput.value = '';
+        }
+
     });
 </script>
+
+<!-- Template Main JS File -->
+<script src="{{ asset('js/main.js') }}"></script>

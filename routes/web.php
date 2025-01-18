@@ -128,8 +128,11 @@ Route::delete('/pm-for-recipe/{id}', [PmForRecipeController::class, 'destroy'])-
 Route::post('/oh-for-recipe', [OhForRecipeController::class, 'store'])->name('oh.store');
 Route::delete('/oh-for-recipe/{id}', [OhForRecipeController::class, 'destroy'])->name('oh.delete');
 
+Route::post('/recipepricing', [RecipePricingController::class, 'store']);
 
 Route::get('/editrecipedetails/{id}', [RecipeController::class, 'edit'])->name('editrecipedetails.edit');
 Route::put('/editreceipedetails/{id}', [RecipeController::class, 'update'])->name('editrecipedetails.update');
 Route::get('/recipe-history/{id}', [RecipeController::class, 'getRecipedetailsHistory']);
+
+
 
