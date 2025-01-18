@@ -21,12 +21,13 @@
                                 </option>
                                 @endforeach
                             </select>
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" class="btn btn-primary me-2">Submit</button>
+                            <a href="{{ 'pricing' }}" class="btn btn-primary">Add</a>
                         </form>
                     </div>
-                    <div class="col-auto">
-                        <a href="{{ 'pricing' }}" class="btn btn-primary">Add</a>
-                    </div>
+                    <!-- <div class="col-auto">
+
+                    </div> -->
                 </div>
             </div>
 
@@ -160,3 +161,14 @@
     </section>
 </main>
 @endsection
+<!-- <script>
+    document.getElementById('productSelect').addEventListener('change', function () {
+        // Get the selected product ID
+        const selectedProductId = this.value;
+
+        // Redirect to the route with the selected product ID
+        if (selectedProductId) {
+            window.location.href = `{{ route('receipepricing.form') }}?product_id=${selectedProductId}`;
+        }
+    });
+</script> -->
