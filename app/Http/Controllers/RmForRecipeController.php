@@ -23,7 +23,7 @@ class RmForRecipeController extends Controller
         //
     }
 
-    
+
     /**
      * Show the form for creating a new resource.
      */
@@ -45,6 +45,17 @@ class RmForRecipeController extends Controller
                 'quantity' => 'required|numeric',
                 'amount' => 'required|numeric',
                 'code' => 'required|string',
+                'rpoutput' => 'required|string',
+                'rpuom' => 'required|string',
+            ]);
+
+            $rpCode = UniqueCode::generateRpCode();
+
+           $rp = RecipeMaster::create([
+                'product_id' => $request->product_id,
+                'rpcode' => $rpCode,
+                'rpoutput' => $request->rpoutput,
+                'rpuom' => $request->rpuom,
             ]);
 
             // Create the record
@@ -76,9 +87,6 @@ class RmForRecipeController extends Controller
             ], 500); // Internal Server Error
         }
     }
-
-
-
 
     public function saveRawMaterials(Request $request)
     {

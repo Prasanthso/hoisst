@@ -7,6 +7,7 @@
         <h1>Add Pricing</h1>
         <div class="row">
             <!-- Action Buttons -->
+            <!--
             <div class="d-flex justify-content-end mb-2 action-buttons">
                 <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                     <i class="fas fa-edit" style="color: black;"></i>
@@ -14,8 +15,8 @@
                 <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                     <i class="fas fa-trash" style="color: red;"></i>
                 </button>
-               <!-- <a href="{{ 'showpricing' }}"> <button class="btn btn-primary">View</button></a>-->
-            </div>
+
+            </div>-->
         </div>
     </div><!-- End Page Title -->
     <section class="section dashboard">
@@ -349,8 +350,7 @@
 
         const rpoutputInput = document.getElementById('recipeOutput');
         const rpuomInput = document.getElementById('recipeUoM');
-        const rpoutput = rpoutputInput.value.trim(); // Convert to number
-        const rpuom = rpuomInput.value;
+
 
         productSelect.addEventListener('change', function() {
             product_id = this.value; // Update product_id with the selected value
@@ -395,6 +395,9 @@
             const price = parseFloat(priceInput.value) || 0;
             const amount = parseFloat(amountInput.value) || 0;
 
+            const rpoutput = rpoutputInput.value.trim(); // Convert to number
+            const rpuom = rpuomInput.value;
+            console.log("rp",rpoutput,rpuom);
             const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
             if (!token) {
@@ -431,6 +434,8 @@
                         code: code,
                         uom: uom,
                         price: price,
+                        rpoutput: rpoutput,
+                        rpuom: rpuom,
                     }),
                 })
                 .then(response => {

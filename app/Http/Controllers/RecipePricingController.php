@@ -85,34 +85,9 @@ class RecipePricingController extends Controller
      * Display the specified resource.
      */
 
-    public function show(Request $request)
+    public function show(string $id)
     {
-        /*
-        $id=1;
         //
-        // $rawMaterials = DB::table('raw_materials')->get();
-        // $packingMaterials = DB::table('packing_materials')->get();
-        // $overheads = DB::table('overheads')->get();
-        $products = DB::table('product_master')->get();
-
-        // // Join all tables based on product_id
-        // $rpDetails = DB::table('recipe_master')
-        // ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id')
-        // ->join('raw_materials', 'raw_materials.product_id', '=', 'product_master.id')
-        // ->join('packing_materials', 'packing_materials.product_id', '=', 'product_master.id')
-        // ->join('overheads', 'overheads.product_id', '=', 'product_master.id')
-        // ->where('recipe_master.product_id', $id) // Filter by the given product_id
-        // ->select(
-        //     'recipe_master.*',
-        //     'product_master.name as product_name',
-        //     'raw_materials.name as raw_material_name',
-        //     'packing_materials.name as packing_material_name',
-        //     'overheads.name as overhead_name'
-        // )
-        // ->get();
-
-        return view('viewPricing' , compact('products'));
-        */
     }
 
 
