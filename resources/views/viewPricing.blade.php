@@ -4,6 +4,18 @@
 <main id="main" class="main">
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
         <h1>Pricing</h1>
+        <div class="row">
+            <!-- Action Buttons -->
+
+            <div class="d-flex justify-content-end mb-2 action-buttons">
+                <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                    <i class="fas fa-edit" style="color: black;"></i>
+                </button>
+                <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                    <i class="fas fa-trash" style="color: red;"></i>
+                </button>
+            </div>
+        </div>
     </div>
 
     <section class="section dashboard">
@@ -11,7 +23,7 @@
             <div class="mb-4">
                 <label for="productSelect" class="form-label">Select Product</label>
                 <div class="row align-items-center">
-                    <div class="col-6">
+                    <div class="col-8">
                         <form action="{{ route('receipepricing.form') }}" method="GET" class="d-flex">
                             <select id="productSelect" class="form-select me-2" name="product_id" aria-labelledby="productSelect">
                                 <option selected disabled>Choose...</option>
@@ -158,9 +170,66 @@
                 <p>No pricing data available for this product.</p>
             @endif
         </div>
+        <div>
+            <form action="{{ route('receipepricing.delete') }}" method="POST" id="deleteForm" style="display: none;">
+                @csrf
+                @method('DELETE')
+                <input type="hidden" name="product_id" id="product_id_to_delete">
+            </form>
+        </div>
     </section>
 </main>
 @endsection
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        $('#productSelect').select2({
+            theme: 'bootstrap-5',
+            placeholder: "Type or select a recipe...",
+            allowClear: true
+        });
+
+        // edit products//
+    document.querySelector('.edit-table-btn').addEventListener('click', function () {
+            const productId = document.getElementById('productSelect').value;
+
+            if (productId) {
+                // Redirect to the edit route with the selected product ID
+                window.location.href = `/edit-pricing/${productId}`;
+            } else {
+                alert('Please select a product to edit.');
+            }
+    });
+
+        // delete products//
+    document.querySelector('.delete-table-btn').addEventListener('click', function() {
+        var productId = document.getElementById('productSelect').value;
+
+        if (productId) {
+            // Show confirmation dialog
+            if (confirm('Are you sure you want to delete the pricing data for this product?')) {
+                // Set the product ID to the hidden input
+                document.getElementById('product_id_to_delete').value = productId;
+
+                // Submit the form
+                document.getElementById('deleteForm').submit();
+            } else {
+                // User canceled the action
+                console.log('Delete action canceled by user.');
+            }
+        } else {
+            alert('Please select a product before deleting.');
+        }
+    });
+
+});
+</script>
+
+
 <!-- <script>
     document.getElementById('productSelect').addEventListener('change', function () {
         // Get the selected product ID

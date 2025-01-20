@@ -37,6 +37,7 @@ class RmForRecipeController extends Controller
      */
     public function store(Request $request)
     {
+
         try {
             // Validate the request
             $request->validate([
@@ -49,14 +50,33 @@ class RmForRecipeController extends Controller
                 'rpuom' => 'required|string',
             ]);
 
-            $rpCode = UniqueCode::generateRpCode();
+            if($request->product_id)
+            {
+                $isProduct = DB::table('recipe_master')
+                ->where('product_id', $request->product_id)
+                ->exists();
 
-           $rp = RecipeMaster::create([
-                'product_id' => $request->product_id,
-                'rpcode' => $rpCode,
-                'rpoutput' => $request->rpoutput,
-                'rpuom' => $request->rpuom,
-            ]);
+                if($isProduct == false)
+                {
+                    $rpCode = UniqueCode::generateRpCode();
+
+                        $rp = DB::table('recipe_master')->insert([
+                            'product_id' => $request->product_id,
+                            'rpcode' => $rpCode,
+                            'Output' => $request->rpoutput,
+                            'uom' => $request->rpuom,
+                            'totalCost' => 0,
+                            'singleCost' => 0,
+                        ]);
+                }
+                else{
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'There was an issue inserting.',
+                        'error' => $e->getMessage()
+                    ], 500);
+                }
+            }
 
             // Create the record
             $rmForRecipe = RmForRecipe::create([
@@ -78,7 +98,7 @@ class RmForRecipeController extends Controller
             ]);
         } catch (\Exception $e) {
             // Handle the error gracefully
-            \Log::error('Error storing raw material: ' . $e->getMessage());
+            // \Log::error('Error storing raw material: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,

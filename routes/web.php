@@ -136,4 +136,7 @@ Route::put('/editreceipedetails/{id}', [RecipeController::class, 'update'])->nam
 Route::get('/recipe-history/{id}', [RecipeController::class, 'getRecipedetailsHistory']);
 
 Route::get('/pricing-records', [RecipePricingController::class, 'showPricingForm'])->name('receipepricing.form');
+Route::delete('/receipepricing/delete', [RecipePricingController::class, 'destroy'])->name('receipepricing.delete');
+Route::get('/edit-pricing/{id}', [RecipePricingController::class, 'edit'])->name('receipepricing.edit');
+
 Route::get('/recipepricing', [RecipePricingController::class, 'showRecipePricingList'])->name('showRecipePricingList');
