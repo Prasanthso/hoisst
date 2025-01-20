@@ -53,7 +53,8 @@ class PackingMaterialController extends Controller
                         'c9.itemname as category_name9',
                         'c10.itemname as category_name10'
                     )
-                    ->get();
+                    ->where('pm.status', '=', 'active') // Filter by active status
+                    ->paginate(10);
             } else {
                 // Fetch packing materials filtered by the selected category IDs
                 $packingMaterials = DB::table('packing_materials as pm')
@@ -96,7 +97,8 @@ class PackingMaterialController extends Controller
                             ->orWhereIn('c9.id', $selectedCategoryIds)
                             ->orWhereIn('c10.id', $selectedCategoryIds);
                     })
-                    ->get();
+                    ->where('pm.status', '=', 'active') // Filter by active status
+                    ->paginate(10);
             }
 
             // Return filtered packing materials as JSON response
@@ -134,7 +136,8 @@ class PackingMaterialController extends Controller
                 'c9.itemname as category_name9',
                 'c10.itemname as category_name10'
             )
-            ->get();
+        ->where('pm.status', '=', 'active') // Filter by active status
+        ->paginate(10);
 
         // Default view, return all packing materials and category items
         $packingMaterials = DB::table('packing_materials as pm')
@@ -165,6 +168,7 @@ class PackingMaterialController extends Controller
             'c9.itemname as category_name9',
             'c10.itemname as category_name10'
         )
+        ->where('pm.status', '=', 'active') // Filter by active status
         ->paginate(10);
 
         return view('packingMaterial.packingMaterial', compact('packingMaterials', 'categoryitems'));
@@ -346,8 +350,22 @@ class PackingMaterialController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function delete(Request $request)
     {
-        //
+        $ids = $request->input('ids'); // Get the 'ids' array from the request
+
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'No valid IDs provided.']);
+        }
+
+        try {
+            // Update the status of raw materials to 'inactive'
+            PackingMaterial::whereIn('id', $ids)->update(['status' => 'inactive']);
+
+            return response()->json(['success' => true, 'message' => 'Raw materials marked as inactive successfully.']);
+        } catch (\Exception $e) {
+            // Handle exceptions
+            return response()->json(['success' => false, 'message' => 'Error updating raw materials: ' . $e->getMessage()]);
+        }
     }
 }

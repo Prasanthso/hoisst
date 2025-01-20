@@ -25,12 +25,11 @@
                             <div class="col-sm-10">
                                 <div>
                                     <input
-                                    type="text"
-                                    id="categorySearch"
-                                    class="form-control mb-3"
-                                    placeholder="Search categories..."
-                                    onkeyup="filterCategories()"
-                                />
+                                        type="text"
+                                        id="categorySearch"
+                                        class="form-control mb-3"
+                                        placeholder="Search categories..."
+                                        onkeyup="filterCategories()" />
                                 </div>
 
                                 @foreach($categoryitems as $category)
@@ -233,6 +232,7 @@
 
             // Reassign the edit button functionality
             document.querySelector(".edit-table-btn").addEventListener("click", enableEditing);
+            document.querySelector(".delete-table-btn").addEventListener("click", deleteRows);
         };
 
         // Function to save changes
@@ -438,6 +438,56 @@
                 });
         };
 
+        // Function to handle row deletion
+        const deleteRows = () => {
+            const selectedRows = Array.from(getRowCheckboxes()).filter(checkbox => checkbox.checked);
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // CSRF token
+
+            if (selectedRows.length === 0) {
+                alert("Please select at least one row to delete.");
+                return;
+            }
+
+            const selectedIds = selectedRows.map(checkbox => checkbox.closest('tr').getAttribute('data-id'));
+
+            if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
+                return;
+            }
+
+            fetch("{{ route('rawMaterial.delete') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": token
+                    },
+                    body: JSON.stringify({
+                        ids: selectedIds // Array of IDs to delete
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        selectedRows.forEach(checkbox => {
+                            const row = checkbox.closest("tr");
+                            row.remove();
+                            updateSerialNumbers();
+                        });
+                        alert("Selected rows deleted successfully!");
+                    } else {
+                        alert("Failed to delete rows. Please try again.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error deleting rows:", error);
+                    alert("An error occurred. Please try again.");
+                });
+        };
+
         // Attach click event listener to each price column
         table.querySelectorAll(".price-text").forEach((priceElement) => {
             const row = priceElement.closest("tr");
@@ -454,51 +504,51 @@
         });
 
         function filterRawMaterials2() {
-    // Get selected categories
-    const selectedCategories = Array.from(categoryCheckboxes)
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.value);
-        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            // Get selected categories
+            const selectedCategories = Array.from(categoryCheckboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    // Send an AJAX request to the server with the selected categories
-    fetch(`/rawmaterial?category_ids=${selectedCategories.join(',')}`, {
-        method: 'GET',
-        headers: {
-            'X-CSRF-TOKEN': token,  // Add CSRF token
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Assuming your table rows are in a tbody element
-        const tbody = document.querySelector('#raw-materials-table tbody');
-        tbody.innerHTML = ''; // Clear existing rows
+            // Send an AJAX request to the server with the selected categories
+            fetch(`/rawmaterial?category_ids=${selectedCategories.join(',')}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRF-TOKEN': token, // Add CSRF token
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Assuming your table rows are in a tbody element
+                    const tbody = document.querySelector('#raw-materials-table tbody');
+                    tbody.innerHTML = ''; // Clear existing rows
 
-        // Loop through the returned raw materials and update the table
-        data.rawMaterials.forEach(material => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
+                    // Loop through the returned raw materials and update the table
+                    data.rawMaterials.forEach(material => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
                 <td>${material.name}</td>
                 <td>${material.rmcode}</td>
                 <td>${material.price}</td>
                 <td>${material.uom}</td>
                 <td>${material.category_name1}, ${material.category_name2}, ${material.category_name3}, ${material.category_name4}, ${material.category_name5}</td>
             `;
-            tbody.appendChild(row);
-        });
-    })
-    .catch(error => {
-        console.error("Error fetching filtered data:", error);
-    });
-}
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching filtered data:", error);
+                });
+        }
 
         /* For filter Functions*/
-    function filterRawMaterials() {
+        function filterRawMaterials() {
             // Get all selected categories
             const selectedCategories = Array.from(categoryCheckboxes)
                 .filter(checkbox => checkbox.checked)
                 .map(checkbox => checkbox.value.toLowerCase().trim());
 
-             rows.forEach(row => {
+            rows.forEach(row => {
                 const categoryCells = row.querySelector('td:nth-child(5)').textContent.toLowerCase().split(', ');
                 let matches = false;
 
@@ -537,12 +587,12 @@
     });
 
     function updateRawMaterialsTable(rawMaterials) {
-    const tableBody = document.querySelector('#rawMaterialTable tbody');
-    tableBody.innerHTML = '';  // Clear the existing table rows
+        const tableBody = document.querySelector('#rawMaterialTable tbody');
+        tableBody.innerHTML = ''; // Clear the existing table rows
 
-    rawMaterials.forEach(rawMaterial => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
+        rawMaterials.forEach(rawMaterial => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
          <td>${rawMaterial.name}</td>
             <td>${rawMaterial.rmcode}</td>
             <td>${rawMaterial.price}</td>
@@ -554,11 +604,11 @@
             ${rawMaterial.category_name5}</td>
              <td>${rawMaterial.uom}</td>
         `;
-        tableBody.appendChild(row);
-    });
-}
+            tableBody.appendChild(row);
+        });
+    }
 
-function filterCategories() {
+    function filterCategories() {
         // Get the search input value
         const searchValue = document.getElementById('categorySearch').value.toLowerCase();
         const keywords = searchValue.split(',').map(keyword => keyword.trim()).filter(keyword => keyword);
@@ -567,11 +617,11 @@ function filterCategories() {
 
         // If the search box is empty, show all categories
         if (keywords.length === 0) {
-                    categoryItems.forEach((item) => {
-                        item.style.display = ''; // Show all items
-                    });
-                    return;
-            }
+            categoryItems.forEach((item) => {
+                item.style.display = ''; // Show all items
+            });
+            return;
+        }
         // Loop through category items and filter them
         categoryItems.forEach((item) => {
             const label = item.querySelector('.form-check-label').textContent.toLowerCase();
@@ -584,47 +634,47 @@ function filterCategories() {
         });
     }
 
-/*
-    function sorting() {
-    // Get selected category IDs
-    const selectedCategories = Array.from(categoryCheckboxes)
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.value);
+    /*
+        function sorting() {
+        // Get selected category IDs
+        const selectedCategories = Array.from(categoryCheckboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value);
 
-        fetch(`/rawmaterial?rawMaterials=${selectedCategories.join(',')}`, {
-        method: 'GET',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }, // Important for Laravel AJAX detection
+            fetch(`/rawmaterial?rawMaterials=${selectedCategories.join(',')}`, {
+            method: 'GET',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }, // Important for Laravel AJAX detection
+            })
+        .then((response) => response.json())
+        .then((data) => {
+            const rawMaterials = data.rawMaterials;
+            const tbody = document.querySelector('#rawMaterialTable tbody');
+            tbody.innerHTML = ''; // Clear existing rows
+
+            rawMaterials.forEach((item, index) => {
+                const row = `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.name}</td>
+                        <td>${item.rmcode}</td>
+                         <td>
+                                        ${ $item->category_name1 ?? '' }}
+                                        ${ $item->category_name2 ? ', ' . $item->category_name2 : '' }}
+                                        ${ $item->category_name3 ? ', ' . $item->category_name3 : '' }}
+                                        ${ $item->category_name4 ? ', ' . $item->category_name4 : '' }}
+                                        ${ $item->category_name5 ? ', ' . $item->category_name5 : '' }}
+                                    </td>
+                        <td>${item.price}</td>
+                        <td>${item.uom}</td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
         })
-    .then((response) => response.json())
-    .then((data) => {
-        const rawMaterials = data.rawMaterials;
-        const tbody = document.querySelector('#rawMaterialTable tbody');
-        tbody.innerHTML = ''; // Clear existing rows
+        .catch((error) => console.error('Error fetching data:', error));
 
-        rawMaterials.forEach((item, index) => {
-            const row = `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${item.name}</td>
-                    <td>${item.rmcode}</td>
-                     <td>
-                                    ${ $item->category_name1 ?? '' }}
-                                    ${ $item->category_name2 ? ', ' . $item->category_name2 : '' }}
-                                    ${ $item->category_name3 ? ', ' . $item->category_name3 : '' }}
-                                    ${ $item->category_name4 ? ', ' . $item->category_name4 : '' }}
-                                    ${ $item->category_name5 ? ', ' . $item->category_name5 : '' }}
-                                </td>
-                    <td>${item.price}</td>
-                    <td>${item.uom}</td>
-                </tr>
-            `;
-            tbody.insertAdjacentHTML('beforeend', row);
-        });
-    })
-    .catch((error) => console.error('Error fetching data:', error));
-
-    }
-    */
+        }
+        */
 
     /* end DomLoad section*/
 </script>
