@@ -33,15 +33,17 @@
             <div class="row mb-4">
                 <div class="col-md-3 col-sm-10 mb-2">
                     <label for="recipeOutput" class="form-label">Output</label>
-                    <input type="text" class="form-control rounded" id="recipeOutput" name="recipeOutput" value="{{ $pricingData->output }}">
+                    @foreach ($products as $rpoutput)
+                    <input type="text" class="form-control rounded" id="recipeOutput" name="recipeOutput" value = "{{ $rpoutput->rp_output }}" >
+                    @endforeach
                 </div>
                 <div class="col-md-2 col-sm-10">
                     <label for="recipeUoM" class="form-label">UoM</label>
                     <select id="recipeUoM" class="form-select" name="recipeUoM">
                         <option value="" disabled  selected> UoM </option>
-                        @foreach ($pricingData as $rpuom)
-                        <option value="{{ $rpuom->uom }}" selected disabled>
-                            {{ $rpuom->uom }}
+                        @foreach ($products as $rpuom)
+                        <option value="{{ $rpuom->rp_uom }}" selected disabled>
+                            {{ $rpuom->rp_uom }}
                         </option>
                     @endforeach
                         {{-- <option value="Ltr">Ltr</option>

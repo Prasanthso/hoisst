@@ -23,7 +23,7 @@ class RecipePricingController extends Controller
 
         $products = DB::table('product_master')
         ->leftJoin('recipe_master', 'product_master.id', '=', 'recipe_master.product_id') // Left join with recipe_master
-        ->select('recipe_master.product_id as id','product_master.name as name') // Select the product name from product_master
+        ->select('product_master.id as id','product_master.name as name') // Select the product name from product_master
         ->whereNull('recipe_master.product_id') // Filter products that don't have a match in recipe_master
         ->get();
 
@@ -172,8 +172,8 @@ class RecipePricingController extends Controller
         $productId = $id;
         $products = DB::table('recipe_master')
         ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id') // Join with the products table
-        ->select('product_master.id as id','product_master.name as name') // Select the product name from the products table
         ->where('recipe_master.product_id', $productId)
+        ->select('product_master.id as id','product_master.name as name','recipe_master.Output as rp_output','recipe_master.uom as rp_uom')
         ->get();
 
         $pricingData = null;
@@ -204,8 +204,8 @@ class RecipePricingController extends Controller
                     'oh_for_recipe.code as oh_code',
                     'oh_for_recipe.uom as oh_uom',
                     'oh_for_recipe.price as oh_price',
-                    'recipe_master.Output as output',
-                    'recipe_master.uom as uom',
+                    // 'recipe_master.Output as rp_output',
+                    // 'recipe_master.uom as rp_uom',
                 )
                 ->get();
 

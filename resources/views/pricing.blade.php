@@ -30,7 +30,9 @@
                     <select id="productSelect" class="form-select" aria-labelledby="productSelect">
                         <option selected disabled>Choose...</option>
                         @foreach($products as $productItem)
-                        <option value="{{ $productItem->id }}">{{ $productItem->name }}</option>
+                        <option value= "{{ $productItem->id }}" >
+                            {{ $productItem->name }}
+                        </option>
                         @endforeach
                     </select>
                 </div>
@@ -351,7 +353,6 @@
         const rpoutputInput = document.getElementById('recipeOutput');
         const rpuomInput = document.getElementById('recipeUoM');
 
-
         productSelect.addEventListener('change', function() {
             product_id = this.value; // Update product_id with the selected value
             console.log('Selected product ID:', product_id); // Debug log to check the selected value
@@ -382,6 +383,7 @@
 
         // Add raw material row to the table
         addButton.addEventListener('click', function() {
+        // console.log(product_id);
 
             if (!product_id) {
                 alert('Please select a valid product.');
@@ -465,11 +467,6 @@
 
                 })
                 .catch(error => console.error('Error:', error.message));
-
-                // if(isaddRp == false)
-                // {
-                //     recipePricing();
-                // }
         });
 
         // Delete row functionality
@@ -966,7 +963,6 @@
             })
             .catch(error => console.error('Error:', error.message));
         }
-
 
     });
 </script>
