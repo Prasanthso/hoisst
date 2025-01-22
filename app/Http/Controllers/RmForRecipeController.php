@@ -67,7 +67,22 @@ class RmForRecipeController extends Controller
                             'uom' => $request->rpuom,
                             'totalCost' => 0,
                             'singleCost' => 0,
+                            'status' => 'active',
                         ]);
+                }
+                else if($isProduct == true)
+                {
+                    $rpCode = UniqueCode::generateRpCode();
+                    $rp = DB::table('recipe_master')
+                    ->where('product_id', $request->product_id) // Condition to match the row(s) to update
+                    ->update([
+                        'rpcode' => $rpCode,
+                        'Output' => $request->rpoutput,
+                        'uom' => $request->rpuom,
+                        'totalCost' => 0,
+                        'singleCost' => 0,
+                        'status' => 'active',
+                    ]);
                 }
                 else{
                     return response()->json([
@@ -110,7 +125,7 @@ class RmForRecipeController extends Controller
 
     public function saveRawMaterials(Request $request)
     {
-         dd($request->all());
+        // dd($request->all());
 
         $request->validate([
             'raw_material_id' => 'required|exists:raw_materials,id',
@@ -152,7 +167,42 @@ class RmForRecipeController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+           // Validate the request
+           $request->validate([
+            'raw_material_id' => 'required|exists:raw_materials,id',
+            'product_id' => 'required|exists:product_master,id',
+            'quantity' => 'required|numeric',
+            'amount' => 'required|numeric',
+            'code' => 'required|string',
+            'rpoutput' => 'required|string',
+            'rpuom' => 'required|string',
+        ]);
+            // Find the record by ID
+            $rmForRecipe = RmForRecipe::findOrFail($id);
+
+            // Dynamically update only the fields provided in the request
+            $fieldsToUpdate = $request->only([
+                'quantity',
+                'amount',
+            ]);
+
+            $rmForRecipe->update($fieldsToUpdate);
+
+            // Return success response
+            return response()->json([
+                'success' => true,
+                'message' => 'Raw Material updated successfully.',
+                'data' => $rmForRecipe,
+            ]);
+        } catch (\Exception $e) {
+            // Handle exceptions gracefully
+            return response()->json([
+                'success' => false,
+                'message' => 'There was an issue updating the raw material.',
+                'error' => $e->getMessage(),
+            ], 500); // Internal Server Error
+        }
     }
 
     /**

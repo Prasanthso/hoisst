@@ -139,7 +139,7 @@
             </div>
             <div class="row mb-4">
                 <div class="col-md-3">
-                    <label for="packingmaterial" class="form-label" id="packingmaterial">Packing Material</label>
+                    <label for="packingmaterial" class="form-label">Packing Material</label>
                     <select id="packingmaterial" class="form-select">
                         <option selected disabled>Choose...</option>
                         @foreach($packingMaterials as $packingMaterialItem)
@@ -222,7 +222,7 @@
             </div>
             <div class="row mb-4">
                 <div class="col-md-3">
-                    <label for="overheads" class="form-label" id="overheads">Overheads</label>
+                    <label for="overheads" class="form-label">Overheads</label>
                     <select id="overheads" class="form-select">
                         <option selected disabled>Choose...</option>
                         @foreach($overheads as $overheadsItem)

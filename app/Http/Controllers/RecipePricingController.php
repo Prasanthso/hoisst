@@ -20,11 +20,13 @@ class RecipePricingController extends Controller
         $packingMaterials = DB::table('packing_materials')->get();
         $overheads = DB::table('overheads')->get();
         // $products = DB::table('product_master')->get();
-
         $products = DB::table('product_master')
         ->leftJoin('recipe_master', 'product_master.id', '=', 'recipe_master.product_id') // Left join with recipe_master
-        ->select('product_master.id as id','product_master.name as name') // Select the product name from product_master
-        ->whereNull('recipe_master.product_id') // Filter products that don't have a match in recipe_master
+        ->select('product_master.id as id', 'product_master.name as name') // Select the product name from product_master
+        ->where(function ($query) {
+            $query->whereNull('recipe_master.product_id') // Include products with no match in recipe_master
+                  ->orWhere('recipe_master.status', '!=', 'active'); // Include products where status is not 'inactive'
+        })
         ->get();
 
         return view('pricing' , compact('rawMaterials', 'packingMaterials', 'overheads', 'products'));
@@ -50,41 +52,41 @@ class RecipePricingController extends Controller
     public function store(Request $request)
     {
 
-        // Validate incoming data
-    $validated = $request->validate([
-        'product_id' => 'required|exists:product_master,id',
-        'rpoutput' => 'required|string', // Adjust to 'numeric|min:0' if it's a number
-        'rpuom' => 'required|string',
-        // 'rptotalCost' => 'required|numeric|min:0',
-        // 'singleCost' => 'required|numeric|min:0',
-    ]);
+    //     // Validate incoming data
+    // $validated = $request->validate([
+    //     'product_id' => 'required|exists:product_master,id',
+    //     'rpoutput' => 'required|string', // Adjust to 'numeric|min:0' if it's a number
+    //     'rpuom' => 'required|string',
+    //     // 'rptotalCost' => 'required|numeric|min:0',
+    //     // 'singleCost' => 'required|numeric|min:0',
+    // ]);
 
-    $rpCode = UniqueCode::generateRpCode();
-    // $rptotalCost = 0;
-    // $singleCost = 0;
+    // $rpCode = UniqueCode::generateRpCode();
+    // // $rptotalCost = 0;
+    // // $singleCost = 0;
 
 
-    try {
-        // Create a new recipe
-      $Rp =  RecipeMaster::create([
-        'product_id' => 1, // Use a valid product_id from your database
-        'rpcode' => 'Rp0001',
-        'Output' => '100',
-        'uom' => 'Kgs',
-           ]);
-        return response()->json([
-            'success' => true,
-            'message' => 'Recipe pricing added successfully.',
-            'data' => $Rp,
-        ]);
-    } catch (\Exception $e) {
-        // Log the error and return an error response
-        // \Log::error('Error inserting data: ' . $e->getMessage());
-        return redirect()->back()->with('error', 'An error occurred while adding the recipe-pricing.');
-    }
+    // try {
+    //     // Create a new recipe
+    //   $Rp =  RecipeMaster::create([
+    //     'product_id' => 1, // Use a valid product_id from your database
+    //     'rpcode' => 'Rp0001',
+    //     'Output' => '100',
+    //     'uom' => 'Kgs',
+    //        ]);
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Recipe pricing added successfully.',
+    //         'data' => $Rp,
+    //     ]);
+    // } catch (\Exception $e) {
+    //     // Log the error and return an error response
+    //     // \Log::error('Error inserting data: ' . $e->getMessage());
+    //     return redirect()->back()->with('error', 'An error occurred while adding the recipe-pricing.');
+    // }
 
-    // Redirect back with a success message
-    return redirect()->route('receipepricing.index')->with('success', 'Recipe-pricing added successfully.');
+    // // Redirect back with a success message
+    // return redirect()->route('receipepricing.index')->with('success', 'Recipe-pricing added successfully.');
 }
 
     /**
@@ -105,6 +107,7 @@ class RecipePricingController extends Controller
         $products = DB::table('recipe_master')
         ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id') // Join with the products table
         ->select('recipe_master.product_id as id','product_master.name as name') // Select the product name from the products table
+        ->where('recipe_master.status','active')
         ->get(); // Get all results
 
 
@@ -170,6 +173,11 @@ class RecipePricingController extends Controller
     public function edit(Request $request,$id)
     {
         $productId = $id;
+
+        $rawMaterials = DB::table('raw_materials')->get();
+        $packingMaterials = DB::table('packing_materials')->get();
+        $overheads = DB::table('overheads')->get();
+
         $products = DB::table('recipe_master')
         ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id') // Join with the products table
         ->where('recipe_master.product_id', $productId)
@@ -229,10 +237,10 @@ class RecipePricingController extends Controller
                 $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
 
             // Pass the data to the view
-            return view('editPricing', compact('products','pricingData','totalCost'));
+            return view('editPricing', compact('rawMaterials','products','pricingData','totalCost'));
         }
 
-        return view('editPricing', compact('products','pricingData','totalCost'));
+        return view('editPricing', compact('rawMaterials','products','pricingData','totalCost'));
     }
 
     /**
@@ -240,7 +248,7 @@ class RecipePricingController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+
     }
 
     /**
