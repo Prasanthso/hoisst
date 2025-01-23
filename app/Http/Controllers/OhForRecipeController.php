@@ -93,7 +93,25 @@ class OhForRecipeController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            // Validate the request
+            $request->validate([
+                'quantity' => 'required|numeric',
+            ]);
+            // dd($request);
+              // Perform the update
+                $updated = DB::table('oh_for_recipe')
+                ->where('id', $request->id)
+                ->update(['quantity' => $request->quantity]);
+
+            if ($updated) {
+                return response()->json(['success' => 'Quantity updated successfully.']);
+            } else {
+                return response()->json(['error' => 'Update failed.'], 500);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Internal server error'], 500);
+        }
     }
 
     /**
