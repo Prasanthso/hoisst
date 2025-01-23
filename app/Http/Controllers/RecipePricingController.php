@@ -136,7 +136,8 @@ class RecipePricingController extends Controller
                     'oh_for_recipe.quantity as oh_quantity',
                     'oh_for_recipe.code as oh_code',
                     'oh_for_recipe.uom as oh_uom',
-                    'oh_for_recipe.price as oh_price'
+                    'oh_for_recipe.price as oh_price',
+                    'rm_for_recipe.amount as rm_amount',
                 )
                 ->get();
 
@@ -160,7 +161,7 @@ class RecipePricingController extends Controller
                 $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
 
             // Pass the data to the view
-            return view('viewPricing', compact('products', 'pricingData','totalCost'));
+            return view('viewPricing', compact('products', 'pricingData','totalCost','totalRmCost'));
         }
 
         return view('viewPricing', compact('products'));
@@ -238,10 +239,10 @@ class RecipePricingController extends Controller
                 $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
 
             // Pass the data to the view
-            return view('editPricing', compact('rawMaterials','products','pricingData','totalCost'));
+            return view('editPricing', compact('rawMaterials','packingMaterials','products','pricingData','totalCost'));
         }
 
-        return view('editPricing', compact('rawMaterials','products','pricingData','totalCost'));
+        return view('editPricing', compact('rawMaterials','packingMaterials','products','pricingData','totalCost'));
     }
 
     /**

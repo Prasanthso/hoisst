@@ -116,8 +116,13 @@
                                 </tr>
                             </thead>
                             <tbody id="rawMaterialTable">
+                                @php $rmTotal = 0; @endphp
                                 @foreach($pricingData as $data)
                                     @if($data->rm_name)
+                                    @php
+                                        $amount = $data->rm_quantity * $data->rm_price;
+                                        $rmTotal += $amount;
+                                     @endphp
                                         <tr>
                                             <td>{{ $data->rm_name }}</td>
                                             <td class="quantity-cell" id="quantity-cell-{{ $data->rid }}">
@@ -130,12 +135,6 @@
                                             <td>{{ $data->rm_quantity * $data->rm_price }}</td>
                                             <td>
                                                 <!-- Action Buttons -->
-                                                {{-- <!-- <button class="btn btn-primary btn-sm edit-btn" id="edit-{{ $data->rm_id }}" data-rid="{{ $data->rid }}" style="width: 50px;" onclick="editRow('{{ $data->rm_id }}','{{ $data->rid }}')">
-                                                    <i class="bi bi-pencil"></i>
-                                                </button>
-                                                <button class="btn btn-success btn-sm save-btn" id="save-{{ $data->rm_id }}" style="display:none;" onclick="saveRow('{{ $data->rm_id }}','{{ $data->rid }}')">
-                                                    <i class="bi bi-save"></i> Save
-                                                </button> --> --}}
                                                 <span
                                                 class="icon-action edit-btn"
                                                 id="edit-{{ $data->rid }}"
@@ -144,7 +143,6 @@
                                                 onclick="editRow('{{ $data->rm_id }}', '{{ $data->rid }}')">
                                                 &#9998;
                                             </span>
-
                                             <span
                                                 class="icon-action save-btn"
                                                 id="save-{{ $data->rid }}"
@@ -153,6 +151,7 @@
                                                 onclick="saveRow('{{ $data->rm_id }}', '{{ $data->rid }}')">
                                                 &#x2714;
                                             </span>
+                                            <span class="delete-icon" style="cursor: pointer; color: red;" title="Remove Row" data-id="{{ $data->rid }}">&#x1F5D1;</span>
                                             </td>
                                         </tr>
                                     @endif
@@ -166,7 +165,7 @@
                             </tbody>
                         </table>
                         <div class="text-end" style="background-color: #eaf8ff; width:90%;">
-                            <strong>RM Cost (A) : </strong> <span id="totalRmCost">0.00</span>
+                            <strong>RM Cost (A) : </strong> <span id="totalRmCost">{{ $rmTotal }}</span>
                         </div>
                     </div>
                 </div>
@@ -180,7 +179,48 @@
                     <hr />
                 </div>
             </div>
-
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <label for="packingmaterial" class="form-label">Packing Material</label>
+                    <select id="packingmaterial" class="form-select">
+                        <option selected disabled>Choose...</option>
+                        @foreach($packingMaterials as $packingMaterialItem)
+                        <option
+                            value="{{ $packingMaterialItem->id }}"
+                            data-code="{{ $packingMaterialItem->pmcode }}"
+                            data-uom="{{ $packingMaterialItem->uom }}"
+                            data-price="{{ $packingMaterialItem->price }}">
+                            {{ $packingMaterialItem->name }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="d-flex flex-column" style="flex: 1.5;">
+                    <label for="pmQuantity" class="form-label">Quantity</label>
+                    <input type="text" class="form-control rounded" id="pmQuantity" name="pmQuantity">
+                </div>
+                <div class="d-flex flex-column" style="flex: 1.5;">
+                    <label for="pmCode" class="form-label">PM Code</label>
+                    <input type="text" class="form-control rounded" id="pmCode" name="pmCode" disabled>
+                </div>
+                <div class="d-flex flex-column" style="flex: 1.5;">
+                    <label for="pmUoM" class="form-label">UoM</label>
+                    <input type="text" class="form-control" id="pmUoM" name="pmUoM" disabled>
+                </div>
+                <div class="d-flex flex-column" style="flex: 1.5;">
+                    <label for="pmPrice" class="form-label">Price</label>
+                    <input type="text" class="form-control rounded" id="pmPrice" name="pmPrice" disabled>
+                </div>
+                <div class="d-flex flex-column" style="flex: 1.5;">
+                    <label for="pmAmount" class="form-label">Amount</label>
+                    <input type="text" class="form-control" id="pmAmount" name="pmAmount">
+                </div>
+                <div class="d-flex flex-column" style="flex: 2;">
+                    {{-- <a href="#" class='text-decoration-none pm-ps-add-btn text-white py-4 px-4'> --}}
+                    <button type="button" class="btn btn-primary pmaddbtn" id="pmaddbtn"><i class="fas fa-plus"></i> Add</button>
+                    {{-- </a> --}}
+                </div>
+            </div>
             <div class="row mb-4">
                 <!-- Packing Materials Table -->
                 <div class="table-responsive">
@@ -195,7 +235,7 @@
                                 <th>Amount</th>
                             </tr>
                         </thead>
-                        <tbody id="rawMaterialTable">
+                        <tbody id="packingMaterialTable">
                             @foreach($pricingData as $data)
                                 @if($data->pm_name)
                                     <tr>
@@ -278,10 +318,8 @@
                 </div>
                 <div class="col-md-3">
                     <input type="text" class="form-control" id="totalcost" value = "{{ $totalCost }}" disabled>
-
                 </div>
             </div>
-
         </div>
     </section>
 </main>
@@ -291,6 +329,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         window.editRow = editRow;
         window.saveRow = saveRow;
+        updateAmount();
         rmforRecipe();
     });
 
@@ -397,13 +436,13 @@
             codeInput.value = code || '';
             uomInput.value = uom || '';
             priceInput.value = price.toFixed(2);
-
             updateAmount();
         });
 
         // Update amount on quantity input
         quantityInput.addEventListener('input', updateAmount);
 
+        // add rawmaterial
     document.getElementById('rmaddbtn').addEventListener('click', function () {
         const product_id = productSelect.value;
         if (!product_id) {
@@ -453,7 +492,7 @@
             rpuom: rpuom,
         };
 
-        console.log(rmdata);
+        // console.log(rmdata);
         // Send data to the server
         fetch('/rm-for-recipe', {
             method: 'POST',
@@ -495,6 +534,52 @@
         });
     });
 
+     // Delete row functionality
+     tableBody.addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-icon')) {
+                const deleteIcon = e.target;
+                const row = deleteIcon.closest('tr');
+                const rmInsertedId = deleteIcon.getAttribute('data-id');
+
+                // Confirm deletion
+                if (!confirm('Are you sure you want to delete this record?')) {
+                    return;
+                }
+                // CSRF token
+                const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                if (!token) {
+                    console.error('CSRF token not found.');
+                    return;
+                }
+
+                // Send DELETE request to the server
+                fetch(`/rm-for-recipe/${rmInsertedId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': token,
+                        },
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Server response not OK');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Success:', data);
+
+                        // Remove the row from the table
+                        const amount = parseFloat(row.cells[5].textContent) || 0;
+                        row.remove();
+
+                        // Update the total cost
+                        updateTotalCost(-amount);
+                    })
+                    .catch(error => console.error('Error:', error.message));
+            }
+        });
+
      // Helper functions
      function updateAmount() {
             const price = parseFloat(priceInput.value) || 0;
@@ -505,7 +590,7 @@
         function updateTotalCost(newAmount) {
             const currentTotal = parseFloat(totalCostSpan.textContent) || 0;
             totalCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
-            updateGrandTotal();
+            // updateGrandTotal();
         }
 
         function clearFields() {

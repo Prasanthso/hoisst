@@ -72,11 +72,11 @@ class RmForRecipeController extends Controller
                 }
                 else if($isProduct == true)
                 {
-                    $rpCode = UniqueCode::generateRpCode();
+                    // $rpCode = UniqueCode::generateRpCode();
                     $rp = DB::table('recipe_master')
                     ->where('product_id', $request->product_id) // Condition to match the row(s) to update
                     ->update([
-                        'rpcode' => $rpCode,
+                        // 'rpcode' => $rpCode,
                         'Output' => $request->rpoutput,
                         'uom' => $request->rpuom,
                         'totalCost' => 0,
