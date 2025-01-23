@@ -165,43 +165,26 @@ class RmForRecipeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         try {
-           // Validate the request
-           $request->validate([
-            'raw_material_id' => 'required|exists:raw_materials,id',
-            'product_id' => 'required|exists:product_master,id',
-            'quantity' => 'required|numeric',
-            'amount' => 'required|numeric',
-            'code' => 'required|string',
-            'rpoutput' => 'required|string',
-            'rpuom' => 'required|string',
-        ]);
-            // Find the record by ID
-            $rmForRecipe = RmForRecipe::findOrFail($id);
-
-            // Dynamically update only the fields provided in the request
-            $fieldsToUpdate = $request->only([
-                'quantity',
-                'amount',
+            // Validate the request
+            $request->validate([
+                'quantity' => 'required|numeric',
             ]);
+            // dd($request);
+              // Perform the update
+                $updated = DB::table('rm_for_recipe')
+                ->where('id', $request->id)
+                ->update(['quantity' => $request->quantity]);
 
-            $rmForRecipe->update($fieldsToUpdate);
-
-            // Return success response
-            return response()->json([
-                'success' => true,
-                'message' => 'Raw Material updated successfully.',
-                'data' => $rmForRecipe,
-            ]);
+            if ($updated) {
+                return response()->json(['success' => 'Quantity updated successfully.']);
+            } else {
+                return response()->json(['error' => 'Update failed.'], 500);
+            }
         } catch (\Exception $e) {
-            // Handle exceptions gracefully
-            return response()->json([
-                'success' => false,
-                'message' => 'There was an issue updating the raw material.',
-                'error' => $e->getMessage(),
-            ], 500); // Internal Server Error
+            return response()->json(['error' => 'Internal server error'], 500);
         }
     }
 

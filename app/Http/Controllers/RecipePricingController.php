@@ -212,6 +212,7 @@ class RecipePricingController extends Controller
                     'oh_for_recipe.code as oh_code',
                     'oh_for_recipe.uom as oh_uom',
                     'oh_for_recipe.price as oh_price',
+                    'rm_for_recipe.id as rid',
                     // 'recipe_master.Output as rp_output',
                     // 'recipe_master.uom as rp_uom',
                 )
