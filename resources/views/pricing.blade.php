@@ -7,6 +7,7 @@
         <h1>Add Pricing</h1>
         <div class="row">
             <!-- Action Buttons -->
+            <!--
             <div class="d-flex justify-content-end mb-2 action-buttons">
                 <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                     <i class="fas fa-edit" style="color: black;"></i>
@@ -14,8 +15,8 @@
                 <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                     <i class="fas fa-trash" style="color: red;"></i>
                 </button>
-               <!-- <a href="{{ 'showpricing' }}"> <button class="btn btn-primary">View</button></a>-->
-            </div>
+
+            </div>-->
         </div>
     </div><!-- End Page Title -->
     <section class="section dashboard">
@@ -29,7 +30,9 @@
                     <select id="productSelect" class="form-select" aria-labelledby="productSelect">
                         <option selected disabled>Choose...</option>
                         @foreach($products as $productItem)
-                        <option value="{{ $productItem->id }}">{{ $productItem->name }}</option>
+                        <option value= "{{ $productItem->id }}" >
+                            {{ $productItem->name }}
+                        </option>
                         @endforeach
                     </select>
                 </div>
@@ -136,7 +139,7 @@
             </div>
             <div class="row mb-4">
                 <div class="col-md-3">
-                    <label for="packingmaterial" class="form-label" id="packingmaterial">Packing Material</label>
+                    <label for="packingmaterial" class="form-label">Packing Material</label>
                     <select id="packingmaterial" class="form-select">
                         <option selected disabled>Choose...</option>
                         @foreach($packingMaterials as $packingMaterialItem)
@@ -219,7 +222,7 @@
             </div>
             <div class="row mb-4">
                 <div class="col-md-3">
-                    <label for="overheads" class="form-label" id="overheads">Overheads</label>
+                    <label for="overheads" class="form-label">Overheads</label>
                     <select id="overheads" class="form-select">
                         <option selected disabled>Choose...</option>
                         @foreach($overheads as $overheadsItem)
@@ -349,8 +352,6 @@
 
         const rpoutputInput = document.getElementById('recipeOutput');
         const rpuomInput = document.getElementById('recipeUoM');
-        const rpoutput = rpoutputInput.value.trim(); // Convert to number
-        const rpuom = rpuomInput.value;
 
         productSelect.addEventListener('change', function() {
             product_id = this.value; // Update product_id with the selected value
@@ -382,6 +383,7 @@
 
         // Add raw material row to the table
         addButton.addEventListener('click', function() {
+        // console.log(product_id);
 
             if (!product_id) {
                 alert('Please select a valid product.');
@@ -395,6 +397,9 @@
             const price = parseFloat(priceInput.value) || 0;
             const amount = parseFloat(amountInput.value) || 0;
 
+            const rpoutput = rpoutputInput.value.trim(); // Convert to number
+            const rpuom = rpuomInput.value;
+            console.log("rp",rpoutput,rpuom);
             const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
             if (!token) {
@@ -431,6 +436,8 @@
                         code: code,
                         uom: uom,
                         price: price,
+                        rpoutput: rpoutput,
+                        rpuom: rpuom,
                     }),
                 })
                 .then(response => {
@@ -460,11 +467,6 @@
 
                 })
                 .catch(error => console.error('Error:', error.message));
-
-                // if(isaddRp == false)
-                // {
-                //     recipePricing();
-                // }
         });
 
         // Delete row functionality
@@ -763,7 +765,7 @@
 
             if (isAlreadyAdded) {
                 alert('This overheads has already been added to the table.');
-                clearPmFields();
+                clearOhFields();
                 return;
             }
 
@@ -961,7 +963,6 @@
             })
             .catch(error => console.error('Error:', error.message));
         }
-
 
     });
 </script>

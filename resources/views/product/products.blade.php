@@ -16,21 +16,22 @@
              <div class="alert alert-success">{{ session('success') }}</div>
              @endif
              <!-- Left side columns -->
-             <div class="col-lg-2 px-4">
+             <div class="col-lg-2 px-2 mt-5">
                  <!-- Categories Section -->
                  <div class="card" style="background-color: #EEEEEE;">
                      <div class="card-body">
                          <h5 class="card-title">Categories</h5>
                          <div class="row mb-3">
-                             <div class="col-sm-10">
-                                 <div>
-                                     <input
-                                         type="text"
-                                         id="categorySearch"
-                                         class="form-control mb-3"
-                                         placeholder="Search categories..."
-                                         onkeyup="filterCategories()" />
-                                 </div>
+                             <div class="col-sm-12">
+                                <div>
+                                    <input
+                                    type="text"
+                                    id="categorySearch"
+                                    class="form-control mb-3"
+                                    placeholder="Search categories..."
+                                    onkeyup="filterCategories()"
+                                />
+                                </div>
                                  @foreach($categoryitems as $category)
                                  <div class="form-check category-item">
                                      <input
@@ -66,7 +67,7 @@
                      </div>
 
                      <!-- Bordered Table -->
-                     <table class="table table-bordered">
+                     <table class="table table-bordered mt-2">
                          <thead class="custom-header">
                              <tr>
                                  <th class="head" scope="col">
