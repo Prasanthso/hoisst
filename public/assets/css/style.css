@@ -1269,11 +1269,16 @@ h6 {
   border: 1px solid #ddd;
 }
 
+.table-bordered th {
+  vertical-align: middle;
+}
+
 .table-bordered th,
 .table-bordered td {
   border: 1px solid #ddd;
   padding: 2px;
   text-align: center;
+  vertical-align: middle;
 }
 
 /* Header Styles */

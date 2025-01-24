@@ -14,6 +14,7 @@ use App\Http\Controllers\RecipePricingController;
 use App\Http\Controllers\RmForRecipeController;
 use App\Http\Controllers\PmForRecipeController;
 use App\Http\Controllers\OhForRecipeController;
+use App\Http\Controllers\ReportController;
 use App\Models\Overhead;
 
 /*
@@ -136,3 +137,5 @@ Route::put('/editreceipedetails/{id}', [RecipeController::class, 'update'])->nam
 Route::get('/recipe-history/{id}', [RecipeController::class, 'getRecipedetailsHistory']);
 
 Route::get('/recipepricing', [RecipePricingController::class, 'showRecipePricingList'])->name('showRecipePricingList');
+
+Route::get('/report', [ReportController::class, 'index'])->name('report.view');
