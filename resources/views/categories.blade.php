@@ -62,18 +62,18 @@
                        <!-- <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-edit" style="color: black;"></i>
                         </button>-->
-                        <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                        <!-- <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-trash" style="color: red;"></i>
-                        </button>
+                        </button> -->
                     </div>
 
                     <!-- Bordered Table -->
                     <table class="table table-bordered mt-2">
                         <thead class="custom-header">
                             <tr>
-                                <th class="head" scope="col">
+                                <!-- <th class="head" scope="col">
                                     <input type="checkbox" id="select-all" class="form-check-input">
-                                </th>
+                                </th> -->
                                 <th scope="col" style="color:white;">S.NO</th>
                                 <th scope="col" style="color:white;">Category Items</th>
                                 <th scope="col" style="color:white;">Description</th>
@@ -84,9 +84,9 @@
                         <tbody id="catagoriesTable">
                             @foreach ($categoriesitems as $index => $material)
                             <tr data-id="{{ $material->id }}">
-                                <td>
+                                <!-- <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
-                                </td>
+                                </td> -->
                                 <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO -->
                                 <td><a href="{{ route('categoryitem.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->itemname }}</a></td>
                                 <td>{{ $material->description }}</td>
