@@ -540,7 +540,7 @@
                 // Update the text to show the new quantity
                 document.getElementById('quantity-text-' + rid).textContent = quantity.toFixed(2);
                 document.getElementById('rmamount-' + rid).textContent = parseFloat(rmnewAmt).toFixed(2);
-
+                window.location.reload();
             } else {
                 alert("Error updating quantity.");
             }
@@ -684,11 +684,10 @@
                     </td>
                     </tr>`;
                     tableBody.insertAdjacentHTML('beforeend', row);
-
-                    updateTotalCost(amount); // Update the total cost after adding a row
+                    // updateTotalCost(amount); // Update the total cost after adding a row
                     clearFields();
                 alert('Raw material added successfully!');
-                //  window.location.reload();
+                 window.location.reload();
             } else {
                 alert('Failed to add raw material. Please try again.');
             }
@@ -838,6 +837,7 @@
                 // Update the text to show the new quantity
                 document.getElementById('pmquantity-text-' + pid).textContent = pmquantity.toFixed(2);
                 document.getElementById('pmamount-' + pid).textContent = parseFloat(pmnewAmt).toFixed(2);
+                window.location.reload();
             } else {
                 alert("Error updating quantity.");
             }
@@ -972,9 +972,10 @@
                         </td>
                     </tr>`;
                     packingMaterialTable.insertAdjacentHTML('beforeend', row);
-                    updatePmTotalCost(amount); // Update the total cost after adding a row
+                    // updatePmTotalCost(amount); // Update the total cost after adding a row
                     clearPmFields();
                     alert('Packing material added successfully!');
+                    window.location.reload();
                 } else {
                     alert('Failed to add packing material. Please try again.');
                 }
@@ -1121,6 +1122,7 @@
                 // Update the text to show the new quantity
                 document.getElementById('ohquantity-text-' + ohid).textContent = ohquantity.toFixed(2);
                 document.getElementById('ohamount-' + ohid).textContent = parseFloat(ohnewAmt).toFixed(2);
+                window.location.reload();
             } else {
                 alert("Error updating quantity.");
             }
@@ -1254,9 +1256,10 @@
                         </td>
                     </tr>`;
                     overheadsTable.insertAdjacentHTML('beforeend', row);
-                    updateOhTotalCost(amount); // Update the total cost after adding a row
+                    // updateOhTotalCost(amount); // Update the total cost after adding a row
                     clearOhFields();
                     alert('Overheads added successfully!');
+                    window.location.reload();
                 } else {
                     alert('Failed to add overheads. Please try again.');
                 }
@@ -1269,6 +1272,7 @@
 
     // Delete row functionality
     overheadsTable.addEventListener('click', function (e) {
+
         if (e.target.classList.contains('delete-icon')) {
             const deleteIcon = e.target;
             const row = deleteIcon.closest('tr');
@@ -1330,7 +1334,6 @@
             ohPriceInput.value = '';
             ohAmountInput.value = '';
         }
-
 }
 
 </script>
