@@ -460,14 +460,13 @@
         pmforRecipe();
         ohforRecipe();
 
-
-function updateGrandTotal() {
+        function updateGrandTotal() {
             const rawMaterialTotal = parseFloat(totalCostSpan.textContent) || 0;
             const packingMaterialTotal = parseFloat(totalPmCostSpan.textContent) || 0;
             const overheadsTotal = parseFloat(totalOhCostSpan.textContent) || 0;
             const grandTotal = rawMaterialTotal + packingMaterialTotal + overheadsTotal; // Add other totals if needed
             totalCostInput.value = grandTotal.toFixed(2); // Display in Total Cost (A+B+C)
-}
+        }
     });
 
     // raw materials recipe-pricing details
@@ -506,7 +505,7 @@ function updateGrandTotal() {
         document.querySelector(`#cancel-${rid}`).style.display = 'none';
         // Optionally log the action for debugging purposes
         // console.log(`Edit for row with PID ${pid} canceled. Value reverted to: ${originalValue}`);
-        updateGrandTotal();
+
     }
 
     // Function to save the edited data
@@ -541,6 +540,7 @@ function updateGrandTotal() {
                 // Update the text to show the new quantity
                 document.getElementById('quantity-text-' + rid).textContent = quantity.toFixed(2);
                 document.getElementById('rmamount-' + rid).textContent = parseFloat(rmnewAmt).toFixed(2);
+
             } else {
                 alert("Error updating quantity.");
             }
@@ -560,7 +560,6 @@ function updateGrandTotal() {
         document.querySelector(`#cancel-${rid}`).style.display = 'none';
         document.querySelector(`#edit-${rid}`).style.display = 'inline-block';
         document.querySelector(`#delete-${rid}`).style.display = 'inline-block';
-
     }
 
     // raw materials recipe-pricing function
@@ -575,9 +574,8 @@ function updateGrandTotal() {
         const amountInput = document.getElementById('rmAmount');
         const addButton = document.getElementById('rmaddbtn');
         const tableBody = document.getElementById('rawMaterialTable');
-        // const totalCostSpan = document.getElementById('totalRmCost');
+        const totalCostSpan = document.getElementById('totalRmCost');
         const totalCostInput = document.getElementById('totalcost'); // Total Cost (A+B+C)
-
         const rpoutputInput = document.getElementById('recipeOutput');
         const rpuomInput = document.getElementById('recipeUoM');
 
@@ -686,9 +684,11 @@ function updateGrandTotal() {
                     </td>
                     </tr>`;
                     tableBody.insertAdjacentHTML('beforeend', row);
+
                     updateTotalCost(amount); // Update the total cost after adding a row
                     clearFields();
                 alert('Raw material added successfully!');
+                //  window.location.reload();
             } else {
                 alert('Failed to add raw material. Please try again.');
             }
@@ -733,11 +733,9 @@ function updateGrandTotal() {
                     })
                     .then(data => {
                         console.log('Success:', data);
-
                         // Remove the row from the table
                         const amount = parseFloat(row.cells[5].textContent) || 0;
                         row.remove();
-
                         // Update the total cost
                         updateTotalCost(-amount);
                     })
@@ -751,13 +749,11 @@ function updateGrandTotal() {
             const quantity = parseFloat(quantityInput.value) || 0;
             amountInput.value = (price * quantity).toFixed(2);
         }
-
         function updateTotalCost(newAmount) {
             const currentTotal = parseFloat(totalCostSpan.textContent) || 0;
             totalCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
             updateGrandTotal();
         }
-
         function clearFields() {
             // Clear select dropdown
             rawMaterialSelect.value = rawMaterialSelect.options[0].value; // Set to the first option (usually the placeholder)
@@ -768,7 +764,6 @@ function updateGrandTotal() {
             priceInput.value = '';
             amountInput.value = '';
         }
-
     }
 
      // Packing materials details
@@ -1027,7 +1022,6 @@ function updateGrandTotal() {
                     // Remove the row from the table
                     const amount = parseFloat(row.cells[5].textContent) || 0;
                     row.remove();
-
                     // Update the total cost
                     updatePmTotalCost(-amount);
                 })
