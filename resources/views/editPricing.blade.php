@@ -133,8 +133,8 @@
                                             </td>
                                             <td>{{ $data->rm_code }}</td>
                                             <td>{{ $data->rm_uom ?? 'N/A' }}</td>
-                                            <td>{{ $data->rm_price }}</td>
-                                            <td>{{ $amount }}</td>
+                                            <td id="rmprice-{{ $data->rid }}">{{ $data->rm_price }}</td>
+                                            <td class="rmamountcell" id="rmamount-{{ $data->rid }}">{{ $amount }}</td>
                                             <td>
                                                 <!-- Action Buttons -->
                                                 <span
@@ -153,8 +153,10 @@
                                                 onclick="saveRow('{{ $data->rm_id }}', '{{ $data->rid }}')">
                                                 &#x2714;
                                             </span>
-                                            <span class="delete-icon" style="cursor: pointer; color: red;" title="Remove Row" data-id="{{ $data->rid }}">&#x1F5D1;</span>
-                                            </td>
+                                            <span class="delete-icon" id="delete-{{ $data->rid }}" style="cursor: pointer; color: red;" title="Remove Row" data-id="{{ $data->rid }}">&#x1F5D1;</span>
+                                            <span class="cancel-icon" id="cancel-{{ $data->rid }}" style="cursor: pointer; color: blue; display:none;" title="Cancel"
+                                                data-id="{{ $data->rid }}" onclick="cancelRow('{{ $data->rm_id }}', '{{ $data->rid }}')">&#x2716;</span>
+                                        </td>
                                         </tr>
                                     @endif
                                 @endforeach
@@ -255,8 +257,8 @@
                                         </td>
                                         <td>{{ $data->pm_code }}</td>
                                         <td>{{ $data->pm_uom ?? 'N/A' }}</td>
-                                        <td>{{ $data->pm_price }}</td>
-                                        <td class="pmamount-cell">{{ $amount }}</td>
+                                        <td id="pmprice-{{ $data->pid }}">{{ $data->pm_price }}</td>
+                                        <td id="pmamount-{{ $data->pid }}">{{ $amount }}</td>
                                         <td>
                                             <!-- Action Buttons -->
                                             <span
@@ -275,7 +277,9 @@
                                                 onclick="pm_saveRow('{{ $data->pm_id }}', '{{ $data->pid }}')">
                                                 &#x2714;
                                             </span>
-                                            <span class="delete-icon" style="cursor: pointer; color: red;" title="Remove Row" data-id="{{ $data->pid }}">&#x1F5D1;</span>
+                                            <span class="delete-icon" id="pmdelete-{{ $data->pid }}" style="cursor: pointer; color: red;" title="Remove Row" data-id="{{ $data->pid }}">&#x1F5D1;</span>
+                                            <span class="cancel-icon" id="pmcancel-{{ $data->pid }}" style="cursor: pointer; color: blue; display:none;" title="Cancel"
+                                                 data-id="{{ $data->pid }}" onclick="pm_cancelRow('{{ $data->pm_id }}', '{{ $data->pid }}')">&#x2716;</span>
                                         </td>
                                     </tr>
                                 @endif
@@ -364,7 +368,7 @@
                                 <th>Amount</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="overheadsTable">
                             @php $ohTotal = 0;
                                 $filteredData = collect($pricingData)->unique('ohid')->values();
                                  @endphp
@@ -373,14 +377,39 @@
                                     @php
                                     $amount = $data->oh_quantity * $data->oh_price;
                                     $ohTotal += $amount;
-                                @endphp
+                                        @endphp
                                     <tr>
                                         <td>{{ $data->oh_name }}</td>
-                                        <td>{{ $data->oh_quantity }}</td>
+                                        <td class="ohquantity-cell" id="ohquantity-cell-{{ $data->ohid }}">
+                                            <span id="ohquantity-text-{{ $data->ohid }}">{{ $data->oh_quantity }}</span>
+                                            <input type="number" class="form-control ohquantity-input" id="ohquantity-{{ $data->ohid }}" value="{{ $data->oh_quantity }}" style="display: none;" disabled>
+                                        </td>
                                         <td>{{ $data->oh_code }}</td>
                                         <td>{{ $data->oh_uom ?? 'N/A' }}</td>
-                                        <td>{{ $data->oh_price }}</td>
-                                        <td>{{ $data->oh_quantity * $data->oh_price }}</td>
+                                        <td id="ohprice-{{ $data->ohid }}">{{ $data->oh_price }}</td>
+                                        <td id="ohamount-{{ $data->ohid }}">{{ $amount }}</td>
+                                        <td>
+                                            <!-- Action Buttons -->
+                                            <span
+                                                class="icon-action oh-edit-btn"
+                                                id="ohedit-{{ $data->ohid }}"
+                                                style="cursor: pointer; color: blue;"
+                                                title="Edit Row"
+                                                onclick="oh_editRow('{{ $data->oh_id }}', '{{ $data->ohid }}')">
+                                                &#9998;
+                                            </span>
+                                            <span
+                                                class="icon-action oh-save-btn"
+                                                id="ohsave-{{ $data->ohid }}"
+                                                style="cursor: pointer; color: green; display:none;"
+                                                title="Save Row"
+                                                onclick="oh_saveRow('{{ $data->oh_id }}', '{{ $data->ohid }}')">
+                                                &#x2714;
+                                            </span>
+                                            <span class="delete-icon" id="ohdelete-{{ $data->ohid }}" style="cursor: pointer; color: red;" title="Remove Row" data-id="{{ $data->ohid }}">&#x1F5D1;</span>
+                                            <span class="cancel-icon" id="ohcancel-{{ $data->ohid }}" style="cursor: pointer; color: blue; display:none;" title="Cancel"
+                                                 data-id="{{ $data->ohid }}"  onclick="oh_cancelRow('{{ $data->oh_id }}', '{{ $data->ohid }}')">&#x2716;</span>
+                                        </td>
                                     </tr>
                                 @endif
                             @endforeach
@@ -392,6 +421,9 @@
                             @endif
                         </tbody>
                     </table>
+                    <div class="text-end" style="background-color:#F1F1F1; width:90%;">
+                        <strong>OH Cost (C) : </strong> <span id="totalohCost">{{ $ohTotal }}</span>
+                    </div>
                 </div>
             </div>
 
@@ -400,7 +432,7 @@
                     <label for="totalcost" class="form-label">Total Cost (A+B+C):</label>
                 </div>
                 <div class="col-md-3">
-                    <input type="text" class="form-control" id="totalcost" value = "{{ $totalCost }}" disabled>
+                    <input type="text" class="form-control" id="totalcost" value = "{{ $rmTotal+$pmTotal+$ohTotal }}" disabled>
                 </div>
             </div>
         </div>
@@ -410,6 +442,10 @@
 <script>
     // Ensure functions are available in the global scope
     document.addEventListener('DOMContentLoaded', function () {
+        const totalCostSpan = document.getElementById('totalRmCost');
+        const totalPmCostSpan = document.getElementById('totalPmCost');
+        const totalOhCostSpan = document.getElementById('totalohCost');
+        const totalCostInput = document.getElementById('totalcost');
 
         window.editRow = editRow;
         window.saveRow = saveRow;
@@ -417,10 +453,24 @@
         window.pm_editRow = pm_editRow;
         window.pm_saveRow = pm_saveRow;
 
+        window.oh_editRow = oh_editRow;
+        window.oh_saveRow = oh_saveRow;
+
         rmforRecipe();
         pmforRecipe();
+        ohforRecipe();
+
+
+function updateGrandTotal() {
+            const rawMaterialTotal = parseFloat(totalCostSpan.textContent) || 0;
+            const packingMaterialTotal = parseFloat(totalPmCostSpan.textContent) || 0;
+            const overheadsTotal = parseFloat(totalOhCostSpan.textContent) || 0;
+            const grandTotal = rawMaterialTotal + packingMaterialTotal + overheadsTotal; // Add other totals if needed
+            totalCostInput.value = grandTotal.toFixed(2); // Display in Total Cost (A+B+C)
+}
     });
 
+    // raw materials recipe-pricing details
     // Function to enable editing for a specific row
     function editRow(id, rid) {
         // Hide the text and show the input field
@@ -432,14 +482,41 @@
 
         // Show the save button and hide the edit button
         document.querySelector(`#save-${rid}`).style.display = 'inline-block';
+        document.querySelector(`#cancel-${rid}`).style.display = 'inline-block';
         document.querySelector(`#edit-${rid}`).style.display = 'none';
+        document.querySelector(`#delete-${rid}`).style.display = 'none';
+    }
+        function cancelRow(id,rid) {
+        // Hide the input field and show the static text
+        document.getElementById('quantity-' + rid).style.display = 'none';
+        document.getElementById('quantity-text-' + rid).style.display = 'inline-block';
+
+        // Reset the input field value to match the static text value (original value)
+        const originalValue = document.getElementById('quantity-text-' + rid).innerText.trim();
+        document.getElementById('quantity-' + rid).value = originalValue;
+        // Disable the input field to ensure it's not editable in view mode
+        document.getElementById('quantity-' + rid).disabled = true;
+
+        // Show the "Edit" and "Delete" buttons
+        document.querySelector(`#edit-${rid}`).style.display = 'inline-block';
+        document.querySelector(`#delete-${rid}`).style.display = 'inline-block';
+
+        // Hide the "Save" and "Cancel" buttons
+        document.querySelector(`#save-${rid}`).style.display = 'none';
+        document.querySelector(`#cancel-${rid}`).style.display = 'none';
+        // Optionally log the action for debugging purposes
+        // console.log(`Edit for row with PID ${pid} canceled. Value reverted to: ${originalValue}`);
+        updateGrandTotal();
     }
 
     // Function to save the edited data
     function saveRow(id, rid) {
         const quantityInput = document.getElementById('quantity-' + rid);
         const quantity = parseFloat(quantityInput.value); // Get and parse the input value
-
+        const rmpriceInput = document.getElementById('rmprice-' + rid); // Get the price cell element
+        const rmprice = parseFloat(rmpriceInput.innerText) || 0;
+              const rmnewAmt = (rmprice * quantity).toFixed(2);
+            console.log('Quantity & price & Amount:', quantity,rmprice,rmnewAmt);
         // Perform validation
         if (isNaN(quantity) || quantity <= 0) {
             alert('Please enter a valid quantity greater than 0.');
@@ -455,18 +532,15 @@
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': token
             },
-            body: JSON.stringify({ quantity: quantity }),
+            body: JSON.stringify({ quantity: quantity,amount: rmnewAmt, }),
         })
         .then((response) => response.json())
         .then((data) => {
             if (data.success) {
                 alert("Quantity updated successfully.");
-
                 // Update the text to show the new quantity
                 document.getElementById('quantity-text-' + rid).textContent = quantity.toFixed(2);
-
-                // Update any other fields if needed, e.g., amount
-                // document.querySelector(`#amount-cell-${rid}`).textContent = data.newAmount.toFixed(2);
+                document.getElementById('rmamount-' + rid).textContent = parseFloat(rmnewAmt).toFixed(2);
             } else {
                 alert("Error updating quantity.");
             }
@@ -483,9 +557,13 @@
 
         // Hide the save button and show the edit button again
         document.querySelector(`#save-${rid}`).style.display = 'none';
+        document.querySelector(`#cancel-${rid}`).style.display = 'none';
         document.querySelector(`#edit-${rid}`).style.display = 'inline-block';
+        document.querySelector(`#delete-${rid}`).style.display = 'inline-block';
+
     }
-    // raw materials recipe-pricing details
+
+    // raw materials recipe-pricing function
     function rmforRecipe()
     {
         const productSelect = document.getElementById('productSelect');
@@ -497,7 +575,7 @@
         const amountInput = document.getElementById('rmAmount');
         const addButton = document.getElementById('rmaddbtn');
         const tableBody = document.getElementById('rawMaterialTable');
-        const totalCostSpan = document.getElementById('totalRmCost');
+        // const totalCostSpan = document.getElementById('totalRmCost');
         const totalCostInput = document.getElementById('totalcost'); // Total Cost (A+B+C)
 
         const rpoutputInput = document.getElementById('recipeOutput');
@@ -617,7 +695,7 @@
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('An error occurred while adding raw material.');
+            // alert('An error occurred while adding raw material.');
         });
     });
 
@@ -677,7 +755,7 @@
         function updateTotalCost(newAmount) {
             const currentTotal = parseFloat(totalCostSpan.textContent) || 0;
             totalCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
-            // updateGrandTotal();
+            updateGrandTotal();
         }
 
         function clearFields() {
@@ -690,8 +768,10 @@
             priceInput.value = '';
             amountInput.value = '';
         }
+
     }
 
+     // Packing materials details
     function pm_editRow(id, pid) {
         // Hide the text and show the input field
         document.getElementById('pmquantity-text-' + pid).style.display = 'none';
@@ -703,12 +783,42 @@
         // Show the save button and hide the edit button
         document.querySelector(`#pmsave-${pid}`).style.display = 'inline-block';
         document.querySelector(`#pmedit-${pid}`).style.display = 'none';
+        document.querySelector(`#pmcancel-${pid}`).style.display = 'inline-block';
+        document.querySelector(`#pmdelete-${pid}`).style.display = 'none';
     }
+
+        function pm_cancelRow(id,pid) {
+        // Hide the input field and show the static text
+        document.getElementById('pmquantity-' + pid).style.display = 'none';
+        document.getElementById('pmquantity-text-' + pid).style.display = 'inline-block';
+
+        // Reset the input field value to match the static text value (original value)
+        const originalValue = document.getElementById('pmquantity-text-' + pid).innerText.trim();
+        document.getElementById('pmquantity-' + pid).value = originalValue;
+
+        // Disable the input field to ensure it's not editable in view mode
+        document.getElementById('pmquantity-' + pid).disabled = true;
+
+        // Show the "Edit" and "Delete" buttons
+        document.querySelector(`#pmedit-${pid}`).style.display = 'inline-block';
+        document.querySelector(`#pmdelete-${pid}`).style.display = 'inline-block';
+        // Hide the "Save" and "Cancel" buttons
+        document.querySelector(`#pmsave-${pid}`).style.display = 'none';
+        document.querySelector(`#pmcancel-${pid}`).style.display = 'none';
+        // Optionally log the action for debugging purposes
+        // console.log(`Edit for row with PID ${pid} canceled. Value reverted to: ${originalValue}`);
+    }
+
     // Function to save the edited data
     function pm_saveRow(id, pid) {
         const pmquantityInput = document.getElementById('pmquantity-' + pid);
         const pmquantity = parseFloat(pmquantityInput.value); // Get and parse the input value
-
+        const pmpriceInput = document.getElementById('pmprice-' + pid); // Get the price cell element
+        const pmprice = parseFloat(pmpriceInput.innerText) || 0;
+            // Calculate the new amount
+            const pmnewAmt = (pmprice * pmquantity).toFixed(2);
+            // Log the values for debugging
+            console.log('pm-Quantity & price & Amount:', pmquantity,pmprice,pmnewAmt);
         // Perform validation
         if (isNaN(pmquantity) || pmquantity <= 0) {
             alert('Please enter a valid quantity greater than 0.');
@@ -724,7 +834,7 @@
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': token
             },
-            body: JSON.stringify({ quantity: pmquantity }),
+            body: JSON.stringify({ quantity: pmquantity, amount:pmnewAmt, }),
         })
         .then((response) => response.json())
         .then((data) => {
@@ -732,7 +842,7 @@
                 alert("Quantity updated successfully.");
                 // Update the text to show the new quantity
                 document.getElementById('pmquantity-text-' + pid).textContent = pmquantity.toFixed(2);
-
+                document.getElementById('pmamount-' + pid).textContent = parseFloat(pmnewAmt).toFixed(2);
             } else {
                 alert("Error updating quantity.");
             }
@@ -750,10 +860,11 @@
         // Hide the save button and show the edit button again
         document.querySelector(`#pmsave-${pid}`).style.display = 'none';
         document.querySelector(`#pmedit-${pid}`).style.display = 'inline-block';
+        document.querySelector(`#pmcancel-${pid}`).style.display = 'none';
+        document.querySelector(`#pmdelete-${pid}`).style.display = 'inline-block';
     }
 
-    // packing materials details
-    function pmforRecipe() {
+       function pmforRecipe() {
         // const productSelect = document.getElementById('productSelect');
         const packingMaterialSelect = document.getElementById('packingmaterial');
         const pmQuantityInput = document.getElementById('pmQuantity');
@@ -875,7 +986,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred while adding packing material.');
+                // alert('An error occurred while adding packing material.');
             });
     });
 
@@ -943,6 +1054,289 @@
             pmPriceInput.value = '';
             pmAmountInput.value = '';
         }
+
+}
+
+    function oh_editRow(id, ohid) {
+        // Hide the text and show the input field
+        document.getElementById('ohquantity-text-' + ohid).style.display = 'none';
+        document.getElementById('ohquantity-' + ohid).style.display = 'inline-block';
+
+        // Enable the input field
+        document.getElementById('ohquantity-' + ohid).disabled = false;
+
+        // Show the save button and hide the edit button
+        document.querySelector(`#ohsave-${ohid}`).style.display = 'inline-block';
+        document.querySelector(`#ohedit-${ohid}`).style.display = 'none';
+        document.querySelector(`#ohcancel-${ohid}`).style.display = 'inline-block';
+        document.querySelector(`#ohdelete-${ohid}`).style.display = 'none';
+    }
+
+    function oh_cancelRow(id,ohid) {
+        // Hide the input field and show the static text
+        document.getElementById('ohquantity-' + ohid).style.display = 'none';
+        document.getElementById('ohquantity-text-' + ohid).style.display = 'inline-block';
+
+        // Reset the input field value to match the static text value (original value)
+        const originalValue = document.getElementById('ohquantity-text-' + ohid).innerText.trim();
+        document.getElementById('ohquantity-' + ohid).value = originalValue;
+
+        // Disable the input field to ensure it's not editable in view mode
+        document.getElementById('ohquantity-' + ohid).disabled = true;
+
+        // Show the "Edit" and "Delete" buttons
+        document.querySelector(`#ohedit-${ohid}`).style.display = 'inline-block';
+        document.querySelector(`#ohdelete-${ohid}`).style.display = 'inline-block';
+        // Hide the "Save" and "Cancel" buttons
+        document.querySelector(`#ohsave-${ohid}`).style.display = 'none';
+        document.querySelector(`#ohcancel-${ohid}`).style.display = 'none';
+        // Optionally log the action for debugging purposes
+        // console.log(`Edit for row with PID ${pid} canceled. Value reverted to: ${originalValue}`);
+    }
+    // Function to save the edited data
+    function oh_saveRow(id, ohid) {
+        const ohquantityInput = document.getElementById('ohquantity-' + ohid);
+        const ohquantity = parseFloat(ohquantityInput.value); // Get and parse the input value
+        const ohpriceInput = document.getElementById('ohprice-' + ohid); // Get the price cell element
+         const ohprice = parseFloat(ohpriceInput.innerText) || 0;
+            // Calculate the new amount
+            const ohnewAmt = (ohprice * ohquantity).toFixed(2);
+            // Log the values for debugging
+            console.log('Quantity & price & Amount:', ohquantity,ohprice,ohnewAmt);
+        // Perform validation
+        if (isNaN(ohquantity) || ohquantity <= 0) {
+            alert('Please enter a valid quantity greater than 0.');
+            return;
+        }
+        // Get CSRF token from the meta tag
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+        // Send data to the server via a POST request
+        fetch(`/oh-update-pricing/${ohid}`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token
+            },
+            body: JSON.stringify({ quantity: ohquantity, amount: ohnewAmt,}),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                alert("Quantity updated successfully.");
+                // Update the text to show the new quantity
+                document.getElementById('ohquantity-text-' + ohid).textContent = ohquantity.toFixed(2);
+                document.getElementById('ohamount-' + ohid).textContent = parseFloat(ohnewAmt).toFixed(2);
+            } else {
+                alert("Error updating quantity.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            alert("An unexpected error occurred while updating quantity.");
+        });
+
+        // Disable the input again and revert UI changes
+        ohquantityInput.disabled = true;
+
+        document.getElementById('ohquantity-text-' + ohid).style.display = 'inline-block'; // Show the text
+        document.getElementById('ohquantity-' + ohid).style.display = 'none'; // Hide the input
+        // Hide the save button and show the edit button again
+        document.querySelector(`#ohsave-${ohid}`).style.display = 'none';
+        document.querySelector(`#ohedit-${ohid}`).style.display = 'inline-block';
+        document.querySelector(`#ohcancel-${ohid}`).style.display = 'none';
+        document.querySelector(`#ohdelete-${ohid}`).style.display = 'inline-block';
+    }
+
+    function ohforRecipe() {
+        // const productSelect = document.getElementById('productSelect');
+        const overheadsSelect = document.getElementById('overheads');
+        const ohQuantityInput = document.getElementById('ohQuantity');
+        const ohCodeInput = document.getElementById('ohCode');
+        const ohUoMInput = document.getElementById('ohUoM');
+        const ohPriceInput = document.getElementById('ohPrice');
+        const ohAmountInput = document.getElementById('ohAmount');
+        const ohAddButton = document.getElementById('ohaddbtn');
+        const overheadsTable = document.getElementById('overheadsTable');
+        const totalOhCostSpan = document.getElementById('totalohCost');
+
+        productSelect.addEventListener('change', function () {
+            const product_id = this.value; // Update product_id with the selected value
+            console.log('Selected product ID:', product_id); // Debug log to check the selected value
+        });
+
+    // Update fields when packing material is selected
+    overheadsSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.disabled) {
+                clearOhFields();
+                return;
+            }
+            const code = selectedOption.getAttribute('data-code');
+            const uom = selectedOption.getAttribute('data-uom');
+            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+            ohCodeInput.value = code || '';
+            ohUoMInput.value = uom || '';
+            ohPriceInput.value = price.toFixed(2);
+            updateOhAmount();
+        });
+
+    // Update amount on quantity input
+    ohQuantityInput.addEventListener('input', updateOhAmount);
+
+    // Add packing material
+    ohAddButton.addEventListener('click', function () {
+        const product_id = productSelect.value;
+        if (!product_id) {
+            alert('Please select a valid product.');
+            return;
+        }
+        const overheadsId = overheadsSelect.value;
+            const overheadsName = overheadsSelect.options[overheadsSelect.selectedIndex]?.text;
+            const quantity = parseFloat(ohQuantityInput.value) || 0;
+            const code = ohCodeInput.value;
+            const uom = ohUoMInput.value;
+            const price = parseFloat(ohPriceInput.value) || 0;
+            const amount = parseFloat(ohAmountInput.value) || 0;
+
+            if (!overheadsName || !quantity || !code || !uom || !price || !amount) {
+                alert('Please fill all fields before adding.');
+                return;
+            }
+
+            const rows = Array.from(overheadsTable.querySelectorAll('tr'));
+            const isAlreadyAdded = rows.some(row => row.cells[0].textContent === overheadsName);
+            if (isAlreadyAdded) {
+                alert('This overheads has already been added to the table.');
+                clearOhFields();
+                return;
+            }
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (!token) {
+                console.error('CSRF token not found.');
+                return;
+            }
+            if (!overheadsId || quantity <= 0 || amount <= 0) {
+                alert('Please select a valid overheads and fill all fields correctly.');
+                return;
+            }
+
+
+        // Prepare data for server request
+        const ohData = {
+                product_id: product_id,
+                overheads_id: overheadsId,
+                quantity: quantity,
+                amount: amount,
+               code: code,
+              uom: uom,
+              price: price,
+        };
+
+        // Send data to the server
+        fetch('/oh-for-recipe', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+            },
+            body: JSON.stringify(ohData),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Success:', data);
+                    const insertedId = data.inserted_id;
+                    // Add row to the table
+                    const row = `<tr>
+                        <td>${overheadsName}</td>
+                        <td>${quantity}</td>
+                        <td>${code}</td>
+                        <td>${uom}</td>
+                        <td>${price.toFixed(2)}</td>
+                        <td>${amount.toFixed(2)}</td>
+                        <td>
+                            <span class="delete-icon" style="cursor: pointer; color: red;" title="Remove Row" data-id="${insertedId}">&#x1F5D1;</span>
+                        </td>
+                    </tr>`;
+                    overheadsTable.insertAdjacentHTML('beforeend', row);
+                    updateOhTotalCost(amount); // Update the total cost after adding a row
+                    clearOhFields();
+                    alert('Overheads added successfully!');
+                } else {
+                    alert('Failed to add overheads. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // alert('An error occurred while adding overheads.');
+            });
+    });
+
+    // Delete row functionality
+    overheadsTable.addEventListener('click', function (e) {
+        if (e.target.classList.contains('delete-icon')) {
+            const deleteIcon = e.target;
+            const row = deleteIcon.closest('tr');
+            const insertedId = deleteIcon.getAttribute('data-id');
+
+            // Confirm deletion
+            if (!confirm('Are you sure you want to delete this record?')) {
+                return;
+            }
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (!token) {
+                console.error('CSRF token not found.');
+                return;
+            }
+
+            // Send DELETE request to the server
+            fetch(`/oh-for-recipe/${insertedId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                },
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server response not OK');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Success:', data);
+
+                    // Remove the row from the table
+                    const amount = parseFloat(row.cells[5].textContent) || 0;
+                    row.remove();
+
+                    // Update the total cost
+                    updateOhTotalCost(-amount);
+                })
+                .catch(error => console.error('Error:', error.message));
+        }
+    });
+
+        function updateOhAmount() {
+            const price = parseFloat(ohPriceInput.value) || 0;
+            const quantity = parseFloat(ohQuantityInput.value) || 0;
+            ohAmountInput.value = (price * quantity).toFixed(2);
+        }
+        function updateOhTotalCost(newAmount) {
+            const currentTotal = parseFloat(totalOhCostSpan.textContent) || 0;
+            totalOhCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
+            updateGrandTotal();
+        }
+        function clearOhFields() {
+            overheadsSelect.value = '';
+            ohQuantityInput.value = '';
+            ohCodeInput.value = '';
+            ohUoMInput.value = '';
+            ohPriceInput.value = '';
+            ohAmountInput.value = '';
+        }
+
 }
 
 </script>

@@ -104,6 +104,9 @@ class RecipePricingController extends Controller
                     'oh_for_recipe.uom as oh_uom',
                     'oh_for_recipe.price as oh_price',
                     'rm_for_recipe.amount as rm_amount',
+                    'rm_for_recipe.id as rid',
+                    'pm_for_recipe.id as pid',
+                    'oh_for_recipe.id as ohid',
                 )
                 ->get();
 

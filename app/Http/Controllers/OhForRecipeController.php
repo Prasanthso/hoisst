@@ -7,6 +7,7 @@ use App\Models\CategoryItems;
 use App\Models\OhForRecipe;
 use App\Models\UniqueCode;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class OhForRecipeController extends Controller
 {
@@ -97,12 +98,15 @@ class OhForRecipeController extends Controller
             // Validate the request
             $request->validate([
                 'quantity' => 'required|numeric',
+                'amount' => 'required|numeric',
             ]);
             // dd($request);
               // Perform the update
                 $updated = DB::table('oh_for_recipe')
                 ->where('id', $request->id)
-                ->update(['quantity' => $request->quantity]);
+                ->update(['quantity' => $request->quantity,
+                            'amount' => $request->amount,
+                           'updated_at' => Carbon::now(),]);
 
             if ($updated) {
                 return response()->json(['success' => 'Quantity updated successfully.']);

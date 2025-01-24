@@ -765,7 +765,7 @@
 
             if (isAlreadyAdded) {
                 alert('This overheads has already been added to the table.');
-                clearPmFields();
+                clearOhFields();
                 return;
             }
 

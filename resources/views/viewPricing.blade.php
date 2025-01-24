@@ -58,16 +58,23 @@
                                 <th>Amount</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach($pricingData as $data)
-                            @if($data->rm_name)
-                            <tr>
-                                <td>{{ $data->rm_name }}</td>
-                                <td>{{ $data->rm_quantity }}</td>
-                                <td>{{ $data->rm_code }}</td>
-                                <td>{{ $data->rm_uom ?? 'N/A' }}</td>
-                                <td>{{ $data->rm_price }}</td>
-                                <td>{{ $data->rm_quantity * $data->rm_price }}</td>
+                        <tbody id="rawMaterialTable">
+                            @php $rmTotal = 0;
+                            $filteredData = collect($pricingData)->unique('rid')->values();
+                             @endphp
+                            @foreach($filteredData as $data)
+                                @if($data->rm_name)
+                                @php
+                                    $amount = $data->rm_quantity * $data->rm_price;
+                                    $rmTotal += $amount;
+                                 @endphp
+                                <tr>
+                                    <td>{{ $data->rm_name }}</td>
+                                    <td>{{ $data->rm_quantity }}</td>
+                                    <td>{{ $data->rm_code }}</td>
+                                    <td>{{ $data->rm_uom ?? 'N/A' }}</td>
+                                    <td>{{ $data->rm_price }}</td>
+                                    <td>{{ $amount }}</td>
                             </tr>
                             @endif
                             @endforeach
@@ -96,16 +103,23 @@
                                 <th>Amount</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach($pricingData as $data)
-                            @if($data->pm_name)
-                            <tr>
-                                <td>{{ $data->pm_name }}</td>
-                                <td>{{ $data->pm_quantity }}</td>
-                                <td>{{ $data->pm_code }}</td>
-                                <td>{{ $data->pm_uom ?? 'N/A' }}</td>
-                                <td>{{ $data->pm_price }}</td>
-                                <td>{{ $data->pm_quantity * $data->pm_price }}</td>
+                        <tbody id="packingMaterialTable">
+                            @php
+                            $filteredData = collect($pricingData)->unique('pid')->values();
+                            $pmTotal = 0; @endphp
+                           @foreach($filteredData  as $data)
+                               @if($data->pm_name)
+                               @php
+                                   $amount = $data->pm_quantity * $data->pm_price;
+                                    $pmTotal += $amount;
+                                @endphp
+                                <tr>
+                                    <td>{{ $data->pm_name }}</td>
+                                    <td>{{ $data->pm_quantity }}</td>
+                                    <td>{{ $data->pm_code }}</td>
+                                    <td>{{ $data->pm_uom ?? 'N/A' }}</td>
+                                    <td>{{ $data->pm_price }}</td>
+                                    <td>{{ $data->pm_quantity * $data->pm_price }}</td>
                             </tr>
                             @endif
                             @endforeach
@@ -134,16 +148,23 @@
                                 <th>Amount</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach($pricingData as $data)
-                            @if($data->oh_name)
-                            <tr>
-                                <td>{{ $data->oh_name }}</td>
-                                <td>{{ $data->oh_quantity }}</td>
-                                <td>{{ $data->oh_code }}</td>
-                                <td>{{ $data->oh_uom ?? 'N/A' }}</td>
-                                <td>{{ $data->oh_price }}</td>
-                                <td>{{ $data->oh_quantity * $data->oh_price }}</td>
+                        <tbody id="overheadsTable">
+                            @php $ohTotal = 0;
+                                $filteredData = collect($pricingData)->unique('ohid')->values();
+                                 @endphp
+                            @foreach($filteredData as $data)
+                                @if($data->oh_name)
+                                    @php
+                                    $amount = $data->oh_quantity * $data->oh_price;
+                                    $ohTotal += $amount;
+                                @endphp
+                                <tr>
+                                    <td>{{ $data->oh_name }}</td>
+                                    <td>{{ $data->oh_quantity }}</td>
+                                    <td>{{ $data->oh_code }}</td>
+                                    <td>{{ $data->oh_uom ?? 'N/A' }}</td>
+                                    <td>{{ $data->oh_price }}</td>
+                                    <td>{{ $amount }}</td>
                             </tr>
                             @endif
                             @endforeach
@@ -163,7 +184,7 @@
                     <label for="totalcost" class="form-label">Total Cost (A+B+C):</label>
                 </div>
                 <div class="col-md-3">
-                    <input type="text" class="form-control" id="totalcost" value="{{ $totalCost }}" disabled>
+                    <input type="text" class="form-control" id="totalcost" value="{{ $rmTotal+$pmTotal+$ohTotal }}" disabled>
                 </div>
             </div>
             @else
