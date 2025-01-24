@@ -23,79 +23,82 @@ class RawMaterialController extends Controller
             // Get selected category IDs from the request
             $selectedCategoryIds = $request->input('category_ids', []);
 
-            // If no categories are selected, return all raw materials
+            // If no categories are selected, return all raw materials with status 'active'
             if (empty($selectedCategoryIds)) {
                 $rawMaterials = DB::table('raw_materials as rm')
-                    ->leftJoin('categoryitems as c1', 'rm.category_id1', '=', 'c1.id')
-                    ->leftJoin('categoryitems as c2', 'rm.category_id2', '=', 'c2.id')
-                    ->leftJoin('categoryitems as c3', 'rm.category_id3', '=', 'c3.id')
-                    ->leftJoin('categoryitems as c4', 'rm.category_id4', '=', 'c4.id')
-                    ->leftJoin('categoryitems as c5', 'rm.category_id5', '=', 'c5.id')
-                    ->leftJoin('categoryitems as c6', 'rm.category_id6', '=', 'c6.id')
-                    ->leftJoin('categoryitems as c7', 'rm.category_id7', '=', 'c7.id')
-                    ->leftJoin('categoryitems as c8', 'rm.category_id8', '=', 'c8.id')
-                    ->leftJoin('categoryitems as c9', 'rm.category_id9', '=', 'c9.id')
-                    ->leftJoin('categoryitems as c10', 'rm.category_id10', '=', 'c10.id')
-                    ->select(
-                        'rm.id',
-                        'rm.name',
-                        'rm.rmcode',
-                        'rm.price',
-                        'rm.uom',
-                        'c1.itemname as category_name1',
-                        'c2.itemname as category_name2',
-                        'c3.itemname as category_name3',
-                        'c4.itemname as category_name4',
-                        'c5.itemname as category_name5',
-                        'c6.itemname as category_name6',
-                        'c7.itemname as category_name7',
-                        'c8.itemname as category_name8',
-                        'c9.itemname as category_name9',
-                        'c10.itemname as category_name10'
-                    )
+                ->leftJoin('categoryitems as c1', 'rm.category_id1', '=', 'c1.id')
+                ->leftJoin('categoryitems as c2', 'rm.category_id2', '=', 'c2.id')
+                ->leftJoin('categoryitems as c3', 'rm.category_id3', '=', 'c3.id')
+                ->leftJoin('categoryitems as c4', 'rm.category_id4', '=', 'c4.id')
+                ->leftJoin('categoryitems as c5', 'rm.category_id5', '=', 'c5.id')
+                ->leftJoin('categoryitems as c6', 'rm.category_id6', '=', 'c6.id')
+                ->leftJoin('categoryitems as c7', 'rm.category_id7', '=', 'c7.id')
+                ->leftJoin('categoryitems as c8', 'rm.category_id8', '=', 'c8.id')
+                ->leftJoin('categoryitems as c9', 'rm.category_id9', '=', 'c9.id')
+                ->leftJoin('categoryitems as c10', 'rm.category_id10', '=', 'c10.id')
+                ->select(
+                    'rm.id',
+                    'rm.name',
+                    'rm.rmcode',
+                    'rm.price',
+                    'rm.uom',
+                    'c1.itemname as category_name1',
+                    'c2.itemname as category_name2',
+                    'c3.itemname as category_name3',
+                    'c4.itemname as category_name4',
+                    'c5.itemname as category_name5',
+                    'c6.itemname as category_name6',
+                    'c7.itemname as category_name7',
+                    'c8.itemname as category_name8',
+                    'c9.itemname as category_name9',
+                    'c10.itemname as category_name10'
+                )
+                    ->where('rm.status', '=', 'active') // Filter by active status
                     ->paginate(10);
             } else {
-                // Fetch raw materials filtered by the selected category IDs
+                // Fetch raw materials filtered by the selected category IDs and status 'active'
                 $rawMaterials = DB::table('raw_materials as rm')
-                    ->leftJoin('categoryitems as c1', 'rm.category_id1', '=', 'c1.id')
-                    ->leftJoin('categoryitems as c2', 'rm.category_id2', '=', 'c2.id')
-                    ->leftJoin('categoryitems as c3', 'rm.category_id3', '=', 'c3.id')
-                    ->leftJoin('categoryitems as c4', 'rm.category_id4', '=', 'c4.id')
-                    ->leftJoin('categoryitems as c5', 'rm.category_id5', '=', 'c5.id')
-                    ->leftJoin('categoryitems as c6', 'rm.category_id6', '=', 'c6.id')
-                    ->leftJoin('categoryitems as c7', 'rm.category_id7', '=', 'c7.id')
-                    ->leftJoin('categoryitems as c8', 'rm.category_id8', '=', 'c8.id')
-                    ->leftJoin('categoryitems as c9', 'rm.category_id9', '=', 'c9.id')
-                    ->leftJoin('categoryitems as c10', 'rm.category_id10', '=', 'c10.id')
-                    ->select(
-                        'rm.id',
-                        'rm.name',
-                        'rm.rmcode',
-                        'rm.price',
-                        'rm.uom',
-                        'c1.itemname as category_name1',
-                        'c2.itemname as category_name2',
-                        'c3.itemname as category_name3',
-                        'c4.itemname as category_name4',
-                        'c5.itemname as category_name5',
-                        'c6.itemname as category_name6',
-                        'c7.itemname as category_name7',
-                        'c8.itemname as category_name8',
-                        'c9.itemname as category_name9',
-                        'c10.itemname as category_name10'
-                    )
+                ->leftJoin('categoryitems as c1', 'rm.category_id1', '=', 'c1.id')
+                ->leftJoin('categoryitems as c2', 'rm.category_id2', '=', 'c2.id')
+                ->leftJoin('categoryitems as c3', 'rm.category_id3', '=', 'c3.id')
+                ->leftJoin('categoryitems as c4', 'rm.category_id4', '=', 'c4.id')
+                ->leftJoin('categoryitems as c5', 'rm.category_id5', '=', 'c5.id')
+                ->leftJoin('categoryitems as c6', 'rm.category_id6', '=', 'c6.id')
+                ->leftJoin('categoryitems as c7', 'rm.category_id7', '=', 'c7.id')
+                ->leftJoin('categoryitems as c8', 'rm.category_id8', '=', 'c8.id')
+                ->leftJoin('categoryitems as c9', 'rm.category_id9', '=', 'c9.id')
+                ->leftJoin('categoryitems as c10', 'rm.category_id10', '=', 'c10.id')
+                ->select(
+                    'rm.id',
+                    'rm.name',
+                    'rm.rmcode',
+                    'rm.price',
+                    'rm.uom',
+                    'c1.itemname as category_name1',
+                    'c2.itemname as category_name2',
+                    'c3.itemname as category_name3',
+                    'c4.itemname as category_name4',
+                    'c5.itemname as category_name5',
+                    'c6.itemname as category_name6',
+                    'c7.itemname as category_name7',
+                    'c8.itemname as category_name8',
+                    'c9.itemname as category_name9',
+                    'c10.itemname as category_name10'
+                )
+                    ->where('rm.status', '=', 'active') // Filter by active status
                     ->where(function ($query) use ($selectedCategoryIds) {
                         $query->whereIn('c1.id', $selectedCategoryIds)
-                              ->orWhereIn('c2.id', $selectedCategoryIds)
-                              ->orWhereIn('c3.id', $selectedCategoryIds)
-                              ->orWhereIn('c4.id', $selectedCategoryIds)
-                              ->orWhereIn('c5.id', $selectedCategoryIds)
-                              ->orWhereIn('c6.id', $selectedCategoryIds)
-                              ->orWhereIn('c7.id', $selectedCategoryIds)
-                              ->orWhereIn('c8.id', $selectedCategoryIds)
-                              ->orWhereIn('c9.id', $selectedCategoryIds)
-                              ->orWhereIn('c10.id', $selectedCategoryIds);
+                            ->orWhereIn('c2.id', $selectedCategoryIds)
+                            ->orWhereIn('c3.id', $selectedCategoryIds)
+                            ->orWhereIn('c4.id', $selectedCategoryIds)
+                            ->orWhereIn('c5.id', $selectedCategoryIds)
+                            ->orWhereIn('c6.id', $selectedCategoryIds)
+                            ->orWhereIn('c7.id', $selectedCategoryIds)
+                            ->orWhereIn('c8.id', $selectedCategoryIds)
+                            ->orWhereIn('c9.id', $selectedCategoryIds)
+                            ->orWhereIn('c10.id', $selectedCategoryIds);
                     })
+                    ->where('rm.status', '=', 'active') // Filter by active status
                     ->paginate(10);
             }
 
@@ -105,39 +108,41 @@ class RawMaterialController extends Controller
             ]);
         }
 
-        // Default view, return all raw materials and category items
+        // Default view, return all raw materials with status 'active' and category items
         $rawMaterials = DB::table('raw_materials as rm')
-            ->leftJoin('categoryitems as c1', 'rm.category_id1', '=', 'c1.id')
-            ->leftJoin('categoryitems as c2', 'rm.category_id2', '=', 'c2.id')
-            ->leftJoin('categoryitems as c3', 'rm.category_id3', '=', 'c3.id')
-            ->leftJoin('categoryitems as c4', 'rm.category_id4', '=', 'c4.id')
-            ->leftJoin('categoryitems as c5', 'rm.category_id5', '=', 'c5.id')
-            ->leftJoin('categoryitems as c6', 'rm.category_id6', '=', 'c6.id')
-            ->leftJoin('categoryitems as c7', 'rm.category_id7', '=', 'c7.id')
-            ->leftJoin('categoryitems as c8', 'rm.category_id8', '=', 'c8.id')
-            ->leftJoin('categoryitems as c9', 'rm.category_id9', '=', 'c9.id')
-            ->leftJoin('categoryitems as c10', 'rm.category_id10', '=', 'c10.id')
-            ->select(
-                'rm.id',
-                'rm.name',
-                'rm.rmcode',
-                'rm.price',
-                'rm.uom',
-                'c1.itemname as category_name1',
-                'c2.itemname as category_name2',
-                'c3.itemname as category_name3',
-                'c4.itemname as category_name4',
-                'c5.itemname as category_name5',
-                'c6.itemname as category_name6',
-                'c7.itemname as category_name7',
-                'c8.itemname as category_name8',
-                'c9.itemname as category_name9',
-                'c10.itemname as category_name10'
-            )
+        ->leftJoin('categoryitems as c1', 'rm.category_id1', '=', 'c1.id')
+        ->leftJoin('categoryitems as c2', 'rm.category_id2', '=', 'c2.id')
+        ->leftJoin('categoryitems as c3', 'rm.category_id3', '=', 'c3.id')
+        ->leftJoin('categoryitems as c4', 'rm.category_id4', '=', 'c4.id')
+        ->leftJoin('categoryitems as c5', 'rm.category_id5', '=', 'c5.id')
+        ->leftJoin('categoryitems as c6', 'rm.category_id6', '=', 'c6.id')
+        ->leftJoin('categoryitems as c7', 'rm.category_id7', '=', 'c7.id')
+        ->leftJoin('categoryitems as c8', 'rm.category_id8', '=', 'c8.id')
+        ->leftJoin('categoryitems as c9', 'rm.category_id9', '=', 'c9.id')
+        ->leftJoin('categoryitems as c10', 'rm.category_id10', '=', 'c10.id')
+        ->select(
+            'rm.id',
+            'rm.name',
+            'rm.rmcode',
+            'rm.price',
+            'rm.uom',
+            'c1.itemname as category_name1',
+            'c2.itemname as category_name2',
+            'c3.itemname as category_name3',
+            'c4.itemname as category_name4',
+            'c5.itemname as category_name5',
+            'c6.itemname as category_name6',
+            'c7.itemname as category_name7',
+            'c8.itemname as category_name8',
+            'c9.itemname as category_name9',
+            'c10.itemname as category_name10'
+        )
+            ->where('rm.status', '=', 'active') // Filter by active status
             ->paginate(10);
 
         return view('rawMaterial.rawMaterial', compact('rawMaterials', 'categoryitems'));
     }
+
 
 
     /**
@@ -323,8 +328,23 @@ class RawMaterialController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function delete(Request $request)
     {
-        //
+        $ids = $request->input('ids'); // Get the 'ids' array from the request
+
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'No valid IDs provided.']);
+        }
+
+        try {
+            // Update the status of raw materials to 'inactive'
+            RawMaterial::whereIn('id', $ids)->update(['status' => 'inactive']);
+
+            return response()->json(['success' => true, 'message' => 'Raw materials marked as inactive successfully.']);
+        } catch (\Exception $e) {
+            // Handle exceptions
+            return response()->json(['success' => false, 'message' => 'Error updating raw materials: ' . $e->getMessage()]);
+        }
     }
+
 }

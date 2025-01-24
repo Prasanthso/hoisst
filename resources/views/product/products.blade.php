@@ -12,9 +12,9 @@
 
      <section class="section dashboard">
          <div class="row">
-            @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
+             @if(session('success'))
+             <div class="alert alert-success">{{ session('success') }}</div>
+             @endif
              <!-- Left side columns -->
              <div class="col-lg-2 px-4">
                  <!-- Categories Section -->
@@ -23,15 +23,14 @@
                          <h5 class="card-title">Categories</h5>
                          <div class="row mb-3">
                              <div class="col-sm-10">
-                                <div>
-                                    <input
-                                    type="text"
-                                    id="categorySearch"
-                                    class="form-control mb-3"
-                                    placeholder="Search categories..."
-                                    onkeyup="filterCategories()"
-                                />
-                                </div>
+                                 <div>
+                                     <input
+                                         type="text"
+                                         id="categorySearch"
+                                         class="form-control mb-3"
+                                         placeholder="Search categories..."
+                                         onkeyup="filterCategories()" />
+                                 </div>
                                  @foreach($categoryitems as $category)
                                  <div class="form-check category-item">
                                      <input
@@ -221,6 +220,7 @@
 
              // Reassign the edit button functionality
              document.querySelector(".edit-table-btn").addEventListener("click", enableEditing);
+             document.querySelector(".delete-table-btn").addEventListener("click", deleteRows);
          };
 
          // Function to save changes
@@ -427,6 +427,56 @@
                  });
          };
 
+         // Function to handle row deletion
+         const deleteRows = () => {
+             const selectedRows = Array.from(getRowCheckboxes()).filter(checkbox => checkbox.checked);
+             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // CSRF token
+
+             if (selectedRows.length === 0) {
+                 alert("Please select at least one row to delete.");
+                 return;
+             }
+
+             const selectedIds = selectedRows.map(checkbox => checkbox.closest('tr').getAttribute('data-id'));
+
+             if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
+                 return;
+             }
+
+             fetch("{{ route('product.delete') }}", {
+                     method: "POST",
+                     headers: {
+                         "Content-Type": "application/json",
+                         "X-CSRF-TOKEN": token
+                     },
+                     body: JSON.stringify({
+                         ids: selectedIds // Array of IDs to delete
+                     })
+                 })
+                 .then(response => {
+                     if (!response.ok) {
+                         throw new Error(`HTTP error! status: ${response.status}`);
+                     }
+                     return response.json();
+                 })
+                 .then(data => {
+                     if (data.success) {
+                         selectedRows.forEach(checkbox => {
+                             const row = checkbox.closest("tr");
+                             row.remove();
+                             updateSerialNumbers();
+                         });
+                         alert("Selected rows deleted successfully!");
+                     } else {
+                         alert("Failed to delete rows. Please try again.");
+                     }
+                 })
+                 .catch(error => {
+                     console.error("Error deleting rows:", error);
+                     alert("An error occurred. Please try again.");
+                 });
+         };
+
          // Attach click event listener to each price column
          table.querySelectorAll(".price-text").forEach((priceElement) => {
              const row = priceElement.closest("tr");
@@ -471,43 +521,44 @@
          }
 
          function updateSerialNumbers() {
-            // Get all visible rows
-            const visibleRows = Array.from(document.querySelectorAll("#rawMaterialTable tr"))
-                .filter(row => row.style.display !== 'none');
+             // Get all visible rows
+             const visibleRows = Array.from(document.querySelectorAll("#rawMaterialTable tr"))
+                 .filter(row => row.style.display !== 'none');
 
-            // Update serial numbers for visible rows only
-            visibleRows.forEach((row, index) => {
-                const snoCell = row.querySelector("td:nth-child(2)"); // Adjust the column index for S.NO
-                if (snoCell) {
-                    snoCell.textContent = `${index + 1}.`; // Update the serial number
-                }
-            });
-        }
+             // Update serial numbers for visible rows only
+             visibleRows.forEach((row, index) => {
+                 const snoCell = row.querySelector("td:nth-child(2)"); // Adjust the column index for S.NO
+                 if (snoCell) {
+                     snoCell.textContent = `${index + 1}.`; // Update the serial number
+                 }
+             });
+         }
 
-    });
-    function filterCategories() {
-        // Get the search input value
-        const searchValue = document.getElementById('categorySearch').value.toLowerCase();
-        const keywords = searchValue.split(',').map(keyword => keyword.trim()).filter(keyword => keyword);
-        // Get all category items
-        const categoryItems = document.querySelectorAll('.category-item');
+     });
 
-        // If the search box is empty, show all categories
-        if (keywords.length === 0) {
-                    categoryItems.forEach((item) => {
-                        item.style.display = ''; // Show all items
-                    });
-                    return;
-            }
-        // Loop through category items and filter them
-        categoryItems.forEach((item) => {
-            const label = item.querySelector('.form-check-label').textContent.toLowerCase();
+     function filterCategories() {
+         // Get the search input value
+         const searchValue = document.getElementById('categorySearch').value.toLowerCase();
+         const keywords = searchValue.split(',').map(keyword => keyword.trim()).filter(keyword => keyword);
+         // Get all category items
+         const categoryItems = document.querySelectorAll('.category-item');
 
-            // Check if any of the keywords match the label
-            const isVisible = keywords.some(keyword => label.includes(keyword));
+         // If the search box is empty, show all categories
+         if (keywords.length === 0) {
+             categoryItems.forEach((item) => {
+                 item.style.display = ''; // Show all items
+             });
+             return;
+         }
+         // Loop through category items and filter them
+         categoryItems.forEach((item) => {
+             const label = item.querySelector('.form-check-label').textContent.toLowerCase();
 
-            // Show or hide the category item based on the match
-            item.style.display = isVisible ? '' : 'none';
-        });
-    }
+             // Check if any of the keywords match the label
+             const isVisible = keywords.some(keyword => label.includes(keyword));
+
+             // Show or hide the category item based on the match
+             item.style.display = isVisible ? '' : 'none';
+         });
+     }
  </script>

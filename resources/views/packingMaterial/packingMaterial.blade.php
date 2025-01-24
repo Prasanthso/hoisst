@@ -25,12 +25,11 @@
                             <div class="col-sm-10">
                                 <div>
                                     <input
-                                    type="text"
-                                    id="categorySearch"
-                                    class="form-control mb-3"
-                                    placeholder="Search categories..."
-                                    onkeyup="filterCategories()"
-                                />
+                                        type="text"
+                                        id="categorySearch"
+                                        class="form-control mb-3"
+                                        placeholder="Search categories..."
+                                        onkeyup="filterCategories()" />
                                 </div>
                                 @foreach($categoryitems as $category)
                                 <div class="form-check category-item">
@@ -230,6 +229,7 @@
 
             // Reassign the edit button functionality
             document.querySelector(".edit-table-btn").addEventListener("click", enableEditing);
+            document.querySelector(".delete-table-btn").addEventListener("click", deleteRows);
         };
 
         // Function to save changes
@@ -435,6 +435,56 @@
                 });
         };
 
+        // Function to handle row deletion
+        const deleteRows = () => {
+            const selectedRows = Array.from(getRowCheckboxes()).filter(checkbox => checkbox.checked);
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // CSRF token
+
+            if (selectedRows.length === 0) {
+                alert("Please select at least one row to delete.");
+                return;
+            }
+
+            const selectedIds = selectedRows.map(checkbox => checkbox.closest('tr').getAttribute('data-id'));
+
+            if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
+                return;
+            }
+
+            fetch("{{ route('packingMaterial.delete') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": token
+                    },
+                    body: JSON.stringify({
+                        ids: selectedIds // Array of IDs to delete
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        selectedRows.forEach(checkbox => {
+                            const row = checkbox.closest("tr");
+                            row.remove();
+                            updateSerialNumbers();
+                        });
+                        alert("Selected rows deleted successfully!");
+                    } else {
+                        alert("Failed to delete rows. Please try again.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error deleting rows:", error);
+                    alert("An error occurred. Please try again.");
+                });
+        };
+
         // Attach click event listener to each price column
         table.querySelectorAll(".price-text").forEach((priceElement) => {
             const row = priceElement.closest("tr");
@@ -503,11 +553,11 @@
 
         // If the search box is empty, show all categories
         if (keywords.length === 0) {
-                    categoryItems.forEach((item) => {
-                        item.style.display = ''; // Show all items
-                    });
-                    return;
-            }
+            categoryItems.forEach((item) => {
+                item.style.display = ''; // Show all items
+            });
+            return;
+        }
         // Loop through category items and filter them
         categoryItems.forEach((item) => {
             const label = item.querySelector('.form-check-label').textContent.toLowerCase();
@@ -519,5 +569,4 @@
             item.style.display = isVisible ? '' : 'none';
         });
     }
-
 </script>
