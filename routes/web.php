@@ -137,5 +137,5 @@ Route::put('/editreceipedetails/{id}', [RecipeController::class, 'update'])->nam
 Route::get('/recipe-history/{id}', [RecipeController::class, 'getRecipedetailsHistory']);
 
 Route::get('/recipepricing', [RecipePricingController::class, 'showRecipePricingList'])->name('showRecipePricingList');
-
+Route::get('/overallcosting', [RecipePricingController::class, 'overallcosting'])->name('showRecipeoverallcosting');
 Route::get('/report', [ReportController::class, 'index'])->name('report.view');
