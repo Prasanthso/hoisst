@@ -114,32 +114,6 @@
         </div>
     </section>
 
-    <!-- Modal -->
-    <!-- <div class="modal fade" id="priceModal" tabindex="-1" aria-labelledby="priceModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="priceModalLabel">Price Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <table class="table table-bordered table-price">
-                        <thead class="custom-header">
-                            <tr>
-                                <th style="color:white;">Effective From</th>
-                                <th style="color:white;">Price</th>
-                                <th style="color:white;">Updated By</th>
-                            </tr>
-                        </thead>
-                        <tbody id="priceDetailsTable">
-
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div> -->
-
 </main><!-- End #main -->
 @endsection
 

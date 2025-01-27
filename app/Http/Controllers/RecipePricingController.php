@@ -37,6 +37,10 @@ class RecipePricingController extends Controller
         return view('recipePricing');
     }
 
+    public function overallcosting(){
+        return view('overallcosting');
+    }
+
     /**
      * Show the form for creating a new resource.
      */
