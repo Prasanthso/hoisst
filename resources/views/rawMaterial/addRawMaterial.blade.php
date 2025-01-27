@@ -27,8 +27,8 @@
                                     <input type="text" class="form-control" id="inputNanme4">
                                 </div> -->
                                 <div class="col-md-12">
-                                    <label for="inputNanme4" class="form-label">Choose Category For</label>
-                                    <select id="inputState" class="form-select" name="uom">
+                                    <label for="inputState" class="form-label">Choose Category For</label>
+                                    <select id="inputState" class="form-select select2" name="uom">
                                         <option selected>UoM</option>
                                         <option>Ltr</option>
                                         <option>Kgs</option>
@@ -97,11 +97,18 @@
 
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
     $(document).ready(function() {
         $('#categorySelect').select2({
             theme: 'bootstrap-5',
             placeholder: 'Choose Categories',
+            allowClear: true
+        });
+
+        $('#inputState').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select UoM',
             allowClear: true
         });
     });
