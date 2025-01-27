@@ -247,7 +247,7 @@
             </li><!-- End Masters Nav -->
 
             <li class="nav-item">
-                <a class="nav-link {{ Request::is('receipedetails') ||  Request::is('addreceipedetails') || Request::is('pricing') ? '' : 'collapsed'}} " data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); font-size:17px;text-decoration: none;">
+                <a class="nav-link {{ Request::is('receipedetails') ||  Request::is('addreceipedetails') ||  Request::is('pricing-records') || Request::is('pricing') ? '' : 'collapsed'}} " data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); font-size:17px;text-decoration: none;">
                     {{-- <i class="bi bi-journal-text"></i> --}}
                     <img src="/assets/img/receipe_pic.svg" alt="receipe Icon" style="width: 1em; height: auto; margin-right:10px;">
                     <span>Recipe</span><i class="bi bi-chevron-down ms-auto"></i>
@@ -260,7 +260,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="/pricing" class="{{Request::is('pricing') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                        <a href="/pricing-records" class="{{Request::is('pricing-records') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Pricing</span>
                         </a>
                     </li>

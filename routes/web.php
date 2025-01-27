@@ -131,10 +131,18 @@ Route::delete('/pm-for-recipe/{id}', [PmForRecipeController::class, 'destroy'])-
 Route::post('/oh-for-recipe', [OhForRecipeController::class, 'store'])->name('oh.store');
 Route::delete('/oh-for-recipe/{id}', [OhForRecipeController::class, 'destroy'])->name('oh.delete');
 
+// Route::post('/recipepricing', [RecipePricingController::class, 'store'])->name('recipepricing.store');
 
 Route::get('/editrecipedetails/{id}', [RecipeController::class, 'edit'])->name('editrecipedetails.edit');
 Route::put('/editreceipedetails/{id}', [RecipeController::class, 'update'])->name('editrecipedetails.update');
 Route::get('/recipe-history/{id}', [RecipeController::class, 'getRecipedetailsHistory']);
+
+Route::get('/pricing-records', [RecipePricingController::class, 'showPricingForm'])->name('receipepricing.form');
+Route::delete('/receipepricing/delete', [RecipePricingController::class, 'destroy'])->name('receipepricing.delete');
+Route::get('/edit-pricing/{id}', [RecipePricingController::class, 'edit'])->name('receipepricing.edit');
+Route::post('/update-pricing/{id}', [RmForRecipeController::class, 'update']);
+Route::post('/pm-update-pricing/{id}', [PmForRecipeController::class, 'update']);
+Route::post('/oh-update-pricing/{id}', [OhForRecipeController::class, 'update']);
 
 Route::get('/recipepricing', [RecipePricingController::class, 'showRecipePricingList'])->name('showRecipePricingList');
 Route::get('/overallcosting', [RecipePricingController::class, 'overallcosting'])->name('showRecipeoverallcosting');
