@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('update_frequency');
             $table->string('price_update_frequency');
             $table->string('price_threshold');
+            $table->string('status', 20)->default('active');
             $table->timestamps();
         });
     }

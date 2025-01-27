@@ -32,6 +32,7 @@ return new class extends Migration
             $table->enum('recipe_created_status', ['yes', 'no'])->default('no');
             $table->string('price_update_frequency');
             $table->string('price_threshold');
+            $table->string('status', 20)->default('active');
             $table->timestamps();
         });
     }
