@@ -124,7 +124,6 @@
         $('#inputState').select2({
             theme: 'bootstrap-5',
             placeholder: 'Select UoM',
-            allowClear: true
         });
 
         // Toggle edit mode

@@ -167,8 +167,8 @@
         $('#recipeSelect').select2({
             theme: 'bootstrap-5',
             placeholder: "Type or select a recipe...",
-            allowClear: true
-        });
+          });
+
         $('#recipeSelect').on('change', function () {
         const selectedValue = $(this).val();
         // console.log("Selected value:", selectedValue); // Debugging

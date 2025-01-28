@@ -211,8 +211,7 @@
         $('#productSelect').select2({
             theme: 'bootstrap-5',
             placeholder: "Type or select a recipe...",
-            allowClear: true
-        });
+         });
 
         // edit products//
     document.querySelector('.edit-table-btn').addEventListener('click', function () {

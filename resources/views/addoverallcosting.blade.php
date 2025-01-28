@@ -27,7 +27,7 @@
                                     <input type="text" class="form-control" id="inputNanme4">
                                 </div> -->
                                 <div class="col-md-12">
-                                    <label for="inputNanme4" class="form-label">Choose Recipe</label>
+                                    <label for="inputState" class="form-label">Choose Recipe</label>
                                     <select id="inputState" class="form-select" name="uom">
                                         <option selected>Select Recipe...</option>
                                         <option>Egg Puff</option>
@@ -35,63 +35,85 @@
                                         <option>Cake</option>
                                     </select>
                                 </div>
-                                <div>
+                                <div class="mb-2">
                                     <h4>Overall Costing</h4>
                                 </div>
+                            <div class="row">
+                            <div class="col">
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">RM Cost/Unit(A)</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name">
+                                    <label for="inputRmcost" class="form-label">RM Cost/Unit(A)</label>
+                                    <input type="text" class="form-control" id="inputRmcost" name="name">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">PM Cost/Unit(A)</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name">
+                                    <label for="inputPmcost" class="form-label">PM Cost/Unit(A)</label>
+                                    <input type="text" class="form-control" id="inputPmcost" name="name">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">RM & PM Cost</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name">
+                                    <label for="inputRmPmcost" class="form-label">RM & PM Cost</label>
+                                    <input type="text" class="form-control" id="inputRmPmcost" name="name">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Overhead % C</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name">
+                                    <label for="inputOverhead" class="form-label">Overhead % C</label>
+                                    <input type="text" class="form-control" id="inputOverhead" name="name">
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="col-12">
+                                    <label for="inputRmSgmrp" class="form-label">RM(%) Suggested MRP</label>
+                                    <input type="text" class="form-control" id="inputRmSgmrp" name="name">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Overhead Amount D</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name">
+                                    <label for="inputPmSgmrp" class="form-label">PM(%) Suggested MRP</label>
+                                    <input type="text" class="form-control" id="inputPmSgmrp" name="name">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Total cost J</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name">
+                                    <label for="inputSgMrp" class="form-label"> Suggested MRP </label>
+                                    <input type="text" class="form-control" id="inputSgMrp" name="name">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Selling Rate</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name">
+                                    <label for="inputSgMargin" class="form-label"> Suggested Margin </label>
+                                    <input type="text" class="form-control" id="inputSgMargin" name="name">
+                                </div>
+                            </div>
+                                <div class="col-12">
+                                    <label for="inputOhAmt" class="form-label">Overhead Amount D</label>
+                                    <input type="text" class="form-control" id="inputOhAmt" name="name">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Selling Rate before tax</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name">
+                                    <label for="inputTotalCost" class="form-label">Total cost J</label>
+                                    <input type="text" class="form-control" id="inputTotalCost" name="name">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Tax</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name">
+                                    <label for="inputSellRate" class="form-label">Selling Rate</label>
+                                    <input type="text" class="form-control" id="inputSellRate" name="name">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Margin Amount</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name">
+                                    <label for="inputSellRatebf" class="form-label">Selling Rate before tax</label>
+                                    <input type="text" class="form-control" id="inputSellRatebf" name="name">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Discount</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name">
+                                    <label for="inputTax" class="form-label">Tax</label>
+                                    <input type="text" class="form-control" id="inputTax" name="name">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Present MRP</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name">
+                                    <label for="inputMarginAmt" class="form-label">Margin Amount</label>
+                                    <input type="text" class="form-control" id="inputMarginAmt" name="name">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Margin</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name">
+                                    <label for="inputDiscount" class="form-label">Discount</label>
+                                    <input type="text" class="form-control" id="inputDiscount" name="name">
                                 </div>
+                                <div class="col-12">
+                                    <label for="inputPresentMrp" class="form-label">Present MRP</label>
+                                    <input type="text" class="form-control" id="inputPresentMrp" name="name">
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputMargin" class="form-label">Margin</label>
+                                    <input type="text" class="form-control" id="inputMargin" name="name">
+                                </div>
+                            </div>
                                 <div>
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="submit" class="btn btn-primary save-btn">
                                         Save
                                     </button>
                                 </div>
