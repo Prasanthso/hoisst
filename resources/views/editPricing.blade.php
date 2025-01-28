@@ -19,7 +19,7 @@
             <div class="mb-4">
                 <label for="productSelect" class="form-label">Select Product</label>
                 <div class="col-6">
-                    <select id="productSelect" class="form-select" name="productSelect" aria-labelledby="productSelect">
+                    <select id="productSelect" class="form-select select2" name="productSelect" aria-labelledby="productSelect">
                         <option value="" disabled selected>Select a Product</option>
                         @foreach ($products as $product)
                             <option value="{{ $product->id }}" selected>
@@ -37,7 +37,7 @@
                 </div>
                 <div class="col-md-2 col-sm-10">
                     <label for="recipeUoM" class="form-label">UoM</label>
-                    <select id="recipeUoM" class="form-select" name="recipeUoM">
+                    <select id="recipeUoM" class="form-select select2" name="recipeUoM">
                         <option value="" disabled selected>UoM</option>
                         @foreach ($products as $rpuom)
                             <option value="{{ $rpuom->rp_uom }}" {{ $rpuom->rp_uom == $products[0]->rp_uom ? 'selected' : '' }}>
@@ -59,7 +59,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="rawmaterial" class="form-label">Raw Material</label>
-                    <select id="rawmaterial" class="form-select">
+                    <select id="rawmaterial" class="form-select select2">
                         <option selected disabled>Choose...</option>
                         @foreach($rawMaterials as $rawMaterialItem)
                         <option
@@ -186,7 +186,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="packingmaterial" class="form-label">Packing Material</label>
-                    <select id="packingmaterial" class="form-select">
+                    <select id="packingmaterial" class="form-select select2">
                         <option selected disabled>Choose...</option>
                         @foreach($packingMaterials as $packingMaterialItem)
                         <option
@@ -315,7 +315,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="overheads" class="form-label">Overheads</label>
-                    <select id="overheads" class="form-select">
+                    <select id="overheads" class="form-select select2">
                         <option selected disabled>Choose...</option>
                         @foreach($overheads as $overheadsItem)
                         <option
@@ -439,9 +439,40 @@
     </section>
 </main>
 @endsection
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     // Ensure functions are available in the global scope
     document.addEventListener('DOMContentLoaded', function () {
+        $('#productSelect').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select UoM',
+            allowClear: true
+        });
+
+        $('#rawmaterial').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select Rawmaterial',
+            allowClear: true
+        });
+
+        $('#packingmaterial').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select Packing',
+            allowClear: true
+        });
+        $('#overheads').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select Overheads',
+            allowClear: true
+        });
+        $('#recipeUoM').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select UoM',
+            allowClear: true
+        });
+
         const totalCostSpan = document.getElementById('totalRmCost');
         const totalPmCostSpan = document.getElementById('totalPmCost');
         const totalOhCostSpan = document.getElementById('totalohCost');

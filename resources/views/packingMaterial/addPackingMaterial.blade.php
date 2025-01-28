@@ -28,7 +28,7 @@
                                 </div> -->
                                 <div class="col-md-12">
                                     <label for="inputNanme4" class="form-label">Choose Category For</label>
-                                    <select id="inputState" class="form-select" name="uom">
+                                    <select id="inputState" class="form-select select2" name="uom">
                                         <option selected>UoM</option>
                                         <option>Ltr</option>
                                         <option>Kgs</option>
@@ -105,6 +105,11 @@
             allowClear: true
         });
     });
+    $('#inputState').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select UoM',
+            allowClear: true
+        });
 </script>
 
 

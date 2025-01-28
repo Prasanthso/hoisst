@@ -17,45 +17,19 @@ class OverheadController extends Controller
     {
         // Fetch all category items
         $categoryitems = CategoryItems::ohCategoryItem();
+        $selectedCategoryIds = $request->input('category_ids', []);
 
-        // If it's an AJAX request for filtered packing materials
         if ($request->ajax()) {
-            // Get selected category IDs from the request
-            $selectedCategoryIds = $request->input('category_ids', []);
             $selectedCategoryIds = explode(',', $selectedCategoryIds);
-            // If no categories are selected, return all packing materials
+            $selectedCategoryIds = array_filter($selectedCategoryIds, fn($id) => is_numeric($id) && $id > 0);
+
             if (empty($selectedCategoryIds)) {
-                $overheads = DB::table('overheads as oh')
-                ->leftJoin('categoryitems as c1', 'oh.category_id1', '=', 'c1.id')
-                ->leftJoin('categoryitems as c2', 'oh.category_id2', '=', 'c2.id')
-                ->leftJoin('categoryitems as c3', 'oh.category_id3', '=', 'c3.id')
-                ->leftJoin('categoryitems as c4', 'oh.category_id4', '=', 'c4.id')
-                ->leftJoin('categoryitems as c5', 'oh.category_id5', '=', 'c5.id')
-                ->leftJoin('categoryitems as c6', 'oh.category_id6', '=', 'c6.id')
-                ->leftJoin('categoryitems as c7', 'oh.category_id7', '=', 'c7.id')
-                ->leftJoin('categoryitems as c8', 'oh.category_id8', '=', 'c8.id')
-                ->leftJoin('categoryitems as c9', 'oh.category_id9', '=', 'c9.id')
-                ->leftJoin('categoryitems as c10', 'oh.category_id10', '=', 'c10.id')
-                ->select(
-                    'oh.id',
-                    'oh.name',
-                    'oh.ohcode',
-                    'oh.price',
-                    'oh.uom',
-                    'c1.itemname as category_name1',
-                    'c2.itemname as category_name2',
-                    'c3.itemname as category_name3',
-                    'c4.itemname as category_name4',
-                    'c5.itemname as category_name5',
-                    'c6.itemname as category_name6',
-                    'c7.itemname as category_name7',
-                    'c8.itemname as category_name8',
-                    'c9.itemname as category_name9',
-                    'c10.itemname as category_name10'
-                )
-                    ->where('oh.status', '=', 'active') // Filter by active status
-                    ->paginate(10);
-            } else {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'No category IDs provided',
+                    'overheads' => []
+                ]);
+            }
                 // Fetch packing materials filtered by the selected category IDs
                 $overheads = DB::table('overheads as oh')
                 ->leftJoin('categoryitems as c1', 'oh.category_id1', '=', 'c1.id')
@@ -98,46 +72,14 @@ class OverheadController extends Controller
                             ->orWhereIn('c10.id', $selectedCategoryIds);
                     })
                     ->where('oh.status', '=', 'active') // Filter by active status
-                    ->paginate(10);
-            }
-
+                    ->get();
             // Return filtered packing materials as JSON response
             return response()->json([
+                'status' => 'success',
+                'message' => count($overheads) > 0 ? 'Overheads found' : 'No Overheads found',
                 'overheads' => $overheads
             ]);
         }
-
-        // Default view, return all packing materials and category items
-        $overheads = DB::table('overheads as oh')
-        ->leftJoin('categoryitems as c1', 'oh.category_id1', '=', 'c1.id')
-        ->leftJoin('categoryitems as c2', 'oh.category_id2', '=', 'c2.id')
-        ->leftJoin('categoryitems as c3', 'oh.category_id3', '=', 'c3.id')
-        ->leftJoin('categoryitems as c4', 'oh.category_id4', '=', 'c4.id')
-        ->leftJoin('categoryitems as c5', 'oh.category_id5', '=', 'c5.id')
-        ->leftJoin('categoryitems as c6', 'oh.category_id6', '=', 'c6.id')
-        ->leftJoin('categoryitems as c7', 'oh.category_id7', '=', 'c7.id')
-        ->leftJoin('categoryitems as c8', 'oh.category_id8', '=', 'c8.id')
-        ->leftJoin('categoryitems as c9', 'oh.category_id9', '=', 'c9.id')
-        ->leftJoin('categoryitems as c10', 'oh.category_id10', '=', 'c10.id')
-        ->select(
-            'oh.id',
-            'oh.name',
-            'oh.ohcode',
-            'oh.price',
-            'oh.uom',
-            'c1.itemname as category_name1',
-            'c2.itemname as category_name2',
-            'c3.itemname as category_name3',
-            'c4.itemname as category_name4',
-            'c5.itemname as category_name5',
-            'c6.itemname as category_name6',
-            'c7.itemname as category_name7',
-            'c8.itemname as category_name8',
-            'c9.itemname as category_name9',
-            'c10.itemname as category_name10'
-        )
-        ->where('oh.status', '=', 'active') // Filter by active status
-        ->paginate(10);
 
         // Default view, return all packing materials and category items
         $overheads = DB::table('overheads as oh')

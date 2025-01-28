@@ -27,7 +27,7 @@
             <div class="mb-4">
                 <label for="productSelect" class="form-label">Select Product</label>
                 <div class="col-6">
-                    <select id="productSelect" class="form-select" aria-labelledby="productSelect">
+                    <select id="productSelect" class="form-select select2" aria-labelledby="productSelect">
                         <option selected disabled>Choose...</option>
                         @foreach($products as $productItem)
                         <option value= "{{ $productItem->id }}" >
@@ -45,7 +45,7 @@
                 </div>
                 <div class="col-md-2 col-sm-10">
                     <label for="recipeUoM" class="form-label">UoM</label>
-                    <select id="recipeUoM" class="form-select" name="recipeUoM">
+                    <select id="recipeUoM" class="form-select select2" name="recipeUoM">
                         <option selected>UoM</option>
                         <option value="Ltr">Ltr</option>
                         <option value="Kgs">Kgs</option>
@@ -66,7 +66,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="rawmaterial" class="form-label">Raw Material</label>
-                    <select id="rawmaterial" class="form-select">
+                    <select id="rawmaterial" class="form-select select2">
                         <option selected disabled>Choose...</option>
                         @foreach($rawMaterials as $rawMaterialItem)
                         <option
@@ -140,7 +140,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="packingmaterial" class="form-label">Packing Material</label>
-                    <select id="packingmaterial" class="form-select">
+                    <select id="packingmaterial" class="form-select select2">
                         <option selected disabled>Choose...</option>
                         @foreach($packingMaterials as $packingMaterialItem)
                         <option
@@ -223,7 +223,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="overheads" class="form-label">Overheads</label>
-                    <select id="overheads" class="form-select">
+                    <select id="overheads" class="form-select select2">
                         <option selected disabled>Choose...</option>
                         @foreach($overheads as $overheadsItem)
                         <option
@@ -313,9 +313,38 @@
 {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
  --}}
-
+ <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        $('#productSelect').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select UoM',
+            allowClear: true
+        });
+
+        $('#rawmaterial').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select Rawmaterial',
+            allowClear: true
+        });
+
+        $('#packingmaterial').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select Packing',
+            allowClear: true
+        });
+        $('#overheads').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select Overheads',
+            allowClear: true
+        });
+        $('#recipeUoM').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select UoM',
+            allowClear: true
+        });
+
         const productSelect = document.getElementById('productSelect');
 
         const rawMaterialSelect = document.getElementById('rawmaterial');

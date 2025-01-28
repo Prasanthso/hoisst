@@ -22,7 +22,7 @@
                                 @csrf
                                 <div class="col-md-12">
                                     <label for="inputNanme4" class="form-label">Choose Category For</label>
-                                    <select id="inputState" name="categoryId" class="form-select">
+                                    <select id="inputState" name="categoryId" class="form-select select2">
                                         <option selected disabled>Choose...</option>
                                         @foreach($categories as $category)
                                             <option value="{{ $category->id }}">{{ $category->categoryname }}</option>
@@ -74,3 +74,15 @@
 
 <!-- Template Main JS File -->
 <script src="{{ asset('js/main.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+
+        $('#inputState').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select UoM',
+            allowClear: true
+        });
+    });
+</script>

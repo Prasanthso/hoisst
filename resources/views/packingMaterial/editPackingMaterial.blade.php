@@ -34,7 +34,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <label for="inputNanme4" class="form-label">Choose Category For</label>
-                                    <select id="inputState" class="form-select" name="uom" disabled>
+                                    <select id="inputState" class="form-select select2" name="uom" disabled>
                                         <option selected>{{ $packingMaterial->uom}}</option>
                                         <option>Ltr</option>
                                         <option>Kgs</option>
@@ -119,6 +119,12 @@
         $('#categorySelect').select2({
             theme: 'bootstrap-5',
             placeholder: 'Choose Categories',
+            allowClear: true
+        });
+
+        $('#inputState').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select UoM',
             allowClear: true
         });
 

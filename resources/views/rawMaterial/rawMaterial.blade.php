@@ -38,7 +38,7 @@
                                         class="form-check-input category-checkbox"
                                         type="checkbox"
                                         data-id="category_{{ $category->id }}"
-                                        value="{{ $category->itemname }}"
+                                        value="{{ $category->id }}"
                                         {{-- data-category-name="{{ $category->itemname }}" --}}>
                                     <label class="form-check-label" for="category_{{ $category->id }}">
                                         {{ $category->itemname }}
@@ -500,48 +500,80 @@
 
         // Listen for change events on category checkboxes
         categoryCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', filterRawMaterials);
+            checkbox.addEventListener('change',  () => {
+             const selectedCategories = Array.from(
+                document.querySelectorAll('.category-checkbox:checked')
+            ).map(cb => cb.value);
+
+        if(selectedCategories.length > 0)
+        {
+            const queryParams = new URLSearchParams({
+                category_ids: selectedCategories.join(','),
+            });
+            console.log(queryParams.toString());
+            // Construct the URL dynamically based on selected categories
+            const url = `/rawmaterial?${queryParams.toString()}`;
+
+            // Fetch updated data from server
+            fetch(url, {
+                method: 'GET',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Clear existing table content
+                rawMaterialTable.innerHTML = '';
+                console.log('Fetched Data:', data.rawMaterials);
+                // Populate the table with new data
+                data.rawMaterials.forEach((item, index) => {
+                    rawMaterialTable.innerHTML += `
+                        <tr>
+                            <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
+                            <td>${index + 1}.</td>
+                            <td><a href="/rawMaterial/edit/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                            <td>${item.rmcode}</td>
+                             <td>
+                                ${item.category_name1 ?? ''}
+                                ${item.category_name2 ? ', ' + item.category_name2 : ''}
+                                ${item.category_name3 ? ', ' + item.category_name3 : ''}
+                                ${item.category_name4 ? ', ' + item.category_name4 : ''}
+                                ${item.category_name5 ? ', ' + item.category_name5 : ''}
+                                ${item.category_name6 ? ', ' + item.category_name6 : ''}
+                                ${item.category_name7 ? ', ' + item.category_name7 : ''}
+                                ${item.category_name8 ? ', ' + item.category_name8 : ''}
+                                ${item.category_name9 ? ', ' + item.category_name9 : ''}
+                                ${item.category_name10 ? ', ' + item.category_name10 : ''}
+                            </td> <!-- Categories -->
+                            <td>
+                                <span class="price-text">${item.price}</span>
+                                <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
+                            </td>
+                            <td>${item.uom}</td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while fetching rawMaterials(s).');
+            });
+        }
+         else
+            {
+                location.reload();
+            }
+         });
         });
 
-        function filterRawMaterials2() {
-            // Get selected categories
-            const selectedCategories = Array.from(categoryCheckboxes)
-                .filter(checkbox => checkbox.checked)
-                .map(checkbox => checkbox.value);
-            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            // Send an AJAX request to the server with the selected categories
-            fetch(`/rawmaterial?category_ids=${selectedCategories.join(',')}`, {
-                    method: 'GET',
-                    headers: {
-                        'X-CSRF-TOKEN': token, // Add CSRF token
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // Assuming your table rows are in a tbody element
-                    const tbody = document.querySelector('#raw-materials-table tbody');
-                    tbody.innerHTML = ''; // Clear existing rows
-
-                    // Loop through the returned raw materials and update the table
-                    data.rawMaterials.forEach(material => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                <td>${material.name}</td>
-                <td>${material.rmcode}</td>
-                <td>${material.price}</td>
-                <td>${material.uom}</td>
-                <td>${material.category_name1}, ${material.category_name2}, ${material.category_name3}, ${material.category_name4}, ${material.category_name5}</td>
-            `;
-                        tbody.appendChild(row);
-                    });
-                })
-                .catch(error => {
-                    console.error("Error fetching filtered data:", error);
-                });
-        }
 
         /* For filter Functions*/
+        /*
         function filterRawMaterials() {
             // Get all selected categories
             const selectedCategories = Array.from(categoryCheckboxes)
@@ -583,30 +615,8 @@
                 }
             });
         }
-
+        */
     });
-
-    function updateRawMaterialsTable(rawMaterials) {
-        const tableBody = document.querySelector('#rawMaterialTable tbody');
-        tableBody.innerHTML = ''; // Clear the existing table rows
-
-        rawMaterials.forEach(rawMaterial => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-         <td>${rawMaterial.name}</td>
-            <td>${rawMaterial.rmcode}</td>
-            <td>${rawMaterial.price}</td>
-            <td>${rawMaterial.uom}</td>
-            <td>${rawMaterial.category_name1}
-            ${rawMaterial.category_name2}
-            ${rawMaterial.category_name3}
-            ${rawMaterial.category_name4}
-            ${rawMaterial.category_name5}</td>
-             <td>${rawMaterial.uom}</td>
-        `;
-            tableBody.appendChild(row);
-        });
-    }
 
     function filterCategories() {
         // Get the search input value
@@ -633,48 +643,4 @@
             item.style.display = isVisible ? '' : 'none';
         });
     }
-
-    /*
-        function sorting() {
-        // Get selected category IDs
-        const selectedCategories = Array.from(categoryCheckboxes)
-            .filter(checkbox => checkbox.checked)
-            .map(checkbox => checkbox.value);
-
-            fetch(`/rawmaterial?rawMaterials=${selectedCategories.join(',')}`, {
-            method: 'GET',
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }, // Important for Laravel AJAX detection
-            })
-        .then((response) => response.json())
-        .then((data) => {
-            const rawMaterials = data.rawMaterials;
-            const tbody = document.querySelector('#rawMaterialTable tbody');
-            tbody.innerHTML = ''; // Clear existing rows
-
-            rawMaterials.forEach((item, index) => {
-                const row = `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${item.name}</td>
-                        <td>${item.rmcode}</td>
-                         <td>
-                                        ${ $item->category_name1 ?? '' }}
-                                        ${ $item->category_name2 ? ', ' . $item->category_name2 : '' }}
-                                        ${ $item->category_name3 ? ', ' . $item->category_name3 : '' }}
-                                        ${ $item->category_name4 ? ', ' . $item->category_name4 : '' }}
-                                        ${ $item->category_name5 ? ', ' . $item->category_name5 : '' }}
-                                    </td>
-                        <td>${item.price}</td>
-                        <td>${item.uom}</td>
-                    </tr>
-                `;
-                tbody.insertAdjacentHTML('beforeend', row);
-            });
-        })
-        .catch((error) => console.error('Error fetching data:', error));
-
-        }
-        */
-
-    /* end DomLoad section*/
 </script>
