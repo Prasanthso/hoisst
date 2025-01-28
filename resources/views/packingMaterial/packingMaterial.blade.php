@@ -37,7 +37,7 @@
                                         class="form-check-input category-checkbox"
                                         type="checkbox"
                                         data-id="category_{{ $category->id }}"
-                                        value="{{ $category->itemname }}"
+                                        value="{{ $category->id }}"
                                         {{-- data-category-name="{{ $category->itemname }}" --}}>
                                     <label class="form-check-label" for="category_{{ $category->id }}">
                                         {{ $category->itemname }}
@@ -80,7 +80,7 @@
                                 <th scope="col" style="color:white;">UoM</th>
                             </tr>
                         </thead>
-                        <tbody id="rawMaterialTable">
+                        <tbody id="packingMaterialTable">
                             @foreach ($packingMaterials as $index => $material)
                             <tr data-id="{{ $material->id }}">
                                 <td>
@@ -165,11 +165,11 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const table = document.getElementById("rawMaterialTable");
+        const table = document.getElementById("packingMaterialTable");
         const editTableBtn = document.querySelector(".edit-table-btn");
         const deleteTableBtn = document.querySelector(".delete-table-btn");
         const selectAllCheckbox = document.getElementById('select-all');
-        const rows = document.querySelectorAll('#rawMaterialTable tr');
+        const rows = document.querySelectorAll('#packingMaterialTable tr');
         const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
         let isEditing = false; // Track if edit mode is active
 
@@ -497,9 +497,79 @@
 
         // Listen for change events on category checkboxes
         categoryCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', filterPackingMaterials);
+            checkbox.addEventListener('change',  () => {
+             const selectedCategories = Array.from(
+                document.querySelectorAll('.category-checkbox:checked')
+            ).map(cb => cb.value);
+
+        if(selectedCategories.length > 0)
+        {
+            const queryParams = new URLSearchParams({
+                category_ids: selectedCategories.join(','),
+            });
+            console.log(queryParams.toString());
+            // Construct the URL dynamically based on selected categories
+            const url = `/packingmaterial?${queryParams.toString()}`;
+
+            // Fetch updated data from server
+            fetch(url, {
+                method: 'GET',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Clear existing table content
+                packingMaterialTable.innerHTML = '';
+                console.log('Fetched Data:', data.packingMaterials);
+                // Populate the table with new data
+                data.packingMaterials.forEach((item, index) => {
+                    packingMaterialTable.innerHTML += `
+                        <tr>
+                            <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
+                            <td>${index + 1}.</td>
+                            <td><a href="/packingMaterial/edit/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                            <td>${item.pmcode}</td>
+                             <td>
+                                ${item.category_name1 ?? ''}
+                                ${item.category_name2 ? ', ' + item.category_name2 : ''}
+                                ${item.category_name3 ? ', ' + item.category_name3 : ''}
+                                ${item.category_name4 ? ', ' + item.category_name4 : ''}
+                                ${item.category_name5 ? ', ' + item.category_name5 : ''}
+                                ${item.category_name6 ? ', ' + item.category_name6 : ''}
+                                ${item.category_name7 ? ', ' + item.category_name7 : ''}
+                                ${item.category_name8 ? ', ' + item.category_name8 : ''}
+                                ${item.category_name9 ? ', ' + item.category_name9 : ''}
+                                ${item.category_name10 ? ', ' + item.category_name10 : ''}
+                            </td> <!-- Categories -->
+                            <td>
+                                <span class="price-text">${item.price}</span>
+                                <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
+                            </td>
+                            <td>${item.uom}</td>
+                        </tr>
+                    `;
+                });
+
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while fetching packingMaterials.');
+            });
+        }
+         else
+            {
+                location.reload();
+            }
+         });
+
         });
 
+        /*
         function filterPackingMaterials() {
             // Get all selected categories
             const selectedCategories = Array.from(categoryCheckboxes)
@@ -530,7 +600,7 @@
 
         function updateSerialNumbers() {
             // Get all visible rows
-            const visibleRows = Array.from(document.querySelectorAll("#rawMaterialTable tr"))
+            const visibleRows = Array.from(document.querySelectorAll("#packingMaterialTable tr"))
                 .filter(row => row.style.display !== 'none');
 
             // Update serial numbers for visible rows only
@@ -541,6 +611,7 @@
                 }
             });
         }
+        */
 
     });
 

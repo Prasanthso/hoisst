@@ -535,17 +535,29 @@
                         <tr>
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${index + 1}.</td>
-                            <td><a href="/products/edit/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
+                            <td><a href="/products/edit/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
                             <td>${item.pdcode}</td>
+                             <td>
+                                ${item.category_name1 ?? ''}
+                                ${item.category_name2 ? ', ' + item.category_name2 : ''}
+                                ${item.category_name3 ? ', ' + item.category_name3 : ''}
+                                ${item.category_name4 ? ', ' + item.category_name4 : ''}
+                                ${item.category_name5 ? ', ' + item.category_name5 : ''}
+                                ${item.category_name6 ? ', ' + item.category_name6 : ''}
+                                ${item.category_name7 ? ', ' + item.category_name7 : ''}
+                                ${item.category_name8 ? ', ' + item.category_name8 : ''}
+                                ${item.category_name9 ? ', ' + item.category_name9 : ''}
+                                ${item.category_name10 ? ', ' + item.category_name10 : ''}
+                            </td> <!-- Categories -->
+                            <td>
+                                <span class="price-text">${item.price}</span>
+                                <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
+                            </td>
                             <td>${item.uom}</td>
                         </tr>
                     `;
                 });
 
-                // // Re-attach event listeners for dynamically added checkboxes
-                // document.querySelectorAll('.category-checkbox').forEach(checkbox => {
-                //     checkbox.addEventListener('change', updateSelectedCategories);
-                // });
             })
             .catch(error => {
                 console.error('Error:', error);
