@@ -38,7 +38,7 @@
                                          class="form-check-input category-checkbox"
                                          type="checkbox"
                                          data-id="category_{{ $category->id }}"
-                                         value="{{ $category->itemname }}"
+                                         value="{{ $category->id }}"
                                          {{-- data-category-name="{{ $category->itemname }}" --}}>
                                      <label class="form-check-label" for="category_{{ $category->id }}">
                                          {{ $category->itemname }}
@@ -82,7 +82,7 @@
                                  <th scope="col" style="color:white;">Cost</th>
                              </tr>
                          </thead>
-                         <tbody id="rawMaterialTable">
+                         <tbody id="productsTable">
                              @foreach ($product as $index => $material)
                              <tr data-id="{{ $material->id }}">
                                  <td>
@@ -112,6 +112,16 @@
                              @endforeach
                          </tbody>
                      </table>
+                     <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <!-- Content like "Showing 1 to 10 of 50 entries" -->
+                            Showing {{ $product->firstItem() }} to {{ $product->lastItem() }} of {{ $product->total() }} entries
+                        </div>
+                        <div>
+                            <!-- Pagination Links -->
+                            {{ $product->links('pagination::bootstrap-5') }}
+                        </div>
+                    </div>
                      <!-- End Bordered Table -->
                  </div>
              </div><!-- End Right side columns -->
@@ -157,11 +167,11 @@
 
  <script>
      document.addEventListener("DOMContentLoaded", function() {
-         const table = document.getElementById("rawMaterialTable");
+         const table = document.getElementById("productsTable");
          const editTableBtn = document.querySelector(".edit-table-btn");
          const deleteTableBtn = document.querySelector(".delete-table-btn");
          const selectAllCheckbox = document.getElementById('select-all');
-         const rows = document.querySelectorAll('#rawMaterialTable tr');
+         const rows = document.querySelectorAll('#productsTable tr');
          const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
          let isEditing = false; // Track if edit mode is active
 
@@ -490,10 +500,67 @@
 
          // Listen for change events on category checkboxes
          categoryCheckboxes.forEach(checkbox => {
-             checkbox.addEventListener('change', filterRawMaterials);
-         });
+             checkbox.addEventListener('change',  () => {
+             const selectedCategories = Array.from(
+                document.querySelectorAll('.category-checkbox:checked')
+            ).map(cb => cb.value);
 
-         function filterRawMaterials() {
+        if(selectedCategories.length > 0)
+        {
+            const queryParams = new URLSearchParams({
+                category_ids: selectedCategories.join(','),
+            });
+            console.log(queryParams.toString());
+            // Construct the URL dynamically based on selected categories
+            const url = `/products?${queryParams.toString()}`;
+
+            // Fetch updated data from server
+            fetch(url, {
+                method: 'GET',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Clear existing table content
+                productsTable.innerHTML = '';
+                console.log('Fetched Data:', data.product);
+                // Populate the table with new data
+                data.product.forEach((item, index) => {
+                    productsTable.innerHTML += `
+                        <tr>
+                            <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
+                            <td>${index + 1}.</td>
+                            <td><a href="/products/edit/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
+                            <td>${item.pdcode}</td>
+                            <td>${item.uom}</td>
+                        </tr>
+                    `;
+                });
+
+                // // Re-attach event listeners for dynamically added checkboxes
+                // document.querySelectorAll('.category-checkbox').forEach(checkbox => {
+                //     checkbox.addEventListener('change', updateSelectedCategories);
+                // });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while fetching product(s).');
+            });
+        }
+         else
+            {
+                location.reload();
+            }
+
+         });
+        });
+
+         function filterProducts1() {
              // Get all selected categories
              const selectedCategories = Array.from(categoryCheckboxes)
                  .filter(checkbox => checkbox.checked)
@@ -521,9 +588,35 @@
              updateSerialNumbers();
          }
 
+         function filterProducts() {
+        // Get the search input value
+        const searchValue = document.getElementById('categorySearch').value.toLowerCase();
+        const keywords = searchValue.split(',').map(keyword => keyword.trim()).filter(keyword => keyword);
+        // Get all category items
+        const categoryItems = document.querySelectorAll('.category-item');
+
+        // If the search box is empty, show all categories
+        if (keywords.length === 0) {
+                    categoryItems.forEach((item) => {
+                        item.style.display = ''; // Show all items
+                    });
+                    return;
+            }
+       // Loop through category items and filter them
+       categoryItems.forEach((item) => {
+            const label = item.querySelector('.form-check-label').textContent.toLowerCase();
+
+            // Check if any of the keywords match the label
+            const isVisible = keywords.some(keyword => label.includes(keyword));
+
+            // Show or hide the category item based on the match
+            item.style.display = isVisible ? '' : 'none';
+        });
+    }
+
          function updateSerialNumbers() {
              // Get all visible rows
-             const visibleRows = Array.from(document.querySelectorAll("#rawMaterialTable tr"))
+             const visibleRows = Array.from(document.querySelectorAll("#productsTable tr"))
                  .filter(row => row.style.display !== 'none');
 
              // Update serial numbers for visible rows only

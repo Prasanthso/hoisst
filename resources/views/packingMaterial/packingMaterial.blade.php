@@ -497,10 +497,10 @@
 
         // Listen for change events on category checkboxes
         categoryCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', filterRawMaterials);
+            checkbox.addEventListener('change', filterPackingMaterials);
         });
 
-        function filterRawMaterials() {
+        function filterPackingMaterials() {
             // Get all selected categories
             const selectedCategories = Array.from(categoryCheckboxes)
                 .filter(checkbox => checkbox.checked)
