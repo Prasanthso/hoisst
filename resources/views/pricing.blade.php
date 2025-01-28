@@ -66,7 +66,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="rawmaterial" class="form-label">Raw Material</label>
-                    <select id="rawmaterial" class="form-select select2">
+                    <select id="rawmaterial" class="form-select">
                         <option selected disabled>Choose...</option>
                         @foreach($rawMaterials as $rawMaterialItem)
                         <option
@@ -140,7 +140,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="packingmaterial" class="form-label">Packing Material</label>
-                    <select id="packingmaterial" class="form-select select2">
+                    <select id="packingmaterial" class="form-select">
                         <option selected disabled>Choose...</option>
                         @foreach($packingMaterials as $packingMaterialItem)
                         <option
@@ -317,10 +317,10 @@
  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // $('#productSelect').select2({
-        //     theme: 'bootstrap-5',
-        //     placeholder: 'Select UoM',
-        // });
+        $('#productSelect').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select UoM',
+        });
 
         // $('#rawmaterial').select2({
         //     theme: 'bootstrap-5',
@@ -335,10 +335,10 @@
         //     theme: 'bootstrap-5',
         //     placeholder: 'Select Overheads',
         //   });
-        // $('#recipeUoM').select2({
-        //     theme: 'bootstrap-5',
-        //     placeholder: 'Select UoM',
-        //    });
+        $('#recipeUoM').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select UoM',
+           });
 
         const productSelect = document.getElementById('productSelect');
 
@@ -382,15 +382,14 @@
             console.log('Selected product ID:', product_id); // Debug log to check the selected value
         });
 
+
         // Update fields when raw material is selected
         rawMaterialSelect.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
-
             if (selectedOption.disabled) {
                 clearFields();
                 return;
             }
-
             const code = selectedOption.getAttribute('data-code');
             const uom = selectedOption.getAttribute('data-uom');
             const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
@@ -401,6 +400,20 @@
 
             updateAmount();
         });
+        rawMaterialSelect.addEventListener('input', (event) => {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.disabled) {
+                clearFields();
+                return;
+            }
+            const code = selectedOption.getAttribute('data-code');
+            const uom = selectedOption.getAttribute('data-uom');
+            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+            codeInput.value = code || '';
+            uomInput.value = uom || '';
+            priceInput.value = price.toFixed(2);
+            updateAmount();
+    });
 
         // Update amount on quantity input
         quantityInput.addEventListener('input', updateAmount);
@@ -423,7 +436,7 @@
 
             const rpoutput = rpoutputInput.value.trim(); // Convert to number
             const rpuom = rpuomInput.value;
-            console.log("rp",rpoutput,rpuom);
+            console.log("rp",rpoutput,rpuom,rawMaterialName,rawMaterialId);
             const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
             if (!token) {

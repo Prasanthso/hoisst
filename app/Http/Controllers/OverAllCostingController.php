@@ -10,5 +10,4 @@ class OverAllCostingController extends Controller
         return view('addoverallcosting');
     }
 
-
 }
