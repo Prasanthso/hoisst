@@ -5,7 +5,7 @@
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
         <!-- Initially displaying "View Raw Material" -->
-        <h1 id="pageTitle">View Packing Material</h1>
+        <h1 id="pageTitle">View Product</h1>
         <div class="d-flex justify-content-end mb-2 action-buttons">
             <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;" id="editButton">
                 <i class="fas fa-edit" style="color: black;"></i>
@@ -25,7 +25,7 @@
                         <div class="card-body">
 
                             <!-- Vertical Form -->
-                            <form method="POST" action="{{ route('products.edit', $product->id) }}" class="row g-3 mt-2" id="rawMaterialForm">
+                            <form method="POST" action="{{ route('products.edit', $product->id) }}" class="row g-3 mt-2" id="productForm">
                                 @csrf
                                 @method('PUT')
                                 <div class="col-12">
@@ -34,7 +34,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <label for="inputNanme4" class="form-label">Choose Category For</label>
-                                    <select id="inputState" class="form-select" name="uom" disabled>
+                                    <select id="inputState" class="form-select select2" name="uom" disabled>
                                         <option selected>{{ $product->uom}}</option>
                                         <option>Ltr</option>
                                         <option>Kgs</option>
@@ -42,10 +42,10 @@
                                     </select>
                                 </div>
                                 <div class="col-md-12">
-                                    <label for="categorySelect" class="form-label">Packing Material Category</label>
+                                    <label for="categorySelect" class="form-label">Product Category</label>
 
                                     <!-- The dropdown list for selecting categories (hidden initially) -->
-                                    <select class="form-select " id="categorySelect" name="category_ids[]" multiple style="display: none;" disabled>
+                                    <select class="form-select " id="categorySelect" name="category_ids[]" multiple disabled>
                                         @foreach($productCategories as $categories)
                                         <option value="{{ $categories->id }}"
                                             @foreach(range(1, 5) as $i)
@@ -121,14 +121,19 @@
             placeholder: 'Choose Categories',
             allowClear: true
         });
+        $('#inputState').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select UoM',
+            allowClear: true
+        });
 
         // Toggle edit mode
         $('#editButton').on('click', function() {
             // Change the page title text
-            $('#pageTitle').text('Edit Raw Material');
+            $('#pageTitle').text('Edit Product');
 
             // Enable form fields
-            $('#rawMaterialForm input, #rawMaterialForm select').prop('disabled', false);
+            $('#productForm input, #productForm select').prop('disabled', false);
 
             // Show the Save button
             $('#saveButton').show();
