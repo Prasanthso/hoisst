@@ -9,6 +9,9 @@
 
     <section class="section">
         <div class="row">
+            @if(session('success'))
+            <div id="success-message" class="alert alert-success">{{ session('success') }}</div>
+            @endif
             <div class="col-lg-12">
                 <div class="col-lg-6">
 
@@ -16,16 +19,8 @@
                         <div class="card-body">
 
                             <!-- Vertical Form -->
-                            <form method="POST" action="{{ route('rawmaterials.store') }}" class="row g-3 mt-2">
+                            <form method="POST" action="{{ route('overallcosting.store') }}" class="row g-3 mt-2">
                                 @csrf
-                                <!-- <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Name</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name">
-                                </div> -->
-                                <!-- <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">RM Code</label>
-                                    <input type="text" class="form-control" id="inputNanme4">
-                                </div> -->
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Recipe</label>
                                     <div class="col-12">
@@ -151,8 +146,9 @@
         const recipeSelect = document.getElementById('recipeSelect');
         const RmCostA = document.getElementById('inputRmcost');
         const PmCostB = document.getElementById('inputPmcost');
+        const RmPmCost = document.getElementById('inputRmPmcost');
         const OhCostC = document.getElementById('inputOverhead');
-
+        const TotalCost = document.getElementById('inputTotalCost');
         $(document).ready(function() {
             $('#recipeSelect').select2({
                 theme: 'bootstrap-5',
@@ -190,6 +186,8 @@
                         RmCostA.value = data.totalRmCost;
                         PmCostB.value = data.totalPmCost;
                         OhCostC.value = data.totalOhCost;
+                        RmPmCost.value = (parseFloat(data.totalRmCost) + parseFloat(data.totalPmCost)).toFixed(2);
+                        TotalCost.value = (parseFloat(data.totalRmCost) + parseFloat(data.totalPmCost) + parseFloat(data.totalOhCost)).toFixed(2)
                     }
                 }
                 else{ alert(data.error); }
@@ -199,8 +197,14 @@
                 alert("Error fetching cost");
             }
         }
-
     }
+
+    setTimeout(function () {
+        const successMessage = document.getElementById('success-message');
+        if (successMessage) {
+            successMessage.style.display = 'none';
+        }
+    }, 5000);
 });
 </script>
 

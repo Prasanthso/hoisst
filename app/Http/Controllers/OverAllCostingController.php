@@ -5,9 +5,16 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Models\OverallCosting;
 
 class OverAllCostingController extends Controller
 {
+    public function index()
+    {
+        // $costings = OverallCosting::all();
+        // return view('costing.index', compact('costings'));
+    }
+
     public function create(){
 
         $recipeproducts = DB::table('recipe_master')
@@ -77,9 +84,58 @@ class OverAllCostingController extends Controller
             ]);
     }
 
-    public function store()
+    public function store(Request $request)
     {
+        $validatedData = $request->validate([
+            'productId' => 'required|integer',
+            'inputRmcost' => 'required|numeric',
+            'inputPmcost' => 'required|numeric',
+            'inputRmPmcost' => 'required|numeric',
+            'inputOverhead' => 'required|numeric',
+            'inputRmSgmrp' => 'required|numeric',
+            'inputPmSgmrp' => 'required|numeric',
+            'inputSgMrp' => 'required|numeric',
+            'inputSgMargin' => 'required|numeric',
+            'inputOhAmt' => 'required|numeric',
+            'inputTotalCost' => 'required|numeric',
+            'inputSellRate' => 'required|numeric',
+            'inputSellRatebf' => 'required|numeric',
+            'inputTax' => 'required|numeric',
+            'inputMarginAmt' => 'required|numeric',
+            'inputDiscount' => 'required|numeric',
+            'inputPresentMrp' => 'required|numeric',
+            'inputMargin' => 'required|numeric',
+        ]);
 
+        try {
+            OverallCosting::create([
+                'productId' => $request->productId,
+                'rm_cost_unit' => $request->inputRmcost,
+                'pm_cost_unit' => $request->inputPmcost,
+                'rm_pm_cost' => $request->inputRmPmcost,
+                'overhead' => $request->inputOverhead,
+                'rm_sg_mrp' => $request->inputRmSgmrp,
+                'pm_sg_mrp' => $request->inputPmSgmrp,
+                'sg_mrp' => $request->inputSgMrp,
+                'sg_margin' => $request->inputSgMargin,
+                'oh_amt' => $request->inputOhAmt,
+                'total_cost' => $request->inputTotalCost,
+                'sell_rate' => $request->inputSellRate,
+                'sell_rate_bf' => $request->inputSellRatebf,
+                'tax' => $request->inputTax,
+                'margin_amt' => $request->inputMarginAmt,
+                'discount' => $request->inputDiscount,
+                'present_mrp' => $request->inputPresentMrp,
+                'margin' => $request->inputMargin,
+                'status' => 'active',
+            ]);
+        } catch (\Exception $e) {
+            // Handle error by logging or displaying the message
+            \Log::error('Error inserting OverallCosting data: ' . $e->getMessage());
+            // dd($e->getMessage());
+        }
+        // Redirect to another page with a success message
+        return redirect()->route('overallcosting.create')->with('success', 'Costing saved successfully!');
     }
 
 }
