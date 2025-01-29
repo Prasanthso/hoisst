@@ -125,46 +125,29 @@
                                 </tr>
                             </thead>
                             <tbody id="ReportTable">
+                                @foreach ($reports as $index => $report)
                                 <tr>
-                                    <td>1.</td>
-                                    <td>Carrot Cake</td>
-                                    <td>160</td>
-                                    <td>160</td>
-                                    <td>45.3</td>
-                                    <td>55.66</td>
-                                    <td>19.56</td>
-                                    <td>10.224</td>
-                                    <td>45.55</td>
-                                    <td>39.555</td>
-                                    <td>35</td>
-                                    <td>17.55</td>
-                                    <td>17.65</td>
-                                    <td>120</td>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $report->Product_Name }}</td>
+                                    <td>{{ $report->S_MRP }}</td>
+                                    <td>{{ $report->S_MRP  }}</td>
+                                    <td>{{ $report->RM_Cost }}</td>
+                                    <td>{{ number_format($report->RM_perc, 2) }}</td>
+                                    <td>{{ $report->PM_Cost }}</td>
+                                    <td>{{ number_format($report->PM_perc, 2) }}</td>
+                                    <td>{{ $report->TOTAL }}</td>
+                                    <td>{{ $report->Total_perc }}</td>
+                                    <td>{{ number_format($report->OH_Cost, 2) }}</td>
+                                    <td>{{ number_format($report->OH_perc, 2) }}</td>
+                                    <td>{{ $report->COST }}</td>
+                                    <td>{{ $report->Selling_Cost }}</td>
                                     <td>18</td>
-                                    <td>101.11</td>
-                                    <td>23.66</td>
-                                    <td>33.66</td>
+                                    <td>{{ number_format($report->Before_tax, 2) }}</td>
+                                    <td>{{ number_format($report->Margin, 2) }}</td>
+                                    <td>{{ number_format($report->Margin_perc, 2) }}</td>
                                 </tr>
-                                <tr>
-                                    <td>2.</td>
-                                    <td>Egg Puff</td>
-                                    <td>160</td>
-                                    <td>160</td>
-                                    <td>45.3</td>
-                                    <td>75.66</td>
-                                    <td>19.56</td>
-                                    <td>10.224</td>
-                                    <td>45.55</td>
-                                    <td>39.555</td>
-                                    <td>35</td>
-                                    <td>17.55</td>
-                                    <td>17.65</td>
-                                    <td>120</td>
-                                    <td>18</td>
-                                    <td>101.11</td>
-                                    <td>23.66</td>
-                                    <td>33.66</td>
-                                </tr>
+                                @endforeach
+
                                 <!-- Add more rows as needed -->
                             </tbody>
                         </table>
