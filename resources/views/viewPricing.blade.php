@@ -265,7 +265,7 @@
 
         // Redirect to the route with the selected product ID
         if (selectedProductId) {
-            window.location.href = `{{ route('receipepricing.form') }}?product_id=${selectedProductId}`;
+            {{-- window.location.href = `{{ route('receipepricing.form') }}?product_id=${selectedProductId}`; --}}
         }
     });
 </script> -->

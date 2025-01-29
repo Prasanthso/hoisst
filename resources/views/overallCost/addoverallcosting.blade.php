@@ -28,12 +28,17 @@
                                 </div> -->
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Recipe</label>
-                                    <select id="inputState" class="form-select" name="uom">
-                                        <option selected>Select Recipe...</option>
-                                        <option>Egg Puff</option>
-                                        <option>Samosa</option>
-                                        <option>Cake</option>
-                                    </select>
+                                    <div class="col-12">
+                                        <select id="recipeSelect" name="productId" class="form-select select2" aria-labelledby="recipeSelectLabel">
+                                        <option selected disabled>Choose...</option>
+                                        @foreach($recipeproducts as $recipesitem)
+                                        <option value="{{ $recipesitem->id }}">{{ $recipesitem->name }}</option>
+                                        @endforeach
+                                        </select>
+                                        @error('productId')
+                                        <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
                                 </div>
                                 <div class="mb-2">
                                     <h4>Overall Costing</h4>
@@ -42,74 +47,74 @@
                             <div class="col">
                                 <div class="col-12">
                                     <label for="inputRmcost" class="form-label">RM Cost/Unit(A)</label>
-                                    <input type="text" class="form-control" id="inputRmcost" name="name">
+                                    <input type="text" class="form-control" id="inputRmcost" name="inputRmcost">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputPmcost" class="form-label">PM Cost/Unit(A)</label>
-                                    <input type="text" class="form-control" id="inputPmcost" name="name">
+                                    <label for="inputPmcost" class="form-label">PM Cost/Unit(B)</label>
+                                    <input type="text" class="form-control" id="inputPmcost" name="inputPmcost">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputRmPmcost" class="form-label">RM & PM Cost</label>
-                                    <input type="text" class="form-control" id="inputRmPmcost" name="name">
+                                    <input type="text" class="form-control" id="inputRmPmcost" name="inputRmPmcost">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputOverhead" class="form-label">Overhead % C</label>
-                                    <input type="text" class="form-control" id="inputOverhead" name="name">
+                                    <label for="inputOverhead" class="form-label">Overhead(C)</label>
+                                    <input type="text" class="form-control" id="inputOverhead" name="inputOverhead">
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="col-12">
                                     <label for="inputRmSgmrp" class="form-label">RM(%) Suggested MRP</label>
-                                    <input type="text" class="form-control" id="inputRmSgmrp" name="name">
+                                    <input type="text" class="form-control" id="inputRmSgmrp" name="inputRmSgmrp">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputPmSgmrp" class="form-label">PM(%) Suggested MRP</label>
-                                    <input type="text" class="form-control" id="inputPmSgmrp" name="name">
+                                    <input type="text" class="form-control" id="inputPmSgmrp" name="inputPmSgmrp">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputSgMrp" class="form-label"> Suggested MRP </label>
-                                    <input type="text" class="form-control" id="inputSgMrp" name="name">
+                                    <input type="text" class="form-control" id="inputSgMrp" name="inputSgMrp">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputSgMargin" class="form-label"> Suggested Margin </label>
-                                    <input type="text" class="form-control" id="inputSgMargin" name="name">
+                                    <input type="text" class="form-control" id="inputSgMargin" name="inputSgMargin">
                                 </div>
                             </div>
                                 <div class="col-12">
                                     <label for="inputOhAmt" class="form-label">Overhead Amount D</label>
-                                    <input type="text" class="form-control" id="inputOhAmt" name="name">
+                                    <input type="text" class="form-control" id="inputOhAmt" name="inputOhAmt">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputTotalCost" class="form-label">Total cost J</label>
-                                    <input type="text" class="form-control" id="inputTotalCost" name="name">
+                                    <input type="text" class="form-control" id="inputTotalCost" name="inputTotalCost">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputSellRate" class="form-label">Selling Rate</label>
-                                    <input type="text" class="form-control" id="inputSellRate" name="name">
+                                    <input type="text" class="form-control" id="inputSellRate" name="inputSellRate">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputSellRatebf" class="form-label">Selling Rate before tax</label>
-                                    <input type="text" class="form-control" id="inputSellRatebf" name="name">
+                                    <input type="text" class="form-control" id="inputSellRatebf" name="inputSellRatebf">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputTax" class="form-label">Tax</label>
-                                    <input type="text" class="form-control" id="inputTax" name="name">
+                                    <input type="text" class="form-control" id="inputTax" name="inputTax">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputMarginAmt" class="form-label">Margin Amount</label>
-                                    <input type="text" class="form-control" id="inputMarginAmt" name="name">
+                                    <input type="text" class="form-control" id="inputMarginAmt" name="inputMarginAmt">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputDiscount" class="form-label">Discount</label>
-                                    <input type="text" class="form-control" id="inputDiscount" name="name">
+                                    <input type="text" class="form-control" id="inputDiscount" name="inputDiscount">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputPresentMrp" class="form-label">Present MRP</label>
-                                    <input type="text" class="form-control" id="inputPresentMrp" name="name">
+                                    <input type="text" class="form-control" id="inputPresentMrp" name="inputPresentMrp">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputMargin" class="form-label">Margin</label>
-                                    <input type="text" class="form-control" id="inputMargin" name="name">
+                                    <input type="text" class="form-control" id="inputMargin" name="inputMargin">
                                 </div>
                             </div>
                                 <div>
@@ -142,15 +147,62 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#categorySelect').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Choose Categories',
-            allowClear: true
-        });
-    });
-</script>
+     document.addEventListener("DOMContentLoaded", () => {
+        const recipeSelect = document.getElementById('recipeSelect');
+        const RmCostA = document.getElementById('inputRmcost');
+        const PmCostB = document.getElementById('inputPmcost');
+        const OhCostC = document.getElementById('inputOverhead');
 
+        $(document).ready(function() {
+            $('#recipeSelect').select2({
+                theme: 'bootstrap-5',
+                placeholder: "Type or select a recipe...",
+            });
+        });
+
+        $('#recipeSelect').on('change', function () {
+            const selectedValue = $(this).val();
+            console.log("Selected value:", selectedValue);
+            if (selectedValue) {
+                recipedata(selectedValue);
+            } else {
+                console.log("No recipe selected.");
+            }
+        });
+
+    async function recipedata(productId)
+    {
+        // const productId = recipeSelect.value;
+            if (!productId) {
+                alert("Please enter a recipe");
+                return;
+            }
+        if (productId) {
+            try {
+                // editRecipeBtn.setAttribute('data-id', productId);
+                let response = await fetch(`/get-abc-cost?productId=${productId}`);
+                let data = await response.json();
+                if (response.ok) {
+
+                const selectedText = recipeSelect.options[recipeSelect.selectedIndex].text.trim();
+                    if(selectedText != null)
+                    {
+                        RmCostA.value = data.totalRmCost;
+                        PmCostB.value = data.totalPmCost;
+                        OhCostC.value = data.totalOhCost;
+                    }
+                }
+                else{ alert(data.error); }
+
+            } catch (error) {
+                console.error(error);
+                alert("Error fetching cost");
+            }
+        }
+
+    }
+});
+</script>
 
 <!--Template Main JS File-->
 <script src="{{ asset('js/main.js') }}">
