@@ -150,7 +150,9 @@ Route::get('/recipepricing', [RecipePricingController::class, 'showRecipePricing
 Route::get('/overallcosting', [OverAllCostingController::class, 'index'])->name('overallcosting.index');
 Route::get('/addoverallcosting', [OverAllCostingController::class, 'create'])->name('overallcosting.create');
 Route::post('/saveoverallcosting', [OverAllCostingController::class, 'store'])->name('overallcosting.store');
-Route::get('/editoverallcosting', [OverAllCostingController::class, 'edit'])->name('overallcosting.edit');
+Route::get('/editoverallcosting/{id}', [OverAllCostingController::class, 'edit'])->name('overallcosting.edit');
+Route::put('/editoverallcosting/{id}', [OverAllCostingController::class, 'update'])->name('overallcosting.update');
+
 Route::get('/get-abc-cost', [OverAllCostingController::class, 'getABCcost']);
 
 Route::get('/report', [ReportController::class, 'index'])->name('report.view');

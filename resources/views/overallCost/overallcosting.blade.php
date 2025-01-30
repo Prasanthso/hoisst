@@ -61,9 +61,9 @@
                 <div class="row">
                     <!-- Action Buttons -->
                     <div class="d-flex justify-content-end mb-2 action-buttons">
-                        <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                        <!--<button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-edit" style="color: black;"></i>
-                        </button>
+                        </button>-->
                          <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-trash" style="color: red;"></i>
                         </button>
@@ -77,6 +77,7 @@
                                     <input type="checkbox" id="select-all" class="form-check-input">
                                 </th>
                                 <th scope="col" style="color:white;">S.NO</th>
+                                <th scope="col" style="color:white;">Recipe</th>
                                 <th scope="col" style="color:white;">Raw Material Cost</th>
                                 <th scope="col" style="color:white;">Selling Price</th>
                                 <th scope="col" style="color:white;">Discount</th>
@@ -90,7 +91,8 @@
                                     <input type="checkbox" class="form-check-input row-checkbox">
                                 </td>
                                 <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO -->
-                                <td><a href="{{ route('categoryitem.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->rm_cost_unit }}</a></td>
+                                <td><a href="{{ route('overallcosting.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->product_name }}</a></td>
+                                <td>{{ $material->rm_cost_unit }}</td>
                                 <td>{{ $material->sell_rate }}</td>
                                 <td>{{ $material->discount }}</td>
                                 <td>{{ $material->margin }}</td>
@@ -202,9 +204,9 @@
             isEditing = false;
             const actionButtonsContainer = document.querySelector(".action-buttons");
             actionButtonsContainer.innerHTML = `
-            <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+            <!--<button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                 <i class="fas fa-edit" style="color: black;"></i>
-            </button>
+            </button>-->
             <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                 <i class="fas fa-trash" style="color: red;"></i>
             </button>
