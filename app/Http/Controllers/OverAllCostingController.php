@@ -11,8 +11,8 @@ class OverAllCostingController extends Controller
 {
     public function index()
     {
-        // $costings = OverallCosting::all();
-        // return view('costing.index', compact('costings'));
+        $costings = OverallCosting::all();
+        return view('overallCost.overallcosting', compact('costings'));
     }
 
     public function create(){

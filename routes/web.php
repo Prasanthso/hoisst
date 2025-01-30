@@ -147,6 +147,7 @@ Route::post('/oh-update-pricing/{id}', [OhForRecipeController::class, 'update'])
 
 Route::get('/recipepricing', [RecipePricingController::class, 'showRecipePricingList'])->name('showRecipePricingList');
 
+Route::get('/overallcosting', [OverAllCostingController::class, 'index'])->name('overallcosting.index');
 Route::get('/addoverallcosting', [OverAllCostingController::class, 'create'])->name('overallcosting.create');
 Route::post('/saveoverallcosting', [OverAllCostingController::class, 'store'])->name('overallcosting.store');
 Route::get('/get-abc-cost', [OverAllCostingController::class, 'getABCcost']);
