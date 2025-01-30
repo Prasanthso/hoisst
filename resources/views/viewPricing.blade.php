@@ -86,6 +86,9 @@
                             @endif
                         </tbody>
                     </table>
+                    <div class="text-end" style="background-color: #eaf8ff; width:90%;">
+                        <strong>RM Cost (A) : </strong> <span id="totalRmCost">{{ $rmTotal }}</span>
+                    </div>
                 </div>
             </div>
 
@@ -131,6 +134,9 @@
                             @endif
                         </tbody>
                     </table>
+                    <div class="text-end" style="background-color:#F1F1F1; width:90%;">
+                        <strong>PM Cost (B) : </strong> <span id="totalPmCost">{{ $pmTotal }}</span>
+                    </div>
                 </div>
             </div>
 
@@ -176,6 +182,9 @@
                             @endif
                         </tbody>
                     </table>
+                    <div class="text-end" style="background-color:#F1F1F1; width:90%;">
+                        <strong>OH Cost (C) : </strong> <span id="totalohCost">{{ $ohTotal }}</span>
+                    </div>
                 </div>
             </div>
 
@@ -211,8 +220,7 @@
         $('#productSelect').select2({
             theme: 'bootstrap-5',
             placeholder: "Type or select a recipe...",
-            allowClear: true
-        });
+         });
 
         // edit products//
     document.querySelector('.edit-table-btn').addEventListener('click', function () {
@@ -250,7 +258,6 @@
 });
 </script>
 
-
 <!-- <script>
     document.getElementById('productSelect').addEventListener('change', function () {
         // Get the selected product ID
@@ -258,7 +265,7 @@
 
         // Redirect to the route with the selected product ID
         if (selectedProductId) {
-            window.location.href = `{{ route('receipepricing.form') }}?product_id=${selectedProductId}`;
+            {{-- window.location.href = `{{ route('receipepricing.form') }}?product_id=${selectedProductId}`; --}}
         }
     });
 </script> -->

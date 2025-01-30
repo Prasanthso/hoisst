@@ -23,7 +23,7 @@
                                 @method('PUT')
                                 <div class="col-md-12">
                                     <label for="inputNanme4" class="form-label">Choose Category For</label>
-                                    <select id="inputState" name="categoryId" class="form-select">
+                                    <select id="inputState" name="categoryId" class="form-select" disabled>
                                         <option value="{{ $items->category->id }}" selected disabled>{{ $items->category->categoryname }}</option>
                                     </select>
                                     @error('categoryId')

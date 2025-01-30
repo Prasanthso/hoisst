@@ -89,7 +89,6 @@
         $('#recipeSelect').select2({
             theme: 'bootstrap-5',
             placeholder: "Type or select a recipe...",
-            allowClear: true
         });
 
         if (recipeSelect && selectedRecipesName) {

@@ -444,39 +444,7 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     // Ensure functions are available in the global scope
-    document.addEventListener('DOMContentLoaded', function () {
-        $('#productSelect').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Select UoM',
-            allowClear: true
-        });
-
-        $('#rawmaterial').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Select Rawmaterial',
-            allowClear: true
-        });
-
-        $('#packingmaterial').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Select Packing',
-            allowClear: true
-        });
-        $('#overheads').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Select Overheads',
-            allowClear: true
-        });
-        $('#recipeUoM').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Select UoM',
-            allowClear: true
-        });
-
-        const totalCostSpan = document.getElementById('totalRmCost');
-        const totalPmCostSpan = document.getElementById('totalPmCost');
-        const totalOhCostSpan = document.getElementById('totalohCost');
-        const totalCostInput = document.getElementById('totalcost');
+     document.addEventListener('DOMContentLoaded', function () {
 
         window.editRow = editRow;
         window.saveRow = saveRow;
@@ -491,13 +459,6 @@
         pmforRecipe();
         ohforRecipe();
 
-        function updateGrandTotal() {
-            const rawMaterialTotal = parseFloat(totalCostSpan.textContent) || 0;
-            const packingMaterialTotal = parseFloat(totalPmCostSpan.textContent) || 0;
-            const overheadsTotal = parseFloat(totalOhCostSpan.textContent) || 0;
-            const grandTotal = rawMaterialTotal + packingMaterialTotal + overheadsTotal; // Add other totals if needed
-            totalCostInput.value = grandTotal.toFixed(2); // Display in Total Cost (A+B+C)
-        }
     });
 
     // raw materials recipe-pricing details
@@ -618,7 +579,6 @@
         // Update fields when raw material is selected
         rawMaterialSelect.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
-
             if (selectedOption.disabled) {
                 clearFields();
                 return;
@@ -780,6 +740,7 @@
             amountInput.value = (price * quantity).toFixed(2);
         }
         function updateTotalCost(newAmount) {
+            const totalCostSpan = document.getElementById('totalRmCost');
             const currentTotal = parseFloat(totalCostSpan.textContent) || 0;
             totalCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
             updateGrandTotal();
@@ -1050,7 +1011,6 @@
                 })
                 .then(data => {
                     console.log('Success:', data);
-
                     // Remove the row from the table
                     const amount = parseFloat(row.cells[5].textContent) || 0;
                     row.remove();
@@ -1068,6 +1028,7 @@
             pmAmountInput.value = (price * quantity).toFixed(2);
         }
         function updatePmTotalCost(newAmount) {
+            const totalPmCostSpan = document.getElementById('totalPmCost');
             const currentTotal = parseFloat(totalPmCostSpan.textContent) || 0;
             totalPmCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
             updateGrandTotal();
@@ -1247,8 +1208,6 @@
                 alert('Please select a valid overheads and fill all fields correctly.');
                 return;
             }
-
-
         // Prepare data for server request
         const ohData = {
                 product_id: product_id,
@@ -1342,6 +1301,7 @@
 
                     // Update the total cost
                     updateOhTotalCost(-amount);
+
                 })
                 .catch(error => console.error('Error:', error.message));
         }
@@ -1353,6 +1313,8 @@
             ohAmountInput.value = (price * quantity).toFixed(2);
         }
         function updateOhTotalCost(newAmount) {
+
+            const totalOhCostSpan = document.getElementById('totalohCost');
             const currentTotal = parseFloat(totalOhCostSpan.textContent) || 0;
             totalOhCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
             updateGrandTotal();
@@ -1366,5 +1328,16 @@
             ohAmountInput.value = '';
         }
 }
+    function updateGrandTotal() {
+         const totalCostSpan = document.getElementById('totalRmCost');
+         const totalPmCostSpan = document.getElementById('totalPmCost');
+         const totalOhCostSpan = document.getElementById('totalohCost');
+         const totalCostInput = document.getElementById('totalcost');
+            const rawMaterialTotal = parseFloat(totalCostSpan.textContent) || 0;
+            const packingMaterialTotal = parseFloat(totalPmCostSpan.textContent) || 0;
+            const overheadsTotal = parseFloat(totalOhCostSpan.textContent) || 0;
+            const grandTotal = rawMaterialTotal + packingMaterialTotal + overheadsTotal; // Add other totals if needed
+            totalCostInput.value = grandTotal.toFixed(2); // Display in Total Cost (A+B+C)
+        }
 
 </script>

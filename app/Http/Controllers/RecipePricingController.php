@@ -37,10 +37,6 @@ class RecipePricingController extends Controller
         return view('recipePricing');
     }
 
-    public function overallcosting(){
-        return view('overallcosting');
-    }
-
     /**
      * Show the form for creating a new resource.
      */
@@ -72,14 +68,12 @@ class RecipePricingController extends Controller
     public function showPricingForm(Request $request)
     {
         // Retrieve all products to display in the dropdown
-
         // $products = Product::all();
         $products = DB::table('recipe_master')
         ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id') // Join with the products table
         ->select('recipe_master.product_id as id','product_master.name as name') // Select the product name from the products table
         ->where('recipe_master.status','active')
         ->get(); // Get all results
-
 
         // If a product is selected, fetch the pricing data
         if ($request->has('product_id')) {

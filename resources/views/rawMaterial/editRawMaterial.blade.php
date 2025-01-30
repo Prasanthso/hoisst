@@ -143,7 +143,6 @@
             // Hide the category list and show the select dropdown
             $('#categoryList').hide(); // Hide the list of categories
             $('#categorySelect').show(); // Show the select dropdown
-
             // Enable the select dropdown for editing
             $('#categorySelect').prop('disabled', false);
         });

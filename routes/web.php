@@ -15,6 +15,7 @@ use App\Http\Controllers\RmForRecipeController;
 use App\Http\Controllers\PmForRecipeController;
 use App\Http\Controllers\OhForRecipeController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\OverAllCostingController;
 use App\Models\Overhead;
 
 /*
@@ -145,5 +146,10 @@ Route::post('/pm-update-pricing/{id}', [PmForRecipeController::class, 'update'])
 Route::post('/oh-update-pricing/{id}', [OhForRecipeController::class, 'update']);
 
 Route::get('/recipepricing', [RecipePricingController::class, 'showRecipePricingList'])->name('showRecipePricingList');
-Route::get('/overallcosting', [RecipePricingController::class, 'overallcosting'])->name('showRecipeoverallcosting');
+
+Route::get('/overallcosting', [OverAllCostingController::class, 'index'])->name('overallcosting.index');
+Route::get('/addoverallcosting', [OverAllCostingController::class, 'create'])->name('overallcosting.create');
+Route::post('/saveoverallcosting', [OverAllCostingController::class, 'store'])->name('overallcosting.store');
+Route::get('/get-abc-cost', [OverAllCostingController::class, 'getABCcost']);
+
 Route::get('/report', [ReportController::class, 'index'])->name('report.view');

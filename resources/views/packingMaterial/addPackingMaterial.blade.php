@@ -104,12 +104,12 @@
             placeholder: 'Choose Categories',
             allowClear: true
         });
+
+        $('#inputState').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Select UoM',
+            });
     });
-    $('#inputState').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Select UoM',
-            allowClear: true
-        });
 </script>
 
 
