@@ -10,7 +10,7 @@ class OverallCosting extends Model
     use HasFactory;
 
     // Define the table name (optional, if your table is named differently)
-    protected $table = 'overall_costings';
+    protected $table = 'overall_costing';
 
     // Specify which attributes are mass assignable
     protected $fillable = [
