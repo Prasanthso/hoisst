@@ -84,9 +84,9 @@
                         <tbody id="catagoriesTable">
                             @foreach ($categoriesitems as $index => $material)
                             <tr data-id="{{ $material->id }}">
-                                <!-- <td>
+                                <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
-                                </td> -->
+                                </td>
                                 <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO -->
                                 <td><a href="{{ route('categoryitem.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->itemname }}</a></td>
                                 <td>{{ $material->description }}</td>
@@ -267,7 +267,7 @@
                  return;
              }
 
-             fetch("{{ route('product.delete') }}", {
+             fetch("{{ route('categoryitem.delete') }}", {
                      method: "POST",
                      headers: {
                          "Content-Type": "application/json",
@@ -314,6 +314,8 @@
                 }
             });
         }
+
+        deleteTableBtn.addEventListener("click", deleteRows);
 
     // // Optionally, a function to update selected category values in the URL
     // const updateSelectedCategories = () => {
