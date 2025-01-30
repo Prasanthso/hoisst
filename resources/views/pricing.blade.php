@@ -317,28 +317,6 @@
  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        $('#productSelect').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Select UoM',
-        });
-
-        // $('#rawmaterial').select2({
-        //     theme: 'bootstrap-5',
-        //     placeholder: 'Select Rawmaterial',
-        // });
-
-        // $('#packingmaterial').select2({
-        //     theme: 'bootstrap-5',
-        //     placeholder: 'Select Packing',
-        // });
-        // $('#overheads').select2({
-        //     theme: 'bootstrap-5',
-        //     placeholder: 'Select Overheads',
-        //   });
-        $('#recipeUoM').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Select UoM',
-           });
 
         const productSelect = document.getElementById('productSelect');
 
