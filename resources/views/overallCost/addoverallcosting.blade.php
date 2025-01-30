@@ -187,7 +187,7 @@
                         PmCostB.value = data.totalPmCost;
                         OhCostC.value = data.totalOhCost;
                         RmPmCost.value = (parseFloat(data.totalRmCost) + parseFloat(data.totalPmCost)).toFixed(2);
-                        TotalCost.value = (parseFloat(data.totalRmCost) + parseFloat(data.totalPmCost) + parseFloat(data.totalOhCost)).toFixed(2)
+                        TotalCost.value = (parseFloat(data.totalRmCost) + parseFloat(data.totalPmCost) + parseFloat(data.totalOhCost)).toFixed(2);
                     }
                 }
                 else{ alert(data.error); }

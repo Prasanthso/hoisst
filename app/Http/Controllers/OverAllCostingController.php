@@ -96,7 +96,7 @@ class OverAllCostingController extends Controller
     {
         // dd($request);
         $validatedData = $request->validate([
-            'productId' => 'required|integer',
+            'productId' => 'required|exists:recipe_master,product_id',
             'inputRmcost' => 'required|numeric',
             'inputPmcost' => 'required|numeric',
             'inputRmPmcost' => 'required|numeric',

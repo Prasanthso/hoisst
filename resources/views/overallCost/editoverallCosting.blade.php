@@ -173,15 +173,15 @@
         });
         });
 
-        $('#recipeSelect').on('change', function () {
-            const selectedValue = $(this).val();
-            console.log("Selected value:", selectedValue);
-            if (selectedValue) {
-                recipedata(selectedValue);
-            } else {
-                console.log("No recipe selected.");
-            }
-        });
+        // $('#recipeSelect').on('change', function () {
+        //     const selectedValue = $(this).val();
+        //     console.log("Selected value:", selectedValue);
+        //     if (selectedValue) {
+        //         recipedata(selectedValue);
+        //     } else {
+        //         console.log("No recipe selected.");
+        //     }
+        // });
 
     async function recipedata(productId)
     {
