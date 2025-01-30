@@ -317,33 +317,33 @@
  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        $('#productSelect').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Select UoM',
-            allowClear: true
-        });
+        // $('#productSelect').select2({
+        //     theme: 'bootstrap-5',
+        //     placeholder: 'Select UoM',
+        //     allowClear: true
+        // });
 
-        $('#rawmaterial').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Select Rawmaterial',
-            allowClear: true
-        });
+        // $('#rawmaterial').select2({
+        //     theme: 'bootstrap-5',
+        //     placeholder: 'Select Rawmaterial',
+        //     allowClear: true
+        // });
 
-        $('#packingmaterial').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Select Packing',
-            allowClear: true
-        });
-        $('#overheads').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Select Overheads',
-            allowClear: true
-        });
-        $('#recipeUoM').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Select UoM',
-            allowClear: true
-        });
+        // $('#packingmaterial').select2({
+        //     theme: 'bootstrap-5',
+        //     placeholder: 'Select Packing',
+        //     allowClear: true
+        // });
+        // $('#overheads').select2({
+        //     theme: 'bootstrap-5',
+        //     placeholder: 'Select Overheads',
+        //     allowClear: true
+        // });
+        // $('#recipeUoM').select2({
+        //     theme: 'bootstrap-5',
+        //     placeholder: 'Select UoM',
+        //     allowClear: true
+        // });
 
         const productSelect = document.getElementById('productSelect');
 
