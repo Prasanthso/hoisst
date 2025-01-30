@@ -15,6 +15,7 @@
             @if(session('success'))
             <div id="success-message" class="alert alert-success">{{ session('success') }}</div>
             @endif
+            
 
             <!-- Left side columns -->
              <!--
@@ -123,11 +124,10 @@
 @endsection
 
 <script>
-
     document.addEventListener("DOMContentLoaded", function() {
     const tableBody = document.getElementById("overallcostingTable");
     // const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
-        const deleteTableBtn = document.querySelector(".delete-table-btn");
+        // const deleteTableBtn = document.querySelector(".delete-table-btn");
         const selectAllCheckbox = document.getElementById('select-all');
         const rows = document.querySelectorAll('#overallcostingTable tr');
 
@@ -211,12 +211,12 @@
                 <i class="fas fa-trash" style="color: red;"></i>
             </button>
         `;
-
             // Reassign the edit button functionality
             // document.querySelector(".edit-table-btn").addEventListener("click", enableEditing);
+
         };
 
-          // Event listener for Select All checkbox
+         // Event listener for Select All checkbox
           selectAllCheckbox.addEventListener('change', function() {
             const isChecked = this.checked;
 
@@ -232,7 +232,6 @@
             //     exitEditingMode();
             // }
         });
-
 
       // Event listener for individual row checkboxes
       const updateSelectAllState = () => {
@@ -259,6 +258,69 @@
                 updateSelectAllState();
             });
         });
+
+        // Function to handle row deletion
+        const deleteRows = () => {
+            const selectedRows = Array.from(getRowCheckboxes()).filter(checkbox => checkbox.checked);
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // CSRF token
+
+            if (selectedRows.length === 0) {
+                alert("Please select at least one row to delete.");
+                return;
+            }
+            const selectedIds = selectedRows.map(checkbox => checkbox.closest('tr').getAttribute('data-id'));
+            if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
+                return;
+            }
+            fetch("{{ route('overallcosting.delete') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": token
+                    },
+                    body: JSON.stringify({
+                        ids: selectedIds // Array of IDs to delete
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        selectedRows.forEach(checkbox => {
+                            const row = checkbox.closest("tr");
+                            row.remove();
+                            updateSerialNumbers();
+                        });
+                        alert("Selected rows deleted successfully!");
+                    } else {
+                        alert("Failed to delete rows. Please try again.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error deleting rows:", error);
+                    alert("An error occurred. Please try again.");
+                });
+        };
+
+        function updateSerialNumbers() {
+            // Get all visible rows
+            const visibleRows = Array.from(document.querySelectorAll("#overallcostingTable tr"))
+                .filter(row => row.style.display !== 'none');
+
+            // Update serial numbers for visible rows only
+            visibleRows.forEach((row, index) => {
+                const snoCell = row.querySelector("td:nth-child(2)"); // Adjust the column index for S.NO
+                if (snoCell) {
+                    snoCell.textContent = `${index + 1}.`; // Update the serial number
+                }
+            });
+        }
+
+        document.querySelector(".delete-table-btn").addEventListener("click", deleteRows);
 
     // // Optionally, a function to update selected category values in the URL
     // const updateSelectedCategories = () => {
@@ -301,7 +363,6 @@
             item.style.display = isVisible ? '' : 'none';
         });
     }
-
 
    </script>
 

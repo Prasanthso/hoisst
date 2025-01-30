@@ -216,7 +216,24 @@ class OverAllCostingController extends Controller
 
         return redirect()->route('overallcosting.index')->with('success', 'overallCosting updated successfully!');
     }
+    public function delete(Request $request)
+    {
+        $ids = $request->input('ids'); // Get the 'ids' array from the request
 
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'No valid IDs provided.']);
+        }
+
+        try {
+            // Update the status of raw materials to 'inactive'
+            OverallCosting::whereIn('id', $ids)->update(['status' => 'inactive']);
+
+            return response()->json(['success' => true, 'message' => 'Overall-Costing was inactive successfully.']);
+        } catch (\Exception $e) {
+            // Handle exceptions
+            return response()->json(['success' => false, 'message' => 'Error updating Overall Costing: ' . $e->getMessage()]);
+        }
+    }
 
 
 }

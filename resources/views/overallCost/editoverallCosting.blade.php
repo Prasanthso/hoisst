@@ -9,9 +9,9 @@
             <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;" id="editButton">
                 <i class="fas fa-edit" style="color: black;"></i>
             </button>
-            <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;" id="deleteButton" style="display: none;">
+           <!-- <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;" id="deleteButton" style="display: none;">
                 <i class="fas fa-trash" style="color: red;"></i>
-            </button>
+            </button>-->
         </div>
     </div><!-- End Page Title -->
 
@@ -156,7 +156,6 @@
         const OhCostC = document.getElementById('inputOverhead');
         const TotalCost = document.getElementById('inputTotalCost');
         $(document).ready(function() {
-
             $('#recipeSelect').select2({
                 theme: 'bootstrap-5',
                 placeholder: "Type or select a recipe...",

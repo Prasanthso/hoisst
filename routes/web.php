@@ -152,6 +152,7 @@ Route::get('/addoverallcosting', [OverAllCostingController::class, 'create'])->n
 Route::post('/saveoverallcosting', [OverAllCostingController::class, 'store'])->name('overallcosting.store');
 Route::get('/editoverallcosting/{id}', [OverAllCostingController::class, 'edit'])->name('overallcosting.edit');
 Route::put('/editoverallcosting/{id}', [OverAllCostingController::class, 'update'])->name('overallcosting.update');
+Route::post('/deleteoverallcosting', [OverAllCostingController::class, 'delete'])->name('overallcosting.delete');
 
 Route::get('/get-abc-cost', [OverAllCostingController::class, 'getABCcost']);
 
