@@ -10,7 +10,7 @@ class OverallCosting extends Model
     use HasFactory;
 
     // Define the table name (optional, if your table is named differently)
-    protected $table = 'overall_costings';
+    protected $table = 'overall_costing';
 
     // Specify which attributes are mass assignable
     protected $fillable = [
@@ -31,9 +31,10 @@ class OverallCosting extends Model
         'margin_amt',
         'discount',
         'present_mrp',
-        'margin'
+        'margin',
+        'status'
     ];
 
-    // If you want to work with timestamps (created_at and updated_at)
-    public $timestamps = true;
+    // // If you want to work with timestamps (created_at and updated_at)
+    // public $timestamps = true;
 }

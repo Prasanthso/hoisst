@@ -73,9 +73,9 @@
                     <table class="table table-bordered mt-2">
                         <thead class="custom-header">
                             <tr>
-                                <!-- <th class="head" scope="col">
+                                <th class="head" scope="col">
                                     <input type="checkbox" id="select-all" class="form-check-input">
-                                </th> -->
+                                </th>
                                 <th scope="col" style="color:white;">S.NO</th>
                                 <th scope="col" style="color:white;">Raw Material Cost</th>
                                 <th scope="col" style="color:white;">Selling Price</th>
@@ -86,9 +86,9 @@
                         <tbody id="overallcostingTable">
                             @foreach ($costings as $index => $material)
                             <tr data-id="{{ $material->id }}">
-                                <!-- <td>
+                               <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
-                                </td> -->
+                                </td>
                                 <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO -->
                                 <td><a href="{{ route('categoryitem.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->rm_cost_unit }}</a></td>
                                 <td>{{ $material->sell_rate }}</td>
@@ -123,16 +123,17 @@
 <script>
 
     document.addEventListener("DOMContentLoaded", function() {
-    const tableBody = document.getElementById("catagoriesTable");
-    const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+    const tableBody = document.getElementById("overallcostingTable");
+    // const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
         const deleteTableBtn = document.querySelector(".delete-table-btn");
         const selectAllCheckbox = document.getElementById('select-all');
-        const rows = document.querySelectorAll('#catagoriesTable tr');
+        const rows = document.querySelectorAll('#overallcostingTable tr');
 
         const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
         let isEditing = false; // Track if edit mode is active
 
     // Listen for changes to any category checkbox
+    /*
     categoryCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
             const selectedCategories = Array.from(
@@ -193,6 +194,7 @@
         });
 
     });
+    */
 
         /*editdelete icons */
            // Function to restore Edit/Delete buttons

@@ -71,9 +71,9 @@
                     <table class="table table-bordered mt-2">
                         <thead class="custom-header">
                             <tr>
-                                <!-- <th class="head" scope="col">
+                                <th class="head" scope="col">
                                     <input type="checkbox" id="select-all" class="form-check-input">
-                                </th> -->
+                                </th>
                                 <th scope="col" style="color:white;">S.NO</th>
                                 <th scope="col" style="color:white;">Category Items</th>
                                 <th scope="col" style="color:white;">Description</th>

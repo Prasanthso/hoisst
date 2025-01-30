@@ -11,7 +11,7 @@ class OverAllCostingController extends Controller
 {
     public function index()
     {
-        $costings = OverallCosting::all();
+        $costings = OverallCosting::paginate(10);
         return view('overallCost.overallcosting', compact('costings'));
     }
 
@@ -86,6 +86,7 @@ class OverAllCostingController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request);
         $validatedData = $request->validate([
             'productId' => 'required|integer',
             'inputRmcost' => 'required|numeric',
@@ -110,29 +111,29 @@ class OverAllCostingController extends Controller
         try {
             OverallCosting::create([
                 'productId' => $request->productId,
-                'rm_cost_unit' => $request->inputRmcost,
-                'pm_cost_unit' => $request->inputPmcost,
-                'rm_pm_cost' => $request->inputRmPmcost,
-                'overhead' => $request->inputOverhead,
-                'rm_sg_mrp' => $request->inputRmSgmrp,
-                'pm_sg_mrp' => $request->inputPmSgmrp,
-                'sg_mrp' => $request->inputSgMrp,
-                'sg_margin' => $request->inputSgMargin,
-                'oh_amt' => $request->inputOhAmt,
-                'total_cost' => $request->inputTotalCost,
-                'sell_rate' => $request->inputSellRate,
-                'sell_rate_bf' => $request->inputSellRatebf,
-                'tax' => $request->inputTax,
-                'margin_amt' => $request->inputMarginAmt,
-                'discount' => $request->inputDiscount,
-                'present_mrp' => $request->inputPresentMrp,
-                'margin' => $request->inputMargin,
+                'rm_cost_unit' => (float) $request->inputRmcost,
+                'pm_cost_unit' => (float) $request->inputPmcost,
+                'rm_pm_cost' => (float) $request->inputRmPmcost,
+                'overhead' => (float) $request->inputOverhead,
+                'rm_sg_mrp' => (float) $request->inputRmSgmrp,
+                'pm_sg_mrp' => (float) $request->inputPmSgmrp,
+                'sg_mrp' => (float) $request->inputSgMrp,
+                'sg_margin' => (float) $request->inputSgMargin,
+                'oh_amt' => (float) $request->inputOhAmt,
+                'total_cost' => (float) $request->inputTotalCost,
+                'sell_rate' => (float) $request->inputSellRate,
+                'sell_rate_bf' => (float)$request->inputSellRatebf,
+                'tax' => (float) $request->inputTax,
+                'margin_amt' =>(float) $request->inputMarginAmt,
+                'discount' => (float) $request->inputDiscount,
+                'present_mrp' => (float) $request->inputPresentMrp,
+                'margin' => (float) $request->inputMargin,
                 'status' => 'active',
             ]);
         } catch (\Exception $e) {
             // Handle error by logging or displaying the message
             \Log::error('Error inserting OverallCosting data: ' . $e->getMessage());
-            // dd($e->getMessage());
+            return back()->with('error', 'Error saving data: ' . $e->getMessage());
         }
         // Redirect to another page with a success message
         return redirect()->route('overallcosting.create')->with('success', 'Costing saved successfully!');
