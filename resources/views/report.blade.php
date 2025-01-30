@@ -82,10 +82,15 @@
 
 
         <!-- Margin Dropdown -->
-        <select class="form-select me-2" id="marginFilter" style="width: 150px;">
-            <option value="">Margin</option>
-            <option value="30">30%</option>
-            <option value="35">35%</option>
+        <select
+            class="form-select me-2"
+            id="marginFilter"
+            style="width: 150px; background: white; border: 1px solid #ccc; border-radius: 5px;"
+            onchange="updateStyle(this)">
+            <option value="" disabled selected>Margin</option>
+            <option value="Low" style="background-color:rgb(245, 171, 177); color:rgb(183, 18, 34);">Low</option>
+            <option value="Medium" style="background-color:rgb(228, 206, 133); color:rgb(186, 141, 6);">Medium</option>
+            <option value="High" style="background-color:rgb(119, 220, 143); color: #155724;">High</option>
         </select>
     </div>
 
