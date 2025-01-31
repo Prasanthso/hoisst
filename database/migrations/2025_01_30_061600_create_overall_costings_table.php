@@ -31,7 +31,7 @@ return new class extends Migration
             $table->decimal('discount', 10, 2);
             $table->decimal('present_mrp', 10, 2);
             $table->decimal('margin', 10, 2);
-            $table->string('status');
+            $table->string('status')->default('active');
             $table->timestamps();
         });
     }

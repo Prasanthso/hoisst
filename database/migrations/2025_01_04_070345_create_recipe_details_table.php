@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('description')->nullable(); // Recipe description
             $table->text('instructions')->nullable(); // Cooking instructions
             $table->string('video_path')->nullable(); // Path to the video file
+            $table->string('status')->default('active');
             $table->timestamps();
 
             $table->foreign('product_id')->references('id')->on('product_master');

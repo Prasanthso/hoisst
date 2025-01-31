@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('uom');
             $table->decimal('totalCost', 10, 2); // Decimal for monetary value
             $table->decimal('singleCost', 10, 2); // Decimal for monetary value
+            $table->string('status')->default('active');
             $table->timestamps();
 
             $table->foreign('product_id')->references('id')->on('product_master')
