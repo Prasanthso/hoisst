@@ -108,7 +108,7 @@ Route::get('/products/price-details/{id}', [ProductController::class, 'getPdPric
 //     return view('pricing');
 // })->name('pricing');
 
-Route::get('/recipe', [RecipeController::class, 'index'])->name('receipedetails.index');
+// Route::get('/recipe', [RecipeController::class, 'index'])->name('receipedetails.index');
 Route::get('/receipedetails', [RecipeController::class, 'recipeDetails'])->name('receipedetails.index');
 Route::get('/addreceipedetails', [RecipeController::class, 'create'])->name('addreceipedetails.create');
 Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('savereceipedetails.store');
@@ -138,6 +138,7 @@ Route::delete('/oh-for-recipe/{id}', [OhForRecipeController::class, 'destroy'])-
 Route::get('/editrecipedetails/{id}', [RecipeController::class, 'edit'])->name('editrecipedetails.edit');
 Route::put('/editreceipedetails/{id}', [RecipeController::class, 'update'])->name('editrecipedetails.update');
 Route::get('/recipe-history/{id}', [RecipeController::class, 'getRecipedetailsHistory']);
+Route::post('/deleterecipedetails/{id}', [RecipeController::class, 'delete'])->name('deleterecipedetails.delete');
 
 Route::get('/pricing-records', [RecipePricingController::class, 'showPricingForm'])->name('receipepricing.form');
 Route::delete('/receipepricing/delete', [RecipePricingController::class, 'destroy'])->name('receipepricing.delete');

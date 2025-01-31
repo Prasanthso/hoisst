@@ -19,7 +19,13 @@ class RecipeController extends Controller
 
     public function recipeDetails()
     {
-        $recipes = DB::table('product_master')->where('recipe_created_status', 'yes')->get();
+        // $recipes = DB::table('product_master')->where('recipe_created_status', 'yes')->get();
+        $recipes = DB::table('product_master')
+        ->join('recipedetails', 'product_master.id', '=', 'recipedetails.product_id') // Adjust column names as needed
+        ->where('product_master.recipe_created_status', 'yes')
+        ->where('recipedetails.status', 'active')
+        ->select('product_master.*', 'recipedetails.id as rcpid','recipedetails.status') // Select required columns
+        ->get();
         return view('recipedetails.receipeDetails_Description', compact('recipes'));
     }
 
@@ -188,6 +194,32 @@ class RecipeController extends Controller
 
         return response()->json($recipeHistory);
     }
+
+    public function delete(Request $request, $id)
+    {
+        // Fetch the product_id from the Recipe table
+        $recipe = Recipe::where('id', $id)->first();
+
+        if (!$recipe) {
+            return response()->json(['success' => false, 'message' => 'Recipe not found.']);
+        }
+
+        $productId = $recipe->product_id; // Get the product_id
+
+        try {
+            // Update the Recipe status to 'inactive'
+            Recipe::where('id', $id)->update(['status' => 'inactive']);
+
+            // Update the product_master table using the fetched product_id
+            DB::table('product_master')->where('id', $productId)->update(['recipe_created_status' => 'no']);
+
+            return response()->json(['success' => true, 'message' => 'Recipe details were set to inactive successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error updating Recipe details: ' . $e->getMessage()]);
+        }
+    }
+
+
 
 
     /*
