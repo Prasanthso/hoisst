@@ -95,9 +95,17 @@ class RecipeController extends Controller
 
     public function edit($id)
     {
-            // $editrecipe = Recipe::findOrFail($id); // Fetch the recipe details
-            $editrecipe = Recipe::with('product')->findOrFail($id);
+            // $editrecipe = Recipe::findOrFail($id); // Fetch the recipe details- old
+         // $editrecipe = Recipe::with('product')->findOrFail($id);
 
+            $editrecipe = DB::table('recipedetails')
+            ->join('product_master', 'recipedetails.product_id', '=', 'product_master.id')
+            ->where('recipedetails.id', $id)
+            ->select('recipedetails.*', 'product_master.*') // You can select specific fields as needed
+            ->first(); // Use first() because we expect a single result
+            if (!$editrecipe) {
+                return redirect()->route('receipedetails.index')->with('error', 'Recipe not found.');
+            }
             // dd($editrecipe);
             // Return the view with recipe details & description data
             return view('recipedetails.editReceipeDetails', compact('editrecipe'));
@@ -179,7 +187,7 @@ class RecipeController extends Controller
     {
         // Get the recipe ID from the receipedetails table using product_id
         $recipe = DB::table('recipedetails')
-            ->where('product_id', $productId)
+            ->where('id', $productId)
             ->first();
 
         if (!$recipe) {

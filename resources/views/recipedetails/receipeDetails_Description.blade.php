@@ -231,9 +231,10 @@
             }
         });
 
-
+    // here productId means recipeId
     async function recipedata(productId)
     {
+
         // const productId = recipeSelect.value;
         if (productId) {
             try {
