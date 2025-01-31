@@ -27,7 +27,7 @@
             </div>
             <div class="mb-4">
                 <label for="recipeSelect" id="recipeSelectLabel" class="form-label">Select Recipe</label>
-                <div class="col-6">
+                <div class="col-8">
                     <select id="recipeSelect" class="form-select" aria-labelledby="recipeSelectLabel">
                     <option selected disabled>Choose...</option>
                     @foreach($recipes as $recipesitems)

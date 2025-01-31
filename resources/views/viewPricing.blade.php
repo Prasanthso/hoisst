@@ -23,7 +23,7 @@
     <section class="section dashboard">
         <div class="container mt-5">
             <div class="mb-4">
-                <label for="productSelect" class="form-label">Select Product</label>
+                <label for="productSelect" class="form-label">Select Recipe</label>
                 <div class="row align-items-center">
                     <div class="col-8">
                         <form action="{{ route('receipepricing.form') }}" method="GET" class="d-flex">
