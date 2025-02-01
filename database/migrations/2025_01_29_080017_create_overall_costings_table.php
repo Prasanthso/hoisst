@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('overall_costings', function (Blueprint $table) {
+        Schema::create('overall_costing', function (Blueprint $table) {
             $table->id();
             $table->foreignId('productId')->constrained('recipe_master'); // Assuming 'recipe_products' table exists
             $table->decimal('rm_cost_unit', 10, 2);
@@ -41,6 +41,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('overall_costings');
+        Schema::dropIfExists('overall_costing');
     }
 };

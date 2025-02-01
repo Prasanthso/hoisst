@@ -21,6 +21,7 @@ class OverAllCostingController extends Controller
          ->where('overall_costing.status', 'active') // Fetch only active records
          ->paginate(10);
         return view('overallCost.overallCosting', compact('costings'));
+
     }
 
     public function create(){
