@@ -4,24 +4,26 @@
 <main id="main" class="main">
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
         <h1>Pricing</h1>
-        <div class="row">
+        <div class="d-flex align-items-center">
             <!-- Action Buttons -->
-
-            <div class="d-flex justify-content-end mb-2 action-buttons">
-                <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+            <!--<div class="d-flex justify-content-end mb-2 action-buttons">-->
+                <button class="btn btn-sm me-2 edit-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                     <i class="fas fa-edit" style="color: black;"></i>
                 </button>
                 <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                     <i class="fas fa-trash" style="color: red;"></i>
                 </button>
-            </div>
+                <a href="{{ 'pricing' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
+                    <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
+                </a>
+           <!-- </div>-->
         </div>
     </div>
 
     <section class="section dashboard">
         <div class="container mt-5">
             <div class="mb-4">
-                <label for="productSelect" class="form-label">Select Product</label>
+                <label for="productSelect" class="form-label">Select Recipe</label>
                 <div class="row align-items-center">
                     <div class="col-8">
                         <form action="{{ route('receipepricing.form') }}" method="GET" class="d-flex">
@@ -33,8 +35,8 @@
                                 </option>
                                 @endforeach
                             </select>
-                            <button type="submit" class="btn btn-primary me-2">Submit</button>
-                            <a href="{{ 'pricing' }}" class="btn btn-primary">Add</a>
+                            <button type="submit" class="btn btn-primary me-2" id="Submitbtn" hidden>Submit</button>
+                            {{-- <a href="{{ 'pricing' }}" class="btn btn-primary">Add</a> --}}
                         </form>
                     </div>
                     <!-- <div class="col-auto">
@@ -221,6 +223,21 @@
             theme: 'bootstrap-5',
             placeholder: "Type or select a recipe...",
          });
+
+        // Hide the submit button initially
+        // $('#Submitbtn').hide();
+        // Listen for change event on the select element
+        $('#productSelect').on('change', function () {
+            const selectedValue = $(this).val();
+
+            if (selectedValue) {
+                // Submit the form automatically
+                $(this).closest('form').submit(); // Submit the form
+                console.log("Form submitted automatically.");
+            } else {
+                console.log("No recipe selected.");
+            }
+        });
 
         // edit products//
     document.querySelector('.edit-table-btn').addEventListener('click', function () {

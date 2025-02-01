@@ -31,7 +31,7 @@ class CategoryItemController extends Controller
             $categoriesitems = CategoryItems::whereIn('categoryId', $categoryIds)->get();
         } else {
             // Fetch all items when no categories are selected
-            $categoriesitems = CategoryItems::paginate(10);
+            $categoriesitems = CategoryItems::where('status','active')->paginate(10);
         }
 
         if ($request->ajax()) {
@@ -113,5 +113,24 @@ class CategoryItemController extends Controller
         }
         session()->flash('success', 'Category item updated successfully.');
         return redirect()->route('categoryitem.index');
+    }
+
+    public function delete(Request $request)
+    {
+        $ids = $request->input('ids'); // Get the 'ids' array from the request
+
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'No valid IDs provided.']);
+        }
+
+        try {
+            // Update the status of categoryitem to 'inactive'
+            CategoryItems::whereIn('id', $ids)->update(['status' => 'inactive']);
+
+            return response()->json(['success' => true, 'message' => 'Category-item was inactive successfully.']);
+        } catch (\Exception $e) {
+            // Handle exceptions
+            return response()->json(['success' => false, 'message' => 'Error updating Category-item: ' . $e->getMessage()]);
+        }
     }
 }

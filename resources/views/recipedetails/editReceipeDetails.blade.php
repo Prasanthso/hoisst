@@ -20,7 +20,7 @@
                                     <label for="recipeSelect" class="form-label">Select Recipe</label>
                                     <div class="col-6">
                                         <select id="recipeSelect" class="form-select" name="productId" aria-labelledby="recipeSelectLabel">
-                                        <option value="{{ $editrecipe->product->id }}" selected disabled>{{ $editrecipe->product->name  }}</option>
+                                        <option value="{{ $editrecipe->id }}" selected disabled>{{ $editrecipe->name  }}</option>
                                         </select>
                                         @error('productId')
                                         <span class="text-danger">{{ $message }}</span>

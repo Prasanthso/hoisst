@@ -71,9 +71,9 @@
                     <table class="table table-bordered mt-2">
                         <thead class="custom-header">
                             <tr>
-                                <!-- <th class="head" scope="col">
+                                <th class="head" scope="col">
                                     <input type="checkbox" id="select-all" class="form-check-input">
-                                </th> -->
+                                </th>
                                 <th scope="col" style="color:white;">S.NO</th>
                                 <th scope="col" style="color:white;">Category Items</th>
                                 <th scope="col" style="color:white;">Description</th>
@@ -84,9 +84,9 @@
                         <tbody id="catagoriesTable">
                             @foreach ($categoriesitems as $index => $material)
                             <tr data-id="{{ $material->id }}">
-                                <!-- <td>
+                                <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
-                                </td> -->
+                                </td>
                                 <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO -->
                                 <td><a href="{{ route('categoryitem.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->itemname }}</a></td>
                                 <td>{{ $material->description }}</td>
@@ -251,6 +251,71 @@
                 updateSelectAllState();
             });
         });
+            // Function to handle row deletion
+        const deleteRows = () => {
+             const selectedRows = Array.from(getRowCheckboxes()).filter(checkbox => checkbox.checked);
+             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // CSRF token
+
+             if (selectedRows.length === 0) {
+                 alert("Please select at least one row to delete.");
+                 return;
+             }
+
+             const selectedIds = selectedRows.map(checkbox => checkbox.closest('tr').getAttribute('data-id'));
+
+             if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
+                 return;
+             }
+
+             fetch("{{ route('categoryitem.delete') }}", {
+                     method: "POST",
+                     headers: {
+                         "Content-Type": "application/json",
+                         "X-CSRF-TOKEN": token
+                     },
+                     body: JSON.stringify({
+                         ids: selectedIds // Array of IDs to delete
+                     })
+                 })
+                 .then(response => {
+                     if (!response.ok) {
+                         throw new Error(`HTTP error! status: ${response.status}`);
+                     }
+                     return response.json();
+                 })
+                 .then(data => {
+                     if (data.success) {
+                         selectedRows.forEach(checkbox => {
+                             const row = checkbox.closest("tr");
+                             row.remove();
+                             updateSerialNumbers();
+                         });
+                         alert("Selected rows deleted successfully!");
+                     } else {
+                         alert("Failed to delete rows. Please try again.");
+                     }
+                 })
+                 .catch(error => {
+                     console.error("Error deleting rows:", error);
+                     alert("An error occurred. Please try again.");
+                 });
+         };
+
+        function updateSerialNumbers() {
+            // Get all visible rows
+            const visibleRows = Array.from(document.querySelectorAll("#packingMaterialTable tr"))
+                .filter(row => row.style.display !== 'none');
+
+            // Update serial numbers for visible rows only
+            visibleRows.forEach((row, index) => {
+                const snoCell = row.querySelector("td:nth-child(2)"); // Adjust the column index for S.NO
+                if (snoCell) {
+                    snoCell.textContent = `${index + 1}.`; // Update the serial number
+                }
+            });
+        }
+
+        deleteTableBtn.addEventListener("click", deleteRows);
 
     // // Optionally, a function to update selected category values in the URL
     // const updateSelectedCategories = () => {

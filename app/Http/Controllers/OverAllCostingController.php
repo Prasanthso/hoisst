@@ -11,8 +11,17 @@ class OverAllCostingController extends Controller
 {
     public function index()
     {
-        $costings = OverallCosting::paginate(10);
-        return view('overallCost.overallcosting', compact('costings'));
+         // $products = DB::table('product_master')->get();
+         $costings = DB::table('overall_costing')
+         ->join('product_master', 'overall_costing.productId', '=', 'product_master.id')
+         ->select(
+             'overall_costing.*',
+             'product_master.name as product_name' // Select product name from product_master
+         )
+         ->where('overall_costing.status', 'active') // Fetch only active records
+         ->paginate(10);
+        return view('overallCost.overallCosting', compact('costings'));
+
     }
 
     public function create(){
@@ -22,7 +31,7 @@ class OverAllCostingController extends Controller
         ->select('recipe_master.product_id as id','product_master.name as name') // Select the product name from the products table
         ->where('recipe_master.status','active')
         ->get();
-        return view('overallCost.addoverallcosting', compact('recipeproducts'));
+        return view('overallCost.addoverallCosting', compact('recipeproducts'));
     }
 
     public function getABCcost(Request $request)
@@ -86,8 +95,9 @@ class OverAllCostingController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request);
         $validatedData = $request->validate([
-            'productId' => 'required|integer',
+            'productId' => 'required|exists:recipe_master,product_id',
             'inputRmcost' => 'required|numeric',
             'inputPmcost' => 'required|numeric',
             'inputRmPmcost' => 'required|numeric',
@@ -110,32 +120,121 @@ class OverAllCostingController extends Controller
         try {
             OverallCosting::create([
                 'productId' => $request->productId,
-                'rm_cost_unit' => $request->inputRmcost,
-                'pm_cost_unit' => $request->inputPmcost,
-                'rm_pm_cost' => $request->inputRmPmcost,
-                'overhead' => $request->inputOverhead,
-                'rm_sg_mrp' => $request->inputRmSgmrp,
-                'pm_sg_mrp' => $request->inputPmSgmrp,
-                'sg_mrp' => $request->inputSgMrp,
-                'sg_margin' => $request->inputSgMargin,
-                'oh_amt' => $request->inputOhAmt,
-                'total_cost' => $request->inputTotalCost,
-                'sell_rate' => $request->inputSellRate,
-                'sell_rate_bf' => $request->inputSellRatebf,
-                'tax' => $request->inputTax,
-                'margin_amt' => $request->inputMarginAmt,
-                'discount' => $request->inputDiscount,
-                'present_mrp' => $request->inputPresentMrp,
-                'margin' => $request->inputMargin,
+                'rm_cost_unit' => (float) $request->inputRmcost,
+                'pm_cost_unit' => (float) $request->inputPmcost,
+                'rm_pm_cost' => (float) $request->inputRmPmcost,
+                'overhead' => (float) $request->inputOverhead,
+                'rm_sg_mrp' => (float) $request->inputRmSgmrp,
+                'pm_sg_mrp' => (float) $request->inputPmSgmrp,
+                'sg_mrp' => (float) $request->inputSgMrp,
+                'sg_margin' => (float) $request->inputSgMargin,
+                'oh_amt' => (float) $request->inputOhAmt,
+                'total_cost' => (float) $request->inputTotalCost,
+                'sell_rate' => (float) $request->inputSellRate,
+                'sell_rate_bf' => (float)$request->inputSellRatebf,
+                'tax' => (float) $request->inputTax,
+                'margin_amt' =>(float) $request->inputMarginAmt,
+                'discount' => (float) $request->inputDiscount,
+                'present_mrp' => (float) $request->inputPresentMrp,
+                'margin' => (float) $request->inputMargin,
                 'status' => 'active',
             ]);
         } catch (\Exception $e) {
             // Handle error by logging or displaying the message
             \Log::error('Error inserting OverallCosting data: ' . $e->getMessage());
-            // dd($e->getMessage());
+            return back()->with('error', 'Error saving data: ' . $e->getMessage());
         }
         // Redirect to another page with a success message
         return redirect()->route('overallcosting.create')->with('success', 'Costing saved successfully!');
     }
+
+    public function edit($id)
+    {
+        // Fetch the specific OverallCosting record
+        $costing = DB::table('overall_costing')
+            ->join('product_master', 'overall_costing.productId', '=', 'product_master.id')
+            ->select(
+                'overall_costing.*',
+                'product_master.name as product_name'
+            )
+            ->where('overall_costing.id', $id)
+            ->first(); // Retrieve only one record
+
+        // Check if data exists
+        if (!$costing) {
+            return redirect()->route('overallcosting.index')->with('error', 'Record not found.');
+        }
+
+        // Return the view with costing data
+        return view('overallCost.editoverallCosting', compact('costing'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'inputRmcost' => 'required|numeric',
+            'inputPmcost' => 'required|numeric',
+            'inputRmPmcost' => 'required|numeric',
+            'inputOverhead' => 'required|numeric',
+            'inputRmSgmrp' => 'required|numeric',
+            'inputPmSgmrp' => 'required|numeric',
+            'inputSgMrp' => 'required|numeric',
+            'inputSgMargin' => 'required|numeric',
+            'inputOhAmt' => 'required|numeric',
+            'inputTotalCost' => 'required|numeric',
+            'inputSellRate' => 'required|numeric',
+            'inputSellRatebf' => 'required|numeric',
+            'inputTax' => 'required|numeric',
+            'inputMarginAmt' => 'required|numeric',
+            'inputDiscount' => 'required|numeric',
+            'inputPresentMrp' => 'required|numeric',
+            'inputMargin' => 'required|numeric',
+        ]);
+
+        try {
+            DB::table('overall_costing')->where('id', $id)->update([
+                'rm_cost_unit' => (float) $request->inputRmcost,
+                'pm_cost_unit' => (float) $request->inputPmcost,
+                'rm_pm_cost' => (float) $request->inputRmPmcost,
+                'overhead' => (float) $request->inputOverhead,
+                'rm_sg_mrp' => (float) $request->inputRmSgmrp,
+                'pm_sg_mrp' => (float) $request->inputPmSgmrp,
+                'sg_mrp' => (float) $request->inputSgMrp,
+                'sg_margin' => (float) $request->inputSgMargin,
+                'oh_amt' => (float) $request->inputOhAmt,
+                'total_cost' => (float) $request->inputTotalCost,
+                'sell_rate' => (float) $request->inputSellRate,
+                'sell_rate_bf' => (float) $request->inputSellRatebf,
+                'tax' => (float) $request->inputTax,
+                'margin_amt' => (float) $request->inputMarginAmt,
+                'discount' => (float) $request->inputDiscount,
+                'present_mrp' => (float) $request->inputPresentMrp,
+                'margin' => (float) $request->inputMargin,
+            ]);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error updating data: ' . $e->getMessage());
+        }
+
+        return redirect()->route('overallcosting.index')->with('success', 'overallCosting updated successfully!');
+    }
+    public function delete(Request $request)
+    {
+        $ids = $request->input('ids'); // Get the 'ids' array from the request
+
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'No valid IDs provided.']);
+        }
+
+        try {
+            // Update the status of raw materials to 'inactive'
+            OverallCosting::whereIn('id', $ids)->update(['status' => 'inactive']);
+
+            return response()->json(['success' => true, 'message' => 'Overall-Costing was inactive successfully.']);
+        } catch (\Exception $e) {
+            // Handle exceptions
+            return response()->json(['success' => false, 'message' => 'Error updating Overall Costing: ' . $e->getMessage()]);
+        }
+    }
+
 
 }

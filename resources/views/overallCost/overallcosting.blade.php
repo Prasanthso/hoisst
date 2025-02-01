@@ -4,7 +4,7 @@
 <main id="main" class="main">
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
-        <h1>Categories</h1>
+        <h1>Overall Costing</h1>
         <a href="{{ 'addoverallcosting' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
             <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
         </a>
@@ -15,6 +15,7 @@
             @if(session('success'))
             <div id="success-message" class="alert alert-success">{{ session('success') }}</div>
             @endif
+
 
             <!-- Left side columns -->
              <!--
@@ -61,9 +62,9 @@
                 <div class="row">
                     <!-- Action Buttons -->
                     <div class="d-flex justify-content-end mb-2 action-buttons">
-                        <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                        <!--<button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-edit" style="color: black;"></i>
-                        </button>
+                        </button>-->
                          <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-trash" style="color: red;"></i>
                         </button>
@@ -73,10 +74,11 @@
                     <table class="table table-bordered mt-2">
                         <thead class="custom-header">
                             <tr>
-                                <!-- <th class="head" scope="col">
+                                <th class="head" scope="col">
                                     <input type="checkbox" id="select-all" class="form-check-input">
-                                </th> -->
+                                </th>
                                 <th scope="col" style="color:white;">S.NO</th>
+                                <th scope="col" style="color:white;">Recipe</th>
                                 <th scope="col" style="color:white;">Raw Material Cost</th>
                                 <th scope="col" style="color:white;">Selling Price</th>
                                 <th scope="col" style="color:white;">Discount</th>
@@ -86,11 +88,12 @@
                         <tbody id="overallcostingTable">
                             @foreach ($costings as $index => $material)
                             <tr data-id="{{ $material->id }}">
-                                <!-- <td>
+                               <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
-                                </td> -->
+                                </td>
                                 <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO -->
-                                <td><a href="{{ route('categoryitem.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->rm_cost_unit }}</a></td>
+                                <td><a href="{{ route('overallcosting.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->product_name }}</a></td>
+                                <td>{{ $material->rm_cost_unit }}</td>
                                 <td>{{ $material->sell_rate }}</td>
                                 <td>{{ $material->discount }}</td>
                                 <td>{{ $material->margin }}</td>
@@ -121,18 +124,18 @@
 @endsection
 
 <script>
-
     document.addEventListener("DOMContentLoaded", function() {
-    const tableBody = document.getElementById("catagoriesTable");
-    const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
-        const deleteTableBtn = document.querySelector(".delete-table-btn");
+    const tableBody = document.getElementById("overallcostingTable");
+    // const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+        // const deleteTableBtn = document.querySelector(".delete-table-btn");
         const selectAllCheckbox = document.getElementById('select-all');
-        const rows = document.querySelectorAll('#catagoriesTable tr');
+        const rows = document.querySelectorAll('#overallcostingTable tr');
 
         const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
         let isEditing = false; // Track if edit mode is active
 
     // Listen for changes to any category checkbox
+    /*
     categoryCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
             const selectedCategories = Array.from(
@@ -193,6 +196,7 @@
         });
 
     });
+    */
 
         /*editdelete icons */
            // Function to restore Edit/Delete buttons
@@ -200,19 +204,19 @@
             isEditing = false;
             const actionButtonsContainer = document.querySelector(".action-buttons");
             actionButtonsContainer.innerHTML = `
-            <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+            <!--<button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                 <i class="fas fa-edit" style="color: black;"></i>
-            </button>
+            </button>-->
             <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                 <i class="fas fa-trash" style="color: red;"></i>
             </button>
         `;
-
             // Reassign the edit button functionality
             // document.querySelector(".edit-table-btn").addEventListener("click", enableEditing);
+
         };
 
-          // Event listener for Select All checkbox
+         // Event listener for Select All checkbox
           selectAllCheckbox.addEventListener('change', function() {
             const isChecked = this.checked;
 
@@ -228,7 +232,6 @@
             //     exitEditingMode();
             // }
         });
-
 
       // Event listener for individual row checkboxes
       const updateSelectAllState = () => {
@@ -255,6 +258,69 @@
                 updateSelectAllState();
             });
         });
+
+        // Function to handle row deletion
+        const deleteRows = () => {
+            const selectedRows = Array.from(getRowCheckboxes()).filter(checkbox => checkbox.checked);
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // CSRF token
+
+            if (selectedRows.length === 0) {
+                alert("Please select at least one row to delete.");
+                return;
+            }
+            const selectedIds = selectedRows.map(checkbox => checkbox.closest('tr').getAttribute('data-id'));
+            if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
+                return;
+            }
+            fetch("{{ route('overallcosting.delete') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": token
+                    },
+                    body: JSON.stringify({
+                        ids: selectedIds // Array of IDs to delete
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        selectedRows.forEach(checkbox => {
+                            const row = checkbox.closest("tr");
+                            row.remove();
+                            updateSerialNumbers();
+                        });
+                        alert("Selected rows deleted successfully!");
+                    } else {
+                        alert("Failed to delete rows. Please try again.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error deleting rows:", error);
+                    alert("An error occurred. Please try again.");
+                });
+        };
+
+        function updateSerialNumbers() {
+            // Get all visible rows
+            const visibleRows = Array.from(document.querySelectorAll("#overallcostingTable tr"))
+                .filter(row => row.style.display !== 'none');
+
+            // Update serial numbers for visible rows only
+            visibleRows.forEach((row, index) => {
+                const snoCell = row.querySelector("td:nth-child(2)"); // Adjust the column index for S.NO
+                if (snoCell) {
+                    snoCell.textContent = `${index + 1}.`; // Update the serial number
+                }
+            });
+        }
+
+        document.querySelector(".delete-table-btn").addEventListener("click", deleteRows);
 
     // // Optionally, a function to update selected category values in the URL
     // const updateSelectedCategories = () => {
@@ -297,7 +363,6 @@
             item.style.display = isVisible ? '' : 'none';
         });
     }
-
 
    </script>
 

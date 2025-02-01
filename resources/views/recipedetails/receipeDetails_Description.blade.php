@@ -9,7 +9,7 @@
             <button class="btn btn-sm me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;"  id="editRecipeBtn" data-id="">
                 <i class="fas fa-edit" style="color: black;"></i>
             </button>
-            <button class="btn btn-sm" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+            <button class="btn btn-sm" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;" id="deleteRecipebtn" data-id="">
                 <i class="fas fa-trash" style="color: red;"></i>
             </button>
             <a href="{{ 'addreceipedetails' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
@@ -27,11 +27,11 @@
             </div>
             <div class="mb-4">
                 <label for="recipeSelect" id="recipeSelectLabel" class="form-label">Select Recipe</label>
-                <div class="col-6">
+                <div class="col-8">
                     <select id="recipeSelect" class="form-select" aria-labelledby="recipeSelectLabel">
                     <option selected disabled>Choose...</option>
                     @foreach($recipes as $recipesitems)
-                    <option value="{{ $recipesitems->id }}">{{ $recipesitems->name }}</option>
+                    <option value="{{ $recipesitems->rcpid }}">{{ $recipesitems->name }}</option>
                     @endforeach
                     </select>
                     @error('productId')
@@ -158,6 +158,7 @@
         const videoDetailsModalBody = document.querySelector('#videoDetailsModal .modal-body');
 
         const editRecipeBtn = document.getElementById('editRecipeBtn');
+        const deleteRecipeBtn = document.getElementById('deleteRecipebtn');
 
         const description = document.getElementById('recipeDescription');
         const instructionsList = document.getElementById('recipeInstructions');
@@ -192,13 +193,54 @@
             }
         });
 
+        deleteRecipeBtn.addEventListener("click", () => {
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+            const recipeId = deleteRecipeBtn.getAttribute("data-id");
+
+            if (!confirm("Are you sure you want to delete recipe details?")) {
+                return;
+            }
+
+            console.log("Deleting recipe ID:", recipeId);
+
+            if (recipeId) {
+                fetch(`/deleterecipedetails/${recipeId}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": token
+                    },
+                    body: JSON.stringify({ ids: [recipeId] }) // Send as an array
+                })
+                .then(response => response.json().then(data => ({ status: response.status, body: data }))) // Capture status + body
+                .then(result => {
+                    console.log("Server Response:", result); // Debugging
+                    if (result.status === 200 && result.body.success) {
+                        alert("Selected recipe details deleted successfully!");
+                        location.reload();
+                    } else {
+                        alert("Failed to delete recipe details. Server message: " + result.body.message);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error deleting recipe details:", error);
+                    alert("An error occurred. Please try again.");
+                });
+            } else {
+                alert("Please select a recipe to delete.");
+            }
+        });
+
+    // here productId means recipeId
     async function recipedata(productId)
     {
+
         // const productId = recipeSelect.value;
         if (productId) {
             try {
 
                 editRecipeBtn.setAttribute('data-id', productId);
+                deleteRecipeBtn.setAttribute('data-id', productId);
 
                 const response = await fetch(`/recipes/${productId}`);
                 if (!response.ok) throw new Error('Recipe not found');

@@ -595,6 +595,7 @@
             });
             updateSerialNumbers();
         }
+        */
 
         function updateSerialNumbers() {
             // Get all visible rows
@@ -609,7 +610,7 @@
                 }
             });
         }
-        */
+
 
     });
 

@@ -4,7 +4,15 @@
 <main id="main" class="main">
 
     <div class="pagetitle">
-        <h1>Edit Category Items</h1>
+        <h1>View CategoryItems</h1>
+        <div class="d-flex justify-content-end mb-2 action-buttons">
+            <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;" id="editButton">
+                <i class="fas fa-edit" style="color: black;"></i>
+            </button>
+            <!--<button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;" id="deleteButton" style="display: none;">
+                <i class="fas fa-trash" style="color: red;"></i>
+            </button>-->
+        </div>
     </div><!-- End Page Title -->
 
     <section class="section">
@@ -32,26 +40,24 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Category Name</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="itemname" value="{{ $items->itemname}}">
+                                    <input type="text" class="form-control" id="inputNanme4" name="itemname" value="{{ $items->itemname}}" disabled>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Description</label>
                                     <div class="form-floating">
-                                        <textarea class="form-control" placeholder="Category Description" name="description" id="floatingTextarea" style="height: 100px;">{{ $items->description}}</textarea>
+                                        <textarea class="form-control" placeholder="Category Description" name="description" id="floatingTextarea" style="height: 100px;" disabled>{{ $items->description}}</textarea>
                                     </div>
                                     @error('description')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                                 </div>
                                 <div>
-                                    <button type="submit" class="btn btn-primary">Update</button>
+                                    <button type="submit" class="btn btn-primary" id="saveButton" style="display: none;">Update</button>
                                 </div>
                             </form><!-- Vertical Form -->
-
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
@@ -68,6 +74,9 @@
 <script src="{{ asset('assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
 <script src="{{ asset('assets/vendor/tinymce/tinymce.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/php-email-form/validate.js') }}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <!-- Template Main JS File -->
 <script src="{{ asset('js/main.js') }}"></script>
@@ -87,7 +96,7 @@
 
             // Enable form fields
             $('#categoryItemsForm input, #categoryItemsForm select').prop('disabled', false);
-
+            document.getElementById("floatingTextarea").disabled = false;
             // Show the Save button
             $('#saveButton').show();
         });

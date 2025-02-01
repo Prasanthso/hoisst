@@ -31,9 +31,10 @@ class OverallCosting extends Model
         'margin_amt',
         'discount',
         'present_mrp',
-        'margin'
+        'margin',
+        'status'
     ];
 
-    // If you want to work with timestamps (created_at and updated_at)
-    public $timestamps = true;
+    // // If you want to work with timestamps (created_at and updated_at)
+    // public $timestamps = true;
 }

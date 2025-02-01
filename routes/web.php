@@ -54,6 +54,7 @@ Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('ca
 Route::get('/showcategoryitem', [CategoryItemController::class, 'index'])->name('categoryitem.index');
 Route::get('/editcategoryitem/{id}', [CategoryItemController::class, 'edit'])->name('categoryitem.edit');
 Route::put('/editcategoryitem/{id}', [CategoryItemController::class, 'update'])->name('categoryitem.update');
+Route::post('/deletecategory', [CategoryItemController::class, 'delete'])->name('categoryitem.delete');
 
 Route::get('/rawmaterial', [RawMaterialController::class, 'index'])->name('rawMaterials.index');
 Route::get('/addrawmaterial', [RawMaterialController::class, 'create'])->name('rawmaterial.create');
@@ -107,7 +108,7 @@ Route::get('/products/price-details/{id}', [ProductController::class, 'getPdPric
 //     return view('pricing');
 // })->name('pricing');
 
-Route::get('/recipe', [RecipeController::class, 'index'])->name('receipedetails.index');
+// Route::get('/recipe', [RecipeController::class, 'index'])->name('receipedetails.index');
 Route::get('/receipedetails', [RecipeController::class, 'recipeDetails'])->name('receipedetails.index');
 Route::get('/addreceipedetails', [RecipeController::class, 'create'])->name('addreceipedetails.create');
 Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('savereceipedetails.store');
@@ -137,6 +138,7 @@ Route::delete('/oh-for-recipe/{id}', [OhForRecipeController::class, 'destroy'])-
 Route::get('/editrecipedetails/{id}', [RecipeController::class, 'edit'])->name('editrecipedetails.edit');
 Route::put('/editreceipedetails/{id}', [RecipeController::class, 'update'])->name('editrecipedetails.update');
 Route::get('/recipe-history/{id}', [RecipeController::class, 'getRecipedetailsHistory']);
+Route::post('/deleterecipedetails/{id}', [RecipeController::class, 'delete'])->name('deleterecipedetails.delete');
 
 Route::get('/pricing-records', [RecipePricingController::class, 'showPricingForm'])->name('receipepricing.form');
 Route::delete('/receipepricing/delete', [RecipePricingController::class, 'destroy'])->name('receipepricing.delete');
@@ -150,6 +152,10 @@ Route::get('/recipepricing', [RecipePricingController::class, 'showRecipePricing
 Route::get('/overallcosting', [OverAllCostingController::class, 'index'])->name('overallcosting.index');
 Route::get('/addoverallcosting', [OverAllCostingController::class, 'create'])->name('overallcosting.create');
 Route::post('/saveoverallcosting', [OverAllCostingController::class, 'store'])->name('overallcosting.store');
+Route::get('/editoverallcosting/{id}', [OverAllCostingController::class, 'edit'])->name('overallcosting.edit');
+Route::put('/editoverallcosting/{id}', [OverAllCostingController::class, 'update'])->name('overallcosting.update');
+Route::post('/deleteoverallcosting', [OverAllCostingController::class, 'delete'])->name('overallcosting.delete');
+
 Route::get('/get-abc-cost', [OverAllCostingController::class, 'getABCcost']);
 
 Route::get('/report', [ReportController::class, 'index'])->name('report.view');
