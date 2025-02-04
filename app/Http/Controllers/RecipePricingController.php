@@ -21,19 +21,20 @@ class RecipePricingController extends Controller
         $overheads = DB::table('overheads')->get();
         // $products = DB::table('product_master')->get();
         $products = DB::table('product_master')
-        ->leftJoin('recipe_master', 'product_master.id', '=', 'recipe_master.product_id') // Left join with recipe_master
-        ->select('product_master.id as id', 'product_master.name as name') // Select the product name from product_master
-        ->where(function ($query) {
-            $query->whereNull('recipe_master.product_id') // Include products with no match in recipe_master
-                  ->orWhere('recipe_master.status', '!=', 'active'); // Include products where status is not 'inactive'
-        })
-        ->get();
+            ->leftJoin('recipe_master', 'product_master.id', '=', 'recipe_master.product_id') // Left join with recipe_master
+            ->select('product_master.id as id', 'product_master.name as name') // Select the product name from product_master
+            ->where(function ($query) {
+                $query->whereNull('recipe_master.product_id') // Include products with no match in recipe_master
+                    ->orWhere('recipe_master.status', '!=', 'active'); // Include products where status is not 'inactive'
+            })
+            ->get();
 
-        return view('pricing' , compact('rawMaterials', 'packingMaterials', 'overheads', 'products'));
+        return view('pricing', compact('rawMaterials', 'packingMaterials', 'overheads', 'products'));
     }
 
 
-    public function showRecipePricingList(){
+    public function showRecipePricingList()
+    {
         return view('recipePricing');
     }
 
@@ -70,10 +71,10 @@ class RecipePricingController extends Controller
         // Retrieve all products to display in the dropdown
         // $products = Product::all();
         $products = DB::table('recipe_master')
-        ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id') // Join with the products table
-        ->select('recipe_master.product_id as id','product_master.name as name') // Select the product name from the products table
-        ->where('recipe_master.status','active')
-        ->get(); // Get all results
+            ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id') // Join with the products table
+            ->select('recipe_master.product_id as id', 'product_master.name as name') // Select the product name from the products table
+            ->where('recipe_master.status', 'active')
+            ->get(); // Get all results
 
         // If a product is selected, fetch the pricing data
         if ($request->has('product_id')) {
@@ -84,6 +85,7 @@ class RecipePricingController extends Controller
                 ->join('rm_for_recipe', 'rm_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->leftjoin('pm_for_recipe', 'pm_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->leftjoin('oh_for_recipe', 'oh_for_recipe.product_id', '=', 'recipe_master.product_id')
+                ->leftjoin('moh_for_recipe', 'moh_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->where('recipe_master.product_id', $productId)
                 ->select(
                     'rm_for_recipe.raw_material_id as rm_id',
@@ -101,34 +103,40 @@ class RecipePricingController extends Controller
                     'oh_for_recipe.code as oh_code',
                     'oh_for_recipe.uom as oh_uom',
                     'oh_for_recipe.price as oh_price',
-                    'rm_for_recipe.amount as rm_amount',
+                    'moh_for_recipe.name as moh_name',
+                    'moh_for_recipe.oh_type as moh_type',
+                    'moh_for_recipe.price as moh_price',
+                    'moh_for_recipe.percentage as moh_percentage',
                     'rm_for_recipe.id as rid',
                     'pm_for_recipe.id as pid',
                     'oh_for_recipe.id as ohid',
+                    'moh_for_recipe.id as mohid',
+                    // 'recipe_master.Output as rp_output',
+                    // 'recipe_master.uom as rp_uom',
                 )
                 ->get();
 
-                // Fetch names for IDs separately
-                $pricingData->transform(function ($item) {
-                    $item->rm_name = DB::table('raw_materials')->where('id', $item->rm_id)->value('name');
-                    $item->pm_name = DB::table('packing_materials')->where('id', $item->pm_id)->value('name');
-                    $item->oh_name = DB::table('overheads')->where('id', $item->oh_id)->value('name');
-                    return $item;
-                });
+            // Fetch names for IDs separately
+            $pricingData->transform(function ($item) {
+                $item->rm_name = DB::table('raw_materials')->where('id', $item->rm_id)->value('name');
+                $item->pm_name = DB::table('packing_materials')->where('id', $item->pm_id)->value('name');
+                $item->oh_name = DB::table('overheads')->where('id', $item->oh_id)->value('name');
+                return $item;
+            });
 
-                $totalRmCost = $pricingData->sum(function($data) {
-                    return $data->rm_quantity * $data->rm_price;
-                });
-                $totalPmCost = $pricingData->sum(function($data) {
-                    return $data->pm_quantity * $data->pm_price;
-                });
-                $totalOhCost = $pricingData->sum(function($data) {
-                    return $data->oh_quantity * $data->oh_price;
-                });
-                $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
+            $totalRmCost = $pricingData->sum(function ($data) {
+                return $data->rm_quantity * $data->rm_price;
+            });
+            $totalPmCost = $pricingData->sum(function ($data) {
+                return $data->pm_quantity * $data->pm_price;
+            });
+            $totalOhCost = $pricingData->sum(function ($data) {
+                return $data->oh_quantity * $data->oh_price;
+            });
+            $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
 
             // Pass the data to the view
-            return view('viewPricing', compact('products', 'pricingData','totalCost','totalRmCost'));
+            return view('viewPricing', compact('products', 'pricingData', 'totalCost', 'totalRmCost'));
         }
 
         return view('viewPricing', compact('products'));
@@ -138,7 +146,7 @@ class RecipePricingController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request,$id)
+    public function edit(Request $request, $id)
     {
         $productId = $id;
 
@@ -147,10 +155,10 @@ class RecipePricingController extends Controller
         $overheads = DB::table('overheads')->get();
 
         $products = DB::table('recipe_master')
-        ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id') // Join with the products table
-        ->where('recipe_master.product_id', $productId)
-        ->select('product_master.id as id','product_master.name as name','recipe_master.Output as rp_output','recipe_master.uom as rp_uom')
-        ->get();
+            ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id') // Join with the products table
+            ->where('recipe_master.product_id', $productId)
+            ->select('product_master.id as id', 'product_master.name as name', 'recipe_master.Output as rp_output', 'recipe_master.uom as rp_uom')
+            ->get();
 
         $pricingData = null;
         $totalCost = 0;
@@ -163,6 +171,7 @@ class RecipePricingController extends Controller
                 ->join('rm_for_recipe', 'rm_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->leftjoin('pm_for_recipe', 'pm_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->leftjoin('oh_for_recipe', 'oh_for_recipe.product_id', '=', 'recipe_master.product_id')
+                ->leftjoin('moh_for_recipe', 'moh_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->where('recipe_master.product_id', $productId)
                 ->select(
                     'rm_for_recipe.raw_material_id as rm_id',
@@ -180,47 +189,49 @@ class RecipePricingController extends Controller
                     'oh_for_recipe.code as oh_code',
                     'oh_for_recipe.uom as oh_uom',
                     'oh_for_recipe.price as oh_price',
+                    'moh_for_recipe.name as moh_name',
+                    'moh_for_recipe.oh_type as moh_type',
+                    'moh_for_recipe.price as moh_price',
+                    'moh_for_recipe.percentage as moh_percentage',
                     'rm_for_recipe.id as rid',
                     'pm_for_recipe.id as pid',
                     'oh_for_recipe.id as ohid',
+                    'moh_for_recipe.id as mohid',
                     // 'recipe_master.Output as rp_output',
                     // 'recipe_master.uom as rp_uom',
                 )
                 ->get();
 
-                // Fetch names for IDs separately
-                $pricingData->transform(function ($item) {
-                    $item->rm_name = DB::table('raw_materials')->where('id', $item->rm_id)->value('name');
-                    $item->pm_name = DB::table('packing_materials')->where('id', $item->pm_id)->value('name');
-                    $item->oh_name = DB::table('overheads')->where('id', $item->oh_id)->value('name');
-                    return $item;
-                });
+            // Fetch names for IDs separately
+            $pricingData->transform(function ($item) {
+                $item->rm_name = DB::table('raw_materials')->where('id', $item->rm_id)->value('name');
+                $item->pm_name = DB::table('packing_materials')->where('id', $item->pm_id)->value('name');
+                $item->oh_name = DB::table('overheads')->where('id', $item->oh_id)->value('name');
+                return $item;
+            });
 
-                $totalRmCost = $pricingData->sum(function($data) {
-                    return $data->rm_quantity * $data->rm_price;
-                });
-                $totalPmCost = $pricingData->sum(function($data) {
-                    return $data->pm_quantity * $data->pm_price;
-                });
-                $totalOhCost = $pricingData->sum(function($data) {
-                    return $data->oh_quantity * $data->oh_price;
-                });
-                $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
+            $totalRmCost = $pricingData->sum(function ($data) {
+                return $data->rm_quantity * $data->rm_price;
+            });
+            $totalPmCost = $pricingData->sum(function ($data) {
+                return $data->pm_quantity * $data->pm_price;
+            });
+            $totalOhCost = $pricingData->sum(function ($data) {
+                return $data->oh_quantity * $data->oh_price;
+            });
+            $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
 
             // Pass the data to the view
-            return view('editPricing', compact('rawMaterials','packingMaterials','overheads','products','pricingData','totalCost'));
+            return view('editPricing', compact('rawMaterials', 'packingMaterials', 'overheads', 'products', 'pricingData', 'totalCost'));
         }
 
-        return view('editPricing', compact('rawMaterials','packingMaterials','overheads','products','pricingData','totalCost'));
+        return view('editPricing', compact('rawMaterials', 'packingMaterials', 'overheads', 'products', 'pricingData', 'totalCost'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-
-    }
+    public function update(Request $request, string $id) {}
 
     /**
      * Remove the specified resource from storage.
@@ -228,27 +239,26 @@ class RecipePricingController extends Controller
     public function destroy(Request $request)
     {
         // Validate the product_id
-            $request->validate([
-                'product_id' => 'required|exists:product_master,id',
-            ]);
+        $request->validate([
+            'product_id' => 'required|exists:product_master,id',
+        ]);
 
-            // Delete the pricing data for the selected product
-            DB::table('recipe_master')
-                ->where('product_id', $request->product_id)
-                ->update(['status' => 'inactive']);
+        // Delete the pricing data for the selected product
+        DB::table('recipe_master')
+            ->where('product_id', $request->product_id)
+            ->update(['status' => 'inactive']);
 
-            DB::table('rm_for_recipe')
-                ->where('product_id', $request->product_id)
-                ->delete();
-            DB::table('pm_for_recipe')
-                ->where('product_id', $request->product_id)
-                ->delete();
-            DB::table('oh_for_recipe')
-                ->where('product_id', $request->product_id)
-                ->delete();
+        DB::table('rm_for_recipe')
+            ->where('product_id', $request->product_id)
+            ->delete();
+        DB::table('pm_for_recipe')
+            ->where('product_id', $request->product_id)
+            ->delete();
+        DB::table('oh_for_recipe')
+            ->where('product_id', $request->product_id)
+            ->delete();
 
-            // Redirect back with a success message
-            return redirect()->route('receipepricing.index')->with('success', 'Recipe-Pricing data deleted successfully!');
-
+        // Redirect back with a success message
+        return redirect()->route('receipepricing.index')->with('success', 'Recipe-Pricing data deleted successfully!');
     }
 }

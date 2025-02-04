@@ -132,6 +132,8 @@ Route::post('/pm-for-recipe', [PmForRecipeController::class, 'store'])->name('pm
 Route::delete('/pm-for-recipe/{id}', [PmForRecipeController::class, 'destroy'])->name('pm.delete');
 Route::post('/oh-for-recipe', [OhForRecipeController::class, 'store'])->name('oh.store');
 Route::delete('/oh-for-recipe/{id}', [OhForRecipeController::class, 'destroy'])->name('oh.delete');
+Route::post('/manual-overhead', [OhForRecipeController::class, 'storeManualOverhead'])->name('manual-overhead.store');
+Route::delete('/moh-for-recipe/{id}', [OhForRecipeController::class, 'mohDestroy'])->name('moh.delete');
 
 // Route::post('/recipepricing', [RecipePricingController::class, 'store'])->name('recipepricing.store');
 
