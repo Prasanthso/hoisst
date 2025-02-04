@@ -81,8 +81,9 @@
             <div class="card info-card revenue-card" style="background-color: rgb(243,232,255); border-radius: 20px; padding: 15px 0 15px 0;">
                 <div class="card-body">
                     <div class="d-flex flex-column align-items-start">
-                        <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
-                            <img src="/assets/img/PdIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;background-color:rgb(191,131,255); width: 40px; height: 40px; border-radius: 60%;">
+                            {{-- <img src="/assets/img/PdIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;"> --}}
+                            <img src="/assets/img/package.png" alt="Pdc Icon" style="width: 0.7em; height: auto; margin-right:10px;">
                         </div>
                         <div class="ps-3" style="margin-bottom: 10px;">
                             <h6>{{ $totalPd }}</h6>
@@ -175,7 +176,7 @@
             <div class="card info-card revenue-card" style="background-color: rgb(232,238,255); border-radius: 20px; padding: 15px 0 15px 0;">
                 <div class="card-body">
                     <div class="d-flex flex-column align-items-start">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px; background-color:rgb(243,140,73); width: 40px; height: 40px; border-radius: 60%;">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px; background-color:rgb(103,133,220); width: 40px; height: 40px; border-radius: 60%;">
                             <img src="/assets/img/package.png" alt="Pdc Icon" style="width: 0.7em; height: auto; margin-right:10px;">
                         </div>
                         <div class="ps-3" style="margin-bottom: 10px;">
@@ -199,7 +200,7 @@
                             <img src="/assets/img/pmIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;">
                         </div>
                         <div class="ps-3" style="margin-bottom: 10px;">
-                            <h6>{{ $totalPdC }}</h6>
+                            <h6>0</h6>
                         </div>
                         <div class="ps-3">
                             <span class="text-muted small pt-2 ps-1"><b>Alert Messages</b></span>
@@ -217,8 +218,9 @@
             <div class="card info-card revenue-card" style="background-color: rgb(180,249,242); border-radius: 20px; padding: 15px 0 15px 0;">
                 <div class="card-body">
                     <div class="d-flex flex-column align-items-start">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
-                            <i class="bi bi-currency-dollar"></i>
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;background-color:rgb(59,218,202); width: 40px; height: 40px; border-radius: 60%;">
+                            <!--<i class="bi bi-currency-dollar"></i>-->
+                            <img src="/assets/img/package.png" alt="Pdc Icon" style="width: 0.7em; height: auto; margin-right:10px;">
                         </div>
                         <div class="ps-3" style="margin-bottom: 10px;">
                             <h6>{{ $totalPm }}</h6>

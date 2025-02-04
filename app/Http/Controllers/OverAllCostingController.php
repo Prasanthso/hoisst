@@ -61,6 +61,7 @@ class OverAllCostingController extends Controller
                     'rm_for_recipe.id as rid',
                     'pm_for_recipe.id as pid',
                     'oh_for_recipe.id as ohid',
+                    'recipe_master.Output as rpoutput',
                 )
                 ->get();
 
@@ -82,6 +83,7 @@ class OverAllCostingController extends Controller
                     return $data->oh_quantity * $data->oh_price;
                 });
                 $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
+                $rpoutput = $pricingData->isNotEmpty() ? $pricingData->first()->rpoutput : null;
 
             // Pass the data to the view
             // return view('overallCost.addoverallcosting', compact('totalOhCost','totalPmCost','totalRmCost'));
@@ -90,6 +92,7 @@ class OverAllCostingController extends Controller
                 'totalRmCost' => $totalRmCost,
                 'totalPmCost' => $totalPmCost,
                 'totalOhCost' => $totalOhCost,
+                'rpoutput' => $rpoutput,
             ]);
     }
 
@@ -102,19 +105,19 @@ class OverAllCostingController extends Controller
             'inputPmcost' => 'required|numeric',
             'inputRmPmcost' => 'required|numeric',
             'inputOverhead' => 'required|numeric',
-            'inputRmSgmrp' => 'required|numeric',
-            'inputPmSgmrp' => 'required|numeric',
-            'inputSgMrp' => 'required|numeric',
-            'inputSgMargin' => 'required|numeric',
-            'inputOhAmt' => 'required|numeric',
+            // 'inputRmSgmrp' => 'required|numeric',
+            // 'inputPmSgmrp' => 'required|numeric',
+            // 'inputSgMrp' => 'required|numeric',
+            // 'inputSgMargin' => 'required|numeric',
+            // 'inputOhAmt' => 'required|numeric',
+            'inputTax' => 'required|numeric',
+            'inputMargin' => 'required|numeric',
+            'inputMarginAmt' => 'required|numeric',
+            'inputDiscount' => 'required|numeric',
             'inputTotalCost' => 'required|numeric',
             'inputSellRate' => 'required|numeric',
             'inputSellRatebf' => 'required|numeric',
-            'inputTax' => 'required|numeric',
-            'inputMarginAmt' => 'required|numeric',
-            'inputDiscount' => 'required|numeric',
             'inputPresentMrp' => 'required|numeric',
-            'inputMargin' => 'required|numeric',
         ]);
 
         try {
@@ -124,19 +127,19 @@ class OverAllCostingController extends Controller
                 'pm_cost_unit' => (float) $request->inputPmcost,
                 'rm_pm_cost' => (float) $request->inputRmPmcost,
                 'overhead' => (float) $request->inputOverhead,
-                'rm_sg_mrp' => (float) $request->inputRmSgmrp,
-                'pm_sg_mrp' => (float) $request->inputPmSgmrp,
-                'sg_mrp' => (float) $request->inputSgMrp,
-                'sg_margin' => (float) $request->inputSgMargin,
-                'oh_amt' => (float) $request->inputOhAmt,
+                // 'rm_sg_mrp' => (float) $request->inputRmSgmrp,
+                // 'pm_sg_mrp' => (float) $request->inputPmSgmrp,
+                // 'sg_mrp' => (float) $request->inputSgMrp,
+                // 'sg_margin' => (float) $request->inputSgMargin,
+                // 'oh_amt' => (float) $request->inputOhAmt,
                 'total_cost' => (float) $request->inputTotalCost,
-                'sell_rate' => (float) $request->inputSellRate,
-                'sell_rate_bf' => (float)$request->inputSellRatebf,
                 'tax' => (float) $request->inputTax,
+                'margin' => (float) $request->inputMargin,
                 'margin_amt' =>(float) $request->inputMarginAmt,
                 'discount' => (float) $request->inputDiscount,
+                'sell_rate' => (float) $request->inputSellRate,
+                'sell_rate_bf' => (float)$request->inputSellRatebf,
                 'present_mrp' => (float) $request->inputPresentMrp,
-                'margin' => (float) $request->inputMargin,
                 'status' => 'active',
             ]);
         } catch (\Exception $e) {
@@ -176,19 +179,19 @@ class OverAllCostingController extends Controller
             'inputPmcost' => 'required|numeric',
             'inputRmPmcost' => 'required|numeric',
             'inputOverhead' => 'required|numeric',
-            'inputRmSgmrp' => 'required|numeric',
-            'inputPmSgmrp' => 'required|numeric',
-            'inputSgMrp' => 'required|numeric',
-            'inputSgMargin' => 'required|numeric',
-            'inputOhAmt' => 'required|numeric',
+            // 'inputRmSgmrp' => 'required|numeric',
+            // 'inputPmSgmrp' => 'required|numeric',
+            // 'inputSgMrp' => 'required|numeric',
+            // 'inputSgMargin' => 'required|numeric',
+            // 'inputOhAmt' => 'required|numeric',
             'inputTotalCost' => 'required|numeric',
-            'inputSellRate' => 'required|numeric',
-            'inputSellRatebf' => 'required|numeric',
             'inputTax' => 'required|numeric',
+            'inputMargin' => 'required|numeric',
             'inputMarginAmt' => 'required|numeric',
             'inputDiscount' => 'required|numeric',
+            'inputSellRate' => 'required|numeric',
+            'inputSellRatebf' => 'required|numeric',
             'inputPresentMrp' => 'required|numeric',
-            'inputMargin' => 'required|numeric',
         ]);
 
         try {
@@ -197,19 +200,19 @@ class OverAllCostingController extends Controller
                 'pm_cost_unit' => (float) $request->inputPmcost,
                 'rm_pm_cost' => (float) $request->inputRmPmcost,
                 'overhead' => (float) $request->inputOverhead,
-                'rm_sg_mrp' => (float) $request->inputRmSgmrp,
-                'pm_sg_mrp' => (float) $request->inputPmSgmrp,
-                'sg_mrp' => (float) $request->inputSgMrp,
-                'sg_margin' => (float) $request->inputSgMargin,
-                'oh_amt' => (float) $request->inputOhAmt,
+                // 'rm_sg_mrp' => (float) $request->inputRmSgmrp,
+                // 'pm_sg_mrp' => (float) $request->inputPmSgmrp,
+                // 'sg_mrp' => (float) $request->inputSgMrp,
+                // 'sg_margin' => (float) $request->inputSgMargin,
+                // 'oh_amt' => (float) $request->inputOhAmt,
                 'total_cost' => (float) $request->inputTotalCost,
-                'sell_rate' => (float) $request->inputSellRate,
-                'sell_rate_bf' => (float) $request->inputSellRatebf,
                 'tax' => (float) $request->inputTax,
+                'margin' => (float) $request->inputMargin,
                 'margin_amt' => (float) $request->inputMarginAmt,
                 'discount' => (float) $request->inputDiscount,
+                'sell_rate' => (float) $request->inputSellRate,
+                'sell_rate_bf' => (float) $request->inputSellRatebf,
                 'present_mrp' => (float) $request->inputPresentMrp,
-                'margin' => (float) $request->inputMargin,
             ]);
         } catch (\Exception $e) {
             return back()->with('error', 'Error updating data: ' . $e->getMessage());
