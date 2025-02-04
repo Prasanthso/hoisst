@@ -30,7 +30,7 @@
                     <select id="productSelect" class="form-select select2" aria-labelledby="productSelect">
                         <option selected disabled>Choose...</option>
                         @foreach($products as $productItem)
-                        <option value= "{{ $productItem->id }}" >
+                        <option value="{{ $productItem->id }}">
                             {{ $productItem->name }}
                         </option>
                         @endforeach
@@ -204,14 +204,15 @@
                     </div> -->
                 </div>
             </div>
+
             {{-- Overheads --}}
             <div class="row mb-2">
                 <div class="col-auto">
                     <label for="pricingoverheads" class="form-label text-primary" id="pricingoverheads">Overheads</label>
                 </div>
                 <div class="col-2 form-check">
-                    <input type="checkbox" class="form-check-input" id="frommasters"> <label class="form-check-label" for="frommasters"> From Masters </label>
-
+                    <input type="checkbox" class="form-check-input" id="frommasters" checked>
+                    <label class="form-check-label" for="frommasters"> From Masters </label>
                 </div>
                 <div class="col-2 form-check">
                     <input type="checkbox" class="form-check-input" id="entermanually"> <label class="form-check-label" for="entermanually"> Enter Manually </label>
@@ -260,6 +261,38 @@
                     {{-- <a href="#" class='text-decoration-none oh-ps-add-btn text-white py-4 px-4'> --}}
                     <button type="button" class="btn btn-primary ohaddbtn" id="ohaddbtn"><i class="fas fa-plus"></i> Add</button>
                     {{-- </a> --}}
+                </div>
+            </div>
+            <div id="manualEntry" style="display: none;">
+                <div class="row mb-4">
+                    <div class="d-flex flex-column" style="flex: 1.5;">
+                        <label for="manualOverheads" class="form-label">Overheads Name</label>
+                        <input type="text" class="form-control rounded" id="manualOverheads" name="manualOverheads">
+                    </div>
+
+                    <!-- Dropdown for selecting Overheads Type -->
+                    <div class="d-flex flex-column" style="flex: 1.5;">
+                        <label for="manualOhType" class="form-label">Type</label>
+                        <select id="manualOhType" class="form-select">
+                            <option value="price" selected>Overheads Price</option>
+                            <option value="percentage">Overheads Percentage</option>
+                        </select>
+                    </div>
+
+                    <!-- Input Fields (Only One Will Be Visible at a Time) -->
+                    <div class="d-flex flex-column" style="flex: 1.5;">
+                        <label for="manualOhPrice" class="form-label" id="manualOhPricelab">Overheads Price</label>
+                        <input type="number" class="form-control rounded" id="manualOhPrice" name="manualOhPrice">
+
+                        <label for="manualOhPerc" class="form-label" id="manualOhPerclab">Overheads Percentage</label>
+                        <input type="number" class="form-control rounded" id="manualOhPerc" name="manualOhPerc" style="display: none;">
+                    </div>
+
+                    <div class="d-flex flex-column" style="flex: 2;">
+                        <button type="button" class="btn btn-primary ohaddbtn" id="manualOhaddbtn">
+                            <i class="fas fa-plus"></i> Add
+                        </button>
+                    </div>
                 </div>
             </div>
             {{-- <div class="container-fluid mt-4"> --}}
@@ -313,13 +346,12 @@
 {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
  --}}
- <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
         const productSelect = document.getElementById('productSelect');
-
         const rawMaterialSelect = document.getElementById('rawmaterial');
         const quantityInput = document.getElementById('rmQuantity');
         const codeInput = document.getElementById('rmCode');
@@ -355,11 +387,77 @@
         const rpoutputInput = document.getElementById('recipeOutput');
         const rpuomInput = document.getElementById('recipeUoM');
 
+        const fromMastersCheckbox = document.getElementById("frommasters");
+        const enterManuallyCheckbox = document.getElementById("entermanually");
+        const masterEntryDiv = document.getElementById("overheads").closest(".row.mb-4");
+        const manualEntryDiv = document.getElementById("manualEntry");
+
+
+
+        // Function to toggle visibility based on checkbox selection
+        function toggleForms() {
+            if (fromMastersCheckbox.checked) {
+                masterEntryDiv.style.display = "flex";
+                manualEntryDiv.style.display = "none";
+            } else if (enterManuallyCheckbox.checked) {
+                masterEntryDiv.style.display = "none";
+                manualEntryDiv.style.display = "block";
+            } else {
+                masterEntryDiv.style.display = "none";
+                manualEntryDiv.style.display = "none";
+            }
+        }
+
+        const manualOhType = document.getElementById("manualOhType");
+        const manualOhPrice = document.getElementById("manualOhPrice");
+        const manualOhPricelab = document.getElementById("manualOhPricelab");
+        const manualOhPerc = document.getElementById("manualOhPerc");
+        const manualOhPerclab = document.getElementById("manualOhPerclab");
+
+        function toggleFields() {
+            if (manualOhType.value === "price") {
+                manualOhPrice.style.display = "block";
+                manualOhPricelab.style.display = "block";
+                manualOhPerc.style.display = "none";
+                manualOhPerclab.style.display = "none";
+            } else {
+                manualOhPrice.style.display = "none";
+                manualOhPricelab.style.display = "none";
+                manualOhPerc.style.display = "block";
+                manualOhPerclab.style.display = "block";
+            }
+        }
+
+        // Ensure correct field is shown when the page loads
+        toggleFields();
+
+        // Listen for changes in dropdown selection
+        manualOhType.addEventListener("change", toggleFields);
+
+
+        // Add event listeners to checkboxes to toggle the forms
+        fromMastersCheckbox.addEventListener("change", function() {
+            if (fromMastersCheckbox.checked) {
+                enterManuallyCheckbox.checked = false; // Uncheck the "Enter Manually" checkbox
+            }
+            toggleForms();
+        });
+
+        enterManuallyCheckbox.addEventListener("change", function() {
+            if (enterManuallyCheckbox.checked) {
+                fromMastersCheckbox.checked = false; // Uncheck the "From Masters" checkbox
+            }
+            toggleForms();
+        });
+
+        // Set default to "From Masters" and call toggleForms() to show the correct form
+        fromMastersCheckbox.checked = true;
+        toggleForms();
+
         productSelect.addEventListener('change', function() {
             product_id = this.value; // Update product_id with the selected value
             console.log('Selected product ID:', product_id); // Debug log to check the selected value
         });
-
 
         // Update fields when raw material is selected
         rawMaterialSelect.addEventListener('change', function() {
@@ -391,14 +489,14 @@
             uomInput.value = uom || '';
             priceInput.value = price.toFixed(2);
             updateAmount();
-    });
+        });
 
         // Update amount on quantity input
         quantityInput.addEventListener('input', updateAmount);
 
         // Add raw material row to the table
         addButton.addEventListener('click', function() {
-        // console.log(product_id);
+            // console.log(product_id);
 
             if (!product_id) {
                 alert('Please select a valid product.');
@@ -414,7 +512,7 @@
 
             const rpoutput = rpoutputInput.value.trim(); // Convert to number
             const rpuom = rpuomInput.value;
-            console.log("rp",rpoutput,rpuom,rawMaterialName,rawMaterialId);
+            console.log("rp", rpoutput, rpuom, rawMaterialName, rawMaterialId);
             const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
             if (!token) {
@@ -733,7 +831,6 @@
         }
 
 
-
         //overheads
         overheadsSelect.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
@@ -841,51 +938,196 @@
 
         });
 
+        const manualOhAddButton = document.getElementById('manualOhaddbtn');
+
+        // if (!manualOhAddButton) {
+        //     console.error("Add button not found in the DOM!");
+        //     return;
+        // }
+
+        manualOhAddButton.addEventListener('click', function() {
+            console.log("Add button clicked"); // Debugging
+
+            const manualOverheadsName = document.getElementById('manualOverheads').value.trim();
+            const manualOhType = document.getElementById("manualOhType").value;
+
+            let manualOhPriceValue = 0;
+            let manualOhPercValue = 0;
+
+            if (manualOhType === "price") {
+                manualOhPriceValue = parseFloat(document.getElementById('manualOhPrice').value) || 0;
+            } else {
+                manualOhPercValue = parseFloat(document.getElementById('manualOhPerc').value) || 0;
+            }
+
+            if (!manualOverheadsName || (manualOhType === "price" && manualOhPriceValue <= 0) || (manualOhType === "percentage" && manualOhPercValue <= 0)) {
+                alert('Please fill all fields before adding.');
+                return;
+            }
+
+            const data = {
+                product_id: product_id, // Ensure product_id is set
+                manualOverheads: manualOverheadsName,
+                manualOverheadsType: manualOhType,
+                manualOhPrice: manualOhPriceValue,
+                manualOhPerc: manualOhPercValue,
+            };
+
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (!token) {
+                console.error('CSRF token not found.');
+                return;
+            }
+
+            fetch('/manual-overhead', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token,
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Parsed Response:", data);
+                    if (data.success) {
+                        alert('Manual overhead added successfully!');
+
+                        const insertedId = data.inserted_id; // Get the inserted ID from the response
+
+                        // Add a new row to the table
+                        const row = `<tr>
+                    <td>${manualOverheadsName}</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>${manualOhPriceValue.toFixed(2)}</td>
+                    <td>${manualOhPriceValue.toFixed(2)}</td>
+                    <td>
+                        <span class="delete-icon" style="cursor: pointer; color: red;" title="Remove Row" data-id="${insertedId}">&#x1F5D1;</span>
+                    </td>
+                </tr>`;
+
+                        const overheadsTable = document.getElementById('overheadsTable'); // Assuming you have a table with ID 'overheadsTable'
+                        overheadsTable.insertAdjacentHTML('beforeend', row);
+
+                        // Optionally, update the total cost after adding a row
+                        updateOhTotalAmount(); // Assuming this function exists and updates the total cost
+
+                        // Clear the input fields after adding
+                        clearOhFields(); // Assuming this function clears your input fields
+                    } else {
+                        alert('Failed to save manual overhead.');
+                    }
+                })
+                .catch(error => console.error("Fetch error:", error));
+        });
+
         overheadsTable.addEventListener('click', function(e) {
             if (e.target.classList.contains('delete-icon')) {
                 const deleteIcon = e.target;
-                const row = deleteIcon.closest('tr');
+                const row = deleteIcon.closest('tr'); // Get the clicked row
                 const insertedId = deleteIcon.getAttribute('data-id');
+
+                if (!row) {
+                    console.error("Row not found.");
+                    return;
+                }
 
                 // Confirm deletion
                 if (!confirm('Are you sure you want to delete this record?')) {
                     return;
                 }
 
-                // CSRF token
+                // Get the CSRF token
                 const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
                 if (!token) {
                     console.error('CSRF token not found.');
                     return;
                 }
 
-                // Send DELETE request to the server
-                fetch(`/oh-for-recipe/${insertedId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': token,
-                        },
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Server response not OK');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Success:', data);
+                // ✅ Get the code value from the correct row (assuming the code is in the second column)
+                const code = row.cells[1]?.textContent.trim(); // Adjust the index if needed
 
-                        // Remove the row from the table
-                        const amount = parseFloat(row.cells[5].textContent) || 0;
-                        row.remove();
+                console.log("Code value from row:", code); // Debugging
 
-                        // Update the total cost
-                        updateOhTotalCost(-amount);
-                    })
-                    .catch(error => console.error('Error:', error.message));
+                if (code === '-') {
+                    console.log("Calling mohDelete() because code is empty");
+                    mohDelete(insertedId, row, token);
+                } else {
+                    console.log(`Calling ohDelete() because code has a value: ${code}`);
+                    ohDelete(insertedId, row, token);
+                }
             }
         });
+
+
+        // Function to handle deletion when the code is empty
+        function ohDelete(insertedId, row, token) {
+            fetch(`/oh-for-recipe/${insertedId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token,
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server response not OK');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Deleted with empty code:', data);
+                    if (!row) {
+                        console.error("Row not found.");
+                        return;
+                    }
+
+                    // Remove the row from the table
+                    const amount = parseFloat(row.cells[5]?.textContent) || 0;
+                    row.remove();
+
+                    // Update the total cost
+                    updateOhTotalCost(-amount);
+                })
+                .catch(error => console.error('Error:', error.message));
+        }
+
+        // Function to handle deletion when the code is provided
+        function mohDelete(insertedId, row, token) {
+            if (!row) {
+                console.error("Row not found.");
+                return;
+            }
+
+            fetch(`/moh-for-recipe/${insertedId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token,
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server response not OK');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Success:', data);
+
+                    // Remove the row from the table
+                    const amount = parseFloat(row.cells[5].textContent) || 0;
+                    row.remove();
+
+                    // Update the total cost
+                    updateOhTotalCost(-amount);
+                })
+                .catch(error => console.error('Error:', error.message));
+        }
+
+
 
         // Helper functions
 
@@ -895,6 +1137,24 @@
             ohAmountInput.value = (price * quantity).toFixed(2);
         }
 
+        // function updateOhTotalAmount() {
+        //     const overheadsTable = document.getElementById('overheadsTable');
+        //     let totalAmount = 0;
+
+        //     // Loop through all rows of the table and sum the "Amount" column (index 5)
+        //     const rows = overheadsTable.querySelectorAll('tr');
+        //     rows.forEach(row => {
+        //         const amountCell = row.cells[5]; // 6th column (index 5) for Amount
+        //         if (amountCell) {
+        //             const amount = parseFloat(amountCell.textContent) || 0;
+        //             totalAmount += amount;
+        //         }
+        //     });
+
+        //     // Update the total amount display
+        //     const totalOhCostSpan = document.getElementById('totalohCost');
+        //     totalOhCostSpan.textContent = totalAmount.toFixed(2);
+        // }
         function updateOhTotalCost(newAmount) {
             const currentTotal = parseFloat(totalOhCostSpan.textContent) || 0;
             totalOhCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
@@ -917,6 +1177,12 @@
             const overheadsTotal = parseFloat(totalOhCostSpan.textContent) || 0;
             const grandTotal = rawMaterialTotal + packingMaterialTotal + overheadsTotal; // Add other totals if needed
             totalCostInput.value = grandTotal.toFixed(2); // Display in Total Cost (A+B+C)
+        }
+
+        function updatemohAmount() {
+            const price = parseFloat(ohPriceInput.value) || 0;
+            const quantity = parseFloat(ohQuantityInput.value) || 0;
+            ohAmountInput.value = (price * quantity).toFixed(2);
         }
 
         function recipePricing() {
@@ -951,32 +1217,32 @@
 
             // Send the data to the server using fetch API
             fetch('/recipepricing', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken, // Include CSRF token for security
-                },
-                body: JSON.stringify({
-                    product_id: product_id,
-                    rpoutput: rpoutput,
-                    rpuom: rpuom,
-                }),
-            })
-            .then(response => {
-                console.log('Rp Response:', response);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-            })
-            .then(data => {
-                console.log('Success:', data);
-                alert('Recipe-pricing added successfully');
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken, // Include CSRF token for security
+                    },
+                    body: JSON.stringify({
+                        product_id: product_id,
+                        rpoutput: rpoutput,
+                        rpuom: rpuom,
+                    }),
+                })
+                .then(response => {
+                    console.log('Rp Response:', response);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                })
+                .then(data => {
+                    console.log('Success:', data);
+                    alert('Recipe-pricing added successfully');
 
-                // Clear input fields
-                // rpoutputInput.value = '';
-                // rpuomInput.value = '';
-            })
-            .catch(error => console.error('Error:', error.message));
+                    // Clear input fields
+                    // rpoutputInput.value = '';
+                    // rpuomInput.value = '';
+                })
+                .catch(error => console.error('Error:', error.message));
         }
 
     });

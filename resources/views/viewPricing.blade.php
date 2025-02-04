@@ -28,7 +28,7 @@
                             <select id="productSelect" class="form-select me-2" name="product_id" aria-labelledby="productSelect">
                                 <option selected disabled>Choose...</option>
                                 @foreach($products as $productItem)
-                                <option value="{{ $productItem->id }}" @if(request('product_id') == $productItem->id) selected @endif>
+                                <option value="{{ $productItem->id }}" @if(request('product_id')==$productItem->id) selected @endif>
                                     {{ $productItem->name }}
                                 </option>
                                 @endforeach
@@ -61,20 +61,20 @@
                         <tbody id="rawMaterialTable">
                             @php $rmTotal = 0;
                             $filteredData = collect($pricingData)->unique('rid')->values();
-                             @endphp
+                            @endphp
                             @foreach($filteredData as $data)
-                                @if($data->rm_name)
-                                @php
-                                    $amount = $data->rm_quantity * $data->rm_price;
-                                    $rmTotal += $amount;
-                                 @endphp
-                                <tr>
-                                    <td>{{ $data->rm_name }}</td>
-                                    <td>{{ $data->rm_quantity }}</td>
-                                    <td>{{ $data->rm_code }}</td>
-                                    <td>{{ $data->rm_uom ?? 'N/A' }}</td>
-                                    <td>{{ $data->rm_price }}</td>
-                                    <td>{{ $amount }}</td>
+                            @if($data->rm_name)
+                            @php
+                            $amount = $data->rm_quantity * $data->rm_price;
+                            $rmTotal += $amount;
+                            @endphp
+                            <tr>
+                                <td>{{ $data->rm_name }}</td>
+                                <td>{{ $data->rm_quantity }}</td>
+                                <td>{{ $data->rm_code }}</td>
+                                <td>{{ $data->rm_uom ?? 'N/A' }}</td>
+                                <td>{{ $data->rm_price }}</td>
+                                <td>{{ $amount }}</td>
                             </tr>
                             @endif
                             @endforeach
@@ -110,19 +110,19 @@
                             @php
                             $filteredData = collect($pricingData)->unique('pid')->values();
                             $pmTotal = 0; @endphp
-                           @foreach($filteredData  as $data)
-                               @if($data->pm_name)
-                               @php
-                                   $amount = $data->pm_quantity * $data->pm_price;
-                                    $pmTotal += $amount;
-                                @endphp
-                                <tr>
-                                    <td>{{ $data->pm_name }}</td>
-                                    <td>{{ $data->pm_quantity }}</td>
-                                    <td>{{ $data->pm_code }}</td>
-                                    <td>{{ $data->pm_uom ?? 'N/A' }}</td>
-                                    <td>{{ $data->pm_price }}</td>
-                                    <td>{{ $data->pm_quantity * $data->pm_price }}</td>
+                            @foreach($filteredData as $data)
+                            @if($data->pm_name)
+                            @php
+                            $amount = $data->pm_quantity * $data->pm_price;
+                            $pmTotal += $amount;
+                            @endphp
+                            <tr>
+                                <td>{{ $data->pm_name }}</td>
+                                <td>{{ $data->pm_quantity }}</td>
+                                <td>{{ $data->pm_code }}</td>
+                                <td>{{ $data->pm_uom ?? 'N/A' }}</td>
+                                <td>{{ $data->pm_price }}</td>
+                                <td>{{ $data->pm_quantity * $data->pm_price }}</td>
                             </tr>
                             @endif
                             @endforeach
@@ -142,7 +142,11 @@
 
             <div class="row mb-4">
                 <!-- Overheads Table -->
+
                 <div class="table-responsive">
+                    <div class="text" style="background-color: #D7E1E4; width:90%;">
+                        <strong>Overheads From Masters </strong>
+                    </div>
                     <table class="table table-bordered text-center" style="background-color: #D7E1E4; width:90%;">
                         <thead>
                             <tr>
@@ -156,21 +160,21 @@
                         </thead>
                         <tbody id="overheadsTable">
                             @php $ohTotal = 0;
-                                $filteredData = collect($pricingData)->unique('ohid')->values();
-                                 @endphp
+                            $filteredData = collect($pricingData)->unique('m')->values();
+                            @endphp
                             @foreach($filteredData as $data)
-                                @if($data->oh_name)
-                                    @php
-                                    $amount = $data->oh_quantity * $data->oh_price;
-                                    $ohTotal += $amount;
-                                @endphp
-                                <tr>
-                                    <td>{{ $data->oh_name }}</td>
-                                    <td>{{ $data->oh_quantity }}</td>
-                                    <td>{{ $data->oh_code }}</td>
-                                    <td>{{ $data->oh_uom ?? 'N/A' }}</td>
-                                    <td>{{ $data->oh_price }}</td>
-                                    <td>{{ $amount }}</td>
+                            @if($data->oh_name)
+                            @php
+                            $amount = $data->oh_quantity * $data->oh_price;
+                            $ohTotal += $amount;
+                            @endphp
+                            <tr>
+                                <td>{{ $data->oh_name }}</td>
+                                <td>{{ $data->oh_quantity }}</td>
+                                <td>{{ $data->oh_code }}</td>
+                                <td>{{ $data->oh_uom ?? 'N/A' }}</td>
+                                <td>{{ $data->oh_price }}</td>
+                                <td>{{ $amount }}</td>
                             </tr>
                             @endif
                             @endforeach
@@ -188,6 +192,58 @@
                 </div>
             </div>
 
+            <div class="row mb-4">
+                <!-- Overheads Table -->
+
+                <div class="table-responsive">
+                    <div class="text" style="background-color: #D7E1E4; width:90%;">
+                        <strong>Overheads Manually </strong>
+                    </div>
+                    <table class="table table-bordered text-center" style="background-color: #D7E1E4; width:90%;">
+                        <thead>
+                            <tr>
+                                <th>Overheads</th>
+                                <th>Quantity</th>
+                                <th>OH Code</th>
+                                <th>UoM</th>
+                                <th>Price</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="overheadsTable">
+                            @php $mohTotal = 0;
+                            $filteredData = collect($pricingData)->unique('mohid')->values();
+                            @endphp
+                            @foreach($filteredData as $data)
+                            @if($data->moh_name)
+                            @php
+                            $amount = $data->moh_price;
+                            $mohTotal += $amount;
+                            @endphp
+                            <tr>
+                                <td>{{ $data->moh_name }}</td>
+                                <td> - </td>
+                                <td> - </td>
+                                <td> - </td>
+                                <td>{{ $data->moh_price }}</td>
+                                <td>{{ $amount }}</td>
+                            </tr>
+                            @endif
+                            @endforeach
+
+                            @if($pricingData->whereNotNull('moh_name')->isEmpty())
+                            <tr>
+                                <td colspan="6">No records available for Overheads</td>
+                            </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                    <div class="text-end" style="background-color:#F1F1F1; width:90%;">
+                        <strong>MOH Cost (D) : </strong> <span id="totalohCost">{{ $mohTotal }}</span>
+                    </div>
+                </div>
+            </div>
+
             <div class="row mb-2">
                 <div class="col-md-2 mt-2">
                     <label for="totalcost" class="form-label">Total Cost (A+B+C):</label>
@@ -197,7 +253,7 @@
                 </div>
             </div>
             @else
-                <p>No pricing data available for this product.</p>
+            <p>No pricing data available for this product.</p>
             @endif
         </div>
         <div>
@@ -220,10 +276,10 @@
         $('#productSelect').select2({
             theme: 'bootstrap-5',
             placeholder: "Type or select a recipe...",
-         });
+        });
 
         // edit products//
-    document.querySelector('.edit-table-btn').addEventListener('click', function () {
+        document.querySelector('.edit-table-btn').addEventListener('click', function() {
             const productId = document.getElementById('productSelect').value;
 
             if (productId) {
@@ -232,30 +288,30 @@
             } else {
                 alert('Please select a product to edit.');
             }
-    });
+        });
 
         // delete products//
-    document.querySelector('.delete-table-btn').addEventListener('click', function() {
-        var productId = document.getElementById('productSelect').value;
+        document.querySelector('.delete-table-btn').addEventListener('click', function() {
+            var productId = document.getElementById('productSelect').value;
 
-        if (productId) {
-            // Show confirmation dialog
-            if (confirm('Are you sure you want to delete the pricing data for this product?')) {
-                // Set the product ID to the hidden input
-                document.getElementById('product_id_to_delete').value = productId;
+            if (productId) {
+                // Show confirmation dialog
+                if (confirm('Are you sure you want to delete the pricing data for this product?')) {
+                    // Set the product ID to the hidden input
+                    document.getElementById('product_id_to_delete').value = productId;
 
-                // Submit the form
-                document.getElementById('deleteForm').submit();
+                    // Submit the form
+                    document.getElementById('deleteForm').submit();
+                } else {
+                    // User canceled the action
+                    console.log('Delete action canceled by user.');
+                }
             } else {
-                // User canceled the action
-                console.log('Delete action canceled by user.');
+                alert('Please select a product before deleting.');
             }
-        } else {
-            alert('Please select a product before deleting.');
-        }
-    });
+        });
 
-});
+    });
 </script>
 
 <!-- <script>

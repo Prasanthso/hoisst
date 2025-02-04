@@ -30,8 +30,8 @@ class ReportController extends Controller
             SUM((rfr.quantity * rm.price/rmst.Output)+(pfr.quantity * pkm.price/rmst.Output)+((((rfr.quantity * rm.price/rmst.Output)+(pfr.quantity * pkm.price/rmst.Output))*(ofr.quantity * oh.price/rmst.Output))/100)) AS COST,
             SUM(pm.price*0.75) AS Selling_Cost,
             SUM(((pm.price*0.75)*100)/(100+18)) AS Before_tax,
-            SUM((pm.price*0.75)-(((pm.price*0.75)*100)/(100+18))) AS Margin,
-            SUM((((pm.price*0.75)-(((pm.price*0.75)*100)/(100+18)))/(((pm.price*0.75)*100)/(100+18)))*100) AS Margin_perc,
+            SUM((((pm.price*0.75)*100)/(100+18))-((rfr.quantity * rm.price/rmst.Output)+(pfr.quantity * pkm.price/rmst.Output)+((((rfr.quantity * rm.price/rmst.Output)+(pfr.quantity * pkm.price/rmst.Output))*(ofr.quantity * oh.price/rmst.Output))/100))) AS Margin,
+            SUM(((((pm.price*0.75)*100)/(100+18))-((rfr.quantity * rm.price/rmst.Output)+(pfr.quantity * pkm.price/rmst.Output)+((((rfr.quantity * rm.price/rmst.Output)+(pfr.quantity * pkm.price/rmst.Output))*(ofr.quantity * oh.price/rmst.Output))/100)))/(((pm.price*0.75)*100)/(100+18))*100) AS Margin_perc,
             rmst.Output 
             FROM 
                 product_master pm 
