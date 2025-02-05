@@ -7,6 +7,8 @@ use App\Http\Controllers\CategoryItemController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RecipeController;
 
+use App\Http\Controllers\DashboardController;
+
 use App\Http\Controllers\PackingMaterialController;
 use App\Http\Controllers\OverheadController;
 use App\Http\Controllers\ProductController;
@@ -45,10 +47,10 @@ Route::post('/login', [LoginController::class, 'verifyLogin'])->name('login.veri
 //     return view('rawMaterial');
 // })->name('rawMaterial');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
-
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/addcategory', [CategoryItemController::class, 'create'])->name('category.create');
 Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('categoryitem.store');
 Route::get('/showcategoryitem', [CategoryItemController::class, 'index'])->name('categoryitem.index');
