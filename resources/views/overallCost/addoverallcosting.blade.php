@@ -15,7 +15,7 @@
             <div class="col-lg-12">
                 <div class="col-lg-6">
 
-                    <div class="card">
+                    <div class="card"  style="width: 600px;">
                         <div class="card-body">
 
                             <!-- Vertical Form -->
@@ -44,21 +44,21 @@
                                     <input type="text" class="form-control" id="inputRpoutput" name="inputRpoutput" hidden>
 
                                     <label for="inputRmcost" class="form-label">RM Cost/Unit(A)</label>
-                                    <input type="text" class="form-control" id="inputRmcost" name="inputRmcost">
+                                    <input type="text" class="form-control mb-2" id="inputRmcost" name="inputRmcost">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputPmcost" class="form-label">PM Cost/Unit(B)</label>
-                                    <input type="text" class="form-control" id="inputPmcost" name="inputPmcost">
+                                    <input type="text" class="form-control mb-2" id="inputPmcost" name="inputPmcost">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputRmPmcost" class="form-label">RM & PM Cost(A+B)</label>
-                                    <input type="text" class="form-control" id="inputRmPmcost" name="inputRmPmcost">
+                                    <input type="text" class="form-control mb-2" id="inputRmPmcost" name="inputRmPmcost">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputOverhead" class="form-label">Overhead(C)</label>
-                                    <input type="text" class="form-control" id="inputOverhead" name="inputOverhead">
+                                    <input type="text" class="form-control mb-2" id="inputOverhead" name="inputOverhead">
                                 </div>
-                            </div>
+
                            <!-- <div class="col">
                                 <div class="col-12">
                                     <label for="inputRmSgmrp" class="form-label">RM(%) Suggested MRP</label>
@@ -83,19 +83,21 @@
                                 </div>-->
                                 <div class="col-12">
                                     <label for="inputTotalCost" class="form-label">Total cost(A+B+C)</label>
-                                    <input type="text" class="form-control" id="inputTotalCost" name="inputTotalCost">
+                                    <input type="text" class="form-control mb-2" id="inputTotalCost" name="inputTotalCost">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputMargin" class="form-label">Margin</label>
-                                    <input type="text" class="form-control" id="inputMargin" name="inputMargin">
+                                    <input type="text" class="form-control mb-2" id="inputMargin" name="inputMargin">
                                 </div>
+                            </div>
+                            <div class="col">
                                 <div class="col-12">
                                     <label for="inputMarginAmt" class="form-label">Margin Amount</label>
-                                    <input type="text" class="form-control" id="inputMarginAmt" name="inputMarginAmt">
+                                    <input type="text" class="form-control mb-2" id="inputMarginAmt" name="inputMarginAmt">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputTax" class="form-label">Tax</label>
-                                    <input type="text" class="form-control" id="inputTax" name="inputTax" readonly>
+                                    <input type="text" class="form-control mb-2" id="inputTax" name="inputTax" readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputDiscount" class="form-label">Discount</label>
@@ -104,16 +106,17 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="inputSellRate" class="form-label">Suggested Rate</label>
-                                    <input type="text" class="form-control" id="inputSellRate" name="inputSellRate">
-                                </div>
-                                <div class="col-12">
-                                    <label for="inputSellRatebf" class="form-label">Suggested Rate before Tax</label>
-                                    <input type="text" class="form-control" id="inputSellRatebf" name="inputSellRatebf">
+                                    <input type="text" class="form-control mb-2" id="inputSellRate" name="inputSellRate">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputPresentMrp" class="form-label">Suggested MRP</label>
-                                    <input type="text" class="form-control" id="inputPresentMrp" name="inputPresentMrp">
+                                    <input type="text" class="form-control mb-2" id="inputPresentMrp" name="inputPresentMrp">
                                 </div>
+                                <div class="col-12" hidden>
+                                    <label for="inputSellRatebf" class="form-label">Suggested Rate before Tax</label>
+                                    <input type="text" class="form-control mb-2" id="inputSellRatebf" name="inputSellRatebf">
+                                </div>
+                            </div>
                             </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary save-btn">

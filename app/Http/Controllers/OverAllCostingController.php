@@ -27,10 +27,13 @@ class OverAllCostingController extends Controller
     public function create(){
 
         $recipeproducts = DB::table('recipe_master')
-        ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id') // Join with the products table
-        ->select('recipe_master.product_id as id','product_master.name as name') // Select the product name from the products table
-        ->where('recipe_master.status','active')
+        ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id')
+        ->leftJoin('overall_costing', 'recipe_master.product_id', '=', 'overall_costing.productId')
+        ->where('recipe_master.status', 'active')
+        ->whereNull('overall_costing.productId') // Ensures only products with no active costing
+        ->select('recipe_master.product_id as id', 'product_master.name as name')
         ->get();
+
         return view('overallCost.addoverallCosting', compact('recipeproducts'));
     }
 
