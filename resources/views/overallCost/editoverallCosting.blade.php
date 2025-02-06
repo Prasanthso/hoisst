@@ -90,10 +90,6 @@
                                     <input type="text" class="form-control" id="inputTotalCost" name="inputTotalCost" value="{{ $costing->total_cost}}" disabled>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputTax" class="form-label">Tax</label>
-                                    <input type="text" class="form-control" id="inputTax" name="inputTax" value="{{ $costing->tax}}" disabled>
-                                </div>
-                                <div class="col-12">
                                     <label for="inputMargin" class="form-label">Margin</label>
                                     <input type="text" class="form-control" id="inputMargin" name="inputMargin" value="{{ $costing->margin}}" disabled>
                                 </div>
@@ -102,20 +98,24 @@
                                     <input type="text" class="form-control" id="inputMarginAmt" name="inputMarginAmt" value="{{ $costing->margin_amt}}" disabled>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputDiscount" class="form-label">Discount</label>
-                                    <input type="text" class="form-control" id="inputDiscount" name="inputDiscount" value="{{ $costing->discount}}" disabled>
-                                    <div id="DiscountAmt" class="mb-4" style="color:blue;"></div>
+                                    <label for="inputTax" class="form-label">Tax</label>
+                                    <input type="text" class="form-control" id="inputTax" name="inputTax" value="{{ $costing->tax}}" readonly disabled>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputSellRate" class="form-label">Selling Rate</label>
+                                    <label for="inputDiscount" class="form-label">Discount</label>
+                                    <input type="text" class="form-control" id="inputDiscount" name="inputDiscount" value="{{ $costing->discount}}" disabled>
+                                    <div id="DiscountAmt" class="mb-2" style="color:blue;"></div>
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputSellRate" class="form-label">Suggested Rate</label>
                                     <input type="text" class="form-control" id="inputSellRate" name="inputSellRate" value="{{ $costing->sell_rate}}" disabled>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputSellRatebf" class="form-label">Selling Rate before tax</label>
+                                    <label for="inputSellRatebf" class="form-label">Suggested Rate before tax</label>
                                     <input type="text" class="form-control" id="inputSellRatebf" name="inputSellRatebf" value="{{ $costing->sell_rate_bf}}" disabled>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputPresentMrp" class="form-label">Present MRP</label>
+                                    <label for="inputPresentMrp" class="form-label">Suggested MRP</label>
                                     <input type="text" class="form-control" id="inputPresentMrp" name="inputPresentMrp" value="{{ $costing->present_mrp}}" disabled>
                                 </div>
 
@@ -217,9 +217,6 @@
 
                 const selectedText = recipeSelect.options[recipeSelect.selectedIndex].text.trim();
                 recipeOutput.value = data.rpoutput;
-                // totalRmCost.value = data.totalRmCost;
-                // totalRmCost.value = data.totalRmCost;
-                // totalRmCost.value = data.totalRmCost;
                 updateCalculations(data);
                     // if(selectedText != null)
                     // {
@@ -248,9 +245,8 @@
         RmCostA.value = recipeOutput > 0 ? (data.totalRmCost / recipeOutput).toFixed(2) : 'N/A';
         PmCostB.value = recipeOutput > 0 ? (data.totalPmCost / recipeOutput).toFixed(2) : 'N/A';
         OhCostC.value = recipeOutput > 0 ? (data.totalOhCost / recipeOutput).toFixed(2) : 'N/A';
-
-        RmPmCost.value = (parseFloat(data.totalRmCost) + parseFloat(data.totalPmCost)).toFixed(2);
-        TotalCost.value = (parseFloat(data.totalRmCost) + parseFloat(data.totalPmCost) + parseFloat(data.totalOhCost)).toFixed(2);
+        RmPmCost.value = (parseFloat(RmCostA.value) + parseFloat(PmCostB.value)).toFixed(2);
+        TotalCost.value = (parseFloat(RmCostA.value) + parseFloat(PmCostB.value) + parseFloat(OhCostC.value)).toFixed(2);
 
         // Recalculate margin
         MarginAmt.value = (parseFloat(TotalCost.value) * permargin / 100).toFixed(2);
@@ -269,9 +265,12 @@
         // console.log(recipeOutput.value);
         // Final calculations
         let netTotal = parseFloat(discount_Total).toFixed(2);
-        sellRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value) / parseFloat(recipeOutput.value)).toFixed(2) : 'N/A';
-        sellRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total) / parseFloat(recipeOutput.value)).toFixed(2) : 'N/A';
-        presentMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal) / parseFloat(recipeOutput.value)).toFixed(2) : 'N/A';
+        sellRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value)).toFixed(2) : 'N/A';
+        sellRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total)).toFixed(2) : 'N/A';
+        presentMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal)).toFixed(2) : 'N/A';
+        // sellRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value) / parseFloat(recipeOutput.value)).toFixed(2) : 'N/A';
+        // sellRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total) / parseFloat(recipeOutput.value)).toFixed(2) : 'N/A';
+        // presentMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal) / parseFloat(recipeOutput.value)).toFixed(2) : 'N/A';
     }
 
      // **Call updateCalculations when margin input changes**
@@ -281,12 +280,12 @@
         calculate();
     });
 
-    // **Call updateCalculations when tax input changes**
-    pertaxInput.addEventListener('change', () => {
-            pertax = parseFloat(pertaxInput.value) || 0; // Update margin percentage
-            console.log(`Tax updated: ${pertax}%`);
-            calculate();
-        });
+    // // **Call updateCalculations when tax input changes**
+    // pertaxInput.addEventListener('change', () => {
+    //         pertax = parseFloat(pertaxInput.value) || 0; // Update margin percentage
+    //         console.log(`Tax updated: ${pertax}%`);
+    //         calculate();
+    //     });
 
   // **Call updateCalculations when Discount input changes**
   Discount.addEventListener('change', () => {
@@ -314,9 +313,9 @@
         discountAmt.innerHTML = discAmt;;
         // console.log(recipeOutput.value);
         let netTotal = parseFloat(discountTotal).toFixed(2);
-        sellRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value) / parseFloat(recipeOutput.value)).toFixed(2) : 'N/A';
-        sellRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(marginTotal) / parseFloat(recipeOutput.value)).toFixed(2) : 'N/A';
-        presentMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal) / parseFloat(recipeOutput.value)).toFixed(2) : 'N/A';
+        sellRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value)).toFixed(2) : 'N/A';
+        sellRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total)).toFixed(2) : 'N/A';
+        presentMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal)).toFixed(2) : 'N/A';
     }
 
     setTimeout(function () {

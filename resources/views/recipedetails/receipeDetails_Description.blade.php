@@ -15,7 +15,7 @@
             <a href="{{ 'addreceipedetails' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
                 <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
             </a>
-            <button id="exportPdf" class="btn btn-primary">Export</button>
+            <!--<button id="exportPdf" class="btn btn-primary">Export</button>-->
 
         </div>
     </div><!-- End Page Title -->
@@ -151,6 +151,7 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+
         const recipeSelect = document.getElementById('recipeSelect');
         const selectedRecipesName = document.getElementById('selectedrecipesname');
         const lblrecipedesc = document.getElementById('recipedesc');
