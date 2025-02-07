@@ -5,9 +5,17 @@
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
         <h1>Packing Material</h1>
-        <a href="{{ 'addpackingmaterial' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
-            <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
-        </a>
+        <div>
+            <a href="{{ 'addpackingmaterial' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
+                <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
+            </a>
+            <button id="exportBtn" class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Export to Excel
+            </button>
+            <button id="exportPdfBtn" class="btn btn-danger">
+                <i class="fas fa-file-pdf"></i> Export to PDF
+            </button>
+        </div>
     </div><!-- End Page Title -->
 
     <section class="section dashboard">
@@ -66,7 +74,7 @@
                     </div>
 
                     <!-- Bordered Table -->
-                    <table class="table table-bordered mt-2">
+                    <table class="table table-bordered mt-2" id='exportRm'>
                         <thead class="custom-header">
                             <tr>
                                 <th class="head" scope="col">
@@ -159,7 +167,9 @@
 <!-- Vendor JS Files -->
 <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 <!-- Template Main JS File -->
 <script src="{{ asset('js/main.js') }}"></script>
 
@@ -172,6 +182,98 @@
         const rows = document.querySelectorAll('#packingMaterialTable tr');
         const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
         let isEditing = false; // Track if edit mode is active
+
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const table = document.getElementById('exportRm'); // Ensure this ID exists in your table
+            if (!table) {
+                console.error('Table with ID "exportRm" not found.');
+                return;
+            }
+            console.log('Table with ID "exportRm" not found.');
+
+            const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
+            const visibleData = [];
+            let serialNumber = 1; // Initialize serial number
+
+            // Iterate through each row
+            rows.forEach((row, rowIndex) => {
+                if (row.style.display !== 'none') { // Only include visible rows
+                    const cells = Array.from(row.children);
+                    const rowData = [];
+
+                    if (rowIndex > 0) {
+                        rowData.push(serialNumber++); // Auto-increment serial number
+                    } else {
+                        rowData.push("S.NO"); // Add "S.NO" to the header row
+                    }
+
+                    cells.forEach((cell, index) => {
+                        if (index !== 0) { // Skip checkboxes column
+                            rowData.push(cell.innerText.trim());
+                        }
+                    });
+
+                    visibleData.push(rowData);
+                }
+            });
+
+            // Convert data to workbook
+            const ws = XLSX.utils.aoa_to_sheet(visibleData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Raw Material Report');
+
+            // Export as an Excel file
+            XLSX.writeFile(wb, 'packing_material_list.xlsx');
+        });
+
+        // PDF Export Function
+        document.getElementById('exportPdfBtn').addEventListener('click', function() {
+            const {
+                jsPDF
+            } = window.jspdf;
+            const doc = new jsPDF();
+
+            const table = document.getElementById('exportRm');
+            if (!table) {
+                console.error('Table with ID "exportRm" not found.');
+                return;
+            }
+
+            const rows = Array.from(table.querySelectorAll('tr'));
+            const tableData = [];
+            let serialNumber = 1;
+
+            rows.forEach((row, rowIndex) => {
+                if (row.style.display !== 'none') {
+                    const cells = Array.from(row.children);
+                    const rowData = [];
+
+                    if (rowIndex > 0) {
+                        rowData.push(serialNumber++);
+                    } else {
+                        rowData.push("S.NO");
+                    }
+
+                    cells.forEach((cell, index) => {
+                        if (index !== 0) { // Skip checkboxes column
+                            rowData.push(cell.innerText.trim());
+                        }
+                    });
+
+                    tableData.push(rowData);
+                }
+            });
+
+            // Add Table to PDF
+            doc.autoTable({
+                head: [tableData[0]], // Header row
+                body: tableData.slice(1), // Table content
+                startY: 20,
+                theme: 'striped',
+            });
+
+            doc.save('packing_material_list.pdf');
+        });
 
         // Function to get all row checkboxes dynamically
         const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
@@ -497,38 +599,39 @@
 
         // Listen for change events on category checkboxes
         categoryCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change',  () => {
-             const selectedCategories = Array.from(
-                document.querySelectorAll('.category-checkbox:checked')
-            ).map(cb => cb.value);
+            checkbox.addEventListener('change', () => {
+                const selectedCategories = Array.from(
+                    document.querySelectorAll('.category-checkbox:checked')
+                ).map(cb => cb.value);
 
-        if(selectedCategories.length > 0)
-        {
-            const queryParams = new URLSearchParams({
-                category_ids: selectedCategories.join(','),
-            });
-            console.log(queryParams.toString());
-            // Construct the URL dynamically based on selected categories
-            const url = `/packingmaterial?${queryParams.toString()}`;
+                if (selectedCategories.length > 0) {
+                    const queryParams = new URLSearchParams({
+                        category_ids: selectedCategories.join(','),
+                    });
+                    console.log(queryParams.toString());
+                    // Construct the URL dynamically based on selected categories
+                    const url = `/packingmaterial?${queryParams.toString()}`;
 
-            // Fetch updated data from server
-            fetch(url, {
-                method: 'GET',
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Clear existing table content
-                packingMaterialTable.innerHTML = '';
-                console.log('Fetched Data:', data.packingMaterials);
-                // Populate the table with new data
-                data.packingMaterials.forEach((item, index) => {
-                    packingMaterialTable.innerHTML += `
+                    // Fetch updated data from server
+                    fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Clear existing table content
+                            packingMaterialTable.innerHTML = '';
+                            console.log('Fetched Data:', data.packingMaterials);
+                            // Populate the table with new data
+                            data.packingMaterials.forEach((item, index) => {
+                                packingMaterialTable.innerHTML += `
                         <tr>
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${index + 1}.</td>
@@ -553,19 +656,17 @@
                             <td>${item.uom}</td>
                         </tr>
                     `;
-                });
+                            });
 
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while fetching packingMaterials.');
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while fetching packingMaterials.');
+                        });
+                } else {
+                    location.reload();
+                }
             });
-        }
-         else
-            {
-                location.reload();
-            }
-         });
 
         });
 
