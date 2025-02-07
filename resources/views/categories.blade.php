@@ -5,9 +5,17 @@
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
         <h1>Categories</h1>
-        <a href="{{ 'addcategory' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
-            <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
-        </a>
+        <div>
+            <a href="{{ 'addcategory' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
+                <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
+            </a>
+            <button id="exportBtn" class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Export to Excel
+            </button>
+            <button id="exportPdfBtn" class="btn btn-danger">
+                <i class="fas fa-file-pdf"></i> Export to PDF
+            </button>
+        </div>
     </div><!-- End Page Title -->
 
     <section class="section dashboard">
@@ -25,12 +33,11 @@
                             <div class="col-sm-12">
                                 <div>
                                     <input
-                                    type="text"
-                                    id="categorySearch"
-                                    class="form-control mb-3"
-                                    placeholder="Search categories..."
-                                    onkeyup="filterCategories()"
-                                />
+                                        type="text"
+                                        id="categorySearch"
+                                        class="form-control mb-3"
+                                        placeholder="Search categories..."
+                                        onkeyup="filterCategories()" />
                                 </div>
                                 @foreach($categories as $category)
                                 <div class="form-check category-item">
@@ -59,16 +66,16 @@
                 <div class="row">
                     <!-- Action Buttons -->
                     <div class="d-flex justify-content-end mb-2 action-buttons">
-                       <!-- <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                        <!-- <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-edit" style="color: black;"></i>
                         </button>-->
-                         <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                        <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-trash" style="color: red;"></i>
                         </button>
                     </div>
 
                     <!-- Bordered Table -->
-                    <table class="table table-bordered mt-2">
+                    <table class="table table-bordered mt-2" id='exportRm'>
                         <thead class="custom-header">
                             <tr>
                                 <th class="head" scope="col">
@@ -119,8 +126,8 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-    const tableBody = document.getElementById("catagoriesTable");
-    const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+        const tableBody = document.getElementById("catagoriesTable");
+        const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
         const deleteTableBtn = document.querySelector(".delete-table-btn");
         const selectAllCheckbox = document.getElementById('select-all');
         const rows = document.querySelectorAll('#catagoriesTable tr');
@@ -128,40 +135,133 @@
         const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
         let isEditing = false; // Track if edit mode is active
 
-    // Listen for changes to any category checkbox
-    categoryCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', () => {
-            const selectedCategories = Array.from(
-                document.querySelectorAll('.category-checkbox:checked')
-            ).map(cb => cb.value);
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const table = document.getElementById('exportRm'); // Ensure this ID exists in your table
+            if (!table) {
+                console.error('Table with ID "exportRm" not found.');
+                return;
+            }
+            console.log('Table with ID "exportRm" not found.');
 
-        if(selectedCategories.length > 0)
-        {
-            const queryParams = new URLSearchParams({
-                category_ids: selectedCategories.join(','),
+            const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
+            const visibleData = [];
+            let serialNumber = 1; // Initialize serial number
+
+            // Iterate through each row
+            rows.forEach((row, rowIndex) => {
+                if (row.style.display !== 'none') { // Only include visible rows
+                    const cells = Array.from(row.children);
+                    const rowData = [];
+
+                    if (rowIndex > 0) {
+                        rowData.push(serialNumber++); // Auto-increment serial number
+                    } else {
+                        rowData.push("S.NO"); // Add "S.NO" to the header row
+                    }
+
+                    cells.forEach((cell, index) => {
+                        if (index !== 0) { // Skip checkboxes column
+                            rowData.push(cell.innerText.trim());
+                        }
+                    });
+
+                    visibleData.push(rowData);
+                }
             });
 
-            // Construct the URL dynamically based on selected categories
-            const url = `/showcategoryitem?${queryParams.toString()}`;
+            // Convert data to workbook
+            const ws = XLSX.utils.aoa_to_sheet(visibleData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Raw Material Report');
 
-            // Fetch updated data from server
-            fetch(url, {
-                method: 'GET',
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+            // Export as an Excel file
+            XLSX.writeFile(wb, 'categories_list.xlsx');
+        });
+
+        // PDF Export Function
+        document.getElementById('exportPdfBtn').addEventListener('click', function() {
+            const {
+                jsPDF
+            } = window.jspdf;
+            const doc = new jsPDF();
+
+            const table = document.getElementById('exportRm');
+            if (!table) {
+                console.error('Table with ID "exportRm" not found.');
+                return;
+            }
+
+            const rows = Array.from(table.querySelectorAll('tr'));
+            const tableData = [];
+            let serialNumber = 1;
+
+            rows.forEach((row, rowIndex) => {
+                if (row.style.display !== 'none') {
+                    const cells = Array.from(row.children);
+                    const rowData = [];
+
+                    if (rowIndex > 0) {
+                        rowData.push(serialNumber++);
+                    } else {
+                        rowData.push("S.NO");
+                    }
+
+                    cells.forEach((cell, index) => {
+                        if (index !== 0) { // Skip checkboxes column
+                            rowData.push(cell.innerText.trim());
+                        }
+                    });
+
+                    tableData.push(rowData);
                 }
-                return response.json();
-            })
-            .then(data => {
-                // Clear existing table content
-                tableBody.innerHTML = '';
-                console.log('Fetched Data:', data);
-                // Populate the table with new data
-                data.categoriesitems.forEach((item, index) => {
-                    tableBody.innerHTML += `
+            });
+
+            // Add Table to PDF
+            doc.autoTable({
+                head: [tableData[0]], // Header row
+                body: tableData.slice(1), // Table content
+                startY: 20,
+                theme: 'striped',
+            });
+
+            doc.save('categories_list.pdf');
+        });
+
+        // Listen for changes to any category checkbox
+        categoryCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const selectedCategories = Array.from(
+                    document.querySelectorAll('.category-checkbox:checked')
+                ).map(cb => cb.value);
+
+                if (selectedCategories.length > 0) {
+                    const queryParams = new URLSearchParams({
+                        category_ids: selectedCategories.join(','),
+                    });
+
+                    // Construct the URL dynamically based on selected categories
+                    const url = `/showcategoryitem?${queryParams.toString()}`;
+
+                    // Fetch updated data from server
+                    fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Clear existing table content
+                            tableBody.innerHTML = '';
+                            console.log('Fetched Data:', data);
+                            // Populate the table with new data
+                            data.categoriesitems.forEach((item, index) => {
+                                tableBody.innerHTML += `
                         <tr>
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${index + 1}.</td>
@@ -170,29 +270,27 @@
                             <td>${item.created_user}</td>
                         </tr>
                     `;
-                });
+                            });
 
-                // // Re-attach event listeners for dynamically added checkboxes
-                // document.querySelectorAll('.category-checkbox').forEach(checkbox => {
-                //     checkbox.addEventListener('change', updateSelectedCategories);
-                // });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while fetching category items.');
+                            // // Re-attach event listeners for dynamically added checkboxes
+                            // document.querySelectorAll('.category-checkbox').forEach(checkbox => {
+                            //     checkbox.addEventListener('change', updateSelectedCategories);
+                            // });
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while fetching category items.');
+                        });
+                } else {
+                    location.reload();
+                }
             });
-        }
-         else
-            {
-                location.reload();
-            }
+
         });
 
-    });
-
         /*editdelete icons */
-           // Function to restore Edit/Delete buttons
-           const showEditDeleteButtons = () => {
+        // Function to restore Edit/Delete buttons
+        const showEditDeleteButtons = () => {
             isEditing = false;
             const actionButtonsContainer = document.querySelector(".action-buttons");
             actionButtonsContainer.innerHTML = `
@@ -208,8 +306,8 @@
             // document.querySelector(".edit-table-btn").addEventListener("click", enableEditing);
         };
 
-          // Event listener for Select All checkbox
-          selectAllCheckbox.addEventListener('change', function() {
+        // Event listener for Select All checkbox
+        selectAllCheckbox.addEventListener('change', function() {
             const isChecked = this.checked;
 
             // Toggle all row checkboxes
@@ -226,8 +324,8 @@
         });
 
 
-      // Event listener for individual row checkboxes
-      const updateSelectAllState = () => {
+        // Event listener for individual row checkboxes
+        const updateSelectAllState = () => {
             const allCheckboxes = getRowCheckboxes();
             const allChecked = Array.from(allCheckboxes).every((checkbox) => checkbox.checked);
 
@@ -251,55 +349,55 @@
                 updateSelectAllState();
             });
         });
-            // Function to handle row deletion
+        // Function to handle row deletion
         const deleteRows = () => {
-             const selectedRows = Array.from(getRowCheckboxes()).filter(checkbox => checkbox.checked);
-             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // CSRF token
+            const selectedRows = Array.from(getRowCheckboxes()).filter(checkbox => checkbox.checked);
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // CSRF token
 
-             if (selectedRows.length === 0) {
-                 alert("Please select at least one row to delete.");
-                 return;
-             }
+            if (selectedRows.length === 0) {
+                alert("Please select at least one row to delete.");
+                return;
+            }
 
-             const selectedIds = selectedRows.map(checkbox => checkbox.closest('tr').getAttribute('data-id'));
+            const selectedIds = selectedRows.map(checkbox => checkbox.closest('tr').getAttribute('data-id'));
 
-             if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
-                 return;
-             }
+            if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
+                return;
+            }
 
-             fetch("{{ route('categoryitem.delete') }}", {
-                     method: "POST",
-                     headers: {
-                         "Content-Type": "application/json",
-                         "X-CSRF-TOKEN": token
-                     },
-                     body: JSON.stringify({
-                         ids: selectedIds // Array of IDs to delete
-                     })
-                 })
-                 .then(response => {
-                     if (!response.ok) {
-                         throw new Error(`HTTP error! status: ${response.status}`);
-                     }
-                     return response.json();
-                 })
-                 .then(data => {
-                     if (data.success) {
-                         selectedRows.forEach(checkbox => {
-                             const row = checkbox.closest("tr");
-                             row.remove();
-                             updateSerialNumbers();
-                         });
-                         alert("Selected rows deleted successfully!");
-                     } else {
-                         alert("Failed to delete rows. Please try again.");
-                     }
-                 })
-                 .catch(error => {
-                     console.error("Error deleting rows:", error);
-                     alert("An error occurred. Please try again.");
-                 });
-         };
+            fetch("{{ route('categoryitem.delete') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": token
+                    },
+                    body: JSON.stringify({
+                        ids: selectedIds // Array of IDs to delete
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        selectedRows.forEach(checkbox => {
+                            const row = checkbox.closest("tr");
+                            row.remove();
+                            updateSerialNumbers();
+                        });
+                        alert("Selected rows deleted successfully!");
+                    } else {
+                        alert("Failed to delete rows. Please try again.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error deleting rows:", error);
+                    alert("An error occurred. Please try again.");
+                });
+        };
 
         function updateSerialNumbers() {
             // Get all visible rows
@@ -317,21 +415,21 @@
 
         deleteTableBtn.addEventListener("click", deleteRows);
 
-    // // Optionally, a function to update selected category values in the URL
-    // const updateSelectedCategories = () => {
-    //     const selectedCategories = Array.from(
-    //         document.querySelectorAll('.category-checkbox:checked')
-    //     ).map(cb => cb.value);
-    //     // console.log("Selected categories: ", selectedCategories);
-    // };
+        // // Optionally, a function to update selected category values in the URL
+        // const updateSelectedCategories = () => {
+        //     const selectedCategories = Array.from(
+        //         document.querySelectorAll('.category-checkbox:checked')
+        //     ).map(cb => cb.value);
+        //     // console.log("Selected categories: ", selectedCategories);
+        // };
 
-    setTimeout(function () {
-        const successMessage = document.getElementById('success-message');
-        if (successMessage) {
-            successMessage.style.display = 'none';
-        }
-    }, 5000);
-});
+        setTimeout(function() {
+            const successMessage = document.getElementById('success-message');
+            if (successMessage) {
+                successMessage.style.display = 'none';
+            }
+        }, 5000);
+    });
 
     function filterCategories() {
         // Get the search input value
@@ -342,13 +440,13 @@
 
         // If the search box is empty, show all categories
         if (keywords.length === 0) {
-                    categoryItems.forEach((item) => {
-                        item.style.display = ''; // Show all items
-                    });
-                    return;
-            }
-       // Loop through category items and filter them
-       categoryItems.forEach((item) => {
+            categoryItems.forEach((item) => {
+                item.style.display = ''; // Show all items
+            });
+            return;
+        }
+        // Loop through category items and filter them
+        categoryItems.forEach((item) => {
             const label = item.querySelector('.form-check-label').textContent.toLowerCase();
 
             // Check if any of the keywords match the label
@@ -358,13 +456,14 @@
             item.style.display = isVisible ? '' : 'none';
         });
     }
-
-
-   </script>
+</script>
 
 <!-- Vendor JS Files -->
 <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
 <!-- Template Main JS File -->
 <!--<script src="{{ asset('js/main.js') }}"></script> -->

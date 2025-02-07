@@ -5,7 +5,15 @@
     <!-- Page Title -->
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
         <h1>Report</h1>
-        <button type="button" class="btn btn-primary" id="exportBtn">Export</button>
+        <!-- <button type="button" class="btn btn-primary" id="exportBtn">Export</button> -->
+        <div>
+            <button type="button" class="btn btn-success" id="exportBtn">
+                <i class="fas fa-file-excel"></i> Export to Excel
+            </button>
+            <button id="exportPdfBtn" class="btn btn-danger">
+                <i class="fas fa-file-pdf"></i> Export to PDF
+            </button>
+        </div>
     </div>
 
     <!-- Filter Section -->
@@ -29,8 +37,8 @@
                 <div id="columnsContainer">
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="1" checked> S.NO</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="2" checked> Product Name</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="3" checked> P.MRP</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="3" checked> S.MRP</label>
+                    <!-- <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="3" checked> P.MRP</label> -->
+                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="3" checked> MRP</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="4" checked> RM Cost</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="5" checked> RM %</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="6" checked> Packing Cost</label>
@@ -111,8 +119,8 @@
                                 <tr>
                                     <th scope="col" style="color:white;">S.NO</th>
                                     <th scope="col" style="color:white;">Product_Name</th>
-                                    <th scope="col" style="color:white;">P.MRP</th>
-                                    <th scope="col" style="color:white;">S.MRP</th>
+                                    <!-- <th scope="col" style="color:white;">P.MRP</th> -->
+                                    <th scope="col" style="color:white;">MRP</th>
                                     <th scope="col" style="color:white;">RM Cost</th>
                                     <th scope="col" style="color:white;">RM %</th>
                                     <th scope="col" style="color:white;">Packing Cost</th>
@@ -134,7 +142,7 @@
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $report->Product_Name }}</td>
-                                    <td>{{ $report->S_MRP }}</td>
+                                    <!-- <td>{{ $report->S_MRP }}</td> -->
                                     <td>{{ $report->S_MRP  }}</td>
                                     <td>{{ $report->RM_Cost }}</td>
                                     <td>{{ number_format($report->RM_perc, 2) }}</td>
@@ -169,145 +177,196 @@
 <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('js/main.js') }}"></script>
 
-<<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js">
-    </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js">
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Attach event listeners to all checkboxes
+        document.querySelectorAll('.column-toggle').forEach((checkbox) => {
+            checkbox.addEventListener('change', toggleColumn);
+        });
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Attach event listeners to all checkboxes
-            document.querySelectorAll('.column-toggle').forEach((checkbox) => {
-                checkbox.addEventListener('change', toggleColumn);
-            });
+        // PDF Export Function
+        document.getElementById('exportPdfBtn').addEventListener('click', function() {
+            const {
+                jsPDF
+            } = window.jspdf;
+            const doc = new jsPDF();
 
-            // Toggle column visibility
-            function toggleColumn() {
-                const columnIndex = parseInt(this.dataset.column, 10); // Get column index (1-based)
-                const isVisible = this.checked;
-
-                // Select all rows (including headers and body)
-                const rows = document.querySelectorAll('table tr');
-                rows.forEach((row) => {
-                    const cell = row.children[columnIndex - 1]; // Convert 1-based to 0-based index
-                    if (cell) {
-                        cell.style.display = isVisible ? '' : 'none';
-                    }
-                });
-
-                // Recalculate serial numbers after toggle
-                updateSerialNumbers();
+            const table = document.getElementById('reportTable');
+            if (!table) {
+                console.error('Table with ID "exportRm" not found.');
+                return;
             }
 
-            // Select All functionality
-            document.getElementById('selectAllColumns').addEventListener('change', function() {
-                const isChecked = this.checked;
-                document.querySelectorAll('.column-toggle').forEach((checkbox) => {
-                    checkbox.checked = isChecked;
-                    toggleColumn.call(checkbox); // Apply the toggle
-                });
-            });
+            const rows = Array.from(table.querySelectorAll('tr'));
+            const tableData = [];
+            let serialNumber = 1;
 
-            // Search functionality
-            document.getElementById('searchColumns').addEventListener('input', function() {
-                const query = this.value.toLowerCase();
-                document.querySelectorAll('#columnsContainer .dropdown-item').forEach((item) => {
-                    const text = item.textContent.toLowerCase();
-                    item.style.display = text.includes(query) ? '' : 'none';
-                });
-            });
+            rows.forEach((row, rowIndex) => {
+                if (row.style.display !== 'none') {
+                    const cells = Array.from(row.children);
+                    const rowData = [];
 
-            // Export to Excel function
-            document.getElementById('exportBtn').addEventListener('click', function() {
-                const table = document.getElementById('reportTable');
-                const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
-                const visibleData = [];
-                let serialNumber = 1; // Initialize serial number
-
-                // Iterate through each row in the table and check if it's visible
-                rows.forEach((row) => {
-                    if (row.style.display !== 'none') { // Only include rows that are visible
-                        const cells = Array.from(row.children); // Get all cells in the row
-                        const visibleCells = cells
-                            .filter((cell, index) => {
-                                const columnCheckbox = document.querySelector(`.column-toggle[data-column="${index + 1}"]`);
-                                return columnCheckbox && columnCheckbox.checked; // Include only visible columns
-                            })
-                            .map((cell) => cell.innerText.trim()); // Get text content of visible cells
-
-                        visibleCells.unshift(serialNumber.toString()); // Add serial number to row
-                        visibleData.push(visibleCells); // Add filtered row data
-                        serialNumber++; // Increment serial number
-                    }
-                });
-
-                // Convert data to workbook
-                const ws = XLSX.utils.aoa_to_sheet(visibleData); // Create worksheet
-                const wb = XLSX.utils.book_new(); // Create workbook
-                XLSX.utils.book_append_sheet(wb, ws, 'Report'); // Append worksheet to workbook
-
-                // Export to Excel file
-                XLSX.writeFile(wb, 'filtered_report.xlsx'); // Trigger download
-            });
-
-            // Filter and Apply functionality
-            const productNameSearch = document.getElementById('productNameSearch');
-            const rmRangeType = document.getElementById('rmRangeType');
-            const rmValue = document.getElementById('rmValue');
-            const pmRangeType = document.getElementById('pmRangeType');
-            const pmValue = document.getElementById('pmValue');
-            const marginFilter = document.getElementById('marginFilter');
-            const tableRows = document.querySelectorAll('#reportTable tbody tr');
-
-            const applyFilters = () => {
-                tableRows.forEach(row => {
-                    const productName = row.children[1].textContent.toLowerCase();
-                    const rmPercent = parseFloat(row.children[5].textContent);
-                    const pmPercent = row.children[6].textContent;
-                    const margin = row.children[7].textContent;
-
-                    const productNameMatch = productNameSearch.value === "" || productName.includes(productNameSearch.value.toLowerCase());
-
-                    let rmMatch = true;
-                    if (rmValue.value) {
-                        const rmInputValue = parseFloat(rmValue.value);
-                        rmMatch = rmRangeType.value === "above" ? rmPercent >= rmInputValue : rmPercent <= rmInputValue;
-                    }
-
-                    let pmMatch = true;
-                    if (pmValue.value) {
-                        const pmInputValue = parseFloat(pmValue.value);
-                        pmMatch = pmRangeType.value === "above" ? pmPercent >= pmInputValue : pmPercent <= pmInputValue;
-                    }
-
-                    const marginMatch = marginFilter.value === "" || margin === marginFilter.value;
-
-                    if (productNameMatch && rmMatch && pmMatch && marginMatch) {
-                        row.style.display = '';
+                    if (rowIndex > 0) {
+                        rowData.push(serialNumber++);
                     } else {
-                        row.style.display = 'none';
+                        rowData.push("S.NO");
                     }
-                });
 
-                // Recalculate serial numbers after filtering
-                updateSerialNumbers();
-            };
+                    cells.forEach((cell, index) => {
+                        if (index !== 0) { // Skip checkboxes column
+                            rowData.push(cell.innerText.trim());
+                        }
+                    });
 
-            // Event Listeners for Filters
-            productNameSearch.addEventListener('input', applyFilters);
-            rmRangeType.addEventListener('change', applyFilters);
-            rmValue.addEventListener('input', applyFilters);
-            pmRangeType.addEventListener('change', applyFilters);
-            pmValue.addEventListener('input', applyFilters);
-            marginFilter.addEventListener('change', applyFilters);
+                    tableData.push(rowData);
+                }
+            });
 
-            // Function to update serial numbers dynamically
-            const updateSerialNumbers = () => {
-                let serialNumber = 1;
-                tableRows.forEach((row) => {
-                    if (row.style.display !== 'none') { // Only for visible rows
-                        row.children[0].textContent = serialNumber; // Assuming the first column is the serial number
-                        serialNumber++; // Increment serial number
-                    }
-                });
-            };
+            // Add Table to PDF
+            doc.autoTable({
+                head: [tableData[0]], // Header row
+                body: tableData.slice(1), // Table content
+                startY: 20,
+                theme: 'striped',
+            });
+
+            doc.save('filtered_report.pdf');
         });
-    </script>
+
+        // Toggle column visibility
+        function toggleColumn() {
+            const columnIndex = parseInt(this.dataset.column, 10); // Get column index (1-based)
+            const isVisible = this.checked;
+
+            // Select all rows (including headers and body)
+            const rows = document.querySelectorAll('table tr');
+            rows.forEach((row) => {
+                const cell = row.children[columnIndex - 1]; // Convert 1-based to 0-based index
+                if (cell) {
+                    cell.style.display = isVisible ? '' : 'none';
+                }
+            });
+
+            // Recalculate serial numbers after toggle
+            updateSerialNumbers();
+        }
+
+        // Select All functionality
+        document.getElementById('selectAllColumns').addEventListener('change', function() {
+            const isChecked = this.checked;
+            document.querySelectorAll('.column-toggle').forEach((checkbox) => {
+                checkbox.checked = isChecked;
+                toggleColumn.call(checkbox); // Apply the toggle
+            });
+        });
+
+        // Search functionality
+        document.getElementById('searchColumns').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            document.querySelectorAll('#columnsContainer .dropdown-item').forEach((item) => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(query) ? '' : 'none';
+            });
+        });
+        
+
+        // Export to Excel function
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const table = document.getElementById('reportTable');
+            const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
+            const visibleData = [];
+            let serialNumber = 1; // Initialize serial number
+
+            // Iterate through each row in the table and check if it's visible
+            rows.forEach((row) => {
+                if (row.style.display !== 'none') { // Only include rows that are visible
+                    const cells = Array.from(row.children); // Get all cells in the row
+                    const visibleCells = cells
+                        .filter((cell, index) => {
+                            const columnCheckbox = document.querySelector(`.column-toggle[data-column="${index + 1}"]`);
+                            return columnCheckbox && columnCheckbox.checked; // Include only visible columns
+                        })
+                        .map((cell) => cell.innerText.trim()); // Get text content of visible cells
+
+                    visibleCells.unshift(serialNumber.toString()); // Add serial number to row
+                    visibleData.push(visibleCells); // Add filtered row data
+                    serialNumber++; // Increment serial number
+                }
+            });
+
+            // Convert data to workbook
+            const ws = XLSX.utils.aoa_to_sheet(visibleData); // Create worksheet
+            const wb = XLSX.utils.book_new(); // Create workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Report'); // Append worksheet to workbook
+
+            // Export to Excel file
+            XLSX.writeFile(wb, 'filtered_report.xlsx'); // Trigger download
+        });
+
+        // Filter and Apply functionality
+        const productNameSearch = document.getElementById('productNameSearch');
+        const rmRangeType = document.getElementById('rmRangeType');
+        const rmValue = document.getElementById('rmValue');
+        const pmRangeType = document.getElementById('pmRangeType');
+        const pmValue = document.getElementById('pmValue');
+        const marginFilter = document.getElementById('marginFilter');
+        const tableRows = document.querySelectorAll('#reportTable tbody tr');
+
+        const applyFilters = () => {
+            tableRows.forEach(row => {
+                const productName = row.children[1].textContent.toLowerCase();
+                const rmPercent = parseFloat(row.children[5].textContent);
+                const pmPercent = row.children[6].textContent;
+                const margin = row.children[7].textContent;
+
+                const productNameMatch = productNameSearch.value === "" || productName.includes(productNameSearch.value.toLowerCase());
+
+                let rmMatch = true;
+                if (rmValue.value) {
+                    const rmInputValue = parseFloat(rmValue.value);
+                    rmMatch = rmRangeType.value === "above" ? rmPercent >= rmInputValue : rmPercent <= rmInputValue;
+                }
+
+                let pmMatch = true;
+                if (pmValue.value) {
+                    const pmInputValue = parseFloat(pmValue.value);
+                    pmMatch = pmRangeType.value === "above" ? pmPercent >= pmInputValue : pmPercent <= pmInputValue;
+                }
+
+                const marginMatch = marginFilter.value === "" || margin === marginFilter.value;
+
+                if (productNameMatch && rmMatch && pmMatch && marginMatch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Recalculate serial numbers after filtering
+            updateSerialNumbers();
+        };
+
+        // Event Listeners for Filters
+        productNameSearch.addEventListener('input', applyFilters);
+        rmRangeType.addEventListener('change', applyFilters);
+        rmValue.addEventListener('input', applyFilters);
+        pmRangeType.addEventListener('change', applyFilters);
+        pmValue.addEventListener('input', applyFilters);
+        marginFilter.addEventListener('change', applyFilters);
+
+        // Function to update serial numbers dynamically
+        const updateSerialNumbers = () => {
+            let serialNumber = 1;
+            tableRows.forEach((row) => {
+                if (row.style.display !== 'none') { // Only for visible rows
+                    row.children[0].textContent = serialNumber; // Assuming the first column is the serial number
+                    serialNumber++; // Increment serial number
+                }
+            });
+        };
+    });
+</script>

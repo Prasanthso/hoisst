@@ -16,23 +16,41 @@ class ReportController extends Controller
     {
         $reports = DB::select("
             SELECT 
-            pm.id AS SNO, 
-            pm.name AS Product_Name, 
-            pm.price AS S_MRP,
-            SUM(rfr.quantity * rm.price/rmst.Output) AS RM_Cost,
-            SUM(((rfr.quantity * rm.price/rmst.Output)*100)/pm.price) AS RM_perc,
-            SUM(pfr.quantity * pkm.price/rmst.Output) AS PM_Cost,
-            SUM(((pfr.quantity * pkm.price/rmst.Output)*100)/pm.price) AS PM_perc,
-            SUM(ofr.quantity * oh.price/rmst.Output) AS OH_Cost,
-            SUM((((rfr.quantity * rm.price/rmst.Output)+(pfr.quantity * pkm.price/rmst.Output))*(ofr.quantity * oh.price/rmst.Output))/100) AS OH_perc,
-            SUM((rfr.quantity * rm.price/rmst.Output)+(pfr.quantity * pkm.price/rmst.Output)) AS TOTAL,
-            SUM((((rfr.quantity * rm.price/rmst.Output)+(pfr.quantity * pkm.price/rmst.Output))*100)/pm.price) AS Total_perc,
-            SUM((rfr.quantity * rm.price/rmst.Output)+(pfr.quantity * pkm.price/rmst.Output)+((((rfr.quantity * rm.price/rmst.Output)+(pfr.quantity * pkm.price/rmst.Output))*(ofr.quantity * oh.price/rmst.Output))/100)) AS COST,
-            SUM(pm.price*0.75) AS Selling_Cost,
-            SUM(((pm.price*0.75)*100)/(100+18)) AS Before_tax,
-            SUM((((pm.price*0.75)*100)/(100+18))-((rfr.quantity * rm.price/rmst.Output)+(pfr.quantity * pkm.price/rmst.Output)+((((rfr.quantity * rm.price/rmst.Output)+(pfr.quantity * pkm.price/rmst.Output))*(ofr.quantity * oh.price/rmst.Output))/100))) AS Margin,
-            SUM(((((pm.price*0.75)*100)/(100+18))-((rfr.quantity * rm.price/rmst.Output)+(pfr.quantity * pkm.price/rmst.Output)+((((rfr.quantity * rm.price/rmst.Output)+(pfr.quantity * pkm.price/rmst.Output))*(ofr.quantity * oh.price/rmst.Output))/100)))/(((pm.price*0.75)*100)/(100+18))*100) AS Margin_perc,
-            rmst.Output 
+                pm.id AS SNO, 
+                pm.name AS Product_Name, 
+                pm.price AS S_MRP,
+                SUM(COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) AS RM_Cost,
+                SUM((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(pm.price, 1)) AS RM_perc,
+                SUM(COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1)) AS PM_Cost,
+                SUM((COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(pm.price, 1)) AS PM_perc,
+                SUM(COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1)) AS OH_Cost,
+                SUM(((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
+                    (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 
+                    (COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1)) / 100) AS OH_perc,
+                SUM((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
+                    (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) AS TOTAL,
+                SUM(((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
+                    (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 100 / COALESCE(pm.price, 1)) AS Total_perc,
+                SUM(COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) + 
+                    COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) + 
+                    ((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
+                    (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 
+                    (COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1)) / 100) AS COST,
+                SUM(COALESCE(pm.price, 0) * 0.75) AS Selling_Cost,
+                SUM(((COALESCE(pm.price, 0) * 0.75) * 100) / (100 + 18)) AS Before_tax,
+                SUM((((COALESCE(pm.price, 0) * 0.75) * 100) / (100 + 18)) - 
+                    (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) + 
+                    COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) + 
+                    ((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
+                    (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 
+                    (COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1)) / 100)) AS Margin,
+                SUM(((((COALESCE(pm.price, 0) * 0.75) * 100) / (100 + 18)) - 
+                    (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) + 
+                    COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) + 
+                    ((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
+                    (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 
+                    (COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1)) / 100))/(((pm.price*0.75)*100)/(100+18))*100) AS Margin_perc,
+                rmst.Output 
             FROM 
                 product_master pm 
             JOIN 
@@ -50,7 +68,7 @@ class ReportController extends Controller
             LEFT JOIN 
                 overheads oh ON ofr.overheads_id = oh.id
             GROUP BY 
-                pm.id, pm.name, pm.price, rmst.Output
+                pm.id, pm.name, pm.price, rmst.Output;
         ");
 
         return view('report', compact('reports'));

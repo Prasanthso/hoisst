@@ -5,75 +5,87 @@
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
         <h1>Recipe Pricing</h1>
-        <a href="{{ 'addoverheads' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
-            <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
-        </a>
+        <div>
+            <button type="button" class="btn btn-success" id="exportBtn">
+                <i class="fas fa-file-excel"></i> Export to Excel
+            </button>
+            <button id="exportPdfBtn" class="btn btn-danger">
+                <i class="fas fa-file-pdf"></i> Export to PDF
+            </button>
+        </div>
     </div><!-- End Page Title -->
 
     <section class="section dashboard">
         <div class="row">
             <div class="col-lg-1"></div>
-
             <!-- Right side columns -->
             <div class="col-lg-8">
                 <div class="row">
                     <!-- Action Buttons -->
                     <div class="d-flex justify-content-end mb-2 action-buttons">
-                        <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                        <!-- <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-edit" style="color: black;"></i>
-                        </button>
-                        <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                        </button> -->
+                        <!-- <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-trash" style="color: red;"></i>
-                        </button>
+                        </button> -->
                     </div>
 
                     <!-- Bordered Table -->
-                    <table class="table table-bordered">
+                    <table class="table table-bordered" id="reportTable">
                         <thead class="custom-header">
                             <tr>
-                                <!-- <th class="head" scope="col">
-                                    <input type="checkbox" id="select-all" class="form-check-input">
-                                </th> -->
                                 <th scope="col" style="color:white;">S.NO</th>
-                                <th scope="col" style="color:white;">Recipe</th>
-                                <th scope="col" style="color:white;">RP Code</th>
-                                <th scope="col" style="color:white;">Raw Material Cost</th>
-                                <th scope="col" style="color:white;">Selling Price</th>
-                                <th scope="col" style="color:white;">Discount</th>
-                                <th scope="col" style="color:white;">Margin</th>
+                                <th scope="col" style="color:white;">Product_Name</th>
+                                <th scope="col" style="color:white;">MRP</th>
+                                <th scope="col" style="color:white;">RM Cost</th>
+                                <!-- <th scope="col" style="color:white;">RM %</th> -->
+                                <th scope="col" style="color:white;">Packing Cost</th>
+                                <!-- <th scope="col" style="color:white;">Packing %</th> -->
+                                <th scope="col" style="color:white;">Total</th>
+                                <!-- <th scope="col" style="color:white;">%</th> -->
+                                <!-- <th scope="col" style="color:white;">Overhead %</th> -->
+                                <th scope="col" style="color:white;">Overhead</th>
+                                <th scope="col" style="color:white;">Cost</th>
+                                <th scope="col" style="color:white;">Selling Rate</th>
+                                <th scope="col" style="color:white;">Tax</th>
+                                <th scope="col" style="color:white;">Before Tax</th>
+                                <th scope="col" style="color:white;">Margin Amount</th>
+                                <th scope="col" style="color:white;">Margin %</th>
                             </tr>
                         </thead>
-                        <tbody id="rawMaterialTable">
+                        <tbody id="ReportTable">
+                            @foreach ($reports as $index => $report)
+                            @php
+                            $sellingRate = $report->S_MRP * 0.75;
+                            $beforeTax = ($sellingRate * 100) / 118;
+                            $margin = $beforeTax - $report->COST;
+                            $marginPercentage = $beforeTax > 0 ? ($margin / $beforeTax) * 100 : 0;
+                            @endphp
                             <tr>
-                                
-                                <td>1.</td> <!-- Auto-increment S.NO -->
-                                <td>Egg Puff</td>
-                                <td>RP0001</td> <!-- RM Code -->
-                                <td>37</td> <!-- UoM -->
-                                <td>45</td>
-                                <td>5%</td>
-                                <td>5</td>
-                            </tr>
-                            <tr>
-                                
-                                <td>2.</td> <!-- Auto-increment S.NO -->
-                                <td>Egg Puff</td>
-                                <td>RP0001</td> <!-- RM Code -->
-                                <td>37</td> <!-- UoM -->
-                                <td>45</td>
-                                <td>5%</td>
-                                <td>5</td>
-                            </tr>
-                            <tr>
-                                
-                                <td>3.</td> <!-- Auto-increment S.NO -->
-                                <td>Egg Puff</td>
-                                <td>RP0001</td> <!-- RM Code -->
-                                <td>37</td> <!-- UoM -->
-                                <td>45</td>
-                                <td>5%</td>
-                                <td>5</td>
-                            </tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $report->Product_Name }}</td>
+                                <td class="editable-mrp position-relative">
+                                    <span class="mrp-text">{{ $report->S_MRP }}</span>
+                                    <input type="text" class="form-control mrp-input d-none" value="{{ $report->S_MRP }}">
+                                </td>
+                                <td>{{ $report->RM_Cost }}</td>
+                                <!-- <td>{{ number_format($report->RM_perc, 2) }}</td> -->
+                                <td>{{ $report->PM_Cost }}</td>
+                                <!-- <td>{{ number_format($report->PM_perc, 2) }}</td> -->
+                                <td>{{ $report->TOTAL }}</td>
+                                <!-- <td>{{ $report->Total_perc }}</td> -->
+                                <td>{{ number_format($report->OH_Cost, 2) }}</td>
+                                <!-- <td>{{ number_format($report->OH_perc, 2) }}</td> -->
+                                <td class="cost">{{ $report->COST }}</td>
+                                <td class="selling-rate">{{ number_format($report->S_MRP * 0.75, 2) }}</td>
+                                <td>18</td>
+                                <td class="before-tax">{{ number_format($beforeTax, 2) }}</td>
+                                <td class="margin">{{ number_format($beforeTax - $report->COST, 2) }}</td>
+                                <td class="margin-perc">{{ number_format((($beforeTax - $report->COST) / $beforeTax) * 100, 2) }}%</td>
+                                @endforeach
+
+                                <!-- Add more rows as needed -->
                         </tbody>
                     </table>
                     <!-- Pagination Links -->
@@ -92,32 +104,6 @@
         </div>
     </section>
 
-    <!-- Modal -->
-    <div class="modal fade" id="priceModal" tabindex="-1" aria-labelledby="priceModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="priceModalLabel">Price Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <table class="table table-bordered table-price">
-                        <thead class="custom-header">
-                            <tr>
-                                <th style="color:white;">Effective From</th>
-                                <th style="color:white;">Price</th>
-                                <th style="color:white;">Updated By</th>
-                            </tr>
-                        </thead>
-                        <tbody id="priceDetailsTable">
-                            <!-- Data will be dynamically injected here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
 </main><!-- End #main -->
 @endsection
 
@@ -128,359 +114,169 @@
 <!-- Template Main JS File -->
 <script src="{{ asset('js/main.js') }}"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js">
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const table = document.getElementById("rawMaterialTable");
-        const editTableBtn = document.querySelector(".edit-table-btn");
-        const deleteTableBtn = document.querySelector(".delete-table-btn");
-        const selectAllCheckbox = document.getElementById('select-all');
-        const rows = document.querySelectorAll('#rawMaterialTable tr');
-        const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
-        let isEditing = false; // Track if edit mode is active
+    $(document).ready(function() {
 
-        // Function to get all row checkboxes dynamically
-        const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
+        // PDF Export Function
+        document.getElementById('exportPdfBtn').addEventListener('click', function() {
+            const {
+                jsPDF
+            } = window.jspdf;
+            const doc = new jsPDF();
 
-        // Function to toggle editing mode for selected rows
-        const toggleEditMode = (enable) => {
-            table.querySelectorAll("tr").forEach(row => {
-                const checkbox = row.querySelector(".row-checkbox");
-                const priceText = row.querySelector(".price-text");
-                const priceInput = row.querySelector(".price-input");
-
-                if (checkbox && priceText && priceInput) {
-                    if (checkbox.checked && enable) {
-                        // Enable editing
-                        priceText.classList.add("d-none");
-                        priceInput.classList.remove("d-none");
-                    } else {
-                        // Disable editing
-                        priceInput.classList.add("d-none");
-                        priceText.classList.remove("d-none");
-                    }
-                }
-            });
-        };
-
-        // Function to add Save and Cancel buttons
-        const showSaveCancelButtons = () => {
-            const actionButtonsContainer = document.querySelector(".action-buttons");
-            actionButtonsContainer.innerHTML = `
-            <button class="btn btn-sm save-btn me-2" style="background-color: #28a745; color: white; border-radius: 50%; padding: 10px;">
-                <i class="fas fa-save"></i>
-            </button>
-            <button class="btn btn-sm cancel-btn" style="background-color: #dc3545; color: white; border-radius: 50%; padding: 10px;">
-                <i class="fas fa-times"></i>
-            </button>
-        `;
-
-            // Add functionality to Save and Cancel buttons
-            document.querySelector(".save-btn").addEventListener("click", saveChanges);
-            document.querySelector(".cancel-btn").addEventListener("click", cancelEditing);
-        };
-
-        // Function to restore Edit/Delete buttons
-        const showEditDeleteButtons = () => {
-            isEditing = false;
-            const actionButtonsContainer = document.querySelector(".action-buttons");
-            actionButtonsContainer.innerHTML = `
-            <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
-                <i class="fas fa-edit" style="color: black;"></i>
-            </button>
-            <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
-                <i class="fas fa-trash" style="color: red;"></i>
-            </button>
-        `;
-
-            // Reassign the edit button functionality
-            document.querySelector(".edit-table-btn").addEventListener("click", enableEditing);
-        };
-
-        // Function to save changes
-        const saveChanges = () => {
-            const updatedData = [];
-            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // CSRF token
-
-            table.querySelectorAll("tr").forEach(row => {
-                const checkbox = row.querySelector(".row-checkbox");
-                const priceText = row.querySelector(".price-text");
-                const priceInput = row.querySelector(".price-input");
-
-                if (checkbox && checkbox.checked && !priceInput.classList.contains("d-none")) {
-                    // Collect data for this row
-                    const materialId = row.getAttribute("data-id"); // Ensure row has a `data-id` attribute for identifying raw material
-                    const updatedPrice = priceInput.value.trim();
-
-                    updatedData.push({
-                        id: materialId,
-                        price: updatedPrice
-                    });
-                }
-            });
-
-            // Send data to the server via AJAX
-            if (updatedData.length > 0) {
-                fetch("{{ route('overheads.updatePrices') }}", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-CSRF-TOKEN": token
-                        },
-                        body: JSON.stringify({
-                            updatedMaterials: updatedData
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Success message
-                            alert("Prices updated successfully!");
-
-                            // Update price text and exit editing mode
-                            updatedData.forEach(item => {
-                                const row = document.querySelector(`tr[data-id="${item.id}"]`);
-                                if (row) {
-                                    const priceText = row.querySelector(".price-text");
-                                    const priceInput = row.querySelector(".price-input");
-                                    priceText.textContent = item.price;
-                                    priceInput.value = item.price;
-                                }
-                            });
-                            exitEditingMode();
-                        } else {
-                            alert("Failed to update prices. Please try again.");
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error updating prices:", error);
-                        alert("An error occurred. Please try again.");
-                    });
-            } else {
-                alert("No rows selected for saving.");
-            }
-        };
-
-
-        // Function to cancel editing
-        const cancelEditing = () => {
-            const selectedRows = Array.from(getRowCheckboxes()).filter(checkbox => checkbox.checked);
-            if (selectedRows.length === 0) {
-                // No rows selected, prompt the user to select rows
-                alert("Please select at least one row to cancel.");
+            const table = document.getElementById('reportTable');
+            if (!table) {
+                console.error('Table with ID "exportRm" not found.');
                 return;
             }
 
-            table.querySelectorAll("tr").forEach(row => {
-                const checkbox = row.querySelector(".row-checkbox");
-                const priceText = row.querySelector(".price-text");
-                const priceInput = row.querySelector(".price-input");
+            const rows = Array.from(table.querySelectorAll('tr'));
+            const tableData = [];
+            let serialNumber = 1;
 
-                if (checkbox.checked && !priceInput.classList.contains("d-none")) {
-                    // Revert input value to original price text for selected row
-                    priceInput.value = priceText.textContent;
-                }
-            });
-            exitEditingMode();
-        };
+            rows.forEach((row, rowIndex) => {
+                if (row.style.display !== 'none') {
+                    const cells = Array.from(row.children);
+                    const rowData = [];
 
-        // Function to exit edit mode
-        const exitEditingMode = () => {
-            toggleEditMode(false);
-            isEditing = false;
-            showEditDeleteButtons();
-        };
-
-        // Function to enable editing
-        const enableEditing = () => {
-            let isAnyRowSelected = false;
-
-            // Check if any row is selected
-            getRowCheckboxes().forEach(checkbox => {
-                if (checkbox.checked) isAnyRowSelected = true;
-            });
-
-            if (isAnyRowSelected) {
-                isEditing = true;
-                toggleEditMode(true);
-                showSaveCancelButtons();
-            } else {
-                alert("Please select at least one row to edit.");
-            }
-        };
-
-        // Event listener for Select All checkbox
-        selectAllCheckbox.addEventListener('change', function() {
-            const isChecked = this.checked;
-
-            // Toggle all row checkboxes
-            getRowCheckboxes().forEach((checkbox) => {
-                checkbox.checked = isChecked;
-            });
-            // Automatically enable edit mode if at least one row is selected
-            if (isChecked && isEditing) {
-                enableEditing();
-            } else {
-                exitEditingMode();
-            }
-        });
-
-        // Event listener for individual row checkboxes
-        const updateSelectAllState = () => {
-            const allCheckboxes = getRowCheckboxes();
-            const allChecked = Array.from(allCheckboxes).every((checkbox) => checkbox.checked);
-
-            // Update Select All checkbox state
-            selectAllCheckbox.checked = allChecked;
-
-            // Automatically enable or disable edit mode based on selections
-            const anyChecked = Array.from(allCheckboxes).some((checkbox) => checkbox.checked);
-
-            if (anyChecked && isEditing) {
-                // editTableBtn.addEventListener("click", enableEditing);
-                enableEditing();
-            } else {
-                exitEditingMode();
-                // cancelEditing();
-            }
-
-        };
-
-        getRowCheckboxes().forEach((checkbox) => {
-            checkbox.addEventListener('change', () => {
-                // const unselectedRows = Array.from(getRowCheckboxes()).filter(chk => !chk.checked);
-                // If a row is unselected and editing mode is enabled, cancel editing mode
-                // if (unselectedRows) {
-                //     exitEditingMode();
-                // }
-
-                updateSelectAllState();
-            });
-        });
-
-        // Initialize Edit button functionality
-        editTableBtn.addEventListener("click", enableEditing);
-
-
-
-        const priceModal = new bootstrap.Modal(document.getElementById("priceModal")); // Initialize Bootstrap Modal
-
-        const showPriceModal = (materialId) => {
-            const url = `{{ route('overheads.priceHistory', ':id') }}`.replace(':id', materialId);
-
-            fetch(url) // API endpoint to fetch price details
-                .then((response) => response.json())
-                .then((data) => {
-                    const modalTableBody = document.getElementById("priceDetailsTable");
-                    modalTableBody.innerHTML = ""; // Clear previous data
-
-                    if (data.priceDetails.length > 0) {
-                        data.priceDetails.forEach((detail) => {
-                            modalTableBody.innerHTML += `
-                                    <tr>
-                                        <td>${detail.updated_at}</td>
-                                        <td>${detail.new_price}</td>
-                                        <td>${detail.updated_by}</td>
-                                    </tr>
-                                `;
-                        });
+                    if (rowIndex > 0) {
+                        rowData.push(serialNumber++);
                     } else {
-                        modalTableBody.innerHTML = `
-                                <tr>
-                                    <td colspan="3" class="text-center">No price details available</td>
-                                </tr>
-                            `;
+                        rowData.push("S.NO");
                     }
 
-                    priceModal.show(); // Show modal after populating
-                })
-                .catch((error) => {
-                    console.error("Error fetching price details:", error);
-                    alert("Unable to fetch price details. Please try again.");
-                });
-        };
+                    cells.forEach((cell, index) => {
+                        if (index !== 0) { // Skip checkboxes column
+                            rowData.push(cell.innerText.trim());
+                        }
+                    });
 
-        // Attach click event listener to each price column
-        table.querySelectorAll(".price-text").forEach((priceElement) => {
-            const row = priceElement.closest("tr");
-            const materialId = row.getAttribute("data-id");
+                    tableData.push(rowData);
+                }
+            });
 
-            priceElement.addEventListener("click", () => {
-                showPriceModal(materialId);
+            // Add Table to PDF
+            doc.autoTable({
+                head: [tableData[0]], // Header row
+                body: tableData.slice(1), // Table content
+                startY: 20,
+                theme: 'striped',
+            });
+
+            doc.save('margin_calculation.pdf');
+        });
+
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const table = document.getElementById('reportTable'); // Ensure this ID exists in your table
+            if (!table) {
+                console.error('Table with ID "exportRm" not found.');
+                return;
+            }
+            console.log('Table with ID "exportRm" not found.');
+
+            const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
+            const visibleData = [];
+            let serialNumber = 1; // Initialize serial number
+
+            // Iterate through each row
+            rows.forEach((row, rowIndex) => {
+                if (row.style.display !== 'none') { // Only include visible rows
+                    const cells = Array.from(row.children);
+                    const rowData = [];
+
+                    if (rowIndex > 0) {
+                        rowData.push(serialNumber++); // Auto-increment serial number
+                    } else {
+                        rowData.push("S.NO"); // Add "S.NO" to the header row
+                    }
+
+                    cells.forEach((cell, index) => {
+                        if (index !== 0) { // Skip checkboxes column
+                            rowData.push(cell.innerText.trim());
+                        }
+                    });
+
+                    visibleData.push(rowData);
+                }
+            });
+
+            // Convert data to workbook
+            const ws = XLSX.utils.aoa_to_sheet(visibleData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Raw Material Report');
+
+            // Export as an Excel file
+            XLSX.writeFile(wb, 'margin_calculation.xlsx');
+        });
+
+
+        // When clicking the MRP cell
+        $(document).on("click", ".editable-mrp", function(e) {
+            e.stopPropagation(); // Prevents closing immediately when clicking inside
+
+            $(".mrp-text").removeClass("d-none"); // Reset all first
+            $(".mrp-input").addClass("d-none");
+
+            var cell = $(this);
+            cell.find(".mrp-text").addClass("d-none"); // Hide text
+            cell.find(".mrp-input").removeClass("d-none").focus(); // Show input & focus
+        });
+
+        // When clicking outside, switch back and update Selling Rate, Before Tax, Margin & Margin %
+        $(document).on("click", function() {
+            $(".mrp-input").each(function() {
+                var inputField = $(this);
+                var newValue = parseFloat(inputField.val().trim()); // Get new MRP value
+
+                if (!isNaN(newValue) && newValue > 0) {
+                    inputField.addClass("d-none"); // Hide input
+                    inputField.siblings(".mrp-text").text(newValue).removeClass("d-none"); // Update text
+
+                    var row = inputField.closest("tr"); // Get the row
+                    var sellingRateCell = row.find(".selling-rate"); // Get Selling Rate cell
+                    var beforeTaxCell = row.find(".before-tax"); // Get Before Tax cell
+                    var costCell = row.find(".cost"); // Get Cost cell
+                    var marginCell = row.find(".margin"); // Get Margin cell
+                    var marginPercCell = row.find(".margin-perc"); // Get Margin % cell
+
+                    // Calculate Selling Rate (MRP * 0.75)
+                    var sellingRate = (newValue * 0.75).toFixed(2);
+                    sellingRateCell.text(sellingRate); // Update Selling Rate
+
+                    // Calculate Before Tax (Selling Rate * 100 / 118)
+                    var beforeTax = (sellingRate * 100 / 118).toFixed(2);
+                    beforeTaxCell.text(beforeTax); // Update Before Tax
+
+                    // Get Cost value
+                    var cost = parseFloat(costCell.text().trim()) || 0;
+
+                    // Calculate Margin (Before Tax - Cost)
+                    var margin = (beforeTax - cost).toFixed(2);
+                    marginCell.text(margin); // Update Margin
+
+                    // Calculate Margin % (Margin / Before Tax * 100)
+                    var marginPerc = beforeTax > 0 ? ((margin / beforeTax) * 100).toFixed(2) : "0.00";
+                    marginPercCell.text(marginPerc + "%"); // Update Margin %
+                }
             });
         });
 
-        // Listen for change events on category checkboxes
-        categoryCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', filterRawMaterials);
+        // Prevent event bubbling when clicking inside the input
+        $(document).on("click", ".mrp-input", function(e) {
+            e.stopPropagation();
         });
 
-        function filterRawMaterials() {
-            // Get all selected categories
-            const selectedCategories = Array.from(categoryCheckboxes)
-                .filter(checkbox => checkbox.checked)
-                .map(checkbox => checkbox.value.toLowerCase().trim());
-
-            rows.forEach(row => {
-                const categoryCells = row.querySelector('td:nth-child(5)').textContent.toLowerCase().split(', ');
-                let matches = false;
-
-                // Check if any of the selected categories match the categories of the raw material row
-                selectedCategories.forEach(selectedCategory => {
-                    // Check if the selected category exists in the row's categories
-                    if (categoryCells.some(category => category.trim() === selectedCategory)) {
-                        matches = true;
-                    }
-                });
-
-                // Show or hide the row based on the match
-                if (selectedCategories.length === 0 || matches) {
-                    row.style.display = ''; // Show row
-                } else {
-                    row.style.display = 'none'; // Hide row
-                }
-            });
-            updateSerialNumbers();
-        }
-
-        function updateSerialNumbers() {
-            // Get all visible rows
-            const visibleRows = Array.from(document.querySelectorAll("#rawMaterialTable tr"))
-                .filter(row => row.style.display !== 'none');
-
-            // Update serial numbers for visible rows only
-            visibleRows.forEach((row, index) => {
-                const snoCell = row.querySelector("td:nth-child(2)"); // Adjust the column index for S.NO
-                if (snoCell) {
-                    snoCell.textContent = `${index + 1}.`; // Update the serial number
-                }
-            });
-        }
-
+        // When pressing Enter, switch back and update Selling Rate, Before Tax, Margin & Margin %
+        $(document).on("keypress", ".mrp-input", function(e) {
+            if (e.which === 13) { // Enter key
+                $(this).blur();
+            }
+        });
     });
-
-    function filterCategories() {
-        // Get the search input value
-        const searchValue = document.getElementById('categorySearch').value.toLowerCase();
-        const keywords = searchValue.split(',').map(keyword => keyword.trim()).filter(keyword => keyword);
-        // Get all category items
-        const categoryItems = document.querySelectorAll('.category-item');
-
-        // If the search box is empty, show all categories
-        if (keywords.length === 0) {
-            categoryItems.forEach((item) => {
-                item.style.display = ''; // Show all items
-            });
-            return;
-        }
-        // Loop through category items and filter them
-        categoryItems.forEach((item) => {
-            const label = item.querySelector('.form-check-label').textContent.toLowerCase();
-
-            // Check if any of the keywords match the label
-            const isVisible = keywords.some(keyword => label.includes(keyword));
-
-            // Show or hide the category item based on the match
-            item.style.display = isVisible ? '' : 'none';
-        });
-    }
 </script>
