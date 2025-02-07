@@ -100,7 +100,11 @@
 
                 editCostingBtn.setAttribute('data-id', recipeId);
                 deleteCostingBtn.setAttribute('data-id', recipeId);
-                window.location.href = `/editoverallcosting/${recipeId}`;
+
+                const response = await fetch(`/recipes/${productId}`);
+                if (!response.ok) throw new Error('Recipe not found');
+                const recipe = await response.json();
+                // window.location.href = `/editoverallcosting/${recipeId}`;
 
             }catch (error) {alert(error);}
         }

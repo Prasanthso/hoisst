@@ -153,6 +153,31 @@ class OverAllCostingController extends Controller
         // Redirect to another page with a success message
         return redirect()->route('overallcosting.create')->with('success', 'Costing saved successfully!');
     }
+    public function show($id)
+    {
+        // Fetch the specific OverallCosting record
+        $costing = DB::table('overall_costing')
+            ->join('product_master', 'overall_costing.productId', '=', 'product_master.id')
+            ->select(
+                'overall_costing.*',
+                'product_master.name as product_name'
+            )
+            ->where('overall_costing.id', $id)
+            ->where('overall_costing.status', 'active')
+            ->get(); // Retrieve only records
+
+        // Check if data exists
+        if (!$costing) {
+            return response()->json(['success' => false, 'message' => 'Overall-Costing was not fetching.']);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Overall-Costing was fetched.',
+            'data' => $costing
+        ]);
+    }
+
 
     public function edit($id)
     {
