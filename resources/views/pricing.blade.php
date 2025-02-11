@@ -859,6 +859,11 @@
                 return;
             }
 
+            const fromMastersCheckbox = document.getElementById("frommasters");
+            const fromMastersLabel = document.querySelector("label[for='frommasters']");
+            const manualCheckbox = document.getElementById("entermanually");
+            const manualLabel = document.querySelector("label[for='entermanually']");
+
             const overheadsId = overheadsSelect.value;
             const overheadsName = overheadsSelect.options[overheadsSelect.selectedIndex]?.text;
             const quantity = parseFloat(ohQuantityInput.value) || 0;
@@ -931,6 +936,16 @@
                     </tr>`;
                     overheadsTable.insertAdjacentHTML('beforeend', row);
                     updateOhTotalCost(amount); // Update the total cost after adding a row
+
+                    if (document.getElementById("frommasters").checked) {
+                        manualCheckbox.style.display = "none";
+                        manualLabel.style.display = "none";
+                    } else if (document.getElementById("entermanually").checked) {
+                        fromMastersCheckbox.style.display = "none";
+                        fromMastersLabel.style.display = "none";
+                    }
+
+
                     clearOhFields();
 
                 })
@@ -948,20 +963,26 @@
         manualOhAddButton.addEventListener('click', function() {
             console.log("Add button clicked"); // Debugging
 
-            const manualOverheadsName = document.getElementById('manualOverheads').value.trim();
+            const fromMastersCheckbox = document.getElementById("frommasters");
+            const fromMastersLabel = document.querySelector("label[for='frommasters']");
+            const manualCheckbox = document.getElementById("entermanually");
+            const manualLabel = document.querySelector("label[for='entermanually']");
+            const overheadsTable = document.getElementById("overheadsTable");
+
+            const manualOverheadsName = document.getElementById("manualOverheads").value.trim();
             const manualOhType = document.getElementById("manualOhType").value;
 
             let manualOhPriceValue = 0;
             let manualOhPercValue = 0;
 
             if (manualOhType === "price") {
-                manualOhPriceValue = parseFloat(document.getElementById('manualOhPrice').value) || 0;
+                manualOhPriceValue = parseFloat(document.getElementById("manualOhPrice").value) || 0;
             } else {
-                manualOhPercValue = parseFloat(document.getElementById('manualOhPerc').value) || 0;
+                manualOhPercValue = parseFloat(document.getElementById("manualOhPerc").value) || 0;
             }
 
             if (!manualOverheadsName || (manualOhType === "price" && manualOhPriceValue <= 0) || (manualOhType === "percentage" && manualOhPercValue <= 0)) {
-                alert('Please fill all fields before adding.');
+                alert("Please fill all fields before adding.");
                 return;
             }
 
@@ -973,25 +994,25 @@
                 manualOhPerc: manualOhPercValue,
             };
 
-            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const token = document.querySelector("meta[name='csrf-token']")?.getAttribute("content");
             if (!token) {
-                console.error('CSRF token not found.');
+                console.error("CSRF token not found.");
                 return;
             }
 
-            fetch('/manual-overhead', {
-                    method: 'POST',
+            fetch("/manual-overhead", {
+                    method: "POST",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': token,
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": token,
                     },
                     body: JSON.stringify(data),
                 })
-                .then(response => response.json())
-                .then(data => {
+                .then((response) => response.json())
+                .then((data) => {
                     console.log("Parsed Response:", data);
                     if (data.success) {
-                        alert('Manual overhead added successfully!');
+                        alert("Manual overhead added successfully!");
 
                         const insertedId = data.inserted_id; // Get the inserted ID from the response
 
@@ -1008,19 +1029,39 @@
                     </td>
                 </tr>`;
 
-                        const overheadsTable = document.getElementById('overheadsTable'); // Assuming you have a table with ID 'overheadsTable'
-                        overheadsTable.insertAdjacentHTML('beforeend', row);
+                        overheadsTable.insertAdjacentHTML("beforeend", row);
 
-                        // Optionally, update the total cost after adding a row
-                        updateOhTotalAmount(); // Assuming this function exists and updates the total cost
+                        // Update total cost after adding a row
+                        if (typeof updateOhTotalAmount === "function") {
+                            updateOhTotalAmount(); // Ensure this function exists
+                        }
+
+                        // Debugging: Check which checkbox is selected
+                        console.log("From Masters Checked:", fromMastersCheckbox.checked);
+                        console.log("Enter Manually Checked:", manualCheckbox.checked);
+
+                        // Hide the opposite checkbox & label
+                        if (manualCheckbox.checked) {
+                            fromMastersCheckbox.style.display = "none";
+                            fromMastersLabel.style.display = "none";
+                            console.log("Hiding From Masters checkbox");
+                        }
+
+                        if (fromMastersCheckbox.checked) {
+                            manualCheckbox.style.display = "none";
+                            manualLabel.style.display = "none";
+                            console.log("Hiding Enter Manually checkbox");
+                        }
 
                         // Clear the input fields after adding
-                        clearOhFields(); // Assuming this function clears your input fields
+                        if (typeof clearOhFields === "function") {
+                            clearOhFields(); // Ensure this function exists
+                        }
                     } else {
-                        alert('Failed to save manual overhead.');
+                        alert("Failed to save manual overhead.");
                     }
                 })
-                .catch(error => console.error("Fetch error:", error));
+                .catch((error) => console.error("Fetch error:", error));
         });
 
         overheadsTable.addEventListener('click', function(e) {
