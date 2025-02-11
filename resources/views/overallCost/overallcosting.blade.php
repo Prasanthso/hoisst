@@ -40,6 +40,23 @@
                     @enderror
                 </div>
             </div>
+            <div class="table-responsive">
+                <table class="table table-bordered mt-2" id="recipeTable" style="display: none; width:70%;">
+                    <thead class="custom-header">
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Rm Cost</th>
+                            <th>Totalcost</th>
+                            <th>Margin</th>
+                            <th>Suggeted Price</th>
+                            <th>Suggeted MRP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Recipe data will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </section>
 
@@ -65,6 +82,9 @@
         const recipeSelect = document.getElementById('recipeSelect');
         const editCostingBtn = document.getElementById('editRecipeBtn');
         const deleteCostingBtn = document.getElementById('deleteRecipebtn');
+        // const tableBody = document.querySelector("#recipeTable tbody");
+        const table = document.getElementById("recipeTable");
+        const tableBody = table.querySelector("tbody");
 
         $('#recipeSelect').select2({
             theme: 'bootstrap-5',
@@ -73,16 +93,17 @@
 
         $('#recipeSelect').on('change', function () {
         const selectedValue = $(this).val();
-            console.log(selectedValue);
+        console.log("Selected Overall-costing ID:", selectedValue);
+        tableBody.style.display = "table-row-group";
         if (selectedValue) {
             recipedata(selectedValue);
         } else {
-            console.log("No recipe selected.");
+            console.log("No Overall-costing recipe selected.");
         }
         });
 
         /* if edit icon clicked */
-        editRecipeBtn.addEventListener('click', () => {
+        editCostingBtn.addEventListener('click', () => {
             const recipeId = editRecipeBtn.getAttribute('data-id');
 
             if (recipeId) {
@@ -93,6 +114,45 @@
             }
         });
 
+        deleteCostingBtn.addEventListener("click", () => {
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+            const recipeId = deleteCostingBtn.getAttribute("data-id");
+
+            if (!confirm("Are you sure you want to delete?")) {
+                return;
+            }
+
+            console.log("Deleting over-all-costing ID:", recipeId);
+
+            if (recipeId) {
+                fetch(`/deleteoverallcosting`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": token
+                    },
+                    body: JSON.stringify({ ids: [recipeId] }) // Send as an array
+                })
+                .then(response => response.json().then(data => ({ status: response.status, body: data }))) // Capture status + body
+                .then(result => {
+                    console.log("Server Response:", result); // Debugging
+                    if (result.status === 200 && result.body.success) {
+                        alert("Selected recipe's overall costing deleted successfully!");
+                        location.reload();
+                    } else {
+                        alert("Failed to delete recipe. Server message: " + result.body.message);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error deleting recipe's overall costing:", error);
+                    alert("An error occurred. Please try again.");
+                });
+            } else {
+                alert("Please select a recipe to delete.");
+            }
+        });
+
+
         async function recipedata(recipeId)
         {
             if (recipeId) {
@@ -101,9 +161,31 @@
                 editCostingBtn.setAttribute('data-id', recipeId);
                 deleteCostingBtn.setAttribute('data-id', recipeId);
 
-                const response = await fetch(`/recipes/${productId}`);
+                const response = await fetch(`/showoverallcosting/${recipeId}`);
                 if (!response.ok) throw new Error('Recipe not found');
                 const recipe = await response.json();
+                console.log(recipe);
+                // const table = document.getElementById("recipeTable");
+                // const tableBody = table.querySelector("tbody");
+                tableBody.innerHTML = "";   // Clear table before adding new data
+
+                if (recipe.data && recipe.data.length > 0) {
+                    recipe.data.forEach((item) => {
+                        const row = `<tr>
+                            <td><a href="/editoverallcosting/${item.id}" style="color: black;font-size:16px;text-decoration: none;">${item.product_name || '-'}</a></td>
+                            <td>${item.rm_cost_unit || '-'}</td>
+                            <td>${item.total_cost || '-'}</td>
+                            <td>${item.margin || '-'}</td>
+                            <td>${item.sell_rate || '-'}</td>
+                            <td>${item.present_mrp || '-'}</td>
+                        </tr>`;
+                        tableBody.innerHTML += row;
+
+                    });
+                } else {
+                    tableBody.innerHTML = "<tr><td colspan='6'>No data available</td></tr>";
+                }
+                table.style.display = "table";
                 // window.location.href = `/editoverallcosting/${recipeId}`;
 
             }catch (error) {alert(error);}

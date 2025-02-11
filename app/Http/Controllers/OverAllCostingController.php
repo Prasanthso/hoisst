@@ -24,15 +24,18 @@ class OverAllCostingController extends Controller
 
     }
 
-    public function create(){
-
+    public function create()
+    {
         $recipeproducts = DB::table('recipe_master')
-        ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id')
-        ->leftJoin('overall_costing', 'recipe_master.product_id', '=', 'overall_costing.productId')
-        ->where('recipe_master.status', 'active')
-        ->whereNull('overall_costing.productId') // Ensures only products with no active costing
-        ->select('recipe_master.product_id as id', 'product_master.name as name')
-        ->get();
+            ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id')
+            ->leftJoin('overall_costing', function ($join) {
+                $join->on('recipe_master.product_id', '=', 'overall_costing.productId')
+                     ->where('overall_costing.status', 'active'); // Ensures active costing is filtered out
+            })
+            ->where('recipe_master.status', 'active')
+            ->whereNull('overall_costing.productId') // This now ensures there's no active costing
+            ->select('recipe_master.product_id as id', 'product_master.name as name')
+            ->get();
 
         return view('overallCost.addoverallCosting', compact('recipeproducts'));
     }
@@ -168,7 +171,7 @@ class OverAllCostingController extends Controller
 
         // Check if data exists
         if (!$costing) {
-            return response()->json(['success' => false, 'message' => 'Overall-Costing was not fetching.']);
+            return response()->json(['success' => false, 'message' => 'Overall-Costing was not found.'],404);
         }
 
         return response()->json([
