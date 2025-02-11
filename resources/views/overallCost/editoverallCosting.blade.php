@@ -48,19 +48,19 @@
                             <div class="col">
                                 <div class="col-12">
                                     <label for="inputRmcost" class="form-label">RM Cost/Unit(A)</label>
-                                    <input type="text" class="form-control mb-2" id="inputRmcost" name="inputRmcost" value="{{ $costing->rm_cost_unit}}" disabled>
+                                    <input type="text" class="form-control mb-2" id="inputRmcost" name="inputRmcost" value="{{ $costing->rm_cost_unit}}" disabled readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputPmcost" class="form-label">PM Cost/Unit(B)</label>
-                                    <input type="text" class="form-control mb-2" id="inputPmcost" name="inputPmcost" value="{{ $costing->pm_cost_unit}}" disabled>
+                                    <input type="text" class="form-control mb-2" id="inputPmcost" name="inputPmcost" value="{{ $costing->pm_cost_unit}}" disabled readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputRmPmcost" class="form-label">RM & PM Cost(A+B)</label>
-                                    <input type="text" class="form-control mb-2" id="inputRmPmcost" name="inputRmPmcost" value="{{ $costing->rm_pm_cost}}" disabled>
+                                    <input type="text" class="form-control mb-2" id="inputRmPmcost" name="inputRmPmcost" value="{{ $costing->rm_pm_cost}}" disabled readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputOverhead" class="form-label">Overhead(C)</label>
-                                    <input type="text" class="form-control mb-2" id="inputOverhead" name="inputOverhead" value="{{ $costing->overhead}}" disabled>
+                                    <input type="text" class="form-control mb-2" id="inputOverhead" name="inputOverhead" value="{{ $costing->overhead}}" disabled readonly>
                                 </div>
 
                           <!--  <div class="col">
@@ -87,7 +87,7 @@
                                 </div>-->
                                 <div class="col-12">
                                     <label for="inputTotalCost" class="form-label">Total cost J</label>
-                                    <input type="text" class="form-control mb-2" id="inputTotalCost" name="inputTotalCost" value="{{ $costing->total_cost}}" disabled>
+                                    <input type="text" class="form-control mb-2" id="inputTotalCost" name="inputTotalCost" value="{{ $costing->total_cost}}" disabled readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputMargin" class="form-label">Margin</label>
@@ -97,7 +97,7 @@
                                 <div class="col">
                                 <div class="col-12">
                                     <label for="inputMarginAmt" class="form-label">Margin Amount</label>
-                                    <input type="text" class="form-control mb-2" id="inputMarginAmt" name="inputMarginAmt" value="{{ $costing->margin_amt}}" disabled>
+                                    <input type="text" class="form-control mb-2" id="inputMarginAmt" name="inputMarginAmt" value="{{ $costing->margin_amt}}" disabled readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputTax" class="form-label">Tax</label>
@@ -110,15 +110,15 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="inputSellRate" class="form-label">Suggested Rate</label>
-                                    <input type="text" class="form-control mb-2" id="inputSellRate" name="inputSellRate" value="{{ $costing->sell_rate}}" disabled>
+                                    <input type="text" class="form-control mb-2" id="inputSellRate" name="inputSellRate" value="{{ $costing->sell_rate}}" disabled readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputPresentMrp" class="form-label">Suggested MRP</label>
-                                    <input type="text" class="form-control mb-2" id="inputPresentMrp" name="inputPresentMrp" value="{{ $costing->present_mrp}}" disabled>
+                                    <input type="text" class="form-control mb-2" id="inputPresentMrp" name="inputPresentMrp" value="{{ $costing->present_mrp}}" disabled readonly>
                                 </div>
                                 <div class="col-12" hidden>
                                     <label for="inputSellRatebf" class="form-label">Suggested Rate before tax</label>
-                                    <input type="text" class="form-control mb-2" id="inputSellRatebf" name="inputSellRatebf" value="{{ $costing->sell_rate_bf}}" disabled>
+                                    <input type="text" class="form-control mb-2" id="inputSellRatebf" name="inputSellRatebf" value="{{ $costing->sell_rate_bf}}" disabled readonly>
                                 </div>
                             </div>
                             </div>

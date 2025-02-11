@@ -44,19 +44,19 @@
                                     <input type="text" class="form-control" id="inputRpoutput" name="inputRpoutput" hidden>
 
                                     <label for="inputRmcost" class="form-label">RM Cost/Unit(A)</label>
-                                    <input type="text" class="form-control mb-2" id="inputRmcost" name="inputRmcost">
+                                    <input type="text" class="form-control mb-2" id="inputRmcost" name="inputRmcost" readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputPmcost" class="form-label">PM Cost/Unit(B)</label>
-                                    <input type="text" class="form-control mb-2" id="inputPmcost" name="inputPmcost">
+                                    <input type="text" class="form-control mb-2" id="inputPmcost" name="inputPmcost" readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputRmPmcost" class="form-label">RM & PM Cost(A+B)</label>
-                                    <input type="text" class="form-control mb-2" id="inputRmPmcost" name="inputRmPmcost">
+                                    <input type="text" class="form-control mb-2" id="inputRmPmcost" name="inputRmPmcost" readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputOverhead" class="form-label">Overhead(C)</label>
-                                    <input type="text" class="form-control mb-2" id="inputOverhead" name="inputOverhead">
+                                    <input type="text" class="form-control mb-2" id="inputOverhead" name="inputOverhead" readonly>
                                 </div>
 
                            <!-- <div class="col">
@@ -83,7 +83,7 @@
                                 </div>-->
                                 <div class="col-12">
                                     <label for="inputTotalCost" class="form-label">Total cost(A+B+C)</label>
-                                    <input type="text" class="form-control mb-2" id="inputTotalCost" name="inputTotalCost">
+                                    <input type="text" class="form-control mb-2" id="inputTotalCost" name="inputTotalCost" readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputMargin" class="form-label">Margin</label>
@@ -93,7 +93,7 @@
                             <div class="col">
                                 <div class="col-12">
                                     <label for="inputMarginAmt" class="form-label">Margin Amount</label>
-                                    <input type="text" class="form-control mb-2" id="inputMarginAmt" name="inputMarginAmt">
+                                    <input type="text" class="form-control mb-2" id="inputMarginAmt" name="inputMarginAmt" readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputTax" class="form-label">Tax</label>
@@ -106,15 +106,15 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="inputSellRate" class="form-label">Suggested Rate</label>
-                                    <input type="text" class="form-control mb-2" id="inputSellRate" name="inputSellRate">
+                                    <input type="text" class="form-control mb-2" id="inputSellRate" name="inputSellRate" readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputPresentMrp" class="form-label">Suggested MRP</label>
-                                    <input type="text" class="form-control mb-2" id="inputPresentMrp" name="inputPresentMrp">
+                                    <input type="text" class="form-control mb-2" id="inputPresentMrp" name="inputPresentMrp" readonly>
                                 </div>
                                 <div class="col-12" hidden>
                                     <label for="inputSellRatebf" class="form-label">Suggested Rate before Tax</label>
-                                    <input type="text" class="form-control mb-2" id="inputSellRatebf" name="inputSellRatebf">
+                                    <input type="text" class="form-control mb-2" id="inputSellRatebf" name="inputSellRatebf" readonly>
                                 </div>
                             </div>
                             </div>
