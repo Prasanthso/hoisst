@@ -21,18 +21,17 @@ class DashboardController extends Controller
         $ohc = 3;
         $pdc = 4;
 
-        $totalRm = RawMaterial::count(); // Count of raw materials
-        $totalPm = PackingMaterial::count();
+        $totalRm = RawMaterial::where('status', 'active')->count();
+        $totalPm = PackingMaterial::where('status', 'active')->count();
+        $totalOh = Overhead::where('status', 'active')->count();
+        $totalPd = Product::where('status', 'active')->count();
+        $totalCitems = CategoryItems::where('status', 'active')->count();
+        $totalrecipes = Recipe::where('status', 'active')->count();
 
-        $totalOh = Overhead::count(); // Count of raw materials
-        $totalPd = Product::count();
-
-        $totalCitems = CategoryItems::count(); // Count of raw materials
-        $totalrecipes = Recipe::count();
-        $totalRmC = CategoryItems::where('categoryId', $rmc)->count();
-        $totalPmC = CategoryItems::where('categoryId', $pmc)->count();
-        $totalOhC = CategoryItems::where('categoryId', $ohc)->count();
-        $totalPdC = CategoryItems::where('categoryId', $pdc)->count();
+        $totalRmC = CategoryItems::where('categoryId', $rmc)->where('status', 'active')->count();
+        $totalPmC = CategoryItems::where('categoryId', $pmc)->where('status', 'active')->count();
+        $totalOhC = CategoryItems::where('categoryId', $ohc)->where('status', 'active')->count();
+        $totalPdC = CategoryItems::where('categoryId', $pdc)->where('status', 'active')->count();
 
         return view('dashboard', compact('totalRm', 'totalPm','totalOh','totalPd','totalCitems','totalrecipes','totalRmC','totalPmC','totalOhC','totalPdC'));
     }

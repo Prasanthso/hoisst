@@ -22,25 +22,25 @@ class CategoryItems extends Model
 
     public static function rmCategoryItem()
     {
-        $rmCategoryItems = DB::table('categoryitems')->where('categoryId', 1)->get();
+        $rmCategoryItems = DB::table('categoryitems')->where('categoryId', 1)->where('status', 'active')->get();
         return $rmCategoryItems;
     }
 
     public static function pmCategoryItem()
     {
-        $pmCategoryItem = DB::table('categoryitems')->where('categoryId', 2)->get();
+        $pmCategoryItem = DB::table('categoryitems')->where('categoryId', 2)->where('status', 'active')->get();
         return $pmCategoryItem;
     }
 
     public static function ohCategoryItem()
     {
-        $ohCategoryItem = DB::table('categoryitems')->where('categoryId', 3)->get();
+        $ohCategoryItem = DB::table('categoryitems')->where('categoryId', 3)->where('status', 'active')->get();
         return $ohCategoryItem;
     }
 
     public static function pdCategoryItem()
     {
-        $pdCategoryItem = DB::table('categoryitems')->where('categoryId', 4)->get();
+        $pdCategoryItem = DB::table('categoryitems')->where('categoryId', 4)->where('status', 'active')->get();
         return $pdCategoryItem;
     }
 

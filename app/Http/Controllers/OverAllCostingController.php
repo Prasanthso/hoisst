@@ -24,13 +24,19 @@ class OverAllCostingController extends Controller
 
     }
 
-    public function create(){
-
+    public function create()
+    {
         $recipeproducts = DB::table('recipe_master')
-        ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id') // Join with the products table
-        ->select('recipe_master.product_id as id','product_master.name as name') // Select the product name from the products table
-        ->where('recipe_master.status','active')
-        ->get();
+            ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id')
+            ->leftJoin('overall_costing', function ($join) {
+                $join->on('recipe_master.product_id', '=', 'overall_costing.productId')
+                     ->where('overall_costing.status', 'active'); // Ensures active costing is filtered out
+            })
+            ->where('recipe_master.status', 'active')
+            ->whereNull('overall_costing.productId') // This now ensures there's no active costing
+            ->select('recipe_master.product_id as id', 'product_master.name as name')
+            ->get();
+
         return view('overallCost.addoverallCosting', compact('recipeproducts'));
     }
 
@@ -150,6 +156,31 @@ class OverAllCostingController extends Controller
         // Redirect to another page with a success message
         return redirect()->route('overallcosting.create')->with('success', 'Costing saved successfully!');
     }
+    public function show($id)
+    {
+        // Fetch the specific OverallCosting record
+        $costing = DB::table('overall_costing')
+            ->join('product_master', 'overall_costing.productId', '=', 'product_master.id')
+            ->select(
+                'overall_costing.*',
+                'product_master.name as product_name'
+            )
+            ->where('overall_costing.id', $id)
+            ->where('overall_costing.status', 'active')
+            ->get(); // Retrieve only records
+
+        // Check if data exists
+        if (!$costing) {
+            return response()->json(['success' => false, 'message' => 'Overall-Costing was not found.'],404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Overall-Costing was fetched.',
+            'data' => $costing
+        ]);
+    }
+
 
     public function edit($id)
     {

@@ -15,7 +15,7 @@
             <div class="col-lg-12">
                 <div class="col-lg-6">
 
-                    <div class="card">
+                    <div class="card"  style="width: 600px;">
                         <div class="card-body">
 
                             <!-- Vertical Form -->
@@ -44,21 +44,21 @@
                                     <input type="text" class="form-control" id="inputRpoutput" name="inputRpoutput" hidden>
 
                                     <label for="inputRmcost" class="form-label">RM Cost/Unit(A)</label>
-                                    <input type="text" class="form-control" id="inputRmcost" name="inputRmcost">
+                                    <input type="text" class="form-control mb-2" id="inputRmcost" name="inputRmcost" readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputPmcost" class="form-label">PM Cost/Unit(B)</label>
-                                    <input type="text" class="form-control" id="inputPmcost" name="inputPmcost">
+                                    <input type="text" class="form-control mb-2" id="inputPmcost" name="inputPmcost" readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputRmPmcost" class="form-label">RM & PM Cost(A+B)</label>
-                                    <input type="text" class="form-control" id="inputRmPmcost" name="inputRmPmcost">
+                                    <input type="text" class="form-control mb-2" id="inputRmPmcost" name="inputRmPmcost" readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputOverhead" class="form-label">Overhead(C)</label>
-                                    <input type="text" class="form-control" id="inputOverhead" name="inputOverhead">
+                                    <input type="text" class="form-control mb-2" id="inputOverhead" name="inputOverhead" readonly>
                                 </div>
-                            </div>
+
                            <!-- <div class="col">
                                 <div class="col-12">
                                     <label for="inputRmSgmrp" class="form-label">RM(%) Suggested MRP</label>
@@ -83,37 +83,40 @@
                                 </div>-->
                                 <div class="col-12">
                                     <label for="inputTotalCost" class="form-label">Total cost(A+B+C)</label>
-                                    <input type="text" class="form-control" id="inputTotalCost" name="inputTotalCost">
+                                    <input type="text" class="form-control mb-2" id="inputTotalCost" name="inputTotalCost" readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputMargin" class="form-label">Margin</label>
-                                    <input type="text" class="form-control" id="inputMargin" name="inputMargin">
+                                    <input type="text" class="form-control mb-2" id="inputMargin" name="inputMargin">
                                 </div>
+                            </div>
+                            <div class="col">
                                 <div class="col-12">
                                     <label for="inputMarginAmt" class="form-label">Margin Amount</label>
-                                    <input type="text" class="form-control" id="inputMarginAmt" name="inputMarginAmt">
+                                    <input type="text" class="form-control mb-2" id="inputMarginAmt" name="inputMarginAmt" readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputTax" class="form-label">Tax</label>
-                                    <input type="text" class="form-control" id="inputTax" name="inputTax">
+                                    <input type="text" class="form-control mb-2" id="inputTax" name="inputTax" readonly>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputDiscount" class="form-label">Discount</label>
                                     <input type="text" class="form-control" id="inputDiscount" name="inputDiscount">
-                                    <div id="DiscountAmt" class="mb-4" style="color:blue;"></div>
+                                    <div id="DiscountAmt" class="mb-2" style="color:blue;"></div>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputSellRate" class="form-label">Selling Rate</label>
-                                    <input type="text" class="form-control" id="inputSellRate" name="inputSellRate">
+                                    <label for="inputSellRate" class="form-label">Suggested Rate</label>
+                                    <input type="text" class="form-control mb-2" id="inputSellRate" name="inputSellRate" readonly>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputSellRatebf" class="form-label">Selling Rate before Tax</label>
-                                    <input type="text" class="form-control" id="inputSellRatebf" name="inputSellRatebf">
+                                    <label for="inputPresentMrp" class="form-label">Suggested MRP</label>
+                                    <input type="text" class="form-control mb-2" id="inputPresentMrp" name="inputPresentMrp" readonly>
                                 </div>
-                                <div class="col-12">
-                                    <label for="inputPresentMrp" class="form-label">Present MRP</label>
-                                    <input type="text" class="form-control" id="inputPresentMrp" name="inputPresentMrp">
+                                <div class="col-12" hidden>
+                                    <label for="inputSellRatebf" class="form-label">Suggested Rate before Tax</label>
+                                    <input type="text" class="form-control mb-2" id="inputSellRatebf" name="inputSellRatebf" readonly>
                                 </div>
+                            </div>
                             </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary save-btn">
@@ -249,9 +252,8 @@
         PmCostB.value = data.rpoutput > 0 ? (data.totalPmCost / data.rpoutput).toFixed(2) : 'N/A';
         OhCostC.value = data.rpoutput > 0 ? (data.totalOhCost / data.rpoutput).toFixed(2) : 'N/A';
 
-        RmPmCost.value = (parseFloat(data.totalRmCost) + parseFloat(data.totalPmCost)).toFixed(2);
-        TotalCost.value = (parseFloat(data.totalRmCost) + parseFloat(data.totalPmCost) + parseFloat(data.totalOhCost)).toFixed(2);
-
+        RmPmCost.value = (parseFloat(RmCostA.value) + parseFloat(PmCostB.value)).toFixed(2);
+        TotalCost.value = (parseFloat(RmCostA.value) + parseFloat(PmCostB.value) + parseFloat(OhCostC.value)).toFixed(2);
         // Recalculate margin
         MarginAmt.value = (parseFloat(TotalCost.value) * permargin / 100).toFixed(2);
         let margin_Total = (parseFloat(TotalCost.value) + parseFloat(MarginAmt.value)).toFixed(2);
@@ -268,9 +270,9 @@
 
         // Final calculations
         let netTotal = parseFloat(discount_Total).toFixed(2);
-        sellRate.value = data.rpoutput > 0 ? (parseFloat(TotalCost.value) / data.rpoutput).toFixed(2) : 'N/A';
-        sellRatebftax.value = data.rpoutput > 0 ? (parseFloat(margin_Total) / data.rpoutput).toFixed(2) : 'N/A';
-        presentMrp.value = data.rpoutput > 0 ? (parseFloat(netTotal) / data.rpoutput).toFixed(2) : 'N/A';
+        sellRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value)).toFixed(2) : 'N/A';
+        sellRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total)).toFixed(2) : 'N/A';
+        presentMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal)).toFixed(2) : 'N/A';
     }
 
     // **Call updateCalculations when tax input changes**
@@ -313,9 +315,9 @@
 
         console.log(recipeOutput.value);
         let netTotal = parseFloat(discountTotal).toFixed(2);
-        sellRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value) / parseFloat(recipeOutput.value)).toFixed(2) : 'N/A';
-        sellRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(marginTotal) / parseFloat(recipeOutput.value)).toFixed(2) : 'N/A';
-        presentMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal) / parseFloat(recipeOutput.value)).toFixed(2) : 'N/A';
+        sellRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value)).toFixed(2) : 'N/A';
+        sellRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total)).toFixed(2) : 'N/A';
+        presentMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal)).toFixed(2) : 'N/A';
     }
 
     setTimeout(function () {

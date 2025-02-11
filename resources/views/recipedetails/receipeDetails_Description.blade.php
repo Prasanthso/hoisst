@@ -15,6 +15,8 @@
             <a href="{{ 'addreceipedetails' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
                 <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
             </a>
+            <!--<button id="exportPdf" class="btn btn-primary">Export</button>-->
+
         </div>
     </div><!-- End Page Title -->
 
@@ -145,10 +147,11 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+
         const recipeSelect = document.getElementById('recipeSelect');
         const selectedRecipesName = document.getElementById('selectedrecipesname');
         const lblrecipedesc = document.getElementById('recipedesc');
@@ -332,6 +335,67 @@
         recipeHistoryTable.innerHTML = '<tr><td colspan="2">Error fetching history.</td></tr>';
     }
 }
+
+document.getElementById('exportPdf').addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Get recipe details from the page
+    const recipeName = document.getElementById('selectedrecipesname').innerText || 'No Recipe Selected';
+    const recipeDesc = document.getElementById('recipeDescription').innerText || 'No Description Available';
+    const recipeInstructions = document.getElementById('recipeInstructions').innerText || 'No Instructions Provided';
+    // const videoLink = document.getElementById('recipevideo').innerText || 'No Video Link';
+
+     // Get video link from the <iframe> source
+    const iframe = document.querySelector('iframe');
+    const videoLink = iframe ? iframe.src : 'No Video Available';
+    // Set PDF title
+    doc.setFontSize(18);
+    doc.text(recipeName, 15, 20);
+
+    // Add video link above description
+    doc.setFontSize(14);
+    doc.text('Watch Video:', 15, 30);
+    doc.setTextColor(0, 0, 255); // Blue color for link
+    doc.textWithLink(videoLink, 15, 40, { url: videoLink });
+
+    // Add description
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(14);
+    doc.text('Description:', 15, 50);
+    doc.setFontSize(12);
+    // doc.text(recipeDesc, 15, 60, { maxWidth: 180 });
+
+   // Calculate the Y position after the description
+   let yPosition = 60;  // Initial Y position after the "Description:" label
+
+    // Split description into multiple lines if needed
+    const descriptionLines = doc.splitTextToSize(recipeDesc, 180);  // Wrap text to fit within 180 width
+    descriptionLines.forEach((line) => {
+        doc.text(line, 15, yPosition);
+        yPosition += 10; // Adjust vertical space after each line
+    });
+
+    // Add instructions dynamically
+    doc.setFontSize(14);
+    doc.text('Instructions:', 15, yPosition); // Position for the instructions title
+    yPosition += 10; // Move down for instructions list
+
+    doc.setFontSize(12);
+    const instructions = recipeInstructions.split('\n'); // Split instructions by newline
+    instructions.forEach((instruction) => {
+        if (instruction.trim()) { // Avoid empty lines
+            doc.text(`• ${instruction.trim()}`, 15, yPosition); // Bullet point
+            yPosition += 10; // Adjust vertical space between list items
+        }
+    });
+
+    // Save the PDF doc.save('Recipe_Details.pdf');
+    doc.save(`${recipeName}.pdf`);
+});
+
+
+
 });
 
 </script>
