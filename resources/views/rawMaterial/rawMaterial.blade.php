@@ -22,7 +22,7 @@
     <section class="section dashboard">
         <div class="row">
             @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
+            <div id="success-message" class="alert alert-success">{{ session('success') }}</div>
             @endif
             <!-- Left side columns -->
             <div class="col-lg-2 px-2 mt-5">
@@ -503,8 +503,6 @@
         // Initialize Edit button functionality
         editTableBtn.addEventListener("click", enableEditing);
 
-
-
         const priceModal = new bootstrap.Modal(document.getElementById("priceModal")); // Initialize Bootstrap Modal
 
         const showPriceModal = (materialId) => {
@@ -546,7 +544,7 @@
         const deleteRows = () => {
             const selectedRows = Array.from(getRowCheckboxes()).filter(checkbox => checkbox.checked);
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // CSRF token
-
+            console.log(selectedRows);
             if (selectedRows.length === 0) {
                 alert("Please select at least one row to delete.");
                 return;
@@ -591,6 +589,8 @@
                     alert("An error occurred. Please try again.");
                 });
         };
+
+        deleteTableBtn.addEventListener("click", deleteRows);
 
         // Attach click event listener to each price column
         table.querySelectorAll(".price-text").forEach((priceElement) => {
@@ -640,7 +640,7 @@
                         <tr>
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${index + 1}.</td>
-                            <td><a href="/rawMaterial/edit/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                            <td><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
                             <td>${item.rmcode}</td>
                              <td>
                                 ${item.category_name1 ?? ''}
@@ -672,8 +672,6 @@
                 }
             });
         });
-
-
 
         /* For filter Functions*/
         /*
@@ -719,6 +717,13 @@
                 }
             });
         }
+
+        setTimeout(function() {
+            const successMessage = document.getElementById('success-message');
+            if (successMessage) {
+                successMessage.style.display = 'none';
+            }
+        }, 3000);
 
     });
 

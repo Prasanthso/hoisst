@@ -264,7 +264,7 @@
             </div>
 
             @else
-            <p>No pricing data available for this product.</p>
+            <p>No pricing recipe selected.</p>
             @endif
         </div>
         <div>
@@ -318,8 +318,13 @@
 
         // delete products//
         document.querySelector('.delete-table-btn').addEventListener('click', function() {
-            var productId = document.getElementById('productSelect').value;
-
+            var productId = document.getElementById('productSelect').value.trim();
+            console.log(productId);
+            if(productId === 'Choose...')
+            {
+                alert('Please select a product before deleting.');
+                return;
+            }
             if (productId) {
                 // Show confirmation dialog
                 if (confirm('Are you sure you want to delete the pricing data for this product?')) {

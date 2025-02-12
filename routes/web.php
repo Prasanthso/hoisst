@@ -160,6 +160,7 @@ Route::get('/editoverallcosting/{id}', [OverAllCostingController::class, 'edit']
 Route::put('/editoverallcosting/{id}', [OverAllCostingController::class, 'update'])->name('overallcosting.update');
 Route::post('/deleteoverallcosting', [OverAllCostingController::class, 'delete'])->name('overallcosting.delete');
 
+Route::get('/showoverallcosting/{id}', [OverAllCostingController::class, 'show']);
 Route::get('/get-abc-cost', [OverAllCostingController::class, 'getABCcost']);
 
 Route::get('/report', [ReportController::class, 'index'])->name('report.view');

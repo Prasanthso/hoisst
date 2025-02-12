@@ -498,7 +498,6 @@
         // Initialize Edit button functionality
         editTableBtn.addEventListener("click", enableEditing);
 
-
         const priceModal = new bootstrap.Modal(document.getElementById("priceModal")); // Initialize Bootstrap Modal
 
         const showPriceModal = (materialId) => {
@@ -586,6 +585,7 @@
                 });
         };
 
+        deleteTableBtn.addEventListener("click", deleteRows);
         // Attach click event listener to each price column
         table.querySelectorAll(".price-text").forEach((priceElement) => {
             const row = priceElement.closest("tr");
@@ -634,7 +634,7 @@
                         <tr>
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${index + 1}.</td>
-                            <td><a href="/overheads/edit/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                            <td><a href="/editoverheads/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
                             <td>${item.ohcode}</td>
                              <td>
                                 ${item.category_name1 ?? ''}

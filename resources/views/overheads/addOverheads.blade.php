@@ -19,13 +19,17 @@
                             <form method="POST" action="{{ route('overheads.store') }}" class="row g-3 mt-2">
                                 @csrf
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Name</label>
+                                    <label for="inputNanme4" class="form-label">Item Name</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="name">
                                 </div>
                                 <!-- <div class="col-12">
                                     <label for="inputNanme4" class="form-label">RM Code</label>
                                     <input type="text" class="form-control" id="inputNanme4">
                                 </div> -->
+                                <div class="col-12">
+                                    <label for="inputHSNcode" class="form-label">HSN Code</label>
+                                    <input type="text" class="form-control" id="inputHSNcode" name="hsncode">
+                                </div>
                                 <div class="col-md-12">
                                     <label for="inputNanme4" class="form-label">Choose Category For</label>
                                     <select id="inputState" class="form-select select2" name="uom">
@@ -34,6 +38,10 @@
                                         <option>Kgs</option>
                                         <option>Nos</option>
                                     </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputItemWeight" class="form-label">Net Weight</label>
+                                    <input type="text" class="form-control" id="inputItemWeight" name="itemweight">
                                 </div>
                                 <div class="col-md-12">
                                     <label for="categorySelect" class="form-label">Overheads Category</label>
@@ -44,13 +52,21 @@
                                     </select>
                                 </div>
                                 <div class="col-12">
+                                    <label for="inputItemType" class="form-label">Item Type</label>
+                                    <input type="text" class="form-control" id="inputItemType" name="itemtype">
+                                </div>
+                                <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Price</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="price">
                                 </div>
+                                <div class="col-12">
+                                    <label for="inputTax" class="form-label">Tax</label>
+                                    <input type="text" class="form-control mb-2" id="inputTax" name="tax">
+                                </div>
                                 <div class="row mb-4">
-                                    <label for="inputNanme4" class="form-label mb-2">Pricing update frequency</label>
+                                    <label for="inputNanme4" class="form-label">Pricing update frequency</label>
                                     <div class="col-md-3">
-                                        <select class="form-select" id="update_frequency" name="update_frequency">
+                                        <select class="form-select mb-2" id="update_frequency" name="update_frequency">
                                             <option selected>Days</option>
                                             <option>Weeks</option>
                                             <option>Monthly</option>
@@ -64,7 +80,7 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Price threshold in percentage</label>
+                                    <label for="inputNanme4" class="form-label">Price threshold</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="price_threshold">
                                 </div>
                                 <div>

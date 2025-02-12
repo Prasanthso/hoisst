@@ -23,6 +23,7 @@
     <div class="row d-flex flex-wrap justify-content-between" style="margin: 0 -10px;">
         <!-- Box 1 -->
         <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <a href="{{ route('rawMaterials.index') }}" style="text-decoration: none; color: inherit;">
             <div class="card info-card revenue-card" style="background-color: rgb(255, 226, 229); border-radius: 20px; padding: 15px 0 15px 0;">
                 <div class="card-body">
                     <div class="d-flex flex-column align-items-start">
@@ -39,9 +40,12 @@
                     </div>
                 </div>
             </div>
+            </a>
         </div>
+
          <!-- Box 2 -->
         <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <a href="{{ route('packingMaterials.index') }}" style="text-decoration: none; color: inherit;">
             <div class="card info-card revenue-card" style="background-color: rgb(255,244,222); border-radius: 20px; padding: 15px 0 15px 0;">
                 <div class="card-body">
                     <div class="d-flex flex-column align-items-start">
@@ -57,9 +61,11 @@
                     </div>
                 </div>
             </div>
+            </a>
         </div>
          <!-- Box 3 -->
          <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <a href="{{ route('overheads.index') }}" style="text-decoration: none; color: inherit;">
             <div class="card info-card revenue-card" style="background-color: rgb(220,252,231); border-radius: 20px; padding: 15px 0 15px 0;">
                 <div class="card-body">
                     <div class="d-flex flex-column align-items-start">
@@ -75,9 +81,11 @@
                     </div>
                 </div>
             </div>
+            </a>
         </div>
          <!-- Box 4 -->
          <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <a href="{{ route('products.index') }}" style="text-decoration: none; color: inherit;">
             <div class="card info-card revenue-card" style="background-color: rgb(243,232,255); border-radius: 20px; padding: 15px 0 15px 0;">
                 <div class="card-body">
                     <div class="d-flex flex-column align-items-start">
@@ -94,9 +102,11 @@
                     </div>
                 </div>
             </div>
+            </a>
         </div>
          <!-- Box 5 -->
          <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <a href="{{ route('receipedetails.index') }}" style="text-decoration: none; color: inherit;">
             <div class="card info-card revenue-card" style="background-color: rgb(214,236,236); border-radius: 20px; padding: 15px 0 15px 0;">
                 <div class="card-body">
                     <div class="d-flex flex-column align-items-start">
@@ -112,12 +122,14 @@
                     </div>
                 </div>
             </div>
+            </a>
         </div>
     </div>
     <!-- Second Row of Boxes -->
     <div class="row d-flex flex-wrap justify-content-between" style="margin: 0 -10px;">
         <!-- Box 1 -->
         <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <a href="{{ route('categoryitem.index') }}" style="text-decoration: none; color: inherit;">
             <div class="card info-card revenue-card" style="background-color: rgb(212,245,255); border-radius: 20px; padding: 15px 0 15px 0;">
                 <div class="card-body">
                     <div class="d-flex flex-column align-items-start">
@@ -133,9 +145,11 @@
                     </div>
                 </div>
             </div>
+            </a>
         </div>
          <!-- Box 2 -->
         <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <a href="{{ route('categoryitem.index') }}" style="text-decoration: none; color: inherit;">
             <div class="card info-card revenue-card" style="background-color: rgb(255,254,222); border-radius: 20px; padding: 15px 0 15px 0;">
                 <div class="card-body">
                     <div class="d-flex flex-column align-items-start">
@@ -151,10 +165,12 @@
                     </div>
                 </div>
             </div>
+            </a>
         </div>
 
          <!-- Box 3 -->
          <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <a href="{{ route('categoryitem.index') }}" style="text-decoration: none; color: inherit;">
             <div class="card info-card revenue-card" style="background-color: rgb(223,234,227); border-radius: 20px; padding: 15px 0 15px 0;">
                 <div class="card-body">
                     <div class="d-flex flex-column align-items-start">
@@ -170,9 +186,11 @@
                     </div>
                 </div>
             </div>
+            </a>
          </div>
          <!-- Box 4 -->
          <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+            <a href="{{ route('categoryitem.index') }}" style="text-decoration: none; color: inherit;">
             <div class="card info-card revenue-card" style="background-color: rgb(232,238,255); border-radius: 20px; padding: 15px 0 15px 0;">
                 <div class="card-body">
                     <div class="d-flex flex-column align-items-start">
@@ -188,6 +206,7 @@
                     </div>
                 </div>
             </div>
+            </a>
          </div>
 
           <!-- Box 5 -->

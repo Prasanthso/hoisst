@@ -16,8 +16,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('rmcode', 64)->unique();
-            $table->string('hnsCode');
             $table->string('uom');
+            $table->string('hsncode');
+            $table->string('itemweight');
             $table->integer('category_id1')->nullable();
             $table->integer('category_id2')->nullable();
             $table->integer('category_id3')->nullable();
@@ -28,7 +29,7 @@ return new class extends Migration
             $table->integer('category_id8')->nullable();
             $table->integer('category_id9')->nullable();
             $table->integer('category_id10')->nullable();
-            $table->string('itemType');
+            $table->string('itemtype');
             $table->string('price');
             $table->string('tax');
             $table->string('update_frequency');
