@@ -39,6 +39,10 @@
                                         <option>Nos</option>
                                     </select>
                                 </div>
+                                <div class="col-12">
+                                    <label for="inputItemWeight" class="form-label">Net Weight</label>
+                                    <input type="text" class="form-control" id="inputItemWeight" name="itemweight">
+                                </div>
                                 <div class="col-md-12">
                                     <label for="categorySelect" class="form-label">Overheads Category</label>
                                     <select id="categorySelect" class="form-select select2" name="category_ids[]" multiple>

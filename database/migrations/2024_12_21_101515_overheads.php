@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('ohcode', 64)->unique();
             $table->string('uom');
             $table->string('hsncode');
+            $table->string('itemweight');
             $table->integer('category_id1')->nullable();
             $table->integer('category_id2')->nullable();
             $table->integer('category_id3')->nullable();

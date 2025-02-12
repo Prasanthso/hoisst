@@ -29,7 +29,7 @@
                                 @csrf
                                 @method('PUT')
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Name</label>
+                                    <label for="inputNanme4" class="form-label">Item Name</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="name" value="{{ $overheads->name}}" disabled>
                                 </div>
                                 <div class="col-12">
@@ -44,6 +44,10 @@
                                         <option>Kgs</option>
                                         <option>Nos</option>
                                     </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputItemWeight" class="form-label">Net Weight</label>
+                                    <input type="text" class="form-control" id="inputItemWeight" name="itemweight" value="{{ $overheads->itemweight}}" disabled>
                                 </div>
                                 <div class="col-md-12">
                                     <label for="categorySelect" class="form-label">Overheads Category</label>
