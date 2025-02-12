@@ -23,7 +23,7 @@
         <div class="container mt-5">
             <div class="mb-4">
             @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
+            <div id="success-message" class="alert alert-success">{{ session('success') }}</div>
             @endif
             </div>
             <div class="mb-4">
@@ -118,6 +118,11 @@
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
             const recipeId = deleteCostingBtn.getAttribute("data-id");
 
+            if (!recipeId) {
+                alert("Please select a recipe to delete.");
+                return;
+            }
+
             if (!confirm("Are you sure you want to delete?")) {
                 return;
             }
@@ -152,6 +157,12 @@
             }
         });
 
+        setTimeout(function () {
+        const successMessage = document.getElementById('success-message');
+        if (successMessage) {
+            successMessage.style.display = 'none';
+        }
+    }, 5000);
 
         async function recipedata(recipeId)
         {

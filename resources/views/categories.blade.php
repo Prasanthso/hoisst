@@ -428,7 +428,7 @@
             if (successMessage) {
                 successMessage.style.display = 'none';
             }
-        }, 5000);
+        }, 3000);
     });
 
     function filterCategories() {

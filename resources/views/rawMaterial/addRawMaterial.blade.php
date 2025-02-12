@@ -26,6 +26,10 @@
                                     <label for="inputNanme4" class="form-label">RM Code</label>
                                     <input type="text" class="form-control" id="inputNanme4">
                                 </div> -->
+                                <div class="col-12">
+                                    <label for="inputHSNcode" class="form-label">HSN Code</label>
+                                    <input type="text" class="form-control" id="inputHSNcode" name="hsncode">
+                                </div>
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Category For</label>
                                     <select id="inputState" class="form-select select2" name="uom">
@@ -43,9 +47,17 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="col-12">
+                                    <label for="inputItemType" class="form-label">Item Type</label>
+                                    <input type="text" class="form-control" id="inputItemType" name="itemtype">
+                                </div>
                                 <div class="col-12 mb-2">
                                     <label for="inputNanme4" class="form-label">Price</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="price">
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputTax" class="form-label">Tax</label>
+                                    <input type="text" class="form-control" id="inputTax" name="tax">
                                 </div>
                                 <div class="row">
                                     <label for="inputNanme4" class="form-label mb-2">Pricing update frequency</label>
@@ -64,7 +76,7 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Price threshold in percentage</label>
+                                    <label for="inputNanme4" class="form-label">Price threshold</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="price_threshold">
                                 </div>
                                 <div>

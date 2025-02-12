@@ -140,7 +140,10 @@ class RawMaterialController extends Controller
             'price' => 'required|string',
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
-            'price_threshold' => 'required|string'
+            'price_threshold' => 'required|string',
+            'hsncode' => 'required|string',
+            'itemtype' => 'required|string',
+            'tax' => 'required|string',
         ]);
 
         $categoryIds = $request->category_ids;
@@ -166,6 +169,9 @@ class RawMaterialController extends Controller
                 'update_frequency' => $request->update_frequency,
                 'price_update_frequency' => $request->price_update_frequency,
                 'price_threshold' => $request->price_threshold,
+                'hsncode' => $request->hsncode,
+                'itemtype' => $request->itemtype,
+                'tax' => $request->tax,
             ]);
         } catch (\Exception $e) {
             // \Log::error('Error inserting data: ' . $e->getMessage());
@@ -242,7 +248,6 @@ class RawMaterialController extends Controller
         return view('rawMaterial.editRawMaterial', compact('rawMaterial', 'rawMaterialCategories'));
     }
 
-
     /**
      * Update the specified resource in storage.
      */
@@ -260,7 +265,10 @@ class RawMaterialController extends Controller
             'price' => 'required|string',
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
-            'price_threshold' => 'required|string'
+            'price_threshold' => 'required|string',
+            'hsncode' => 'required|string',
+            'itemtype' => 'required|string',
+            'tax' => 'required|string',
         ]);
 
         $categoryIds = $request->category_ids;
@@ -284,6 +292,9 @@ class RawMaterialController extends Controller
                 'update_frequency' => $request->update_frequency,
                 'price_update_frequency' => $request->price_update_frequency,
                 'price_threshold' => $request->price_threshold,
+                'hsncode' => $request->hsncode,
+                'itemtype' => $request->itemtype,
+                'tax' => $request->tax,
             ]);
         } catch (\Exception $e) {
             // Handle the error gracefully (e.g., log it and show an error message)
