@@ -318,12 +318,22 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-2">
-                <div class="col-md-2 mt-2">
-                    <label for="totalcost" class="form-label">Total Cost (A+B+C):
+            <div class="d-flex justify-content-between">
+                <div class=" mb-2">
+                    <div class="mt-2">
+                        <label for="totalcost" class="form-label">Total Cost (A+B+C):
+                    </div>
+                    <div>
+                        </label> <input type="text" class="form-control" id="totalcost" disabled>
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    </label> <input type="text" class="form-control" id="totalcost" disabled>
+                <div class="row mb-2">
+                    <div class="mt-2">
+                        <label for="unitcost" class="form-label">Unit Cost:</label>
+                    </div>
+                    <div class="col-md-7">
+                        <input type="text" class="form-control" id="unitcost" disabled>
+                    </div>
                 </div>
             </div>
         </div>
@@ -362,6 +372,7 @@
         const tableBody = document.getElementById('rawMaterialTable');
         const totalCostSpan = document.getElementById('totalRmCost');
         const totalCostInput = document.getElementById('totalcost'); // Total Cost (A+B+C)
+        const unitCostInput = document.getElementById('unitcost');
 
         const packingMaterialSelect = document.getElementById('packingmaterial');
         const pmQuantityInput = document.getElementById('pmQuantity');
@@ -391,7 +402,6 @@
         const enterManuallyCheckbox = document.getElementById("entermanually");
         const masterEntryDiv = document.getElementById("overheads").closest(".row.mb-4");
         const manualEntryDiv = document.getElementById("manualEntry");
-
 
 
         // Function to toggle visibility based on checkbox selection
@@ -1218,7 +1228,34 @@
             const overheadsTotal = parseFloat(totalOhCostSpan.textContent) || 0;
             const grandTotal = rawMaterialTotal + packingMaterialTotal + overheadsTotal; // Add other totals if needed
             totalCostInput.value = grandTotal.toFixed(2); // Display in Total Cost (A+B+C)
+            updateUnitTotal();
         }
+
+        function updateUnitTotal() {
+            const rawMaterialTotal = parseFloat(totalCostSpan.textContent) || 0;
+            const packingMaterialTotal = parseFloat(totalPmCostSpan.textContent) || 0;
+            const overheadsTotal = parseFloat(totalOhCostSpan.textContent) || 0;
+            const grandTotal = rawMaterialTotal + packingMaterialTotal + overheadsTotal; // Sum of all costs
+
+            const recipeOutput = parseFloat(rpoutputInput.value) || 1; // Prevent division by zero
+
+            console.log("Raw Material:", rawMaterialTotal);
+            console.log("Packing Material:", packingMaterialTotal);
+            console.log("Overheads:", overheadsTotal);
+            console.log("Grand Total:", grandTotal);
+            console.log("Recipe Output:", recipeOutput);
+
+            const unitCost = grandTotal / recipeOutput;
+
+            console.log("unit cost:", unitCost);
+            unitCostInput.value = unitCost.toFixed(2); // Display in Unit Cost field
+        }
+
+        // Initial Calculation
+        updateUnitTotal();
+
+        // Update when input changes
+        rpoutputInput.addEventListener('input', updateUnitTotal);
 
         function updatemohAmount() {
             const price = parseFloat(ohPriceInput.value) || 0;

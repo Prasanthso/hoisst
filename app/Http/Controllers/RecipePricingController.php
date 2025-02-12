@@ -168,7 +168,7 @@ class RecipePricingController extends Controller
                     'pm_for_recipe.id as pid',
                     'oh_for_recipe.id as ohid',
                     'moh_for_recipe.id as mohid',
-                    // 'recipe_master.Output as rp_output',
+                    'recipe_master.Output as rp_output',
                     // 'recipe_master.uom as rp_uom',
                 )
                 ->get();
@@ -254,7 +254,7 @@ class RecipePricingController extends Controller
                     'pm_for_recipe.id as pid',
                     'oh_for_recipe.id as ohid',
                     'moh_for_recipe.id as mohid',
-                    // 'recipe_master.Output as rp_output',
+                    'recipe_master.Output as rp_output',
                     // 'recipe_master.uom as rp_uom',
                 )
                 ->get();

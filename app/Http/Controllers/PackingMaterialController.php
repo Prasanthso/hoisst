@@ -137,7 +137,11 @@ class PackingMaterialController extends Controller
             'price' => 'required|string',
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
-            'price_threshold' => 'required|string'
+            'price_threshold' => 'required|string',
+            'hnsCode' => 'required|string',
+            'itemType' => 'required|string',
+            'itemWeight' => 'required|string',
+            'tax' => 'required|string',
         ]);
 
         $categoryIds = $request->category_ids;
@@ -148,7 +152,9 @@ class PackingMaterialController extends Controller
             PackingMaterial::create([
                 'name' => $request->name,
                 'pmcode' => $pmCode,
+                'hnsCode' => $request->hnsCode,
                 'uom' => $request->uom,
+                'itemWeight' => $request->itemWeight,
                 'category_id1' => $categoryIds[0] ?? null,
                 'category_id2' => $categoryIds[1] ?? null,
                 'category_id3' => $categoryIds[2] ?? null,
@@ -159,7 +165,9 @@ class PackingMaterialController extends Controller
                 'category_id8' => $categoryIds[7] ?? null,
                 'category_id9' => $categoryIds[8] ?? null,
                 'category_id10' => $categoryIds[9] ?? null,
+                'itemType' => $request->itemType,
                 'price' => $request->price,
+                'tax' => $request->tax,
                 'update_frequency' => $request->update_frequency,
                 'price_update_frequency' => $request->price_update_frequency,
                 'price_threshold' => $request->price_threshold,
@@ -253,7 +261,11 @@ class PackingMaterialController extends Controller
             'price' => 'required|string',
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
-            'price_threshold' => 'required|string'
+            'price_threshold' => 'required|string',
+            'hnsCode' => 'required|string',
+            'itemType' => 'required|string',
+            'itemWeight' => 'required|string',
+            'tax' => 'required|string',
         ]);
 
         $categoryIds = $request->category_ids;
@@ -262,7 +274,9 @@ class PackingMaterialController extends Controller
             // Update the packing material record
             $packingMaterial->update([
                 'name' => $request->name,
+                'hnsCode' => $request->hnsCode,
                 'uom' => $request->uom,
+                'itemWeight' => $request->itemWeight,
                 'category_id1' => $categoryIds[0] ?? null,
                 'category_id2' => $categoryIds[1] ?? null,
                 'category_id3' => $categoryIds[2] ?? null,
@@ -273,7 +287,9 @@ class PackingMaterialController extends Controller
                 'category_id8' => $categoryIds[7] ?? null,
                 'category_id9' => $categoryIds[8] ?? null,
                 'category_id10' => $categoryIds[9] ?? null,
+                'itemType' => $request->itemType,
                 'price' => $request->price,
+                'tax' => $request->tax,
                 'update_frequency' => $request->update_frequency,
                 'price_update_frequency' => $request->price_update_frequency,
                 'price_threshold' => $request->price_threshold,
