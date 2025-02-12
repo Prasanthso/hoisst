@@ -32,6 +32,10 @@
                                     <label for="inputNanme4" class="form-label">Name</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="name" value="{{ $overheads->name}}" disabled>
                                 </div>
+                                <div class="col-12">
+                                    <label for="inputHSNcode" class="form-label">HSN Code</label>
+                                    <input type="text" class="form-control" id="inputHSNcode" name="hsncode" value="{{ $overheads->hsncode}}" disabled>
+                                </div>
                                 <div class="col-md-12">
                                     <label for="inputNanme4" class="form-label">Choose Category For</label>
                                     <select id="inputState" class="form-select select2" name="uom" disabled>
@@ -58,11 +62,17 @@
                                         @endforeach
                                     </select>
                                 </div>
-
-
+                                <div class="col-12">
+                                    <label for="inputItemType" class="form-label">Item Type</label>
+                                    <input type="text" class="form-control" id="inputItemType" name="itemtype" value="{{ $overheads->itemtype}}" disabled>
+                                </div>
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Price</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="price" value="{{ $overheads->price}}" disabled>
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputTax" class="form-label">Tax</label>
+                                    <input type="text" class="form-control mb-2" id="inputTax" name="tax" value="{{ $overheads->tax}}" disabled>
                                 </div>
                                 <div class="row mb-4">
                                     <label for="inputNanme4" class="form-label">Pricing update frequency</label>
@@ -80,7 +90,7 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Price threshold in percentage</label>
+                                    <label for="inputNanme4" class="form-label">Price threshold</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="price_threshold" value="{{ $overheads->price_threshold}}" disabled>
                                 </div>
                                 <div>

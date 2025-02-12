@@ -57,12 +57,12 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="inputTax" class="form-label">Tax</label>
-                                    <input type="text" class="form-control" id="inputTax" name="tax">
+                                    <input type="text" class="form-control mb-2" id="inputTax" name="tax">
                                 </div>
                                 <div class="row">
-                                    <label for="inputNanme4" class="form-label mb-2">Pricing update frequency</label>
+                                    <label for="inputNanme4" class="form-label">Pricing update frequency</label>
                                     <div class="col-md-3">
-                                        <select class="form-select" id="update_frequency" name="update_frequency">
+                                        <select class="form-select mb-2" id="update_frequency" name="update_frequency">
                                             <option selected>Days</option>
                                             <option>Weeks</option>
                                             <option>Monthly</option>

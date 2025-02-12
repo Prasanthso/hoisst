@@ -72,7 +72,7 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="inputTax" class="form-label">Tax</label>
-                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ $rawMaterial->tax}}" disabled>
+                                    <input type="text" class="form-control mb-2" id="inputTax" name="tax" value="{{ $rawMaterial->tax}}" disabled>
                                 </div>
                                 <div class="row">
                                     <label for="inputNanme4" class="form-label">Pricing update frequency</label>
@@ -90,7 +90,7 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Price threshold in percentage</label>
+                                    <label for="inputNanme4" class="form-label">Price threshold</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="price_threshold" value="{{ $rawMaterial->price_threshold}}" disabled>
                                 </div>
                                 <div>
