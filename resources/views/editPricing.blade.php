@@ -354,6 +354,7 @@
                     {{-- </a> --}}
                 </div>
             </div>
+            @if($pricingData->whereNotNull('oh_name')->isNotEmpty())
             <div class="row mb-4">
                 <!-- Overheads Table -->
                 <div class="table-responsive">
@@ -369,7 +370,8 @@
                             </tr>
                         </thead>
                         <tbody id="overheadsTable">
-                            @php $ohTotal = 0;
+                            @php
+                            $ohTotal = 0;
                             $filteredData = collect($pricingData)->unique('ohid')->values();
                             @endphp
                             @foreach($filteredData as $data)
@@ -413,12 +415,6 @@
                             </tr>
                             @endif
                             @endforeach
-
-                            @if($pricingData->whereNotNull('oh_name')->isEmpty())
-                            <tr>
-                                <td colspan="6">No records available for Overheads</td>
-                            </tr>
-                            @endif
                         </tbody>
                     </table>
                     <div class="text-end" style="background-color:#F1F1F1; width:90%;">
@@ -426,7 +422,9 @@
                     </div>
                 </div>
             </div>
+            @endif
 
+            @if($pricingData->whereNotNull('moh_name')->isNotEmpty())
             <div class="row mb-2">
                 <div class="col-auto">
                     <label for="pricingoverheads" class="form-label text-primary" id="pricingoverheads">Overheads Enter Manually</label>
@@ -523,13 +521,25 @@
                     </div>
                 </div>
             </div>
+            @endif
 
-            <div class="row mb-2">
-                <div class="col-md-2 mt-2">
-                    <label for="totalcost" class="form-label">Total Cost (A+B+C):</label>
+
+            <div class="d-flex justify-content-between">
+                <div class=" mb-2">
+                    <div class="mt-2">
+                        <label for="totalcost" class="form-label">Total Cost (A+B+C):
+                    </div>
+                    <div>
+                        <input type="text" class="form-control" id="totalcost" value="{{ $rmTotal+$pmTotal+$ohTotal }}" disabled>
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    <input type="text" class="form-control" id="totalcost" value="{{ $rmTotal+$pmTotal+$ohTotal }}" disabled>
+                <div class="row mb-2">
+                    <div class="mt-2">
+                        <label for="unitcost" class="form-label">Unit Cost:</label>
+                    </div>
+                    <div class="col-md-7">
+                        <input type="text" class="form-control" id="totalcost" value="{{ $data->rp_output ? round(($rmTotal + $pmTotal + $ohTotal) / $data->rp_output, 2) : 0 }}" disabled>
+                    </div>
                 </div>
             </div>
         </div>

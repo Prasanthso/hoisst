@@ -14,7 +14,9 @@ class PackingMaterial extends Model
     protected $fillable = [
         'name',
         'pmcode',
+        'hnsCode',
         'uom',
+        'itemWeight',
         'category_id1',
         'category_id2',
         'category_id3',
@@ -25,7 +27,9 @@ class PackingMaterial extends Model
         'category_id8',
         'category_id9',
         'category_id10',
+        'itemType',
         'price',
+        'tax',
         'update_frequency',
         'price_update_frequency',
         'price_threshold'

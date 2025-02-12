@@ -7,16 +7,16 @@
         <div class="d-flex align-items-center">
             <!-- Action Buttons -->
             <!--<div class="d-flex justify-content-end mb-2 action-buttons">-->
-                <button class="btn btn-sm me-2 edit-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
-                    <i class="fas fa-edit" style="color: black;"></i>
-                </button>
-                <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
-                    <i class="fas fa-trash" style="color: red;"></i>
-                </button>
-                <a href="{{ 'pricing' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
-                    <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
-                </a>
-           <!-- </div>-->
+            <button class="btn btn-sm me-2 edit-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                <i class="fas fa-edit" style="color: black;"></i>
+            </button>
+            <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                <i class="fas fa-trash" style="color: red;"></i>
+            </button>
+            <a href="{{ 'pricing' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
+                <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
+            </a>
+            <!-- </div>-->
         </div>
     </div>
 
@@ -142,13 +142,11 @@
                 </div>
             </div>
 
+            @if($pricingData->whereNotNull('oh_name')->isNotEmpty())
             <div class="row mb-4">
                 <!-- Overheads Table -->
 
                 <div class="table-responsive">
-                    <div class="text" style="background-color: #D7E1E4; width:90%;">
-                        <strong>Overheads From Masters </strong>
-                    </div>
                     <table class="table table-bordered text-center" style="background-color: #D7E1E4; width:90%;">
                         <thead>
                             <tr>
@@ -193,14 +191,13 @@
                     </div>
                 </div>
             </div>
+            @endif
 
+            @if($pricingData->whereNotNull('moh_name')->isNotEmpty())
             <div class="row mb-4">
                 <!-- Overheads Table -->
 
                 <div class="table-responsive">
-                    <div class="text" style="background-color: #D7E1E4; width:90%;">
-                        <strong>Overheads Manually </strong>
-                    </div>
                     <table class="table table-bordered text-center" style="background-color: #D7E1E4; width:90%;">
                         <thead>
                             <tr>
@@ -245,15 +242,27 @@
                     </div>
                 </div>
             </div>
+            @endif
 
-            <div class="row mb-2">
-                <div class="col-md-2 mt-2">
-                    <label for="totalcost" class="form-label">Total Cost (A+B+C):</label>
+            <div class="d-flex justify-content-between">
+                <div class=" mb-2">
+                    <div class="mt-2">
+                        <label for="totalcost" class="form-label">Total Cost (A+B+C):
+                    </div>
+                    <div>
+                        <input type="text" class="form-control" id="totalcost" value="{{ $rmTotal+$pmTotal+$ohTotal }}" disabled>
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    <input type="text" class="form-control" id="totalcost" value="{{ $rmTotal+$pmTotal+$ohTotal }}" disabled>
+                <div class="row mb-2">
+                    <div class="mt-2">
+                        <label for="unitcost" class="form-label">Unit Cost:</label>
+                    </div>
+                    <div class="col-md-7">
+                        <input type="text" class="form-control" id="totalcost" value="{{ $data->rp_output ? round(($rmTotal + $pmTotal + $ohTotal) / $data->rp_output, 2) : 0 }}" disabled>
+                    </div>
                 </div>
             </div>
+
             @else
             <p>No pricing recipe selected.</p>
             @endif
@@ -283,7 +292,7 @@
         // Hide the submit button initially
         // $('#Submitbtn').hide();
         // Listen for change event on the select element
-        $('#productSelect').on('change', function () {
+        $('#productSelect').on('change', function() {
             const selectedValue = $(this).val();
 
             if (selectedValue) {

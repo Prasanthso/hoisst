@@ -32,14 +32,22 @@
                                     <label for="inputNanme4" class="form-label">Name</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="name" value="{{ $packingMaterial->name}}" disabled>
                                 </div>
+                                <div class="col-12">
+                                    <label for="inputNanme4" class="form-label">HNS Code</label>
+                                    <input type="text" class="form-control" id="inputNanme4" name="hnsCode" value="{{ $packingMaterial->hnsCode}}" disabled>
+                                </div>
                                 <div class="col-md-12">
-                                    <label for="inputNanme4" class="form-label">Choose Category For</label>
+                                    <label for="inputNanme4" class="form-label">Choose Unit</label>
                                     <select id="inputState" class="form-select select2" name="uom" disabled>
                                         <option selected>{{ $packingMaterial->uom}}</option>
                                         <option>Ltr</option>
                                         <option>Kgs</option>
                                         <option>Nos</option>
                                     </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputNanme4" class="form-label">Net Weight</label>
+                                    <input type="text" class="form-control" id="inputNanme4" name="itemWeight" value="{{ $packingMaterial->itemWeight}}" disabled>
                                 </div>
                                 <div class="col-md-12">
                                     <label for="categorySelect" class="form-label">Packing Material Category</label>
@@ -59,11 +67,21 @@
                                     </select>
                                 </div>
 
+                                <div class="col-12 mb-2">
+                                    <label for="inputNanme4" class="form-label">Item Type</label>
+                                    <input type="text" class="form-control" id="inputNanme4" name="itemType" value="{{ $packingMaterial->itemType}}" disabled>
+                                </div>
 
                                 <div class="col-12 mb-2">
                                     <label for="inputNanme4" class="form-label">Price</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="price" value="{{ $packingMaterial->price}}" disabled>
                                 </div>
+
+                                <div class="col-12 mb-2">
+                                    <label for="inputNanme4" class="form-label">Tax</label>
+                                    <input type="text" class="form-control" id="inputNanme4" name="tax" value="{{ $packingMaterial->tax}}" disabled>
+                                </div>
+
                                 <div class="row">
                                     <label for="inputNanme4" class="form-label">Pricing update frequency</label>
                                     <div class="col-md-3">
@@ -75,7 +93,7 @@
                                             <option>Yearly</option>
                                         </select>
                                     </div>
-                                     <div class="col-md-9">
+                                    <div class="col-md-9">
                                         <input type="text" class="form-control" id="inputNanme4" name="price_update_frequency" value="{{ $packingMaterial->price_update_frequency}}" disabled>
                                     </div>
                                 </div>
@@ -125,7 +143,7 @@
         $('#inputState').select2({
             theme: 'bootstrap-5',
             placeholder: 'Select UoM',
-         });
+        });
 
         // Toggle edit mode
         $('#editButton').on('click', function() {
