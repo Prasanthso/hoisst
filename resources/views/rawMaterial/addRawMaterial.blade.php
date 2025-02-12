@@ -31,13 +31,17 @@
                                     <input type="text" class="form-control" id="inputHSNcode" name="hsncode">
                                 </div>
                                 <div class="col-md-12">
-                                    <label for="inputState" class="form-label">Choose Category For</label>
+                                    <label for="inputState" class="form-label">Choose Unit</label>
                                     <select id="inputState" class="form-select select2" name="uom">
                                         <option selected>UoM</option>
                                         <option>Ltr</option>
                                         <option>Kgs</option>
                                         <option>Nos</option>
                                     </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputItemWeight" class="form-label">Net Weight</label>
+                                    <input type="text" class="form-control" id="inputItemWeight" name="itemweight">
                                 </div>
                                 <div class="col-md-12">
                                     <label for="categorySelect" class="form-label">Raw Material Category</label>

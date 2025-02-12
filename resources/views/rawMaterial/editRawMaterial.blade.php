@@ -29,7 +29,7 @@
                                 @csrf
                                 @method('PUT')
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Name</label>
+                                    <label for="inputNanme4" class="form-label"> Item Name</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="name" value="{{ $rawMaterial->name}}" disabled>
                                 </div>
                                 <div class="col-12">
@@ -37,13 +37,17 @@
                                     <input type="text" class="form-control" id="inputHSNcode" name="hsncode" value="{{ $rawMaterial->hsncode}}" disabled>
                                 </div>
                                 <div class="col-md-12">
-                                    <label for="inputNanme4" class="form-label">Choose Category For</label>
+                                    <label for="inputNanme4" class="form-label">Choose Unit </label>
                                     <select id="inputState" class="form-select select2" name="uom" disabled>
                                         <option selected>{{ $rawMaterial->uom}}</option>
                                         <option>Ltr</option>
                                         <option>Kgs</option>
                                         <option>Nos</option>
                                     </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputItemWeight" class="form-label">Net Weight</label>
+                                    <input type="text" class="form-control" id="inputItemWeight" name="itemweight" value="{{ $rawMaterial->itemweight}}" disabled>
                                 </div>
                                 <div class="col-md-12">
                                     <label for="categorySelect" class="form-label">Raw Material Category</label>

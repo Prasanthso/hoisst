@@ -19,7 +19,7 @@
                             <form method="POST" action="{{ route('overheads.store') }}" class="row g-3 mt-2">
                                 @csrf
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Name</label>
+                                    <label for="inputNanme4" class="form-label">Item Name</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="name">
                                 </div>
                                 <!-- <div class="col-12">
