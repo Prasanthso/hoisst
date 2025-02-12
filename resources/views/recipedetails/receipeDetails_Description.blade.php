@@ -199,7 +199,11 @@
         deleteRecipeBtn.addEventListener("click", () => {
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
             const recipeId = deleteRecipeBtn.getAttribute("data-id");
-
+            if(!recipeId)
+            {
+                alert("Please select a recipe to delete.");
+                return;
+            }
             if (!confirm("Are you sure you want to delete recipe details?")) {
                 return;
             }

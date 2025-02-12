@@ -29,17 +29,25 @@
                                 @csrf
                                 @method('PUT')
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Name</label>
+                                    <label for="inputNanme4" class="form-label"> Item Name</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="name" value="{{ $rawMaterial->name}}" disabled>
                                 </div>
+                                <div class="col-12">
+                                    <label for="inputHSNcode" class="form-label">HSN Code</label>
+                                    <input type="text" class="form-control" id="inputHSNcode" name="hsncode" value="{{ $rawMaterial->hsncode}}" disabled>
+                                </div>
                                 <div class="col-md-12">
-                                    <label for="inputNanme4" class="form-label">Choose Category For</label>
+                                    <label for="inputNanme4" class="form-label">Choose Unit </label>
                                     <select id="inputState" class="form-select select2" name="uom" disabled>
                                         <option selected>{{ $rawMaterial->uom}}</option>
                                         <option>Ltr</option>
                                         <option>Kgs</option>
                                         <option>Nos</option>
                                     </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputItemWeight" class="form-label">Net Weight</label>
+                                    <input type="text" class="form-control" id="inputItemWeight" name="itemweight" value="{{ $rawMaterial->itemweight}}" disabled>
                                 </div>
                                 <div class="col-md-12">
                                     <label for="categorySelect" class="form-label">Raw Material Category</label>
@@ -58,11 +66,17 @@
                                         @endforeach
                                     </select>
                                 </div>
-
-
+                                <div class="col-12">
+                                    <label for="inputItemType" class="form-label">Item Type</label>
+                                    <input type="text" class="form-control" id="inputItemType" name="itemtype" value="{{ $rawMaterial->itemtype}}" disabled>
+                                </div>
                                 <div class="col-12 mb-2">
                                     <label for="inputNanme4" class="form-label">Price</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="price" value="{{ $rawMaterial->price}}" disabled>
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputTax" class="form-label">Tax</label>
+                                    <input type="text" class="form-control mb-2" id="inputTax" name="tax" value="{{ $rawMaterial->tax}}" disabled>
                                 </div>
                                 <div class="row">
                                     <label for="inputNanme4" class="form-label">Pricing update frequency</label>
@@ -80,7 +94,7 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Price threshold in percentage</label>
+                                    <label for="inputNanme4" class="form-label">Price threshold</label>
                                     <input type="text" class="form-control" id="inputNanme4" name="price_threshold" value="{{ $rawMaterial->price_threshold}}" disabled>
                                 </div>
                                 <div>
