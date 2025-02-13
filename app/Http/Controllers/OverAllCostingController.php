@@ -121,9 +121,9 @@ class OverAllCostingController extends Controller
             'inputMarginAmt' => 'required|numeric',
             'inputDiscount' => 'required|numeric',
             'inputTotalCost' => 'required|numeric',
-            'inputSellRate' => 'required|numeric',
-            'inputSellRatebf' => 'required|numeric',
-            'inputPresentMrp' => 'required|numeric',
+            'inputSuggRate' => 'required|numeric',
+            'inputSuggRatebf' => 'required|numeric',
+            'inputSuggMrp' => 'required|numeric',
         ]);
 
         try {
@@ -143,9 +143,9 @@ class OverAllCostingController extends Controller
                 'margin' => (float) $request->inputMargin,
                 'margin_amt' =>(float) $request->inputMarginAmt,
                 'discount' => (float) $request->inputDiscount,
-                'sell_rate' => (float) $request->inputSellRate,
-                'sell_rate_bf' => (float)$request->inputSellRatebf,
-                'present_mrp' => (float) $request->inputPresentMrp,
+                'sugg_rate' => (float) $request->inputSuggRate,
+                'sugg_rate_bf' => (float) $request->inputSuggRatebf,
+                'suggested_mrp' => (float) $request->inputSuggMrp,
                 'status' => 'active',
             ]);
         } catch (\Exception $e) {
@@ -220,9 +220,9 @@ class OverAllCostingController extends Controller
             'inputMargin' => 'required|numeric',
             'inputMarginAmt' => 'required|numeric',
             'inputDiscount' => 'required|numeric',
-            'inputSellRate' => 'required|numeric',
-            'inputSellRatebf' => 'required|numeric',
-            'inputPresentMrp' => 'required|numeric',
+            'inputSuggRate' => 'required|numeric',
+            'inputSuggRatebf' => 'required|numeric',
+            'inputSuggMrp' => 'required|numeric',
         ]);
 
         try {
@@ -241,9 +241,9 @@ class OverAllCostingController extends Controller
                 'margin' => (float) $request->inputMargin,
                 'margin_amt' => (float) $request->inputMarginAmt,
                 'discount' => (float) $request->inputDiscount,
-                'sell_rate' => (float) $request->inputSellRate,
-                'sell_rate_bf' => (float) $request->inputSellRatebf,
-                'present_mrp' => (float) $request->inputPresentMrp,
+                'sugg_rate' => (float) $request->inputSuggRate,
+                'sugg_rate_bf' => (float) $request->inputSuggRatebf,
+                'suggested_mrp' => (float) $request->inputSuggMrp,
             ]);
         } catch (\Exception $e) {
             return back()->with('error', 'Error updating data: ' . $e->getMessage());
