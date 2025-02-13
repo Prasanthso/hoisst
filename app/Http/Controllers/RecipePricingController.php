@@ -39,11 +39,12 @@ class RecipePricingController extends Controller
             SELECT 
                 pm.id AS SNO, 
                 pm.name AS Product_Name, 
-                pm.price AS S_MRP,
+                pm.price AS P_MRP,
+                oc.suggested_mrp AS S_MRP,
                 SUM(COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) AS RM_Cost,
-                SUM((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(pm.price, 1)) AS RM_perc,
+                SUM((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(oc.suggested_mrp, 1)) AS RM_perc,
                 SUM(COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1)) AS PM_Cost,
-                SUM((COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(pm.price, 1)) AS PM_perc,
+                SUM((COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(oc.suggested_mrp, 1)) AS PM_perc,
                 SUM(COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1)) AS OH_Cost,
                 SUM(((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
                     (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 
@@ -51,26 +52,26 @@ class RecipePricingController extends Controller
                 SUM((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
                     (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) AS TOTAL,
                 SUM(((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
-                    (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 100 / COALESCE(pm.price, 1)) AS Total_perc,
+                    (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 100 / COALESCE(oc.suggested_mrp, 1)) AS Total_perc,
                 SUM(COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) + 
                     COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) + 
                     ((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
                     (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 
                     (COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1)) / 100) AS COST,
-                SUM(COALESCE(pm.price, 0) * 0.75) AS Selling_Cost,
-                SUM(((COALESCE(pm.price, 0) * 0.75) * 100) / (100 + 18)) AS Before_tax,
-                SUM((((COALESCE(pm.price, 0) * 0.75) * 100) / (100 + 18)) - 
+                SUM(COALESCE(oc.suggested_mrp, 0) * 0.75) AS Selling_Cost,
+                SUM(((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + 18)) AS Before_tax,
+                SUM((((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + 18)) - 
                     (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) + 
                     COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) + 
                     ((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
                     (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 
                     (COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1)) / 100)) AS Margin,
-                SUM(((((COALESCE(pm.price, 0) * 0.75) * 100) / (100 + 18)) - 
+                SUM(((((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + 18)) - 
                     (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) + 
                     COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) + 
                     ((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
                     (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 
-                    (COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1)) / 100))/(((pm.price*0.75)*100)/(100+18))*100) AS Margin_perc,
+                    (COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1)) / 100))/(((oc.suggested_mrp*0.75)*100)/(100+18))*100) AS Margin_perc,
                 rmst.Output 
             FROM 
                 product_master pm 
@@ -88,8 +89,10 @@ class RecipePricingController extends Controller
                 oh_for_recipe ofr ON rmst.product_id = ofr.product_id
             LEFT JOIN 
                 overheads oh ON ofr.overheads_id = oh.id
+            LEFT JOIN 
+                overall_costing oc ON rmst.product_id = oc.productId
             GROUP BY 
-                pm.id, pm.name, pm.price, rmst.Output;
+                pm.id, pm.name, pm.price, rmst.Output, oc.suggested_mrp;
         ");
 
         return view('recipePricing' , compact('reports'));
