@@ -105,16 +105,16 @@
                                     <div id="DiscountAmt" class="mb-2" style="color:blue;"></div>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputSellRate" class="form-label">Suggested Rate</label>
-                                    <input type="text" class="form-control mb-2" id="inputSellRate" name="inputSellRate" readonly>
+                                    <label for="inputSuggRate" class="form-label">Suggested Rate</label>
+                                    <input type="text" class="form-control mb-2" id="inputSuggRate" name="inputSuggRate" readonly>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputPresentMrp" class="form-label">Suggested MRP</label>
-                                    <input type="text" class="form-control mb-2" id="inputPresentMrp" name="inputPresentMrp" readonly>
+                                    <label for="inputSuggMrp" class="form-label">Suggested MRP</label>
+                                    <input type="text" class="form-control mb-2" id="inputSuggMrp" name="inputSuggMrp" readonly>
                                 </div>
                                 <div class="col-12" hidden>
-                                    <label for="inputSellRatebf" class="form-label">Suggested Rate before Tax</label>
-                                    <input type="text" class="form-control mb-2" id="inputSellRatebf" name="inputSellRatebf" readonly>
+                                    <label for="inputSuggRatebf" class="form-label">Suggested Rate before Tax</label>
+                                    <input type="text" class="form-control mb-2" id="inputSuggRatebf" name="inputSuggRatebf" readonly>
                                 </div>
                             </div>
                             </div>
@@ -159,9 +159,9 @@
         const MarginAmt = document.getElementById('inputMarginAmt');
         const Discount = document.getElementById('inputDiscount'); // discount 33.33
         const pertaxInput = document.getElementById('inputTax');
-        const sellRate = document.getElementById('inputSellRate');
-        const sellRatebftax = document.getElementById('inputSellRatebf');
-        const presentMrp = document.getElementById('inputPresentMrp');
+        const suggRate = document.getElementById('inputSuggRate');
+        const suggRatebftax = document.getElementById('inputSuggRatebf');
+        const suggestedMrp = document.getElementById('inputSuggestedMrp');
         const recipeOutput = document.getElementById('inputRpoutput');
         let discountAmt = document.getElementById('DiscountAmt');
 
@@ -230,9 +230,9 @@
                 //     Discount.value = parseFloat(disc_amt).toFixed(2);
 
                 //     netTotal = parseFloat(discount_Total).toFixed(2);
-                //     sellRate.value = data.rpoutput > 0 ? (parseFloat(TotalCost.value) / data.rpoutput).toFixed(2) : 'N/A';
-                //     sellRatebftax.value = data.rpoutput > 0 ? (parseFloat(margin_Total) / data.rpoutput).toFixed(2) : 'N/A';
-                //     presentMrp.value = data.rpoutput > 0 ? (parseFloat(netTotal) / data.rpoutput).toFixed(2) : 'N/A';
+                //     suggRate.value = data.rpoutput > 0 ? (parseFloat(TotalCost.value) / data.rpoutput).toFixed(2) : 'N/A';
+                //     suggRatebftax.value = data.rpoutput > 0 ? (parseFloat(margin_Total) / data.rpoutput).toFixed(2) : 'N/A';
+                //     suggestedMrp.value = data.rpoutput > 0 ? (parseFloat(netTotal) / data.rpoutput).toFixed(2) : 'N/A';
                 // }
 
                 }
@@ -270,9 +270,9 @@
 
         // Final calculations
         let netTotal = parseFloat(discount_Total).toFixed(2);
-        sellRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value)).toFixed(2) : 'N/A';
-        sellRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total)).toFixed(2) : 'N/A';
-        presentMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal)).toFixed(2) : 'N/A';
+        suggRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value)).toFixed(2) : 'N/A';
+        suggRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total)).toFixed(2) : 'N/A';
+        suggestedMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal)).toFixed(2) : 'N/A';
     }
 
     // **Call updateCalculations when tax input changes**
@@ -315,9 +315,9 @@
 
         console.log(recipeOutput.value);
         let netTotal = parseFloat(discountTotal).toFixed(2);
-        sellRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value)).toFixed(2) : 'N/A';
-        sellRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total)).toFixed(2) : 'N/A';
-        presentMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal)).toFixed(2) : 'N/A';
+        suggRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value)).toFixed(2) : 'N/A';
+        suggRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total)).toFixed(2) : 'N/A';
+        suggestedMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal)).toFixed(2) : 'N/A';
     }
 
     setTimeout(function () {
