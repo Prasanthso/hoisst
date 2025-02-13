@@ -203,9 +203,11 @@
                 let response = await fetch(`/get-abc-cost?productId=${productId}`);
                 let data = await response.json();
                 if (response.ok) {
+                    console.log(data);
                 const selectedText = recipeSelect.options[recipeSelect.selectedIndex].text.trim();
                 recipeOutput.value = data.rpoutput;
-                pertaxInput.value = pertax;
+
+                pertaxInput.value = data.product_tax; //pertax;
                 permarginInput.value = permargin;
                 Discount.value = perdiscount.toFixed(2);
                 updateCalculations(data);

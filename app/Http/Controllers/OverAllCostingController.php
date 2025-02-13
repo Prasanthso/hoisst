@@ -53,6 +53,7 @@ class OverAllCostingController extends Controller
                 ->join('rm_for_recipe', 'rm_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->leftjoin('pm_for_recipe', 'pm_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->leftjoin('oh_for_recipe', 'oh_for_recipe.product_id', '=', 'recipe_master.product_id')
+                ->join('product_master', 'product_master.id', '=', 'recipe_master.product_id')
                 ->where('recipe_master.product_id', $productId)
                 ->select(
                     'rm_for_recipe.raw_material_id as rm_id',
@@ -68,6 +69,7 @@ class OverAllCostingController extends Controller
                     'pm_for_recipe.id as pid',
                     'oh_for_recipe.id as ohid',
                     'recipe_master.Output as rpoutput',
+                    'product_master.tax as product_tax',
                 )
                 ->get();
 
@@ -89,7 +91,9 @@ class OverAllCostingController extends Controller
                     return $data->oh_quantity * $data->oh_price;
                 });
                 $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
+
                 $rpoutput = $pricingData->isNotEmpty() ? $pricingData->first()->rpoutput : null;
+                $product_tax = $pricingData->isNotEmpty() ? $pricingData->first()->product_tax : null;
 
             // Pass the data to the view
             // return view('overallCost.addoverallcosting', compact('totalOhCost','totalPmCost','totalRmCost'));
@@ -99,6 +103,7 @@ class OverAllCostingController extends Controller
                 'totalPmCost' => $totalPmCost,
                 'totalOhCost' => $totalOhCost,
                 'rpoutput' => $rpoutput,
+                'product_tax' => $product_tax,
             ]);
     }
 
