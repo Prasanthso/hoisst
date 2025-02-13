@@ -37,7 +37,8 @@
                             <tr>
                                 <th scope="col" style="color:white;">S.NO</th>
                                 <th scope="col" style="color:white;">Product_Name</th>
-                                <th scope="col" style="color:white;">MRP</th>
+                                <th scope="col" style="color:white;">P MRP</th>
+                                <th scope="col" style="color:white;">S MRP</th>
                                 <th scope="col" style="color:white;">RM Cost</th>
                                 <!-- <th scope="col" style="color:white;">RM %</th> -->
                                 <th scope="col" style="color:white;">Packing Cost</th>
@@ -65,6 +66,7 @@
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $report->Product_Name }}</td>
+                                <td>{{ $report->S_MRP }}</td>
                                 <td class="editable-mrp position-relative">
                                     <span class="mrp-text">{{ $report->S_MRP }}</span>
                                     <input type="text" class="form-control mrp-input d-none" value="{{ $report->S_MRP }}">
