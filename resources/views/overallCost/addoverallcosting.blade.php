@@ -209,6 +209,7 @@
                 permarginInput.value = permargin;
                 Discount.value = perdiscount.toFixed(2);
                 updateCalculations(data);
+
                 // discountAmt.style.display = 'block';
 
                 // if (selectedText) {
