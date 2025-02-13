@@ -187,8 +187,8 @@
                             <td>${item.rm_cost_unit || '-'}</td>
                             <td>${item.total_cost || '-'}</td>
                             <td>${item.margin || '-'}</td>
-                            <td>${item.sell_rate || '-'}</td>
-                            <td>${item.present_mrp || '-'}</td>
+                            <td>${item.sugg_rate || '-'}</td>
+                            <td>${item.suggested_mrp || '-'}</td>
                         </tr>`;
                         tableBody.innerHTML += row;
 

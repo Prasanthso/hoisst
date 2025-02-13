@@ -109,16 +109,16 @@
                                     <div id="DiscountAmt" class="mb-2" style="color:blue;"></div>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputSellRate" class="form-label">Suggested Rate</label>
-                                    <input type="text" class="form-control mb-2" id="inputSellRate" name="inputSellRate" value="{{ $costing->sell_rate}}" disabled readonly>
+                                    <label for="inputSuggRate" class="form-label">Suggested Rate</label>
+                                    <input type="text" class="form-control mb-2" id="inputSuggRate" name="inputSuggRate" value="{{ $costing->sugg_rate}}" disabled readonly>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputPresentMrp" class="form-label">Suggested MRP</label>
-                                    <input type="text" class="form-control mb-2" id="inputPresentMrp" name="inputPresentMrp" value="{{ $costing->present_mrp}}" disabled readonly>
+                                    <label for="inputSuggMrp" class="form-label">Suggested MRP</label>
+                                    <input type="text" class="form-control mb-2" id="inputSuggMrp" name="inputSuggMrp" value="{{ $costing->suggested_mrp}}" disabled readonly>
                                 </div>
                                 <div class="col-12" hidden>
-                                    <label for="inputSellRatebf" class="form-label">Suggested Rate before tax</label>
-                                    <input type="text" class="form-control mb-2" id="inputSellRatebf" name="inputSellRatebf" value="{{ $costing->sell_rate_bf}}" disabled readonly>
+                                    <label for="inputSuggRatebf" class="form-label">Suggested Rate before tax</label>
+                                    <input type="text" class="form-control mb-2" id="inputSuggRatebf" name="inputSuggRatebf" value="{{ $costing->sugg_rate_bf}}" disabled readonly>
                                 </div>
                             </div>
                             </div>
@@ -163,9 +163,9 @@
         const MarginAmt = document.getElementById('inputMarginAmt');
         const Discount = document.getElementById('inputDiscount'); // discount 33.33
         const pertaxInput = document.getElementById('inputTax');
-        const sellRate = document.getElementById('inputSellRate');
-        const sellRatebftax = document.getElementById('inputSellRatebf');
-        const presentMrp = document.getElementById('inputPresentMrp');
+        const suggRate = document.getElementById('inputSuggRate');
+        const suggRatebftax = document.getElementById('inputSuggRatebf');
+        const suggestedMrp = document.getElementById('inputSuggMrp');
         const recipeOutput = document.getElementById('inputRpoutput');
         let discountAmt = document.getElementById('DiscountAmt');
     //     const totalRmCost = 0;
@@ -267,9 +267,9 @@
         // console.log(recipeOutput.value);
         // Final calculations
         let netTotal = parseFloat(discount_Total).toFixed(2);
-        sellRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value)).toFixed(2) : 'N/A';
-        sellRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total)).toFixed(2) : 'N/A';
-        presentMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal)).toFixed(2) : 'N/A';
+        suggRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value)).toFixed(2) : 'N/A';
+        suggRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total)).toFixed(2) : 'N/A';
+        suggestedMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal)).toFixed(2) : 'N/A';
         // sellRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value) / parseFloat(recipeOutput.value)).toFixed(2) : 'N/A';
         // sellRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total) / parseFloat(recipeOutput.value)).toFixed(2) : 'N/A';
         // presentMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal) / parseFloat(recipeOutput.value)).toFixed(2) : 'N/A';
@@ -315,9 +315,9 @@
         discountAmt.innerHTML = discAmt;;
         // console.log(recipeOutput.value);
         let netTotal = parseFloat(discountTotal).toFixed(2);
-        sellRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value)).toFixed(2) : 'N/A';
-        sellRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total)).toFixed(2) : 'N/A';
-        presentMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal)).toFixed(2) : 'N/A';
+        suggRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value)).toFixed(2) : 'N/A';
+        suggRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total)).toFixed(2) : 'N/A';
+        suggestedMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal)).toFixed(2) : 'N/A';
     }
 
     setTimeout(function () {
