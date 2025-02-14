@@ -57,9 +57,16 @@ class OverAllCostingController extends Controller
         ->where('product_id', $productId)
             ->sum('amount');
 
-        $totalOhCost = DB::table('moh_for_recipe')
+        $totalOhCost = DB::table('oh_for_recipe')
         ->where('product_id', $productId)
-            ->sum('amount');
+        ->sum('amount');
+
+        if (!$totalOhCost) { // If NULL or 0
+            $totalOhCost = DB::table('moh_for_recipe')
+            ->where('product_id', $productId)
+            ->sum('price');
+        }
+
 
         // Assuming you are joining these tables based on product_id
         $pricingData = DB::table('recipe_master')
