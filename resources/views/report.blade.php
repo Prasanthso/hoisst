@@ -37,8 +37,8 @@
                 <div id="columnsContainer">
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="1" checked> S.NO</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="2" checked> Product Name</label>
-                    <!-- <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="3" checked> P.MRP</label> -->
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="3" checked> MRP</label>
+                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="3" checked> P.MRP</label>
+                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="3" checked> S.MRP</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="4" checked> RM Cost</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="5" checked> RM %</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="6" checked> Packing Cost</label>
@@ -127,8 +127,8 @@
                                     <th scope="col" style="color:white;">Packing %</th>
                                     <th scope="col" style="color:white;">Total</th>
                                     <th scope="col" style="color:white;">%</th>
-                                    <th scope="col" style="color:white;">Overhead %</th>
                                     <th scope="col" style="color:white;">Overhead</th>
+                                    <th scope="col" style="color:white;">Overhead %</th>
                                     <th scope="col" style="color:white;">Cost</th>
                                     <th scope="col" style="color:white;">Selling Rate</th>
                                     <th scope="col" style="color:white;">Tax</th>
@@ -150,7 +150,7 @@
                                     <td>{{ number_format($report->PM_perc, 2) }}</td>
                                     <td>{{ $report->TOTAL }}</td>
                                     <td>{{ $report->Total_perc }}</td>
-                                    <td>{{ number_format($report->OH_Cost, 2) }}</td>
+                                    <td>{{ number_format($report->OH_Cost) }}</td>
                                     <td>{{ number_format($report->OH_perc, 2) }}</td>
                                     <td>{{ $report->COST }}</td>
                                     <td>{{ $report->Selling_Cost }}</td>
@@ -272,7 +272,7 @@
                 item.style.display = text.includes(query) ? '' : 'none';
             });
         });
-        
+
 
         // Export to Excel function
         document.getElementById('exportBtn').addEventListener('click', function() {

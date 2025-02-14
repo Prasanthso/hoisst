@@ -142,7 +142,7 @@
                 </div>
             </div>
 
-            @if($pricingData->whereNotNull('oh_name')->isNotEmpty())
+            
             <div class="row mb-4">
                 <!-- Overheads Table -->
 
@@ -191,9 +191,9 @@
                     </div>
                 </div>
             </div>
-            @endif
+            
 
-            @if($pricingData->whereNotNull('moh_name')->isNotEmpty())
+            
             <div class="row mb-4">
                 <!-- Overheads Table -->
 
@@ -242,7 +242,7 @@
                     </div>
                 </div>
             </div>
-            @endif
+            
 
             <div class="d-flex justify-content-between">
                 <div class=" mb-2">

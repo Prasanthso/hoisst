@@ -66,7 +66,7 @@
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $report->Product_Name }}</td>
-                                <td>{{ $report->S_MRP }}</td>
+                                <td>{{ $report->P_MRP }}</td>
                                 <td class="editable-mrp position-relative">
                                     <span class="mrp-text">{{ $report->S_MRP }}</span>
                                     <input type="text" class="form-control mrp-input d-none" value="{{ $report->S_MRP }}">
@@ -77,7 +77,7 @@
                                 <!-- <td>{{ number_format($report->PM_perc, 2) }}</td> -->
                                 <td>{{ $report->TOTAL }}</td>
                                 <!-- <td>{{ $report->Total_perc }}</td> -->
-                                <td>{{ number_format($report->OH_Cost, 2) }}</td>
+                                <td>{{ number_format($report->OH_Cost) }}</td>
                                 <!-- <td>{{ number_format($report->OH_perc, 2) }}</td> -->
                                 <td class="cost">{{ $report->COST }}</td>
                                 <td class="selling-rate">{{ number_format($report->S_MRP * 0.75, 2) }}</td>
