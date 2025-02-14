@@ -48,6 +48,19 @@ class OverAllCostingController extends Controller
         if (!$productId) {
             return response()->json(['error' => 'Product ID is required'], 400);
         }
+
+        $totalRmCost = DB::table('rm_for_recipe')
+            ->where('product_id', $productId)
+            ->sum('amount');
+
+        $totalPmCost = DB::table('pm_for_recipe')
+            ->where('product_id', $productId)
+            ->sum('amount');
+
+        $totalOhCost = DB::table('oh_for_recipe')
+            ->where('product_id', $productId)
+            ->sum('amount');
+
             // Assuming you are joining these tables based on product_id
             $pricingData = DB::table('recipe_master')
                 ->join('rm_for_recipe', 'rm_for_recipe.product_id', '=', 'recipe_master.product_id')
@@ -55,16 +68,20 @@ class OverAllCostingController extends Controller
                 ->leftjoin('oh_for_recipe', 'oh_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->join('product_master', 'product_master.id', '=', 'recipe_master.product_id')
                 ->where('recipe_master.product_id', $productId)
+                ->where('recipe_master.status', 'active')
                 ->select(
                     'rm_for_recipe.raw_material_id as rm_id',
                     'rm_for_recipe.quantity as rm_quantity',
                     'rm_for_recipe.price as rm_price',
+                    'rm_for_recipe.amount as rm_amount',
                     'pm_for_recipe.packing_material_id as pm_id',
                     'pm_for_recipe.quantity as pm_quantity',
                     'pm_for_recipe.price as pm_price',
+                    'pm_for_recipe.amount as pm_amount',
                     'oh_for_recipe.overheads_id as oh_id',
                     'oh_for_recipe.quantity as oh_quantity',
                     'oh_for_recipe.price as oh_price',
+                    'oh_for_recipe.amount as oh_amount',
                     'rm_for_recipe.id as rid',
                     'pm_for_recipe.id as pid',
                     'oh_for_recipe.id as ohid',
@@ -81,15 +98,9 @@ class OverAllCostingController extends Controller
                     return $item;
                 });
 
-                $totalRmCost = $pricingData->sum(function($data) {
-                    return $data->rm_quantity * $data->rm_price;
-                });
-                $totalPmCost = $pricingData->sum(function($data) {
-                    return $data->pm_quantity * $data->pm_price;
-                });
-                $totalOhCost = $pricingData->sum(function($data) {
-                    return $data->oh_quantity * $data->oh_price;
-                });
+                // $totalRmCost = $pricingData->rm_amount;
+                // $totalPmCost = $pricingData->pm_amount;
+                // $totalOhCost = $pricingData->oh_amount;
                 $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
 
                 $rpoutput = $pricingData->isNotEmpty() ? $pricingData->first()->rpoutput : null;

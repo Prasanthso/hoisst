@@ -17,5 +17,6 @@ class OhForRecipe extends Model
         'uom',
         'price',
         'amount',
+        'percentage',
     ];
 }

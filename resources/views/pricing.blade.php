@@ -393,7 +393,7 @@
         const ohAddButton = document.getElementById('ohaddbtn');
         const overheadsTable = document.getElementById('overheadsTable');
         const totalOhCostSpan = document.getElementById('totalohCost');
-        let isaddRp = false;
+        // let isaddRp = false;
 
         const rpoutputInput = document.getElementById('recipeOutput');
         const rpuomInput = document.getElementById('recipeUoM');
@@ -402,7 +402,11 @@
         const enterManuallyCheckbox = document.getElementById("entermanually");
         const masterEntryDiv = document.getElementById("overheads").closest(".row.mb-4");
         const manualEntryDiv = document.getElementById("manualEntry");
-
+        let manualOhAmount = 0;
+        let manualOhPercent = 0;
+        let product_id = null;
+        let rawMaterialTotal = 0; // Initialize globally
+        let packingMaterialTotal = 0;
 
         // Function to toggle visibility based on checkbox selection
         function toggleForms() {
@@ -970,8 +974,48 @@
         //     return;
         // }
 
+        function calcForManual()
+        {
+             const manualOhType = document.getElementById("manualOhType").value.trim();
+             let manualOhPercValue = 0;
+             let manualOhPriceValue = 0;
+            rawMaterialTotal = parseFloat(totalCostSpan.textContent) || 0;
+            packingMaterialTotal = parseFloat(totalPmCostSpan.textContent) || 0;
+            if(manualOhType == 'percentage')
+            {
+
+                manualOhPercValue = parseFloat(document.getElementById("manualOhPerc").value) || 0;
+                console.log(parseFloat(rawMaterialTotal));
+                if(rawMaterialTotal > 0 || packingMaterialTotal > 0)
+                {
+                    manualOhAmount = ((rawMaterialTotal + packingMaterialTotal) * manualOhPercValue/100);
+                    console.log(manualOhAmount);
+                }
+                else
+                { alert("please add rawmaterials & Packing materils."); return; }
+            }
+            else if(manualOhType == 'price')
+            {
+                manualOhPriceValue = parseFloat(document.getElementById("manualOhPrice").value) || 0;
+                console.log(parseFloat(rawMaterialTotal));
+                if(rawMaterialTotal > 0 || packingMaterialTotal > 0)
+                {
+                    manualOhPercent = ((manualOhPercValue/(rawMaterialTotal + packingMaterialTotal)) * 100);
+                    console.log(manualOhPercent);
+                }
+                else
+                { alert("please add rawmaterials & Packing materils."); return; }
+            }
+            else{
+            }
+        }
+
         manualOhAddButton.addEventListener('click', function() {
             console.log("Add button clicked"); // Debugging
+            if (!product_id) {
+                alert('Please select a valid product and output');
+                return;
+            }
 
             const fromMastersCheckbox = document.getElementById("frommasters");
             const fromMastersLabel = document.querySelector("label[for='frommasters']");
@@ -987,8 +1031,12 @@
 
             if (manualOhType === "price") {
                 manualOhPriceValue = parseFloat(document.getElementById("manualOhPrice").value) || 0;
+                calcForManual();
+                manualOhPercValue = manualOhPercent;
             } else {
                 manualOhPercValue = parseFloat(document.getElementById("manualOhPerc").value) || 0;
+                calcForManual();
+                manualOhPriceValue = manualOhAmount;
             }
 
             if (!manualOverheadsName || (manualOhType === "price" && manualOhPriceValue <= 0) || (manualOhType === "percentage" && manualOhPercValue <= 0)) {
