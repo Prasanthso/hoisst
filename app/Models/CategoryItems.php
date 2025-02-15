@@ -17,7 +17,8 @@ class CategoryItems extends Model
         'categoryId',
         'itemname',
         'description',
-        'created_user'
+        'created_user',
+        'status',
     ];
 
     public static function rmCategoryItem()
