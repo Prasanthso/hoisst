@@ -33,8 +33,8 @@
                                     <input type="text" class="form-control" id="inputNanme4" name="name" value="{{ $product->name}}" disabled>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">HNS Code</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="hnsCode" value="{{ $product->hnsCode}}" disabled>
+                                    <label for="inputNanme4" class="form-label">HSN Code</label>
+                                    <input type="text" class="form-control" id="inputNanme4" name="hsnCode" value="{{ $product->hsnCode}}" disabled>
                                 </div>
                                 <div class="col-md-12">
                                     <label for="inputNanme4" class="form-label">Choose Category For</label>
