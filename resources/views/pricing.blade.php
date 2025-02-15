@@ -406,8 +406,8 @@
         let manualOhPercValue = 0;
 
         let product_id = null;
-        let rmTotal = 0; // Initialize globally
-        let pTotal = 0;
+        // let rmTotal = 0; // Initialize globally
+        // let pTotal = 0;
 
         // Function to toggle visibility based on checkbox selection
         function toggleForms() {
@@ -959,8 +959,6 @@
                         fromMastersCheckbox.style.display = "none";
                         fromMastersLabel.style.display = "none";
                     }
-
-
                     clearOhFields();
 
                 })
@@ -981,35 +979,28 @@
             let manualOhPercent = 0;
             const manualOhType = document.getElementById("manualOhType").value.trim();
 
-            rmTotal = parseFloat(totalCostSpan.textContent) || 0;
-            pmTotal = parseFloat(totalPmCostSpan.textContent) || 0;
+            let rmTotal = parseFloat(totalCostSpan.textContent) || 0;
+            let pmTotal = parseFloat(totalPmCostSpan.textContent) || 0;
+            if ((rmTotal + pmTotal) <= 0) {
+                alert("Please add raw materials & packing materials.");
+                return;
+            }
             if(manualOhType == 'percentage')
             {
                 manualOhPercValue = parseFloat(document.getElementById("manualOhPerc").value) || 0;
                 console.log(parseFloat(rmTotal));
-                if(rmTotal > 0 || pmTotal > 0)
-                {
                     manualOhAmount = ((rmTotal + pmTotal) * manualOhPercValue/100);
                     console.log(manualOhAmount);
                     manualOhPriceValue = manualOhAmount;
-                }
-                else
-                { alert("please add rawmaterials & Packing materils."); return; }
             }
             else if(manualOhType == 'price')
             {
                 manualOhPriceValue = parseFloat(document.getElementById("manualOhPrice").value) || 0;
                 console.log(parseFloat(rmTotal));
-                if(rmTotal > 0 || pmTotal > 0)
-                {
-                    manualOhPercent = ((manualOhPercValue/(rmTotal + pmTotal)) * 100);
-                    console.log(manualOhPercent);
-                    manualOhPercValue = manualOhPercent;
-                }
-                else
-                { alert("please add rawmaterials & Packing materils."); return; }
+                manualOhPercent = (manualOhPriceValue / (rmTotal + pmTotal)) * 100;
+                console.log(manualOhPercent);
+                manualOhPercValue = manualOhPercent;
             }
-
         }
 
         manualOhAddButton.addEventListener('click', function() {
@@ -1039,7 +1030,7 @@
                 calcForManual();
                 // manualOhPriceValue = manualOhAmount;
             }
-
+            updateMohTotalCost(manualOhPriceValue);
             if (!manualOverheadsName || (manualOhType === "price" && manualOhPriceValue <= 0) || (manualOhType === "percentage" && manualOhPercValue <= 0)) {
                 alert("Please fill all fields before adding.");
                 return;
@@ -1071,8 +1062,8 @@
                 .then((data) => {
                     console.log("Parsed Response:", data);
                     if (data.success) {
-                        alert("Manual overhead added successfully!");
-
+                        // alert("Manual overhead added successfully!");
+                        console.log("Manual overhead added successfully!");
                         const insertedId = data.inserted_id; // Get the inserted ID from the response
 
                         // Add a new row to the table
@@ -1259,7 +1250,6 @@
             updateGrandTotal();
         }
 
-
         function clearOhFields() {
             overheadsSelect.value = '';
             ohQuantityInput.value = '';
@@ -1304,12 +1294,16 @@
         // Update when input changes
         rpoutputInput.addEventListener('input', updateUnitTotal);
 
-        function updatemohAmount() {
-            const price = parseFloat(ohPriceInput.value) || 0;
-            const quantity = parseFloat(ohQuantityInput.value) || 0;
-            ohAmountInput.value = (price * quantity).toFixed(2);
+        // function updatemohAmount() {
+        //     const price = parseFloat(ohPriceInput.value) || 0;
+        //     // const quantity = parseFloat(ohQuantityInput.value) || 0;
+        //     ohAmountInput.value = (price * quantity).toFixed(2);
+        // }
+        function updateMohTotalCost(newAmount) {
+            const currentTotal = parseFloat(totalOhCostSpan.textContent) || 0;
+            totalOhCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
+            updateGrandTotal();
         }
-
         function recipePricing() {
             const rpoutputInput = document.getElementById('recipeOutput');
             const rpuomInput = document.getElementById('recipeUoM');
