@@ -36,6 +36,7 @@ class RecipePricingController extends Controller
     public function showRecipePricingList()
     {
         $reports = DB::select("
+
             SELECT 
                 pm.id AS SNO, 
                 pm.name AS Product_Name, 
@@ -113,11 +114,11 @@ class RecipePricingController extends Controller
                 raw_materials rm ON rfr.raw_material_id = rm.id 
             LEFT JOIN 
                 pm_for_recipe pfr ON rmst.product_id = pfr.product_id
-            LEFT JOIN 
+            LEFT JOIN
                 packing_materials pkm ON pfr.packing_material_id = pkm.id
-            LEFT JOIN 
+            LEFT JOIN
                 oh_for_recipe ofr ON rmst.product_id = ofr.product_id
-            LEFT JOIN 
+            LEFT JOIN
                 overheads oh ON ofr.overheads_id = oh.id
             LEFT JOIN 
                 moh_for_recipe mofr ON rmst.product_id = mofr.product_id

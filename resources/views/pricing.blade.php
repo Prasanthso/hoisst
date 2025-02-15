@@ -393,7 +393,7 @@
         const ohAddButton = document.getElementById('ohaddbtn');
         const overheadsTable = document.getElementById('overheadsTable');
         const totalOhCostSpan = document.getElementById('totalohCost');
-        let isaddRp = false;
+        // let isaddRp = false;
 
         const rpoutputInput = document.getElementById('recipeOutput');
         const rpuomInput = document.getElementById('recipeUoM');
@@ -402,7 +402,12 @@
         const enterManuallyCheckbox = document.getElementById("entermanually");
         const masterEntryDiv = document.getElementById("overheads").closest(".row.mb-4");
         const manualEntryDiv = document.getElementById("manualEntry");
+        let manualOhPriceValue = 0;
+        let manualOhPercValue = 0;
 
+        let product_id = null;
+        let rmTotal = 0; // Initialize globally
+        let pTotal = 0;
 
         // Function to toggle visibility based on checkbox selection
         function toggleForms() {
@@ -465,7 +470,7 @@
         toggleForms();
 
         productSelect.addEventListener('change', function() {
-            product_id = this.value; // Update product_id with the selected value
+           product_id = this.value; // Update product_id with the selected value
             console.log('Selected product ID:', product_id); // Debug log to check the selected value
         });
 
@@ -487,7 +492,7 @@
             updateAmount();
         });
         rawMaterialSelect.addEventListener('input', (event) => {
-            const selectedOption = this.options[this.selectedIndex];
+            const selectedOption = event.target.options[event.target.selectedIndex];  //this.options[this.selectedIndex];
             if (selectedOption.disabled) {
                 clearFields();
                 return;
@@ -506,7 +511,7 @@
 
         // Add raw material row to the table
         addButton.addEventListener('click', function() {
-            // console.log(product_id);
+            console.log('rm p',product_id);
 
             if (!product_id) {
                 alert('Please select a valid product.');
@@ -970,8 +975,49 @@
         //     return;
         // }
 
+        function calcForManual()
+        {
+            let manualOhAmount = 0;
+            let manualOhPercent = 0;
+            const manualOhType = document.getElementById("manualOhType").value.trim();
+
+            rmTotal = parseFloat(totalCostSpan.textContent) || 0;
+            pmTotal = parseFloat(totalPmCostSpan.textContent) || 0;
+            if(manualOhType == 'percentage')
+            {
+                manualOhPercValue = parseFloat(document.getElementById("manualOhPerc").value) || 0;
+                console.log(parseFloat(rmTotal));
+                if(rmTotal > 0 || pmTotal > 0)
+                {
+                    manualOhAmount = ((rmTotal + pmTotal) * manualOhPercValue/100);
+                    console.log(manualOhAmount);
+                    manualOhPriceValue = manualOhAmount;
+                }
+                else
+                { alert("please add rawmaterials & Packing materils."); return; }
+            }
+            else if(manualOhType == 'price')
+            {
+                manualOhPriceValue = parseFloat(document.getElementById("manualOhPrice").value) || 0;
+                console.log(parseFloat(rmTotal));
+                if(rmTotal > 0 || pmTotal > 0)
+                {
+                    manualOhPercent = ((manualOhPercValue/(rmTotal + pmTotal)) * 100);
+                    console.log(manualOhPercent);
+                    manualOhPercValue = manualOhPercent;
+                }
+                else
+                { alert("please add rawmaterials & Packing materils."); return; }
+            }
+
+        }
+
         manualOhAddButton.addEventListener('click', function() {
             console.log("Add button clicked"); // Debugging
+            if (!productSelect.value.trim() == null) {
+                alert('Please select a valid product and output');
+                return;
+            }
 
             const fromMastersCheckbox = document.getElementById("frommasters");
             const fromMastersLabel = document.querySelector("label[for='frommasters']");
@@ -981,14 +1027,17 @@
 
             const manualOverheadsName = document.getElementById("manualOverheads").value.trim();
             const manualOhType = document.getElementById("manualOhType").value;
-
-            let manualOhPriceValue = 0;
-            let manualOhPercValue = 0;
+            // let manualOhPriceValue = 0;
+            // let manualOhPercValue = 0;
 
             if (manualOhType === "price") {
                 manualOhPriceValue = parseFloat(document.getElementById("manualOhPrice").value) || 0;
+                calcForManual();
+                // manualOhPercValue = manualOhPercent;
             } else {
                 manualOhPercValue = parseFloat(document.getElementById("manualOhPerc").value) || 0;
+                calcForManual();
+                // manualOhPriceValue = manualOhAmount;
             }
 
             if (!manualOverheadsName || (manualOhType === "price" && manualOhPriceValue <= 0) || (manualOhType === "percentage" && manualOhPercValue <= 0)) {
@@ -1003,7 +1052,7 @@
                 manualOhPrice: manualOhPriceValue,
                 manualOhPerc: manualOhPercValue,
             };
-
+            console.log(data);
             const token = document.querySelector("meta[name='csrf-token']")?.getAttribute("content");
             if (!token) {
                 console.error("CSRF token not found.");
@@ -1177,8 +1226,6 @@
                 })
                 .catch(error => console.error('Error:', error.message));
         }
-
-
 
         // Helper functions
 

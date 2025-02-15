@@ -90,8 +90,8 @@ class OhForRecipeController extends Controller
             'product_id' => $validatedData['product_id'],
             'name' => $validatedData['manualOverheads'],
             'oh_type' => $validatedData['manualOverheadsType'],
-            'price' => $validatedData['manualOverheadsType'] === 'price' ? $validatedData['manualOhPrice'] : 0,
-            'percentage' => $validatedData['manualOverheadsType'] === 'percentage' ? $validatedData['manualOhPerc'] : 0,
+            'price' => $validatedData['manualOhPrice'] , //$validatedData['manualOverheadsType'] === 'price' ? $validatedData['manualOhPrice'] : 0,
+            'percentage' => $validatedData['manualOhPerc'] , //$validatedData['manualOverheadsType'] === 'percentage' ? $validatedData['manualOhPerc'] : 0,
         ]);
 
         // Return the success response with the inserted record ID

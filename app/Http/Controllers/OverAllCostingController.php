@@ -50,6 +50,7 @@ class OverAllCostingController extends Controller
         }
 
         $totalRmCost = DB::table('rm_for_recipe')
+
         ->where('product_id', $productId)
             ->sum('amount');
 

@@ -69,6 +69,7 @@ class CategoryItemController extends Controller
             'itemname' => $request->itemname,
             'description' => $request->description,
             'created_user' => auth()->id(), // Assuming the user is authenticated
+            'status' => 'active',
         ]);
 
         return redirect()->back()->with('success', 'Category item created successfully.');

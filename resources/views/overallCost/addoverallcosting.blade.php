@@ -203,12 +203,15 @@
                 let response = await fetch(`/get-abc-cost?productId=${productId}`);
                 let data = await response.json();
                 if (response.ok) {
+                    console.log(data);
                 const selectedText = recipeSelect.options[recipeSelect.selectedIndex].text.trim();
                 recipeOutput.value = data.rpoutput;
-                pertaxInput.value = pertax;
+
+                pertaxInput.value = data.product_tax; //pertax;
                 permarginInput.value = permargin;
                 Discount.value = perdiscount.toFixed(2);
                 updateCalculations(data);
+
                 // discountAmt.style.display = 'block';
 
                 // if (selectedText) {
@@ -251,6 +254,7 @@
         RmCostA.value = data.rpoutput > 0 ? (data.totalRmCost / data.rpoutput).toFixed(2) : 'N/A';
         PmCostB.value = data.rpoutput > 0 ? (data.totalPmCost / data.rpoutput).toFixed(2) : 'N/A';
         OhCostC.value = data.rpoutput > 0 ? (data.totalOhCost / data.rpoutput).toFixed(2) : 'N/A';
+        console.log(RmCostA, PmCostB,OhCostC);
 
         RmPmCost.value = (parseFloat(RmCostA.value) + parseFloat(PmCostB.value)).toFixed(2);
         TotalCost.value = (parseFloat(RmCostA.value) + parseFloat(PmCostB.value) + parseFloat(OhCostC.value)).toFixed(2);
