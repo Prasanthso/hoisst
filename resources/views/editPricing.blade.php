@@ -519,7 +519,7 @@
                         </tbody>
                     </table>
                     <div class="text-end" style="background-color:#F1F1F1; width:90%;">
-                        <strong>MOH Cost (D) : </strong> <span id="totalohCost">{{ $mohTotal }}</span>
+                        <strong>OH Cost (C) : </strong> <span id="totalohCost">{{ $mohTotal }}</span>
                     </div>
                 </div>
             </div>
