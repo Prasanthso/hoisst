@@ -178,23 +178,28 @@ class RecipePricingController extends Controller
                 ->leftjoin('pm_for_recipe', 'pm_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->leftjoin('oh_for_recipe', 'oh_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->leftjoin('moh_for_recipe', 'moh_for_recipe.product_id', '=', 'recipe_master.product_id')
+                // Joining with Master Tables
+            ->leftJoin('raw_materials', 'rm_for_recipe.raw_material_id', '=', 'raw_materials.id')
+            ->leftJoin('packing_materials', 'pm_for_recipe.packing_material_id', '=', 'packing_materials.id')
+            ->leftJoin('overheads', 'oh_for_recipe.overheads_id', '=', 'overheads.id')
+
                 ->where('recipe_master.product_id', $productId)
                 ->select(
                     'rm_for_recipe.raw_material_id as rm_id',
                     'rm_for_recipe.quantity as rm_quantity',
-                    'rm_for_recipe.code as rm_code',
-                    'rm_for_recipe.uom as rm_uom',
-                    'rm_for_recipe.price as rm_price',
+                    'raw_materials.rmcode as rm_code',
+                    'raw_materials.uom as rm_uom',
+                    'raw_materials.price as rm_price',
                     'pm_for_recipe.packing_material_id as pm_id',
                     'pm_for_recipe.quantity as pm_quantity',
-                    'pm_for_recipe.code as pm_code',
-                    'pm_for_recipe.uom as pm_uom',
-                    'pm_for_recipe.price as pm_price',
+                    'packing_materials.pmcode as pm_code',
+                    'packing_materials.uom as pm_uom',
+                    'packing_materials.price as pm_price',
                     'oh_for_recipe.overheads_id as oh_id',
                     'oh_for_recipe.quantity as oh_quantity',
-                    'oh_for_recipe.code as oh_code',
-                    'oh_for_recipe.uom as oh_uom',
-                    'oh_for_recipe.price as oh_price',
+                    'overheads.ohcode as oh_code',
+                    'overheads.uom as oh_uom',
+                    'overheads.price as oh_price',
                     'moh_for_recipe.name as moh_name',
                     'moh_for_recipe.oh_type as moh_type',
                     'moh_for_recipe.price as moh_price',
@@ -273,23 +278,27 @@ class RecipePricingController extends Controller
                 ->leftjoin('pm_for_recipe', 'pm_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->leftjoin('oh_for_recipe', 'oh_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->leftjoin('moh_for_recipe', 'moh_for_recipe.product_id', '=', 'recipe_master.product_id')
+                      // Joining with Master Tables
+                ->leftJoin('raw_materials', 'rm_for_recipe.raw_material_id', '=', 'raw_materials.id')
+                ->leftJoin('packing_materials', 'pm_for_recipe.packing_material_id', '=', 'packing_materials.id')
+                ->leftJoin('overheads', 'oh_for_recipe.overheads_id', '=', 'overheads.id')
                 ->where('recipe_master.product_id', $productId)
                 ->select(
                     'rm_for_recipe.raw_material_id as rm_id',
                     'rm_for_recipe.quantity as rm_quantity',
-                    'rm_for_recipe.code as rm_code',
-                    'rm_for_recipe.uom as rm_uom',
-                    'rm_for_recipe.price as rm_price',
+                    'raw_materials.rmcode as rm_code',
+                    'raw_materials.uom as rm_uom',
+                    'raw_materials.price as rm_price',
                     'pm_for_recipe.packing_material_id as pm_id',
                     'pm_for_recipe.quantity as pm_quantity',
-                    'pm_for_recipe.code as pm_code',
-                    'pm_for_recipe.uom as pm_uom',
-                    'pm_for_recipe.price as pm_price',
+                    'packing_materials.pmcode as pm_code',
+                    'packing_materials.uom as pm_uom',
+                    'packing_materials.price as pm_price',
                     'oh_for_recipe.overheads_id as oh_id',
                     'oh_for_recipe.quantity as oh_quantity',
-                    'oh_for_recipe.code as oh_code',
-                    'oh_for_recipe.uom as oh_uom',
-                    'oh_for_recipe.price as oh_price',
+                    'overheads.ohcode as oh_code',
+                    'overheads.uom as oh_uom',
+                    'overheads.price as oh_price',
                     'moh_for_recipe.name as moh_name',
                     'moh_for_recipe.oh_type as moh_type',
                     'moh_for_recipe.price as moh_price',

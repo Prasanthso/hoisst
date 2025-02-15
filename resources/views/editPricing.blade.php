@@ -354,6 +354,10 @@
                     {{-- </a> --}}
                 </div>
             </div>
+            @php
+                $ohTotal = 0;
+                $mohTotal = 0;
+            @endphp
             @if($pricingData->whereNotNull('oh_name')->isNotEmpty())
             <div class="row mb-4">
                 <!-- Overheads Table -->
@@ -505,7 +509,7 @@
                                 <td id="mohprice-{{ $data->mohid }}">{{ $data->moh_price }}</td>
                                 <td id="mohamount-{{ $data->mohid }}">{{ $amount }}</td>
                                 <td>
-                                    <span class="delete-icon" id="ohdelete-{{ $data->mohid }}" style="cursor: pointer; color: red;" title="Remove Row" data-id="{{ $data->mohid }}">&#x1F5D1;</span>
+                                    <span class="delete-icon" id="mohdelete-{{ $data->mohid }}" style="cursor: pointer; color: red;" title="Remove Row" data-id="{{ $data->mohid }}">&#x1F5D1;</span>
                                 </td>
                             </tr>
                             @endif
@@ -532,7 +536,7 @@
                         <label for="totalcost" class="form-label">Total Cost (A+B+C):
                     </div>
                     <div>
-                        <input type="text" class="form-control" id="totalcost" value="{{ $rmTotal+$pmTotal+$ohTotal+$mohTotal }}" disabled>
+                        <input type="text" class="form-control" id="totalcost" value="{{ ($rmTotal ?: 0) + ($pmTotal ?: 0) + ($ohTotal ?: 0) + ($mohTotal ?: 0) }}" disabled>
                     </div>
                 </div>
                 <div class="row mb-2">
@@ -1492,8 +1496,8 @@
                 .then(data => {
                     console.log("Parsed Response:", data);
                     if (data.success) {
-                        alert('Manual overhead added successfully!');
-
+                        //alert('Manual overhead added successfully!');
+                        console.log("Manual overhead added successfully!.");
                         const insertedId = data.inserted_id; // Get the inserted ID from the response
 
                         // Add a new row to the table
