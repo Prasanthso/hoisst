@@ -20,7 +20,7 @@ class ReportController extends Controller
                 pm.name AS Product_Name, 
                 pm.price AS P_MRP,
                 oc.suggested_mrp AS S_MRP,
-                
+
                 -- Raw Material Cost
                 SUM(COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) AS RM_Cost,
                 SUM((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(pm.price, 1)) AS RM_perc,
@@ -92,18 +92,21 @@ class ReportController extends Controller
                 raw_materials rm ON rfr.raw_material_id = rm.id 
             LEFT JOIN 
                 pm_for_recipe pfr ON rmst.product_id = pfr.product_id
-            LEFT JOIN 
+            LEFT JOIN
                 packing_materials pkm ON pfr.packing_material_id = pkm.id
-            LEFT JOIN 
+            LEFT JOIN
                 oh_for_recipe ofr ON rmst.product_id = ofr.product_id
-            LEFT JOIN 
+            LEFT JOIN
                 overheads oh ON ofr.overheads_id = oh.id
             LEFT JOIN 
                 moh_for_recipe mofr ON rmst.product_id = mofr.product_id
             LEFT JOIN 
                 overall_costing oc ON pm.id = oc.productId AND oc.status = 'active'
+            WHERE 
+                rmst.status = 'active'  -- Only include active recipes
             GROUP BY 
                 pm.id, pm.name, pm.price, oc.suggested_mrp, rmst.Output;
+
         ");
 
         return view('report', compact('reports'));

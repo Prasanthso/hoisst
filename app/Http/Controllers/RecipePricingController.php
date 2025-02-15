@@ -42,7 +42,7 @@ class RecipePricingController extends Controller
                 pm.name AS Product_Name, 
                 pm.price AS P_MRP,
                 oc.suggested_mrp AS S_MRP,
-                
+
                 -- Raw Material Cost
                 SUM(COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) AS RM_Cost,
                 SUM((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(pm.price, 1)) AS RM_perc,
@@ -124,8 +124,11 @@ class RecipePricingController extends Controller
                 moh_for_recipe mofr ON rmst.product_id = mofr.product_id
             LEFT JOIN 
                 overall_costing oc ON pm.id = oc.productId AND oc.status = 'active'
+            WHERE 
+                rmst.status = 'active'  -- Only include active recipes
             GROUP BY 
                 pm.id, pm.name, pm.price, oc.suggested_mrp, rmst.Output;
+
         ");
         return view('recipePricing', compact('reports'));
     }
@@ -349,6 +352,9 @@ class RecipePricingController extends Controller
         DB::table('oh_for_recipe')
             ->where('product_id', $request->product_id)
             ->delete();
+        DB::table('moh_for_recipe')
+        ->where('product_id', $request->product_id)
+        ->delete();
 
         // Redirect back with a success message
         return redirect()->route('receipepricing.index')->with('success', 'Recipe-Pricing data deleted successfully!');
