@@ -138,7 +138,7 @@ class PackingMaterialController extends Controller
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
-            'hnsCode' => 'required|string',
+            'hsnCode' => 'required|string',
             'itemType' => 'required|string',
             'itemWeight' => 'required|string',
             'tax' => 'required|string',
@@ -152,7 +152,7 @@ class PackingMaterialController extends Controller
             PackingMaterial::create([
                 'name' => $request->name,
                 'pmcode' => $pmCode,
-                'hnsCode' => $request->hnsCode,
+                'hsnCode' => $request->hsnCode,
                 'uom' => $request->uom,
                 'itemWeight' => $request->itemWeight,
                 'category_id1' => $categoryIds[0] ?? null,
@@ -262,7 +262,7 @@ class PackingMaterialController extends Controller
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
-            'hnsCode' => 'required|string',
+            'hsnCode' => 'required|string',
             'itemType' => 'required|string',
             'itemWeight' => 'required|string',
             'tax' => 'required|string',
@@ -274,7 +274,7 @@ class PackingMaterialController extends Controller
             // Update the packing material record
             $packingMaterial->update([
                 'name' => $request->name,
-                'hnsCode' => $request->hnsCode,
+                'hsnCode' => $request->hsnCode,
                 'uom' => $request->uom,
                 'itemWeight' => $request->itemWeight,
                 'category_id1' => $categoryIds[0] ?? null,

@@ -147,7 +147,7 @@ class ProductController extends Controller
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
-            'hnsCode' => 'required|string',
+            'hsnCode' => 'required|string',
             'itemType' => 'required|string',
             'itemWeight' => 'required|string',
             'tax' => 'required|string',
@@ -161,7 +161,7 @@ class ProductController extends Controller
             Product::create([
                 'name' => $request->name,
                 'pdcode' => $pdCode,
-                'hnsCode' => $request->hnsCode,
+                'hsnCode' => $request->hsnCode,
                 'uom' => $request->uom,
                 'itemWeight' => $request->itemWeight,
                 'category_id1' => $categoryIds[0] ?? null,
@@ -275,7 +275,7 @@ class ProductController extends Controller
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
-            'hnsCode' => 'required|string',
+            'hsnCode' => 'required|string',
             'itemType' => 'required|string',
             'itemWeight' => 'required|string',
             'tax' => 'required|string',
@@ -287,7 +287,7 @@ class ProductController extends Controller
             // Update the raw material record
             $product->update([
                 'name' => $request->name,
-                'hnsCode' => $request->hnsCode,
+                'hsnCode' => $request->hsnCode,
                 'uom' => $request->uom,
                 'itemWeight' => $request->itemWeight,
                 'category_id1' => $categoryIds[0] ?? null,

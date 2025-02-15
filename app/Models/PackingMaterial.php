@@ -14,7 +14,7 @@ class PackingMaterial extends Model
     protected $fillable = [
         'name',
         'pmcode',
-        'hnsCode',
+        'hsnCode',
         'uom',
         'itemWeight',
         'category_id1',

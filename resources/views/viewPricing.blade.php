@@ -141,7 +141,6 @@
                     </div>
                 </div>
             </div>
-
             @if($pricingData->whereNotNull('oh_name')->isNotEmpty())
             <div class="row mb-4">
                 <!-- Overheads Table -->
@@ -167,6 +166,7 @@
                             @php
                             $amount = $data->oh_quantity * $data->oh_price;
                             $ohTotal += $amount;
+                            $mohTotal = 0;
                             @endphp
                             <tr>
                                 <td>{{ $data->oh_name }}</td>
@@ -192,7 +192,6 @@
                 </div>
             </div>
             @endif
-
             @if($pricingData->whereNotNull('moh_name')->isNotEmpty())
             <div class="row mb-4">
                 <!-- Overheads Table -->
@@ -218,6 +217,7 @@
                             @php
                             $amount = $data->moh_price;
                             $mohTotal += $amount;
+                            $ohTotal = 0;
                             @endphp
                             <tr>
                                 <td>{{ $data->moh_name }}</td>
@@ -238,7 +238,7 @@
                         </tbody>
                     </table>
                     <div class="text-end" style="background-color:#F1F1F1; width:90%;">
-                        <strong>MOH Cost (D) : </strong> <span id="totalohCost">{{ $mohTotal }}</span>
+                        <strong>OH Cost (C) : </strong> <span id="totalohCost">{{ $mohTotal }}</span>
                     </div>
                 </div>
             </div>
@@ -250,7 +250,7 @@
                         <label for="totalcost" class="form-label">Total Cost (A+B+C):
                     </div>
                     <div>
-                        <input type="text" class="form-control" id="totalcost" value="{{ $rmTotal+$pmTotal+$ohTotal }}" disabled>
+                        <input type="text" class="form-control" id="totalcost" value="{{ $rmTotal+$pmTotal+$ohTotal+$mohTotal }}" disabled>
                     </div>
                 </div>
                 <div class="row mb-2">
@@ -258,7 +258,7 @@
                         <label for="unitcost" class="form-label">Unit Cost:</label>
                     </div>
                     <div class="col-md-7">
-                        <input type="text" class="form-control" id="totalcost" value="{{ $data->rp_output ? round(($rmTotal + $pmTotal + $ohTotal) / $data->rp_output, 2) : 0 }}" disabled>
+                        <input type="text" class="form-control" id="totalcost" value="{{ $data->rp_output ? round(($rmTotal + $pmTotal + $ohTotal+ $mohTotal) / $data->rp_output, 2) : 0 }}" disabled>
                     </div>
                 </div>
             </div>
@@ -320,8 +320,7 @@
         document.querySelector('.delete-table-btn').addEventListener('click', function() {
             var productId = document.getElementById('productSelect').value.trim();
             console.log(productId);
-            if(productId === 'Choose...')
-            {
+            if (productId === 'Choose...') {
                 alert('Please select a product before deleting.');
                 return;
             }

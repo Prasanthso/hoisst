@@ -27,8 +27,8 @@
                                     <input type="text" class="form-control" id="inputNanme4">
                                 </div> -->
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">HNS Code</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="hnsCode">
+                                    <label for="inputNanme4" class="form-label">HSN Code</label>
+                                    <input type="text" class="form-control" id="inputNanme4" name="hsnCode">
                                 </div>
                                 <div class="col-md-12">
                                     <label for="inputNanme4" class="form-label">Choose Unit</label>
