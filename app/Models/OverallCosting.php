@@ -29,8 +29,8 @@ class OverallCosting extends Model
         'margin_amt',
         'tax',
         'discount',
-        'suggested_rate',
-        'suggested_rate_bf',
+        'sugg_rate',
+        'sugg_rate_bf',
         'suggested_mrp',
         'status'
     ];

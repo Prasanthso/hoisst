@@ -161,7 +161,7 @@
         const pertaxInput = document.getElementById('inputTax');
         const suggRate = document.getElementById('inputSuggRate');
         const suggRatebftax = document.getElementById('inputSuggRatebf');
-        const suggestedMrp = document.getElementById('inputSuggestedMrp');
+        const suggestedMrp = document.getElementById('inputSuggMrp');
         const recipeOutput = document.getElementById('inputRpoutput');
         let discountAmt = document.getElementById('DiscountAmt');
 
