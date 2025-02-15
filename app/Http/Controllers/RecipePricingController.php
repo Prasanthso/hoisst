@@ -41,15 +41,16 @@ class RecipePricingController extends Controller
                 pm.id AS SNO, 
                 pm.name AS Product_Name, 
                 pm.price AS P_MRP,
+                pm.tax As tax,
                 oc.suggested_mrp AS S_MRP,
 
                 -- Raw Material Cost
                 SUM(COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) AS RM_Cost,
-                SUM((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(pm.price, 1)) AS RM_perc,
+                SUM((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(oc.suggested_mrp, 1)) AS RM_perc,
 
                 -- Packing Material Cost
                 SUM(COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1)) AS PM_Cost,
-                SUM((COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(pm.price, 1)) AS PM_perc,
+                SUM((COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(oc.suggested_mrp, 1)) AS PM_perc,
 
                 -- Overhead Cost (excluding mofr.quantity from multiplication)
                 SUM(
@@ -71,7 +72,7 @@ class RecipePricingController extends Controller
 
                 -- Total Percentage
                 SUM(((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
-                    (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 100 / COALESCE(pm.price, 1)) AS Total_perc,
+                    (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 100 / COALESCE(oc.suggested_mrp, 1)) AS Total_perc,
 
                 -- Final Cost Calculation
                 SUM(
@@ -82,11 +83,11 @@ class RecipePricingController extends Controller
                 ) AS COST,
 
                 -- Selling Cost and Margin Calculations
-                SUM(COALESCE(pm.price, 0) * 0.75) AS Selling_Cost,
-                SUM(((COALESCE(pm.price, 0) * 0.75) * 100) / (100 + 18)) AS Before_tax,
+                SUM(COALESCE(oc.suggested_mrp, 0) * 0.75) AS Selling_Cost,
+                SUM(((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + pm.tax)) AS Before_tax,
 
                 -- Margin Calculation
-                SUM((((COALESCE(pm.price, 0) * 0.75) * 100) / (100 + 18)) - 
+                SUM((((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + pm.tax)) - 
                     (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) + 
                     COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) + 
                     COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1) +
@@ -95,12 +96,12 @@ class RecipePricingController extends Controller
 
                 -- Margin Percentage
                 SUM(
-                    ((((COALESCE(pm.price, 0) * 0.75) * 100) / (100 + 18)) - 
+                    ((((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + pm.tax)) - 
                     (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) + 
                     COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) + 
                     COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1) +
                     COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1))
-                    ) / (((pm.price * 0.75) * 100) / (100 + 18)) * 100
+                    ) / (((oc.suggested_mrp * 0.75) * 100) / (100 + pm.tax)) * 100
                 ) AS Margin_perc,
 
                 rmst.Output 
@@ -127,7 +128,7 @@ class RecipePricingController extends Controller
             WHERE 
                 rmst.status = 'active'  -- Only include active recipes
             GROUP BY 
-                pm.id, pm.name, pm.price, oc.suggested_mrp, rmst.Output;
+                pm.id, pm.name, pm.price, pm.tax, oc.suggested_mrp, rmst.Output;
 
         ");
         return view('recipePricing', compact('reports'));
