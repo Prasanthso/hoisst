@@ -1009,7 +1009,10 @@
                 alert('Please select a valid product and output');
                 return;
             }
-
+            if ((parseFloat(totalCostSpan.textContent) || 0) <= 0) {
+                alert("Please add raw materials");
+                return;
+            }
             const fromMastersCheckbox = document.getElementById("frommasters");
             const fromMastersLabel = document.querySelector("label[for='frommasters']");
             const manualCheckbox = document.getElementById("entermanually");
@@ -1114,6 +1117,8 @@
                 .catch((error) => console.error("Fetch error:", error));
         });
 
+        if(overheadsTable)
+        {
         overheadsTable.addEventListener('click', function(e) {
             if (e.target.classList.contains('delete-icon')) {
                 const deleteIcon = e.target;
@@ -1151,7 +1156,7 @@
                 }
             }
         });
-
+        }
 
         // Function to handle deletion when the code is empty
         function ohDelete(insertedId, row, token) {
@@ -1211,7 +1216,6 @@
                     // Remove the row from the table
                     const amount = parseFloat(row.cells[5].textContent) || 0;
                     row.remove();
-
                     // Update the total cost
                     updateOhTotalCost(-amount);
                 })
