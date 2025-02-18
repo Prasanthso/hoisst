@@ -1019,6 +1019,13 @@
                 alert('Please select a valid product.');
                 return;
             }
+            // if((parseFloat(recipeOutput.textContent) || 0) <= 0)
+            const totalCostSpan = document.getElementById('totalRmCost');
+            if((parseFloat(totalCostSpan.textContent) || 0) <= 0) {
+                    alert("Please add raw materials");
+                    return;
+            }
+
             const packingMaterialId = packingMaterialSelect.value;
             const packingMaterialName = packingMaterialSelect.options[packingMaterialSelect.selectedIndex]?.text;
             const quantity = parseFloat(pmQuantityInput.value) || 0;
@@ -1278,12 +1285,17 @@
         const overheadsTable = document.getElementById('overheadsTable');
         const manualEntryTable = document.getElementById('manualEntryTable');
         const totalOhCostSpan = document.getElementById('totalohCost');
+        const totalCostSpan = document.getElementById('totalRmCost');
 
         productSelect.addEventListener('change', function() {
             const product_id = this.value; // Update product_id with the selected value
             console.log('Selected product ID:', product_id); // Debug log to check the selected value
         });
 
+        if ((parseFloat(totalCostSpan.textContent) || 0) <= 0) {
+                alert("Please add raw materials");
+                return;
+            }
         // Update fields when packing material is selected
         overheadsSelect.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
@@ -1469,6 +1481,45 @@
 
     function mohforRecipe()
     {
+        let manualOhPriceValue = 0;
+        let manualOhPercValue = 0;
+        const totalCostSpan = document.getElementById('totalRmCost');
+
+        if((parseFloat(totalCostSpan.textContent) || 0) <= 0) {
+                alert("Please add raw materials");
+                return;
+            }
+
+        function calcForManual()
+        {
+            let manualOhAmount = 0;
+            let manualOhPercent = 0;
+            const manualOhType = document.getElementById("manualOhType").value.trim();
+
+            let rmTotal = parseFloat(totalCostSpan.textContent) || 0;
+            let pmTotal = parseFloat(totalPmCostSpan.textContent) || 0;
+            if ((rmTotal + pmTotal) <= 0) {
+                alert("Please add raw materials & packing materials.");
+                return;
+            }
+            if(manualOhType == 'percentage')
+            {
+                manualOhPercValue = parseFloat(document.getElementById("manualOhPerc").value) || 0;
+                console.log(parseFloat(rmTotal));
+                    manualOhAmount = ((rmTotal + pmTotal) * manualOhPercValue/100);
+                    console.log(manualOhAmount);
+                    manualOhPriceValue = manualOhAmount;
+            }
+            else if(manualOhType == 'price')
+            {
+                manualOhPriceValue = parseFloat(document.getElementById("manualOhPrice").value) || 0;
+                console.log(parseFloat(rmTotal));
+                manualOhPercent = (manualOhPriceValue / (rmTotal + pmTotal)) * 100;
+                console.log(manualOhPercent);
+                manualOhPercValue = manualOhPercent;
+            }
+        }
+
         const manualOhAddButton = document.getElementById('manualOhaddbtn');
         manualOhAddButton.addEventListener('click', function() {
             console.log("Add button clicked"); // Debugging
@@ -1482,13 +1533,12 @@
             const manualOverheadsName = document.getElementById('manualOverheads').value.trim();
             const manualOhType = document.getElementById("manualOhType").value;
 
-            let manualOhPriceValue = 0;
-            let manualOhPercValue = 0;
-
             if (manualOhType === "price") {
                 manualOhPriceValue = parseFloat(document.getElementById('manualOhPrice').value) || 0;
+                calcForManual();
             } else {
                 manualOhPercValue = parseFloat(document.getElementById('manualOhPerc').value) || 0;
+                calcForManual();
             }
 
             if (!manualOverheadsName || (manualOhType === "price" && manualOhPriceValue <= 0) || (manualOhType === "percentage" && manualOhPercValue <= 0)) {

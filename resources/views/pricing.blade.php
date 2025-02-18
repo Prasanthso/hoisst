@@ -1005,10 +1005,11 @@
 
         manualOhAddButton.addEventListener('click', function() {
             console.log("Add button clicked"); // Debugging
-            if (!productSelect.value.trim() == null) {
+            if (productSelect.value.trim() == null) {
                 alert('Please select a valid product and output');
                 return;
             }
+            
             if ((parseFloat(totalCostSpan.textContent) || 0) <= 0) {
                 alert("Please add raw materials");
                 return;
