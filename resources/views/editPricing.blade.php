@@ -579,15 +579,27 @@
     });
 
     function recipevalidation() {
-    const rpvalue = document.getElementById('productSelect').value.trim();
-    const rpopvalue = document.getElementById('recipeOutput').value.trim();
-    const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+        const rpvalue = document.getElementById('productSelect').value.trim();
+        const rpopvalue = document.getElementById('recipeOutput').value.trim();
+        const rpuomvalue = document.getElementById('recipeUoM').value.trim();
 
-    if (rpvalue === "" || rpopvalue === "" || rpuomvalue === "") {
-        alert("Please fill in the Recipe Name, Output, and UoM.");
-        return false;  // Prevents form submission
-    }
-        return true;  // Allows form submission if everything is filled
+        if (rpvalue === "" && rpvalue === "Choose...") {
+            alert("Please fill in the Recipe Name.");
+            document.getElementById('productSelect').focus();
+            return;
+        }
+        else if(rpopvalue === "")
+        {
+            alert("Please fill in the Recipe Output.");
+            document.getElementById('recipeOutput').focus();
+            return;
+        }
+        else if(rpuomvalue === "")
+        {
+            alert("Please fill in the Recipe UoM.");
+            document.getElementById('recipeUoM').focus();
+            return;
+        }
     }
 
     // raw materials recipe-pricing details

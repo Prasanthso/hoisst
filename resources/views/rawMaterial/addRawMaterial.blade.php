@@ -35,7 +35,8 @@
                                     <select id="inputState" class="form-select select2" name="uom">
                                         <option selected>UoM</option>
                                         <option>Ltr</option>
-                                        <option>Kgs</option>
+                                        <option>Kgm</option>
+                                        <option>Gm</option>
                                         <option>Nos</option>
                                     </select>
                                 </div>

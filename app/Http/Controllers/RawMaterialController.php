@@ -134,7 +134,7 @@ class RawMaterialController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'uom' => 'required|string|in:Ltr,Kgs,Nos',
+            'uom' => 'required|string|in:Ltr,Kgm,Gm,Nos',
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
             'price' => 'required|string',
@@ -261,7 +261,7 @@ class RawMaterialController extends Controller
         // Validate the incoming request data
         $request->validate([
             'name' => 'required|string|max:255',
-            'uom' => 'required|string|in:Ltr,Kgs,Nos',
+            'uom' => 'required|string|in:Ltr,Kgm,Gm,Nos',
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
             'price' => 'required|string',

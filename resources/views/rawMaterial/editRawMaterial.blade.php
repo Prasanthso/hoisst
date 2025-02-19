@@ -41,7 +41,8 @@
                                     <select id="inputState" class="form-select select2" name="uom" disabled>
                                         <option selected>{{ $rawMaterial->uom}}</option>
                                         <option>Ltr</option>
-                                        <option>Kgs</option>
+                                        <option>Kgm</option>
+                                        <option>Gm</option>
                                         <option>Nos</option>
                                     </select>
                                 </div>
