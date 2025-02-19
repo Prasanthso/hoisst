@@ -141,6 +141,10 @@
                     </div>
                 </div>
             </div>
+            @php
+                $ohTotal = 0;
+                $mohTotal = 0;
+            @endphp
             @if($pricingData->whereNotNull('oh_name')->isNotEmpty())
             <div class="row mb-4">
                 <!-- Overheads Table -->
@@ -250,7 +254,7 @@
                         <label for="totalcost" class="form-label">Total Cost (A+B+C):
                     </div>
                     <div>
-                        <input type="text" class="form-control" id="totalcost" value="{{ $rmTotal+$pmTotal+$ohTotal+$mohTotal }}" disabled>
+                        <input type="text" class="form-control" id="totalcost" value="{{ ($rmTotal ?: 0) + ($pmTotal ?: 0) + ($ohTotal ?: 0) + ($mohTotal ?: 0) }}" disabled>
                     </div>
                 </div>
                 <div class="row mb-2">

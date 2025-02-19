@@ -354,6 +354,10 @@
                     {{-- </a> --}}
                 </div>
             </div>
+            @php
+                $ohTotal = 0;
+                $mohTotal = 0;
+            @endphp
             @if($pricingData->whereNotNull('oh_name')->isNotEmpty())
             <div class="row mb-4">
                 <!-- Overheads Table -->
@@ -374,7 +378,7 @@
                             $ohTotal = 0;
                             $filteredData = collect($pricingData)->unique('ohid')->values();
                             @endphp
-                            @foreach($filteredData as $data)
+                            @forelse($filteredData as $data)
                             @if($data->oh_name)
                             @php
                             $amount = $data->oh_quantity * $data->oh_price;
@@ -415,7 +419,12 @@
                                 </td>
                             </tr>
                             @endif
-                            @endforeach
+                            @empty
+                            <tr>
+                                <td colspan="6">No records available for Manual Overheads</td>
+                            </tr>
+                            @endforelse
+
                         </tbody>
                     </table>
                     <div class="text-end" style="background-color:#F1F1F1; width:90%;">
@@ -490,7 +499,7 @@
                             @php $mohTotal = 0;
                             $filteredData = collect($pricingData)->unique('mohid')->values();
                             @endphp
-                            @foreach($filteredData as $data)
+                            @forelse($filteredData as $data)
                             @if($data->moh_name)
                             @php
                             $amount = $data->moh_price;
@@ -505,17 +514,16 @@
                                 <td id="mohprice-{{ $data->mohid }}">{{ $data->moh_price }}</td>
                                 <td id="mohamount-{{ $data->mohid }}">{{ $amount }}</td>
                                 <td>
-                                    <span class="delete-icon" id="ohdelete-{{ $data->mohid }}" style="cursor: pointer; color: red;" title="Remove Row" data-id="{{ $data->mohid }}">&#x1F5D1;</span>
+                                    <span class="delete-icon" id="mohdelete-{{ $data->mohid }}" style="cursor: pointer; color: red;" title="Remove Row" data-id="{{ $data->mohid }}">&#x1F5D1;</span>
                                 </td>
                             </tr>
                             @endif
-                            @endforeach
-
-                            @if($pricingData->whereNotNull('moh_name')->isEmpty())
+                            @empty
                             <tr>
-                                <td colspan="6">No records available for Overheads</td>
+                                <td colspan="6">No records available for Manual Overheads</td>
                             </tr>
-                            @endif
+                            @endforelse
+
                         </tbody>
                     </table>
                     <div class="text-end" style="background-color:#F1F1F1; width:90%;">
@@ -525,14 +533,13 @@
             </div>
             @endif
 
-
             <div class="d-flex justify-content-between">
                 <div class=" mb-2">
                     <div class="mt-2">
                         <label for="totalcost" class="form-label">Total Cost (A+B+C):
                     </div>
                     <div>
-                        <input type="text" class="form-control" id="totalcost" value="{{ $rmTotal+$pmTotal+$ohTotal+$mohTotal }}" disabled>
+                        <input type="text" class="form-control" id="totalcost" value="{{ ($rmTotal ?: 0) + ($pmTotal ?: 0) + ($ohTotal ?: 0) + ($mohTotal ?: 0) }}" disabled>
                     </div>
                 </div>
                 <div class="row mb-2">
@@ -551,6 +558,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
     // Ensure functions are available in the global scope
     document.addEventListener('DOMContentLoaded', function() {
@@ -567,8 +575,20 @@
         rmforRecipe();
         pmforRecipe();
         ohforRecipe();
-
+        mohforRecipe();
     });
+
+    function recipevalidation() {
+    const rpvalue = document.getElementById('productSelect').value.trim();
+    const rpopvalue = document.getElementById('recipeOutput').value.trim();
+    const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+
+    if (rpvalue === "" || rpopvalue === "" || rpuomvalue === "") {
+        alert("Please fill in the Recipe Name, Output, and UoM.");
+        return false;  // Prevents form submission
+    }
+        return true;  // Allows form submission if everything is filled
+    }
 
     // raw materials recipe-pricing details
     // Function to enable editing for a specific row
@@ -682,6 +702,8 @@
         const totalCostInput = document.getElementById('totalcost'); // Total Cost (A+B+C)
         const rpoutputInput = document.getElementById('recipeOutput');
         const rpuomInput = document.getElementById('recipeUoM');
+
+        recipevalidation();
 
         productSelect.addEventListener('change', function() {
             product_id = this.value; // Update product_id with the selected value
@@ -987,6 +1009,7 @@
 
         // Update fields when packing material is selected
         packingMaterialSelect.addEventListener('change', function() {
+
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.disabled) {
                 clearPmFields();
@@ -1011,6 +1034,13 @@
                 alert('Please select a valid product.');
                 return;
             }
+            // if((parseFloat(recipeOutput.textContent) || 0) <= 0)
+            const totalCostSpan = document.getElementById('totalRmCost');
+            if((parseFloat(totalCostSpan.textContent) || 0) <= 0) {
+                    alert("Please add raw materials");
+                    return;
+            }
+
             const packingMaterialId = packingMaterialSelect.value;
             const packingMaterialName = packingMaterialSelect.options[packingMaterialSelect.selectedIndex]?.text;
             const quantity = parseFloat(pmQuantityInput.value) || 0;
@@ -1270,12 +1300,17 @@
         const overheadsTable = document.getElementById('overheadsTable');
         const manualEntryTable = document.getElementById('manualEntryTable');
         const totalOhCostSpan = document.getElementById('totalohCost');
+        const totalCostSpan = document.getElementById('totalRmCost');
 
         productSelect.addEventListener('change', function() {
             const product_id = this.value; // Update product_id with the selected value
             console.log('Selected product ID:', product_id); // Debug log to check the selected value
         });
 
+        if ((parseFloat(totalCostSpan.textContent) || 0) <= 0) {
+                alert("Please add raw materials");
+                return;
+            }
         // Update fields when packing material is selected
         overheadsSelect.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
@@ -1293,7 +1328,10 @@
         });
 
         // Update amount on quantity input
+        if (ohQuantityInput) {
         ohQuantityInput.addEventListener('input', updateOhAmount);
+        }
+        // ohQuantityInput.addEventListener('input', updateOhAmount);
 
         // Add packing material
         ohAddButton.addEventListener('click', function() {
@@ -1384,6 +1422,7 @@
         });
 
         // Delete row functionality
+        if(overheadsTable){
         overheadsTable.addEventListener('click', function(e) {
 
             if (e.target.classList.contains('delete-icon')) {
@@ -1429,9 +1468,74 @@
                     .catch(error => console.error('Error:', error.message));
             }
         });
+    }
+
+        function updateOhAmount() {
+            const price = parseFloat(ohPriceInput.value) || 0;
+            const quantity = parseFloat(ohQuantityInput.value) || 0;
+            ohAmountInput.value = (price * quantity).toFixed(2);
+        }
+
+        function updateOhTotalCost(newAmount) {
+
+            const totalOhCostSpan = document.getElementById('totalohCost');
+            const currentTotal = parseFloat(totalOhCostSpan.textContent) || 0;
+            totalOhCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
+            updateGrandTotal();
+        }
+
+        function clearOhFields() {
+            overheadsSelect.value = '';
+            ohQuantityInput.value = '';
+            ohCodeInput.value = '';
+            ohUoMInput.value = '';
+            ohPriceInput.value = '';
+            ohAmountInput.value = '';
+        }
+    }
+
+    function mohforRecipe()
+    {
+        let manualOhPriceValue = 0;
+        let manualOhPercValue = 0;
+        const totalCostSpan = document.getElementById('totalRmCost');
+
+        if((parseFloat(totalCostSpan.textContent) || 0) <= 0) {
+                alert("Please add raw materials");
+                return;
+            }
+
+        function calcForManual()
+        {
+            let manualOhAmount = 0;
+            let manualOhPercent = 0;
+            const manualOhType = document.getElementById("manualOhType").value.trim();
+
+            let rmTotal = parseFloat(totalCostSpan.textContent) || 0;
+            let pmTotal = parseFloat(totalPmCostSpan.textContent) || 0;
+            if ((rmTotal + pmTotal) <= 0) {
+                alert("Please add raw materials & packing materials.");
+                return;
+            }
+            if(manualOhType == 'percentage')
+            {
+                manualOhPercValue = parseFloat(document.getElementById("manualOhPerc").value) || 0;
+                console.log(parseFloat(rmTotal));
+                    manualOhAmount = ((rmTotal + pmTotal) * manualOhPercValue/100);
+                    console.log(manualOhAmount);
+                    manualOhPriceValue = manualOhAmount;
+            }
+            else if(manualOhType == 'price')
+            {
+                manualOhPriceValue = parseFloat(document.getElementById("manualOhPrice").value) || 0;
+                console.log(parseFloat(rmTotal));
+                manualOhPercent = (manualOhPriceValue / (rmTotal + pmTotal)) * 100;
+                console.log(manualOhPercent);
+                manualOhPercValue = manualOhPercent;
+            }
+        }
 
         const manualOhAddButton = document.getElementById('manualOhaddbtn');
-
         manualOhAddButton.addEventListener('click', function() {
             console.log("Add button clicked"); // Debugging
 
@@ -1444,13 +1548,12 @@
             const manualOverheadsName = document.getElementById('manualOverheads').value.trim();
             const manualOhType = document.getElementById("manualOhType").value;
 
-            let manualOhPriceValue = 0;
-            let manualOhPercValue = 0;
-
             if (manualOhType === "price") {
                 manualOhPriceValue = parseFloat(document.getElementById('manualOhPrice').value) || 0;
+                calcForManual();
             } else {
                 manualOhPercValue = parseFloat(document.getElementById('manualOhPerc').value) || 0;
+                calcForManual();
             }
 
             if (!manualOverheadsName || (manualOhType === "price" && manualOhPriceValue <= 0) || (manualOhType === "percentage" && manualOhPercValue <= 0)) {
@@ -1464,7 +1567,6 @@
                 clearMohFields();
                 return;
             }
-
 
             const data = {
                 product_id: product_id, // Ensure product_id is set
@@ -1492,8 +1594,8 @@
                 .then(data => {
                     console.log("Parsed Response:", data);
                     if (data.success) {
-                        alert('Manual overhead added successfully!');
-
+                        //alert('Manual overhead added successfully!');
+                        console.log("Manual overhead added successfully!.");
                         const insertedId = data.inserted_id; // Get the inserted ID from the response
 
                         // Add a new row to the table
@@ -1513,9 +1615,9 @@
                         manualEntryTable.insertAdjacentHTML('beforeend', row);
 
                         clearMohFields()
-
+                        window.location.reload();
                         // Optionally, update the total cost after adding a row
-                        updateOhTotalAmount(); // Assuming this function exists and updates the total cost
+                        // updateOhTotalCost(); // Assuming this function exists and updates the total cost
 
                     } else {
                         alert('Failed to save manual overhead.');
@@ -1524,6 +1626,7 @@
                 .catch(error => console.error("Fetch error:", error));
         });
 
+        if(manualEntryTable){
         manualEntryTable.addEventListener('click', function(e) {
 
             if (e.target.classList.contains('delete-icon')) {
@@ -1531,9 +1634,8 @@
                 const row = deleteIcon.closest('tr');
                 const insertedId = deleteIcon.getAttribute('data-id');
 
-                console.log(
+                console.log("moh",
                     insertedId); // Debugging
-
 
                 // Confirm deletion
                 if (!confirm('Are you sure you want to delete this record?')) {
@@ -1572,29 +1674,7 @@
                     .catch(error => console.error('Error:', error.message));
             }
         });
-
-        function updateOhAmount() {
-            const price = parseFloat(ohPriceInput.value) || 0;
-            const quantity = parseFloat(ohQuantityInput.value) || 0;
-            ohAmountInput.value = (price * quantity).toFixed(2);
-        }
-
-        function updateOhTotalCost(newAmount) {
-
-            const totalOhCostSpan = document.getElementById('totalohCost');
-            const currentTotal = parseFloat(totalOhCostSpan.textContent) || 0;
-            totalOhCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
-            updateGrandTotal();
-        }
-
-        function clearOhFields() {
-            overheadsSelect.value = '';
-            ohQuantityInput.value = '';
-            ohCodeInput.value = '';
-            ohUoMInput.value = '';
-            ohPriceInput.value = '';
-            ohAmountInput.value = '';
-        }
+    }
     }
 
     function updateGrandTotal() {

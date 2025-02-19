@@ -406,8 +406,32 @@
         let manualOhPercValue = 0;
 
         let product_id = null;
-        let rmTotal = 0; // Initialize globally
-        let pTotal = 0;
+        // let rmTotal = 0; // Initialize globally
+        // let pTotal = 0;
+
+        function recipevalidation() {
+        const rpvalue = document.getElementById('productSelect').value.trim();
+        const rpopvalue = document.getElementById('recipeOutput').value.trim();
+        const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+
+        if (rpvalue === "") {
+            alert("Please fill in the Recipe Name.");
+            document.getElementById('productSelect').focus();
+            return;
+        }
+        else if(rpopvalue === "")
+        {
+            alert("Please fill in the Recipe Output.");
+            document.getElementById('recipeOutput').focus();
+            return;
+        }
+        else if(rpuomvalue === "")
+        {
+            alert("Please fill in the Recipe UoM.");
+            document.getElementById('recipeUoM').focus();
+            return;
+        }
+    }
 
         // Function to toggle visibility based on checkbox selection
         function toggleForms() {
@@ -476,6 +500,7 @@
 
         // Update fields when raw material is selected
         rawMaterialSelect.addEventListener('change', function() {
+            recipevalidation();
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.disabled) {
                 clearFields();
@@ -671,6 +696,7 @@
         }
 
         packingMaterialSelect.addEventListener('change', function() {
+            recipevalidation();
             const selectedOption = this.options[this.selectedIndex];
 
             if (selectedOption.disabled) {
@@ -845,11 +871,10 @@
             pmAmountInput.value = '';
         }
 
-
         //overheads
         overheadsSelect.addEventListener('change', function() {
+            recipevalidation();
             const selectedOption = this.options[this.selectedIndex];
-
             if (selectedOption.disabled) {
                 clearPmFields();
                 return;
@@ -959,8 +984,6 @@
                         fromMastersCheckbox.style.display = "none";
                         fromMastersLabel.style.display = "none";
                     }
-
-
                     clearOhFields();
 
                 })
@@ -981,44 +1004,42 @@
             let manualOhPercent = 0;
             const manualOhType = document.getElementById("manualOhType").value.trim();
 
-            rmTotal = parseFloat(totalCostSpan.textContent) || 0;
-            pmTotal = parseFloat(totalPmCostSpan.textContent) || 0;
+            let rmTotal = parseFloat(totalCostSpan.textContent) || 0;
+            let pmTotal = parseFloat(totalPmCostSpan.textContent) || 0;
+            if ((rmTotal + pmTotal) <= 0) {
+                alert("Please add raw materials & packing materials.");
+                return;
+            }
             if(manualOhType == 'percentage')
             {
                 manualOhPercValue = parseFloat(document.getElementById("manualOhPerc").value) || 0;
                 console.log(parseFloat(rmTotal));
-                if(rmTotal > 0 || pmTotal > 0)
-                {
                     manualOhAmount = ((rmTotal + pmTotal) * manualOhPercValue/100);
                     console.log(manualOhAmount);
                     manualOhPriceValue = manualOhAmount;
-                }
-                else
-                { alert("please add rawmaterials & Packing materils."); return; }
             }
             else if(manualOhType == 'price')
             {
                 manualOhPriceValue = parseFloat(document.getElementById("manualOhPrice").value) || 0;
                 console.log(parseFloat(rmTotal));
-                if(rmTotal > 0 || pmTotal > 0)
-                {
-                    manualOhPercent = ((manualOhPercValue/(rmTotal + pmTotal)) * 100);
-                    console.log(manualOhPercent);
-                    manualOhPercValue = manualOhPercent;
-                }
-                else
-                { alert("please add rawmaterials & Packing materils."); return; }
+                manualOhPercent = (manualOhPriceValue / (rmTotal + pmTotal)) * 100;
+                console.log(manualOhPercent);
+                manualOhPercValue = manualOhPercent;
             }
-
         }
 
         manualOhAddButton.addEventListener('click', function() {
             console.log("Add button clicked"); // Debugging
-            if (!productSelect.value.trim() == null) {
-                alert('Please select a valid product and output');
+            recipevalidation();
+            // if (productSelect.value.trim() == null) {
+            //     alert('Please select a valid product and output');
+            //     return;
+            // }
+
+            if ((parseFloat(totalCostSpan.textContent) || 0) <= 0) {
+                alert("Please add raw materials");
                 return;
             }
-
             const fromMastersCheckbox = document.getElementById("frommasters");
             const fromMastersLabel = document.querySelector("label[for='frommasters']");
             const manualCheckbox = document.getElementById("entermanually");
@@ -1039,7 +1060,7 @@
                 calcForManual();
                 // manualOhPriceValue = manualOhAmount;
             }
-
+            updateMohTotalCost(manualOhPriceValue);
             if (!manualOverheadsName || (manualOhType === "price" && manualOhPriceValue <= 0) || (manualOhType === "percentage" && manualOhPercValue <= 0)) {
                 alert("Please fill all fields before adding.");
                 return;
@@ -1071,8 +1092,8 @@
                 .then((data) => {
                     console.log("Parsed Response:", data);
                     if (data.success) {
-                        alert("Manual overhead added successfully!");
-
+                        // alert("Manual overhead added successfully!");
+                        console.log("Manual overhead added successfully!");
                         const insertedId = data.inserted_id; // Get the inserted ID from the response
 
                         // Add a new row to the table
@@ -1123,6 +1144,8 @@
                 .catch((error) => console.error("Fetch error:", error));
         });
 
+        if(overheadsTable)
+        {
         overheadsTable.addEventListener('click', function(e) {
             if (e.target.classList.contains('delete-icon')) {
                 const deleteIcon = e.target;
@@ -1160,7 +1183,7 @@
                 }
             }
         });
-
+        }
 
         // Function to handle deletion when the code is empty
         function ohDelete(insertedId, row, token) {
@@ -1220,7 +1243,6 @@
                     // Remove the row from the table
                     const amount = parseFloat(row.cells[5].textContent) || 0;
                     row.remove();
-
                     // Update the total cost
                     updateOhTotalCost(-amount);
                 })
@@ -1258,7 +1280,6 @@
             totalOhCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
             updateGrandTotal();
         }
-
 
         function clearOhFields() {
             overheadsSelect.value = '';
@@ -1304,12 +1325,16 @@
         // Update when input changes
         rpoutputInput.addEventListener('input', updateUnitTotal);
 
-        function updatemohAmount() {
-            const price = parseFloat(ohPriceInput.value) || 0;
-            const quantity = parseFloat(ohQuantityInput.value) || 0;
-            ohAmountInput.value = (price * quantity).toFixed(2);
+        // function updatemohAmount() {
+        //     const price = parseFloat(ohPriceInput.value) || 0;
+        //     // const quantity = parseFloat(ohQuantityInput.value) || 0;
+        //     ohAmountInput.value = (price * quantity).toFixed(2);
+        // }
+        function updateMohTotalCost(newAmount) {
+            const currentTotal = parseFloat(totalOhCostSpan.textContent) || 0;
+            totalOhCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
+            updateGrandTotal();
         }
-
         function recipePricing() {
             const rpoutputInput = document.getElementById('recipeOutput');
             const rpuomInput = document.getElementById('recipeUoM');
