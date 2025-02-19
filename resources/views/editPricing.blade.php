@@ -578,6 +578,18 @@
         mohforRecipe();
     });
 
+    function recipevalidation() {
+    const rpvalue = document.getElementById('productSelect').value.trim();
+    const rpopvalue = document.getElementById('recipeOutput').value.trim();
+    const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+
+    if (rpvalue === "" || rpopvalue === "" || rpuomvalue === "") {
+        alert("Please fill in the Recipe Name, Output, and UoM.");
+        return false;  // Prevents form submission
+    }
+        return true;  // Allows form submission if everything is filled
+    }
+
     // raw materials recipe-pricing details
     // Function to enable editing for a specific row
     function editRow(id, rid) {
@@ -690,6 +702,8 @@
         const totalCostInput = document.getElementById('totalcost'); // Total Cost (A+B+C)
         const rpoutputInput = document.getElementById('recipeOutput');
         const rpuomInput = document.getElementById('recipeUoM');
+
+        recipevalidation();
 
         productSelect.addEventListener('change', function() {
             product_id = this.value; // Update product_id with the selected value
@@ -995,6 +1009,7 @@
 
         // Update fields when packing material is selected
         packingMaterialSelect.addEventListener('change', function() {
+
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.disabled) {
                 clearPmFields();

@@ -409,6 +409,30 @@
         // let rmTotal = 0; // Initialize globally
         // let pTotal = 0;
 
+        function recipevalidation() {
+        const rpvalue = document.getElementById('productSelect').value.trim();
+        const rpopvalue = document.getElementById('recipeOutput').value.trim();
+        const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+
+        if (rpvalue === "") {
+            alert("Please fill in the Recipe Name.");
+            document.getElementById('productSelect').focus();
+            return;
+        }
+        else if(rpopvalue === "")
+        {
+            alert("Please fill in the Recipe Output.");
+            document.getElementById('recipeOutput').focus();
+            return;
+        }
+        else if(rpuomvalue === "")
+        {
+            alert("Please fill in the Recipe UoM.");
+            document.getElementById('recipeUoM').focus();
+            return;
+        }
+    }
+
         // Function to toggle visibility based on checkbox selection
         function toggleForms() {
             if (fromMastersCheckbox.checked) {
@@ -476,6 +500,7 @@
 
         // Update fields when raw material is selected
         rawMaterialSelect.addEventListener('change', function() {
+            recipevalidation();
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.disabled) {
                 clearFields();
@@ -671,6 +696,7 @@
         }
 
         packingMaterialSelect.addEventListener('change', function() {
+            recipevalidation();
             const selectedOption = this.options[this.selectedIndex];
 
             if (selectedOption.disabled) {
@@ -845,11 +871,10 @@
             pmAmountInput.value = '';
         }
 
-
         //overheads
         overheadsSelect.addEventListener('change', function() {
+            recipevalidation();
             const selectedOption = this.options[this.selectedIndex];
-
             if (selectedOption.disabled) {
                 clearPmFields();
                 return;
@@ -1005,11 +1030,12 @@
 
         manualOhAddButton.addEventListener('click', function() {
             console.log("Add button clicked"); // Debugging
-            if (productSelect.value.trim() == null) {
-                alert('Please select a valid product and output');
-                return;
-            }
-            
+            recipevalidation();
+            // if (productSelect.value.trim() == null) {
+            //     alert('Please select a valid product and output');
+            //     return;
+            // }
+
             if ((parseFloat(totalCostSpan.textContent) || 0) <= 0) {
                 alert("Please add raw materials");
                 return;
