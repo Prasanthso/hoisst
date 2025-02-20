@@ -414,7 +414,7 @@
         const rpopvalue = document.getElementById('recipeOutput').value.trim();
         const rpuomvalue = document.getElementById('recipeUoM').value.trim();
 
-        if (rpvalue === "") {
+        if (rpvalue === "" && rpvalue === "Choose...") {
             alert("Please fill in the Recipe Name.");
             document.getElementById('productSelect').focus();
             return;
