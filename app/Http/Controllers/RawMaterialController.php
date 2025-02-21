@@ -74,6 +74,7 @@ class RawMaterialController extends Controller
                     ->where('rm.status', '=', 'active')
                     ->orderBy('rm.name', 'asc') // Filter by active status
                     ->get();
+                    // ->paginate(10);
             }
             // Return filtered raw materials as JSON response
             return response()->json([

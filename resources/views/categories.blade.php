@@ -94,8 +94,8 @@
                                 <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
                                 </td>
-                                <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO -->
-                                <td><a href="{{ route('categoryitem.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->itemname }}</a></td>
+                                <td>{{ ($categoriesitems->currentPage() - 1) * $categoriesitems->perPage() + $loop->iteration }}.</td> <!-- Auto-increment S.NO -->
+                                <td class="left-align"><a href="{{ route('categoryitem.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->itemname }}</a></td>
                                 <td>{{ $material->description }}</td>
                                 <td>{{ $material->created_user }}</td>
                             </tr>
@@ -261,11 +261,12 @@
                             console.log('Fetched Data:', data);
                             // Populate the table with new data
                             data.categoriesitems.forEach((item, index) => {
+
                                 tableBody.innerHTML += `
                         <tr data-id="${item.id}">
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${index + 1}.</td>
-                            <td><a href="/editcategoryitem/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
+                            <td class="left-align"><a href="/editcategoryitem/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
                             <td>${item.description}</td>
                             <td>${item.created_user}</td>
                         </tr>

@@ -1285,7 +1285,9 @@ h6 {
 .custom-header {
   background-color: #00ABDF;
 }
-
+.left-align {
+    text-align: left !important;
+}
 .custom-header th {
   text-align: center;
   color: rgb(121, 16, 16);

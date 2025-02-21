@@ -96,8 +96,8 @@
                                 <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
                                 </td>
-                                <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO -->
-                                <td><a href="{{ route('rawMaterial.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
+                                <td>{{ ($rawMaterials->currentPage() - 1) * $rawMaterials->perPage() + $loop->iteration }}.</td> <!-- Auto-increment S.NO -->
+                                <td class="left-align"><a href="{{ route('rawMaterial.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none; text-align:left;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
                                 <td>{{ $material->rmcode }}</td> <!-- RM Code -->
                                 <td>
                                     {{ $material->category_name1 ?? '' }}
@@ -664,7 +664,7 @@
                         <tr data-id="${item.id}">
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${index + 1}.</td>
-                            <td><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                            <td class="left-align"><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
                             <td>${item.rmcode}</td>
                              <td>
                                 ${item.category_name1 ?? ''}
