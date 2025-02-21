@@ -28,10 +28,12 @@ class CategoryItemController extends Controller
             $categoryIds = explode(',', $categoryIds);
 
             // Fetch items matching the category IDs
-            $categoriesitems = CategoryItems::whereIn('categoryId', $categoryIds)->get();
+            $categoriesitems = CategoryItems::whereIn('categoryId', $categoryIds)
+            ->orderBy('itemname', 'asc')
+            ->get();
         } else {
             // Fetch all items when no categories are selected
-            $categoriesitems = CategoryItems::where('status','active')->paginate(10);
+            $categoriesitems = CategoryItems::where('status','active')->orderBy('itemname', 'asc')->paginate(10);
         }
 
         if ($request->ajax()) {

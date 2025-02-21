@@ -72,6 +72,7 @@ class OverheadController extends Controller
                             ->orWhereIn('c10.id', $selectedCategoryIds);
                     })
                     ->where('oh.status', '=', 'active') // Filter by active status
+                    ->orderBy('oh.name', 'asc')
                     ->get();
             // Return filtered packing materials as JSON response
             return response()->json([
@@ -111,6 +112,7 @@ class OverheadController extends Controller
             'c10.itemname as category_name10'
         )
         ->where('oh.status', '=', 'active') // Filter by active status
+        ->orderBy('oh.name', 'asc')
         ->paginate(10);
 
         return view('overheads.overheads', compact('overheads', 'categoryitems'));

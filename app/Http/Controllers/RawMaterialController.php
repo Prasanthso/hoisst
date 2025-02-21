@@ -71,7 +71,8 @@ class RawMaterialController extends Controller
                             ->orWhereIn('c9.id', $selectedCategoryIds)
                             ->orWhereIn('c10.id', $selectedCategoryIds);
                     })
-                    ->where('rm.status', '=', 'active') // Filter by active status
+                    ->where('rm.status', '=', 'active')
+                    ->orderBy('rm.name', 'asc') // Filter by active status
                     ->get();
             }
             // Return filtered raw materials as JSON response
@@ -111,7 +112,8 @@ class RawMaterialController extends Controller
             'c9.itemname as category_name9',
             'c10.itemname as category_name10'
         )
-            ->where('rm.status', '=', 'active') // Filter by active status
+            ->where('rm.status', '=', 'active')
+            ->orderBy('rm.name', 'asc') // Filter by active status
             ->paginate(10);
 
         return view('rawMaterial.rawMaterial', compact('rawMaterials', 'categoryitems'));

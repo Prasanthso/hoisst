@@ -77,6 +77,7 @@ class ProductController extends Controller
                         ->orWhereIn('c10.id', $selectedCategoryIds);
                 })
                 ->where('pd.status', '=', 'active') // Filter by active status
+                ->orderBy('pd.name', 'asc')
                 ->get();
 
             // Return filtered raw materials as JSON response
@@ -117,6 +118,7 @@ class ProductController extends Controller
                 'c10.itemname as category_name10'
             )
         ->where('pd.status', '=', 'active') // Filter by active status
+        ->orderBy('pd.name', 'asc')
         ->paginate(10);
 
         return view('product.products', compact('product', 'categoryitems'));

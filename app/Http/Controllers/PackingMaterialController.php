@@ -70,6 +70,7 @@ class PackingMaterialController extends Controller
                             ->orWhereIn('c10.id', $selectedCategoryIds);
                     })
                     ->where('pm.status', '=', 'active') // Filter by active status
+                    ->orderBy('pm.name', 'asc')
                     ->get();
 
                 return response()->json([
@@ -110,6 +111,7 @@ class PackingMaterialController extends Controller
             'c10.itemname as category_name10'
         )
         ->where('pm.status', '=', 'active') // Filter by active status
+        ->orderBy('pm.name', 'asc')
         ->paginate(10);
 
         return view('packingMaterial.packingMaterial', compact('packingMaterials', 'categoryitems'));
