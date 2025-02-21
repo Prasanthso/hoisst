@@ -262,7 +262,7 @@
                             // Populate the table with new data
                             data.categoriesitems.forEach((item, index) => {
                                 tableBody.innerHTML += `
-                        <tr>
+                        <tr data-id="${item.id}">
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${index + 1}.</td>
                             <td><a href="/editcategoryitem/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
@@ -358,12 +358,10 @@
                 alert("Please select at least one row to delete.");
                 return;
             }
-
             const selectedIds = selectedRows.map(checkbox => checkbox.closest('tr').getAttribute('data-id'));
-
-            if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
-                return;
-            }
+            // if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
+            //     return;
+            // }
 
             fetch("{{ route('categoryitem.delete') }}", {
                     method: "POST",
@@ -382,15 +380,40 @@
                     return response.json();
                 })
                 .then(data => {
+                    console.log(data);
                     if (data.success) {
-                        selectedRows.forEach(checkbox => {
-                            const row = checkbox.closest("tr");
-                            row.remove();
-                            updateSerialNumbers();
-                        });
-                        alert("Selected rows deleted successfully!");
-                    } else {
-                        alert("Failed to delete rows. Please try again.");
+                        if (data.confirm) {
+                        // If confirmation is required, show a confirmation dialog
+                        if (confirm("Are you want to delete this item of category-item. Do you want to proceed?")) {
+                            fetch('/confirmcategory', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    "X-CSRF-TOKEN": token
+                                },
+                                body: JSON.stringify({ ids: selectedIds }) // Send the selected IDs again
+                            })
+                            .then(response => response.json())
+                            .then(confirmData  => {
+                                if (confirmData.success) {
+                                    selectedRows.forEach(checkbox => {
+                                        const row = checkbox.closest("tr");
+                                        row.remove();
+                                    });
+                                    updateSerialNumbers();
+                                    alert("Selected rows deleted successfully!");
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error confirming deletion:", error);
+                                alert("An error occurred. Please try again.");
+                            });
+                        }
+                    }
+                }
+                else
+                    {
+                        alert("No category item can be deleted. They might be in use.");
                     }
                 })
                 .catch(error => {

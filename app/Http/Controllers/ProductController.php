@@ -339,13 +339,10 @@ class ProductController extends Controller
             })
             ->update(['status' => 'inactive']);
 
-        if ($updatedCount > 0) {
             return response()->json([
                 'success' => true,
-                'message' => 'Products item marked as inactive successfully.',
+                'message' => $updatedCount > 0 ? 'Products marked as inactive successfully.' : 'No Products were updated.',
             ]);
-        }
-            return response()->json(['success' => true, 'message' => 'Products marked as inactive successfully.']);
         } catch (\Exception $e) {
             // Handle exceptions
             return response()->json(['success' => false, 'message' => 'Error updating Products: ' . $e->getMessage()]);

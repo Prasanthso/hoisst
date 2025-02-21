@@ -57,6 +57,7 @@ Route::get('/showcategoryitem', [CategoryItemController::class, 'index'])->name(
 Route::get('/editcategoryitem/{id}', [CategoryItemController::class, 'edit'])->name('categoryitem.edit');
 Route::put('/editcategoryitem/{id}', [CategoryItemController::class, 'update'])->name('categoryitem.update');
 Route::post('/deletecategory', [CategoryItemController::class, 'delete'])->name('categoryitem.delete');
+Route::post('/confirmcategory', [CategoryItemController::class, 'deleteConfirmation'])->name('categoryitem.confirm');
 
 Route::get('/rawmaterial', [RawMaterialController::class, 'index'])->name('rawMaterials.index');
 Route::get('/addrawmaterial', [RawMaterialController::class, 'create'])->name('rawmaterial.create');

@@ -324,12 +324,10 @@ class PackingMaterialController extends Controller
                 })
                 ->update(['status' => 'inactive']);
 
-            if ($updatedCount > 0) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Packing-materials item marked as inactive successfully.',
+                    'message' => $updatedCount > 0 ? 'Packing materials marked as inactive successfully.' : 'No packing materials were updated.',
                 ]);
-            }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

@@ -116,6 +116,69 @@ class CategoryItemController extends Controller
         return redirect()->route('categoryitem.index');
     }
 
+    public function deleteConfirmation(Request $request)
+    {
+        $ids = $request->input('ids');
+
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'No valid IDs provided.'], 400);
+        }
+
+        try {
+            // Update only CategoryItems that are NOT present in any of the related tables
+            $updatedCount = CategoryItems::whereIn('id', $ids)
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('raw_materials')
+                        ->where(function ($q) {
+                            for ($i = 1; $i <= 10; $i++) {
+                                $q->orWhereColumn("raw_materials.category_id{$i}", 'categoryitems.id');
+                            }
+                        });
+                })
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('packing_materials')
+                        ->where(function ($q) {
+                            for ($i = 1; $i <= 10; $i++) {
+                                $q->orWhereColumn("packing_materials.category_id{$i}", 'categoryitems.id');
+                            }
+                        });
+                })
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('overheads')
+                        ->where(function ($q) {
+                            for ($i = 1; $i <= 10; $i++) {
+                                $q->orWhereColumn("overheads.category_id{$i}", 'categoryitems.id');
+                            }
+                        });
+                })
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('product_master')
+                        ->where(function ($q) {
+                            for ($i = 1; $i <= 10; $i++) {
+                                $q->orWhereColumn("product_master.category_id{$i}", 'categoryitems.id');
+                            }
+                        });
+                })
+                ->update(['status' => 'inactive']);
+
+            return response()->json([
+                'success' => true,
+                'message' => $updatedCount > 0 ? 'Category items marked as inactive successfully.' : 'No category items were updated.',
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error updating category items: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while updating category items. Please try again later.',
+            ], 500);
+        }
+    }
+
     public function delete(Request $request)
     {
         $ids = $request->input('ids'); // Get the 'ids' array from the request
@@ -123,12 +186,61 @@ class CategoryItemController extends Controller
         if (!$ids || !is_array($ids)) {
             return response()->json(['success' => false, 'message' => 'No valid IDs provided.']);
         }
+            try {
+                // Update only CategoryItems that are NOT present in any of the related tables
+                $itemsToDelete = CategoryItems::whereIn('id', $ids)
+                    ->whereNotExists(function ($query) {
+                        $query->select(DB::raw(1))
+                            ->from('raw_materials')
+                            ->where(function ($q) {
+                                for ($i = 1; $i <= 10; $i++) {
+                                    $q->orWhereColumn("raw_materials.category_id{$i}", 'categoryitems.id');
+                                }
+                            });
+                    })
+                    ->whereNotExists(function ($query) {
+                        $query->select(DB::raw(1))
+                            ->from('packing_materials')
+                            ->where(function ($q) {
+                                for ($i = 1; $i <= 10; $i++) {
+                                    $q->orWhereColumn("packing_materials.category_id{$i}", 'categoryitems.id');
+                                }
+                            });
+                    })
+                    ->whereNotExists(function ($query) {
+                        $query->select(DB::raw(1))
+                            ->from('overheads')
+                            ->where(function ($q) {
+                                for ($i = 1; $i <= 10; $i++) {
+                                    $q->orWhereColumn("overheads.category_id{$i}", 'categoryitems.id');
+                                }
+                            });
+                    })
+                    ->whereNotExists(function ($query) {
+                        $query->select(DB::raw(1))
+                            ->from('product_master')
+                            ->where(function ($q) {
+                                for ($i = 1; $i <= 10; $i++) {
+                                    $q->orWhereColumn("product_master.category_id{$i}", 'categoryitems.id');
+                                }
+                            });
+                    })
+                    ->get();
 
-        try {
-            // Update the status of categoryitem to 'inactive'
-            CategoryItems::whereIn('id', $ids)->update(['status' => 'inactive']);
-
-            return response()->json(['success' => true, 'message' => 'Category-item was inactive successfully.']);
+                    if ($itemsToDelete->isNotEmpty()) {
+                        return response()->json([
+                            'success' => true,
+                            'confirm' => true,
+                            'message' => 'Are you want to delete this item of categoryitems. Do you want to proceed?',
+                            // 'items' => $itemsToDelete, // Send the list of items for confirmation
+                        ]);
+                    } else {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'No categoryitems can be deleted. They might be in use.',
+                        ]);
+                    }
+            // return response()->json(['success' => true, 'message' => 'Category-item was inactive successfully.']);
         } catch (\Exception $e) {
             // Handle exceptions
             return response()->json(['success' => false, 'message' => 'Error updating Category-item: ' . $e->getMessage()]);

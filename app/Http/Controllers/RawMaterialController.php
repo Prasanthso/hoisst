@@ -334,12 +334,10 @@ class RawMaterialController extends Controller
                 })
                 ->update(['status' => 'inactive']);
 
-            if ($updatedCount > 0) {
                 return response()->json([
                     'success' => true,
-                    'message' => "$updatedCount Raw-material's item marked as inactive successfully.",
+                    'message' => $updatedCount > 0 ? 'Raw materials marked as inactive successfully.' : 'No raw materials were updated.',
                 ]);
-            }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
