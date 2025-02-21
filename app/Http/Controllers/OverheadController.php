@@ -310,6 +310,38 @@ class OverheadController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    public function deleteConfirmation(Request $request)
+    {
+        $ids = $request->input('ids'); // Get the 'ids' array from the request
+
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'No valid IDs provided.']);
+        }
+
+        try {
+            // Update the status of raw materials to 'inactive'
+            // Overhead::whereIn('id', $ids)->update(['status' => 'inactive']);
+            $updatedCount = Overhead::whereIn('id', $ids)
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('oh_for_recipe')
+                    ->whereColumn('oh_for_recipe.overheads_id', 'overheads.id'); // Ensure correct column name
+            })
+            ->update(['status' => 'inactive']);
+
+        if ($updatedCount > 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Overheads item marked as inactive successfully.',
+            ]);
+        }
+            return response()->json(['success' => true, 'message' => 'Overheads marked as inactive successfully.']);
+        } catch (\Exception $e) {
+            // Handle exceptions
+            return response()->json(['success' => false, 'message' => 'Error updating overheads: ' . $e->getMessage()]);
+        }
+    }
+
     public function delete(Request $request)
     {
         $ids = $request->input('ids'); // Get the 'ids' array from the request
@@ -320,12 +352,33 @@ class OverheadController extends Controller
 
         try {
             // Update the status of raw materials to 'inactive'
-            Overhead::whereIn('id', $ids)->update(['status' => 'inactive']);
+            // Overhead::whereIn('id', $ids)->update(['status' => 'inactive']);
+            $itemsToDelete = Overhead::whereIn('id', $ids)
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('oh_for_recipe')
+                    ->whereColumn('oh_for_recipe.overheads_id', 'overheads.id'); // Ensure correct column name
+            })
+            ->get();
 
-            return response()->json(['success' => true, 'message' => 'Raw materials marked as inactive successfully.']);
+        // If there are items that can be deleted, return a confirmation message
+        if ($itemsToDelete->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'confirm' => true,
+                'message' => 'Are you want to delete this item of overheads. Do you want to proceed?',
+                // 'items' => $itemsToDelete, // Send the list of items for confirmation
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No overheads item can be deleted. They might be in use.',
+            ]);
+        }
+            // return response()->json(['success' => true, 'message' => 'Raw materials marked as inactive successfully.']);
         } catch (\Exception $e) {
             // Handle exceptions
-            return response()->json(['success' => false, 'message' => 'Error updating raw materials: ' . $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Error updating overheads: ' . $e->getMessage()]);
         }
     }
 }

@@ -247,8 +247,8 @@ class ProductController extends Controller
     public function edit(string $id)
     {
         // Fetch all categories
-        $productCategories = DB::table('categoryitems')->get();
-
+        // $productCategories = DB::table('categoryitems')->get();
+        $productCategories = CategoryItems::pdCategoryItem();
         // Fetch the specific raw material by its ID
         $product = DB::table('product_master')->where('id', $id)->first(); // Fetch the single raw material entry
 
@@ -320,6 +320,38 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    public function deleteConfirmation(Request $request)
+    {
+        $ids = $request->input('ids'); // Get the 'ids' array from the request
+
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'No valid IDs provided.']);
+        }
+
+        try {
+            // Update the status of raw materials to 'inactive'
+            // Overhead::whereIn('id', $ids)->update(['status' => 'inactive']);
+            $updatedCount = Product::whereIn('id', $ids)
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('recipedetails')
+                    ->whereColumn('recipedetails.product_id', 'product_master.id'); // Ensure correct column name
+            })
+            ->update(['status' => 'inactive']);
+
+        if ($updatedCount > 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Products item marked as inactive successfully.',
+            ]);
+        }
+            return response()->json(['success' => true, 'message' => 'Products marked as inactive successfully.']);
+        } catch (\Exception $e) {
+            // Handle exceptions
+            return response()->json(['success' => false, 'message' => 'Error updating Products: ' . $e->getMessage()]);
+        }
+    }
+
     public function delete(Request $request)
     {
         $ids = $request->input('ids'); // Get the 'ids' array from the request
@@ -330,12 +362,31 @@ class ProductController extends Controller
 
         try {
             // Update the status of raw materials to 'inactive'
-            Product::whereIn('id', $ids)->update(['status' => 'inactive']);
+            $itemsToDelete = Product::whereIn('id', $ids)
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('recipedetails')
+                    ->whereColumn('recipedetails.product_id', 'product_master.id'); // Ensure correct column name
+            })
+            ->get();
 
-            return response()->json(['success' => true, 'message' => 'Raw materials marked as inactive successfully.']);
+        // If there are items that can be deleted, return a confirmation message
+        if ($itemsToDelete->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'confirm' => true,
+                'message' => 'Are you want to delete this item of Products. Do you want to proceed?',
+                // 'items' => $itemsToDelete, // Send the list of items for confirmation
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No Products item can be deleted. They might be in use.',
+            ]);
+        }
         } catch (\Exception $e) {
             // Handle exceptions
-            return response()->json(['success' => false, 'message' => 'Error updating raw materials: ' . $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Error updating Products: ' . $e->getMessage()]);
         }
     }
 }

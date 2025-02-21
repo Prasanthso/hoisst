@@ -661,7 +661,7 @@
                             // Populate the table with new data
                             data.rawMaterials.forEach((item, index) => {
                                 rawMaterialTable.innerHTML += `
-                        <tr>
+                        <tr data-id="${item.id}">
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${index + 1}.</td>
                             <td><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>

@@ -656,10 +656,10 @@
                             // Populate the table with new data
                             data.packingMaterials.forEach((item, index) => {
                                 packingMaterialTable.innerHTML += `
-                        <tr>
+                        <tr data-id="${item.id}">
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${index + 1}.</td>
-                            <td><a href="/packingMaterial/edit/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                            <td><a href="/editpackingmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
                             <td>${item.pmcode}</td>
                              <td>
                                 ${item.category_name1 ?? ''}
