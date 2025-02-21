@@ -105,7 +105,7 @@ class ReportController extends Controller
             LEFT JOIN 
                 overall_costing oc ON pm.id = oc.productId AND oc.status = 'active'
             WHERE 
-                rmst.status = 'active'  -- Only include active recipes
+                rmst.status = 'active' AND oc.suggested_mrp IS NOT NULL
             GROUP BY 
             pm.id, pm.name, pm.price, pm.tax, oc.suggested_mrp, rmst.Output, ofr.quantity, oh.price, mofr.price
         ");
