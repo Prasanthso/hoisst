@@ -129,6 +129,8 @@ class RecipePricingController extends Controller
                 rmst.status = 'active' AND oc.suggested_mrp IS NOT NULL
             GROUP BY 
             pm.id, pm.name, pm.price, pm.tax, oc.suggested_mrp, rmst.Output, ofr.quantity, oh.price, mofr.price
+            ORDER BY 
+            pm.name ASC;
 
         ");
         return view('recipePricing', compact('reports'));
