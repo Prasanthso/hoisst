@@ -60,16 +60,24 @@
             <i class="bi bi-filter"></i> Filters
         </span>
 
-        <!-- Product Name Search -->
-        <div class="me-2">
-            <input type="text" id="productNameSearch" class="form-control" placeholder="Search Pdt Name" style="width: 150px;">
+        <!-- Combined Search Field with Dropdown -->
+        <div class="me-2 align-items-center d-flex">
+            <div class="input-group" style="width: 250px;">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search by" style="flex: 1;">
+                <select class="form-select me-2" id="searchCategory" style="width: 30px;">
+                    <option value="product">Product</option>
+                    <option value="rm">Raw Material</option>
+                    <option value="pm">Packing Material</option>
+                </select>
+            </div>
         </div>
+
 
         <!-- RM% Range Filter -->
         <div class="d-flex align-items-center me-2">
             <div class="input-group" style="width: 200px;">
                 <input type="number" id="rmValue" class="form-control" placeholder="RM%" style="flex: 1;">
-                <select class="form-select" id="rmRangeType">
+                <select class="form-select" id="rmRangeType" style="width: 40px;">
                     <option value="above">Above</option>
                     <option value="below">Below</option>
                 </select>
@@ -81,7 +89,7 @@
         <div class="d-flex align-items-center me-2">
             <div class="input-group" style="width: 200px;">
                 <input type="text" id="pmValue" class="form-control" placeholder="PM%" style="flex: 1;">
-                <select class="form-select" id="pmRangeType" style="width: 80px;">
+                <select class="form-select" id="pmRangeType" style="width: 40px;">
                     <option value="above">Above</option>
                     <option value="below">Below</option>
                 </select>
@@ -93,12 +101,14 @@
         <select
             class="form-select me-2"
             id="marginFilter"
-            style="width: 150px; background: white; border: 1px solid #ccc; border-radius: 5px;"
-            onchange="updateStyle(this)">
+            style="width: 160px; background: white; border: 1px solid #ccc; border-radius: 5px;"
+            onchange="filterMargin(this.value)">
             <option value="" disabled selected>Margin</option>
-            <option value="Low" style="background-color:rgb(245, 171, 177); color:rgb(183, 18, 34);">Low</option>
-            <option value="Medium" style="background-color:rgb(228, 206, 133); color:rgb(186, 141, 6);">Medium</option>
-            <option value="High" style="background-color:rgb(119, 220, 143); color: #155724;">High</option>
+            <!-- <option value="low" style="background-color:rgb(245, 171, 177); color:rgb(183, 18, 34);">Low</option>
+            <option value="medium" style="background-color:rgb(228, 206, 133); color:rgb(186, 141, 6);">Medium</option>
+            <option value="high" style="background-color:rgb(119, 220, 143); color: #155724;">High</option> -->
+            <option value="asc">Sort Ascending</option>
+            <option value="desc">Sort Descending</option>
         </select>
     </div>
 
@@ -139,7 +149,14 @@
                             </thead>
                             <tbody id="ReportTable">
                                 @foreach ($reports as $index => $report)
-                                <tr>
+                                @php
+                                $sellingRate = $report->S_MRP * 0.75;
+                                $beforeTax = ($sellingRate * 100) / 118;
+                                $OH_PERC = ($report->OH_Cost/$report->TOTAL) * 100;
+                                $MARGINAMOUNT = $beforeTax-$report->COST;
+                                $marginPerc = ($MARGINAMOUNT/$beforeTax)*100;
+                                @endphp
+                                <tr data-rm="{{ strtolower($report->RM_Names) }}" data-pm="{{ strtolower($report->PM_Names) }}">
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $report->Product_Name }}</td>
                                     <!-- <td>{{ $report->S_MRP }}</td> -->
@@ -148,16 +165,16 @@
                                     <td>{{ number_format($report->RM_perc, 2) }}</td>
                                     <td>{{ $report->PM_Cost }}</td>
                                     <td>{{ number_format($report->PM_perc, 2) }}</td>
-                                    <td>{{ $report->TOTAL }}</td>
-                                    <td>{{ $report->Total_perc }}</td>
+                                    <td>{{ number_format($report->TOTAL, 2) }}</td>
+                                    <td>{{ number_format($report->Total_perc, 2) }}</td>
                                     <td>{{ number_format($report->OH_Cost) }}</td>
-                                    <td>{{ number_format($report->OH_perc, 2) }}</td>
+                                    <td>{{ number_format($OH_PERC, 2) }}</td>
                                     <td>{{ $report->COST }}</td>
-                                    <td>{{ $report->Selling_Cost }}</td>
+                                    <td>{{ number_format($report->Selling_Cost, 2) }}</td>
                                     <td>18</td>
-                                    <td>{{ number_format($report->Before_tax, 2) }}</td>
-                                    <td>{{ number_format($report->Margin, 2) }}</td>
-                                    <td>{{ number_format($report->Margin_perc, 2) }}</td>
+                                    <td>{{ number_format($beforeTax, 2) }}</td>
+                                    <td>{{ number_format($MARGINAMOUNT, 2) }}</td>
+                                    <td>{{ number_format($marginPerc, 2) }}</td>
                                 </tr>
                                 @endforeach
 
@@ -234,8 +251,52 @@
                 theme: 'striped',
             });
 
-            doc.save('filtered_report.pdf');
+            doc.save('report.pdf');
         });
+
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const table = document.getElementById('reportTable'); // Ensure this ID exists in your table
+            if (!table) {
+                console.error('Table with ID "exportRm" not found.');
+                return;
+            }
+            console.log('Table with ID "exportRm" not found.');
+
+            const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
+            const visibleData = [];
+            let serialNumber = 1; // Initialize serial number
+
+            // Iterate through each row
+            rows.forEach((row, rowIndex) => {
+                if (row.style.display !== 'none') { // Only include visible rows
+                    const cells = Array.from(row.children);
+                    const rowData = [];
+
+                    if (rowIndex > 0) {
+                        rowData.push(serialNumber++); // Auto-increment serial number
+                    } else {
+                        rowData.push("S.NO"); // Add "S.NO" to the header row
+                    }
+
+                    cells.forEach((cell, index) => {
+                        if (index !== 0) { // Skip checkboxes column
+                            rowData.push(cell.innerText.trim());
+                        }
+                    });
+
+                    visibleData.push(rowData);
+                }
+            });
+
+            // Convert data to workbook
+            const ws = XLSX.utils.aoa_to_sheet(visibleData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Report');
+
+            // Export as an Excel file
+            XLSX.writeFile(wb, 'report.xlsx');
+        });
+
 
         // Toggle column visibility
         function toggleColumn() {
@@ -274,41 +335,9 @@
         });
 
 
-        // Export to Excel function
-        document.getElementById('exportBtn').addEventListener('click', function() {
-            const table = document.getElementById('reportTable');
-            const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
-            const visibleData = [];
-            let serialNumber = 1; // Initialize serial number
-
-            // Iterate through each row in the table and check if it's visible
-            rows.forEach((row) => {
-                if (row.style.display !== 'none') { // Only include rows that are visible
-                    const cells = Array.from(row.children); // Get all cells in the row
-                    const visibleCells = cells
-                        .filter((cell, index) => {
-                            const columnCheckbox = document.querySelector(`.column-toggle[data-column="${index + 1}"]`);
-                            return columnCheckbox && columnCheckbox.checked; // Include only visible columns
-                        })
-                        .map((cell) => cell.innerText.trim()); // Get text content of visible cells
-
-                    visibleCells.unshift(serialNumber.toString()); // Add serial number to row
-                    visibleData.push(visibleCells); // Add filtered row data
-                    serialNumber++; // Increment serial number
-                }
-            });
-
-            // Convert data to workbook
-            const ws = XLSX.utils.aoa_to_sheet(visibleData); // Create worksheet
-            const wb = XLSX.utils.book_new(); // Create workbook
-            XLSX.utils.book_append_sheet(wb, ws, 'Report'); // Append worksheet to workbook
-
-            // Export to Excel file
-            XLSX.writeFile(wb, 'filtered_report.xlsx'); // Trigger download
-        });
-
         // Filter and Apply functionality
-        const productNameSearch = document.getElementById('productNameSearch');
+        const searchCategory = document.getElementById('searchCategory'); // Dropdown
+        const searchInput = document.getElementById('searchInput');
         const rmRangeType = document.getElementById('rmRangeType');
         const rmValue = document.getElementById('rmValue');
         const pmRangeType = document.getElementById('pmRangeType');
@@ -317,13 +346,19 @@
         const tableRows = document.querySelectorAll('#reportTable tbody tr');
 
         const applyFilters = () => {
-            tableRows.forEach(row => {
-                const productName = row.children[1].textContent.toLowerCase();
-                const rmPercent = parseFloat(row.children[5].textContent);
-                const pmPercent = row.children[6].textContent;
-                const margin = row.children[7].textContent;
+            const searchValue = searchInput.value.toLowerCase();
+            const selectedCategory = searchCategory.value;
+            const marginSortOrder = marginFilter.value; // Get sorting order (asc/desc)
 
-                const productNameMatch = productNameSearch.value === "" || productName.includes(productNameSearch.value.toLowerCase());
+            let rowsArray = Array.from(tableRows); // Convert NodeList to array for sorting
+
+            rowsArray.forEach(row => {
+                const productName = row.children[1].textContent.toLowerCase();
+                const rmNames = row.getAttribute('data-rm'); // RM Names stored in data attribute
+                const pmNames = row.getAttribute('data-pm');
+                const rmPercent = parseFloat(row.children[4].textContent);
+                const pmPercent = parseFloat(row.children[6].textContent);
+                const margin = parseFloat(row.children[7].textContent); // Convert to number
 
                 let rmMatch = true;
                 if (rmValue.value) {
@@ -337,21 +372,42 @@
                     pmMatch = pmRangeType.value === "above" ? pmPercent >= pmInputValue : pmPercent <= pmInputValue;
                 }
 
-                const marginMatch = marginFilter.value === "" || margin === marginFilter.value;
-
-                if (productNameMatch && rmMatch && pmMatch && marginMatch) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
+                let searchMatch = false;
+                if (selectedCategory === 'product') {
+                    searchMatch = productName.includes(searchValue);
+                } else if (selectedCategory === 'rm') {
+                    searchMatch = rmNames && rmNames.includes(searchValue);
+                } else if (selectedCategory === 'pm') {
+                    searchMatch = pmNames && pmNames.includes(searchValue);
                 }
+
+                const marginMatch = marginFilter.value === "" || ["asc", "desc"].includes(marginFilter.value) || marginFilter.value === row.children[7].textContent;
+
+                // Show or hide row based on filters
+                row.style.display = (searchMatch && rmMatch && pmMatch && marginMatch) ? '' : 'none';
             });
 
-            // Recalculate serial numbers after filtering
+            // Sorting Logic for Margin
+            if (marginSortOrder === "asc" || marginSortOrder === "desc") {
+                rowsArray.sort((a, b) => {
+                    const marginA = parseFloat(a.children[7].textContent);
+                    const marginB = parseFloat(b.children[7].textContent);
+                    return marginSortOrder === "asc" ? marginA - marginB : marginB - marginA;
+                });
+
+                // Reorder rows in the table
+                const tbody = document.querySelector("#reportTable tbody");
+                rowsArray.forEach(row => tbody.appendChild(row));
+            }
+
+            // Recalculate serial numbers after filtering and sorting
             updateSerialNumbers();
         };
 
+
         // Event Listeners for Filters
-        productNameSearch.addEventListener('input', applyFilters);
+        searchInput.addEventListener('input', applyFilters);
+        searchCategory.addEventListener('change', applyFilters);
         rmRangeType.addEventListener('change', applyFilters);
         rmValue.addEventListener('input', applyFilters);
         pmRangeType.addEventListener('change', applyFilters);
@@ -361,12 +417,13 @@
         // Function to update serial numbers dynamically
         const updateSerialNumbers = () => {
             let serialNumber = 1;
-            tableRows.forEach((row) => {
-                if (row.style.display !== 'none') { // Only for visible rows
-                    row.children[0].textContent = serialNumber; // Assuming the first column is the serial number
-                    serialNumber++; // Increment serial number
-                }
+            const visibleRows = document.querySelectorAll('#reportTable tbody tr:not([style*="display: none"])'); // Select only visible rows
+
+            visibleRows.forEach((row) => {
+                row.children[0].textContent = serialNumber; // Assuming the first column is for serial numbers
+                serialNumber++; // Increment serial number
             });
         };
+
     });
 </script>

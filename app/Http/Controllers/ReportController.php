@@ -19,21 +19,33 @@ class ReportController extends Controller
                 pm.id AS SNO, 
                 pm.name AS Product_Name, 
                 pm.price AS P_MRP,
+                pm.tax As tax,
                 oc.suggested_mrp AS S_MRP,
-                
+
+                -- Get Raw Material IDs
+                GROUP_CONCAT(DISTINCT rfr.raw_material_id ORDER BY rfr.raw_material_id ASC SEPARATOR ', ') AS RM_IDs,
+
+                -- Get Raw Material Names based on RM IDs
+                GROUP_CONCAT(DISTINCT rm.name ORDER BY rm.name ASC SEPARATOR ', ') AS RM_Names,
+
+                -- Get Raw Material IDs
+                GROUP_CONCAT(DISTINCT pfr.packing_material_id ORDER BY pfr.packing_material_id ASC SEPARATOR ', ') AS PM_IDs,
+
+                -- Get Raw Material Names based on RM IDs
+                GROUP_CONCAT(DISTINCT pkm.name ORDER BY pkm.name ASC SEPARATOR ', ') AS PM_Names,
+
                 -- Raw Material Cost
                 SUM(COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) AS RM_Cost,
-                SUM((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(pm.price, 1)) AS RM_perc,
+                SUM((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(oc.suggested_mrp, 1)) AS RM_perc,
 
                 -- Packing Material Cost
                 SUM(COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1)) AS PM_Cost,
-                SUM((COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(pm.price, 1)) AS PM_perc,
+                SUM((COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(oc.suggested_mrp, 1)) AS PM_perc,
 
                 -- Overhead Cost (excluding mofr.quantity from multiplication)
-                SUM(
-                    COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1) +
+                (COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1)) +
                     COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1)
-                ) AS OH_Cost,
+                AS OH_Cost,
 
                 -- Overhead Percentage
                 SUM(
@@ -49,22 +61,22 @@ class ReportController extends Controller
 
                 -- Total Percentage
                 SUM(((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
-                    (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 100 / COALESCE(pm.price, 1)) AS Total_perc,
+                    (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 100 / COALESCE(oc.suggested_mrp, 1)) AS Total_perc,
 
                 -- Final Cost Calculation
                 SUM(
-                    COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) + 
-                    COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) + 
-                    COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1) +
-                    COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1)
-                ) AS COST,
+                        (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
+                        (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))
+                    ) + (COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1)) +
+                        COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1)
+                    AS COST,
 
                 -- Selling Cost and Margin Calculations
-                SUM(COALESCE(pm.price, 0) * 0.75) AS Selling_Cost,
-                SUM(((COALESCE(pm.price, 0) * 0.75) * 100) / (100 + 18)) AS Before_tax,
+                COALESCE(oc.suggested_mrp, 0) * 0.75 AS Selling_Cost,
+                ((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + pm.tax) AS Before_tax,
 
                 -- Margin Calculation
-                SUM((((COALESCE(pm.price, 0) * 0.75) * 100) / (100 + 18)) - 
+                SUM((((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + pm.tax)) - 
                     (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) + 
                     COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) + 
                     COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1) +
@@ -73,12 +85,12 @@ class ReportController extends Controller
 
                 -- Margin Percentage
                 SUM(
-                    ((((COALESCE(pm.price, 0) * 0.75) * 100) / (100 + 18)) - 
+                    ((((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + pm.tax)) - 
                     (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) + 
                     COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) + 
                     COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1) +
                     COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1))
-                    ) / (((pm.price * 0.75) * 100) / (100 + 18)) * 100
+                    ) / (((oc.suggested_mrp * 0.75) * 100) / (100 + pm.tax)) * 100
                 ) AS Margin_perc,
 
                 rmst.Output 
@@ -92,18 +104,23 @@ class ReportController extends Controller
                 raw_materials rm ON rfr.raw_material_id = rm.id 
             LEFT JOIN 
                 pm_for_recipe pfr ON rmst.product_id = pfr.product_id
-            LEFT JOIN 
+            LEFT JOIN
                 packing_materials pkm ON pfr.packing_material_id = pkm.id
-            LEFT JOIN 
+            LEFT JOIN
                 oh_for_recipe ofr ON rmst.product_id = ofr.product_id
-            LEFT JOIN 
+            LEFT JOIN
                 overheads oh ON ofr.overheads_id = oh.id
             LEFT JOIN 
                 moh_for_recipe mofr ON rmst.product_id = mofr.product_id
             LEFT JOIN 
                 overall_costing oc ON pm.id = oc.productId AND oc.status = 'active'
+            WHERE 
+                rmst.status = 'active' AND oc.suggested_mrp IS NOT NULL
             GROUP BY 
-                pm.id, pm.name, pm.price, oc.suggested_mrp, rmst.Output;
+                pm.id, pm.name, pm.price, pm.tax, oc.suggested_mrp, rmst.Output, ofr.quantity, oh.price, mofr.price
+            ORDER BY 
+                pm.name ASC;
+
         ");
 
         return view('report', compact('reports'));

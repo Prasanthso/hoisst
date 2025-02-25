@@ -61,7 +61,7 @@
                             $sellingRate = $report->S_MRP * 0.75;
                             $beforeTax = ($sellingRate * 100) / 118;
                             $margin = $beforeTax - $report->COST;
-                            $marginPercentage = $beforeTax > 0 ? ($margin / $beforeTax) * 100 : 0;
+                            $marginPercentage = ($beforeTax > 0) ? ($margin / $beforeTax) * 100 : 0;
                             @endphp
                             <tr>
                                 <td>{{ $index + 1 }}</td>
@@ -84,7 +84,9 @@
                                 <td>18</td>
                                 <td class="before-tax">{{ number_format($beforeTax, 2) }}</td>
                                 <td class="margin">{{ number_format($beforeTax - $report->COST, 2) }}</td>
-                                <td class="margin-perc">{{ number_format((($beforeTax - $report->COST) / $beforeTax) * 100, 2) }}%</td>
+                                <td class="margin-perc">
+                                    {{ $beforeTax > 0 ? number_format((($beforeTax - $report->COST) / $beforeTax) * 100, 2) . '%' : '0%' }}
+                                </td>
                                 @endforeach
 
                                 <!-- Add more rows as needed -->
@@ -211,7 +213,7 @@
             // Convert data to workbook
             const ws = XLSX.utils.aoa_to_sheet(visibleData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Raw Material Report');
+            XLSX.utils.book_append_sheet(wb, ws, 'Recipe Pricing');
 
             // Export as an Excel file
             XLSX.writeFile(wb, 'margin_calculation.xlsx');
