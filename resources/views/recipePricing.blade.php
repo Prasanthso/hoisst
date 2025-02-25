@@ -213,7 +213,7 @@
             // Convert data to workbook
             const ws = XLSX.utils.aoa_to_sheet(visibleData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Raw Material Report');
+            XLSX.utils.book_append_sheet(wb, ws, 'Recipe Pricing');
 
             // Export as an Excel file
             XLSX.writeFile(wb, 'margin_calculation.xlsx');

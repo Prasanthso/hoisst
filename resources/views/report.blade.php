@@ -251,8 +251,52 @@
                 theme: 'striped',
             });
 
-            doc.save('filtered_report.pdf');
+            doc.save('report.pdf');
         });
+
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const table = document.getElementById('reportTable'); // Ensure this ID exists in your table
+            if (!table) {
+                console.error('Table with ID "exportRm" not found.');
+                return;
+            }
+            console.log('Table with ID "exportRm" not found.');
+
+            const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
+            const visibleData = [];
+            let serialNumber = 1; // Initialize serial number
+
+            // Iterate through each row
+            rows.forEach((row, rowIndex) => {
+                if (row.style.display !== 'none') { // Only include visible rows
+                    const cells = Array.from(row.children);
+                    const rowData = [];
+
+                    if (rowIndex > 0) {
+                        rowData.push(serialNumber++); // Auto-increment serial number
+                    } else {
+                        rowData.push("S.NO"); // Add "S.NO" to the header row
+                    }
+
+                    cells.forEach((cell, index) => {
+                        if (index !== 0) { // Skip checkboxes column
+                            rowData.push(cell.innerText.trim());
+                        }
+                    });
+
+                    visibleData.push(rowData);
+                }
+            });
+
+            // Convert data to workbook
+            const ws = XLSX.utils.aoa_to_sheet(visibleData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Report');
+
+            // Export as an Excel file
+            XLSX.writeFile(wb, 'report.xlsx');
+        });
+
 
         // Toggle column visibility
         function toggleColumn() {
@@ -290,39 +334,6 @@
             });
         });
 
-
-        // Export to Excel function
-        document.getElementById('exportBtn').addEventListener('click', function() {
-            const table = document.getElementById('reportTable');
-            const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
-            const visibleData = [];
-            let serialNumber = 1; // Initialize serial number
-
-            // Iterate through each row in the table and check if it's visible
-            rows.forEach((row) => {
-                if (row.style.display !== 'none') { // Only include rows that are visible
-                    const cells = Array.from(row.children); // Get all cells in the row
-                    const visibleCells = cells
-                        .filter((cell, index) => {
-                            const columnCheckbox = document.querySelector(`.column-toggle[data-column="${index + 1}"]`);
-                            return columnCheckbox && columnCheckbox.checked; // Include only visible columns
-                        })
-                        .map((cell) => cell.innerText.trim()); // Get text content of visible cells
-
-                    visibleCells.unshift(serialNumber.toString()); // Add serial number to row
-                    visibleData.push(visibleCells); // Add filtered row data
-                    serialNumber++; // Increment serial number
-                }
-            });
-
-            // Convert data to workbook
-            const ws = XLSX.utils.aoa_to_sheet(visibleData); // Create worksheet
-            const wb = XLSX.utils.book_new(); // Create workbook
-            XLSX.utils.book_append_sheet(wb, ws, 'Report'); // Append worksheet to workbook
-
-            // Export to Excel file
-            XLSX.writeFile(wb, 'filtered_report.xlsx'); // Trigger download
-        });
 
         // Filter and Apply functionality
         const searchCategory = document.getElementById('searchCategory'); // Dropdown
