@@ -50,7 +50,6 @@ class OverAllCostingController extends Controller
         }
 
         $totalRmCost = DB::table('rm_for_recipe')
-
         ->where('product_id', $productId)
             ->sum('amount');
 
@@ -62,7 +61,9 @@ class OverAllCostingController extends Controller
         ->where('product_id', $productId)
         ->sum('amount');
 
-        if (!$totalOhCost) { // If NULL or 0
+        // $totalMohCost = 0;
+
+        if (empty($totalOhCost)) { // If NULL or 0
             $totalOhCost = DB::table('moh_for_recipe')
             ->where('product_id', $productId)
             ->sum('price');

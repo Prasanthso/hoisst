@@ -96,8 +96,8 @@
                                 <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
                                 </td>
-                                <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO -->
-                                <td><a href="{{ route('rawMaterial.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
+                                <td>{{ ($rawMaterials->currentPage() - 1) * $rawMaterials->perPage() + $loop->iteration }}.</td> <!-- Auto-increment S.NO -->
+                                <td class="left-align"><a href="{{ route('rawMaterial.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none; text-align:left;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
                                 <td>{{ $material->rmcode }}</td> <!-- RM Code -->
                                 <td>
                                     {{ $material->category_name1 ?? '' }}
@@ -549,12 +549,10 @@
                 alert("Please select at least one row to delete.");
                 return;
             }
-
             const selectedIds = selectedRows.map(checkbox => checkbox.closest('tr').getAttribute('data-id'));
-
-            if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
-                return;
-            }
+            // if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
+            //     return;
+            // }
 
             fetch("{{ route('rawMaterial.delete') }}", {
                     method: "POST",
@@ -573,15 +571,41 @@
                     return response.json();
                 })
                 .then(data => {
+                    console.log("data: ", data);
                     if (data.success) {
-                        selectedRows.forEach(checkbox => {
-                            const row = checkbox.closest("tr");
-                            row.remove();
-                            updateSerialNumbers();
-                        });
-                        alert("Selected rows deleted successfully!");
-                    } else {
-                        alert("Failed to delete rows. Please try again.");
+                        if (data.confirm) {
+                        // If confirmation is required, show a confirmation dialog
+                        if (confirm("Are you want to delete this item of raw material. Do you want to proceed?")) {
+                            // Make a second request to actually delete (mark inactive)
+                            fetch('/confirmrawmaterial', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    "X-CSRF-TOKEN": token
+                                },
+                                body: JSON.stringify({ ids: selectedIds }) // Send the selected IDs again
+                            })
+                            .then(response => response.json())
+                            .then(confirmData  => {
+                                if (confirmData.success) {
+                                    selectedRows.forEach(checkbox => {
+                                        const row = checkbox.closest("tr");
+                                        row.remove();
+                                    });
+                                    updateSerialNumbers();
+                                    alert("Selected rows deleted successfully!");
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error confirming deletion:", error);
+                                alert("An error occurred. Please try again.");
+                            });
+                        }
+                    }
+                }
+                else
+                    {
+                        alert("No raw materials item can be deleted. They might be in use.");
                     }
                 })
                 .catch(error => {
@@ -637,10 +661,10 @@
                             // Populate the table with new data
                             data.rawMaterials.forEach((item, index) => {
                                 rawMaterialTable.innerHTML += `
-                        <tr>
+                        <tr data-id="${item.id}">
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${index + 1}.</td>
-                            <td><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                            <td class="left-align"><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
                             <td>${item.rmcode}</td>
                              <td>
                                 ${item.category_name1 ?? ''}

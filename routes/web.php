@@ -57,6 +57,7 @@ Route::get('/showcategoryitem', [CategoryItemController::class, 'index'])->name(
 Route::get('/editcategoryitem/{id}', [CategoryItemController::class, 'edit'])->name('categoryitem.edit');
 Route::put('/editcategoryitem/{id}', [CategoryItemController::class, 'update'])->name('categoryitem.update');
 Route::post('/deletecategory', [CategoryItemController::class, 'delete'])->name('categoryitem.delete');
+Route::post('/confirmcategory', [CategoryItemController::class, 'deleteConfirmation'])->name('categoryitem.confirm');
 
 Route::get('/rawmaterial', [RawMaterialController::class, 'index'])->name('rawMaterials.index');
 Route::get('/addrawmaterial', [RawMaterialController::class, 'create'])->name('rawmaterial.create');
@@ -64,6 +65,7 @@ Route::post('/saverawmaterial', [RawMaterialController::class, 'store'])->name('
 Route::get('/editrawmaterial/{id}', [RawMaterialController::class, 'edit'])->name('rawMaterial.edit');
 Route::put('/editrawmaterial/{id}', [RawMaterialController::class, 'update'])->name('rawMaterial.edit');
 Route::post('/deleterawmaterial', [RawMaterialController::class, 'delete'])->name('rawMaterial.delete');
+Route::post('/confirmrawmaterial', [RawMaterialController::class, 'deleteConfirmation'])->name('rawMaterial.confirm');
 
 Route::post('/update-material-price/{id}', [RawMaterialController::class, 'updatePrice']);
 
@@ -76,6 +78,7 @@ Route::post('/savepackingmaterial', [PackingMaterialController::class, 'store'])
 Route::get('/editpackingmaterial/{id}', [PackingMaterialController::class, 'edit'])->name('packingMaterial.edit');
 Route::put('/editpackingmaterial/{id}', [PackingMaterialController::class, 'update'])->name('packingMaterial.edit');
 Route::post('/deletepackingmaterial', [PackingMaterialController::class, 'delete'])->name('packingMaterial.delete');
+Route::post('/confirmPackingmaterial', [PackingMaterialController::class, 'deleteConfirmation'])->name('packingMaterial.confirm');
 
 Route::post('/update-packing-material-prices', [PackingMaterialController::class, 'updatePrices'])->name('packingMaterial.updatePrices');
 Route::get('/packing-material/price-details/{id}', [PackingMaterialController::class, 'getPmPriceHistory'])->name('packingMaterial.priceHistory');
@@ -87,6 +90,7 @@ Route::post('/saveoverheads', [OverheadController::class, 'store'])->name('overh
 Route::get('/editoverheads/{id}', [OverheadController::class, 'edit'])->name('overheads.edit');
 Route::put('/editoverheads/{id}', [OverheadController::class, 'update'])->name('overheads.edit');
 Route::post('/deleteoverheads', [OverheadController::class, 'delete'])->name('overheads.delete');
+Route::post('/confirmoverheads', [OverheadController::class, 'deleteConfirmation'])->name('overheads.confirm');
 
 Route::post('/update-overheads-prices', [OverheadController::class, 'updatePrices'])->name('overheads.updatePrices');
 Route::get('/overheads/price-details/{id}', [OverheadController::class, 'getOhPriceHistory'])->name('overheads.priceHistory');
@@ -98,6 +102,7 @@ Route::post('/saveproduct', [ProductController::class, 'store'])->name('products
 Route::get('/editproduct/{id}', [ProductController::class, 'edit'])->name('products.edit');
 Route::put('/editproduct/{id}', [ProductController::class, 'update'])->name('products.edit');
 Route::post('/deleteproducts', [ProductController::class, 'delete'])->name('product.delete');
+Route::post('/confirmproducts', [ProductController::class, 'deleteConfirmation'])->name('product.confirm');
 
 Route::post('/update-products-prices', [ProductController::class, 'updatePrices'])->name('products.updatePrices');
 Route::get('/products/price-details/{id}', [ProductController::class, 'getPdPriceHistory'])->name('products.priceHistory');

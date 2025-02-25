@@ -473,7 +473,6 @@
         // Listen for changes in dropdown selection
         manualOhType.addEventListener("change", toggleFields);
 
-
         // Add event listeners to checkboxes to toggle the forms
         fromMastersCheckbox.addEventListener("change", function() {
             if (fromMastersCheckbox.checked) {

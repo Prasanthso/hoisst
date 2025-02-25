@@ -94,8 +94,8 @@
                                 <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
                                 </td>
-                                <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO -->
-                                <td><a href="{{ route('packingMaterial.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
+                                <td>{{ ($packingMaterials->currentPage() - 1) * $packingMaterials->perPage() + $loop->iteration }}.</td> <!-- Auto-increment S.NO -->
+                                <td class="left-align"><a href="{{ route('packingMaterial.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
                                 <td>{{ $material->pmcode }}</td> <!-- RM Code -->
                                 <td>
                                     {{ $material->category_name1 ?? '' }}
@@ -546,12 +546,11 @@
                 alert("Please select at least one row to delete.");
                 return;
             }
-
             const selectedIds = selectedRows.map(checkbox => checkbox.closest('tr').getAttribute('data-id'));
 
-            if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
-                return;
-            }
+            // if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
+            //     return;
+            // }
 
             fetch("{{ route('packingMaterial.delete') }}", {
                     method: "POST",
@@ -571,14 +570,39 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        selectedRows.forEach(checkbox => {
-                            const row = checkbox.closest("tr");
-                            row.remove();
-                            updateSerialNumbers();
-                        });
-                        alert("Selected rows deleted successfully!");
-                    } else {
-                        alert("Failed to delete rows. Please try again.");
+                        if (data.confirm) {
+                        // If confirmation is required, show a confirmation dialog
+                        if (confirm("Are you want to delete this item of packing material. Do you want to proceed?")) {
+                            // Make a second request to actually delete (mark inactive)
+                            fetch('/confirmPackingmaterial', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    "X-CSRF-TOKEN": token
+                                },
+                                body: JSON.stringify({ ids: selectedIds }) // Send the selected IDs again
+                            })
+                            .then(response => response.json())
+                            .then(confirmData  => {
+                                if (confirmData.success) {
+                                    selectedRows.forEach(checkbox => {
+                                        const row = checkbox.closest("tr");
+                                        row.remove();
+                                    });
+                                    updateSerialNumbers();
+                                    alert("Selected rows deleted successfully!");
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error confirming deletion:", error);
+                                alert("An error occurred. Please try again.");
+                            });
+                        }
+                    }
+                }
+                else
+                    {
+                        alert("No packing materials item can be deleted. They might be in use.");
                     }
                 })
                 .catch(error => {
@@ -632,10 +656,10 @@
                             // Populate the table with new data
                             data.packingMaterials.forEach((item, index) => {
                                 packingMaterialTable.innerHTML += `
-                        <tr>
+                        <tr data-id="${item.id}">
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${index + 1}.</td>
-                            <td><a href="/packingMaterial/edit/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                            <td class="left-align"><a href="/editpackingmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
                             <td>${item.pmcode}</td>
                              <td>
                                 ${item.category_name1 ?? ''}

@@ -94,8 +94,8 @@
                                 <td>
                                     <input type="checkbox" class="form-check-input row-checkbox">
                                 </td>
-                                <td>{{ $index + 1 }}.</td> <!-- Auto-increment S.NO -->
-                                <td><a href="{{ route('overheads.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
+                                <td>{{ ($overheads->currentPage() - 1) * $overheads->perPage() + $loop->iteration }}.</td> <!-- Auto-increment S.NO -->
+                                <td class="left-align"><a href="{{ route('overheads.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
                                 <td>{{ $material->ohcode }}</td> <!-- RM Code -->
                                 <td>
                                     {{ $material->category_name1 ?? '' }}
@@ -544,12 +544,10 @@
                 alert("Please select at least one row to delete.");
                 return;
             }
-
             const selectedIds = selectedRows.map(checkbox => checkbox.closest('tr').getAttribute('data-id'));
-
-            if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
-                return;
-            }
+            // if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
+            //     return;
+            // }
 
             fetch("{{ route('overheads.delete') }}", {
                     method: "POST",
@@ -569,14 +567,38 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        selectedRows.forEach(checkbox => {
-                            const row = checkbox.closest("tr");
-                            row.remove();
-                            updateSerialNumbers();
-                        });
-                        alert("Selected rows deleted successfully!");
-                    } else {
-                        alert("Failed to delete rows. Please try again.");
+                        if (data.confirm) {
+                        // If confirmation is required, show a confirmation dialog
+                        if (confirm("Are you want to delete this item of overheads. Do you want to proceed?")) {
+                            fetch('/confirmoverheads', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    "X-CSRF-TOKEN": token
+                                },
+                                body: JSON.stringify({ ids: selectedIds }) // Send the selected IDs again
+                            })
+                            .then(response => response.json())
+                            .then(confirmData  => {
+                                if (confirmData.success) {
+                                    selectedRows.forEach(checkbox => {
+                                        const row = checkbox.closest("tr");
+                                        row.remove();
+                                    });
+                                    updateSerialNumbers();
+                                    alert("Selected rows deleted successfully!");
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error confirming deletion:", error);
+                                alert("An error occurred. Please try again.");
+                            });
+                        }
+                    }
+                }
+                else
+                    {
+                        alert("No overheads item can be deleted. They might be in use.");
                     }
                 })
                 .catch(error => {
@@ -631,10 +653,10 @@
                             // Populate the table with new data
                             data.overheads.forEach((item, index) => {
                                 overheadsTable.innerHTML += `
-                        <tr>
+                        <tr data-id="${item.id}">
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${index + 1}.</td>
-                            <td><a href="/editoverheads/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                            <td class="left-align"><a href="/editoverheads/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
                             <td>${item.ohcode}</td>
                              <td>
                                 ${item.category_name1 ?? ''}

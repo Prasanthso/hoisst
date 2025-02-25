@@ -70,6 +70,7 @@ class PackingMaterialController extends Controller
                             ->orWhereIn('c10.id', $selectedCategoryIds);
                     })
                     ->where('pm.status', '=', 'active') // Filter by active status
+                    ->orderBy('pm.name', 'asc')
                     ->get();
 
                 return response()->json([
@@ -110,6 +111,7 @@ class PackingMaterialController extends Controller
             'c10.itemname as category_name10'
         )
         ->where('pm.status', '=', 'active') // Filter by active status
+        ->orderBy('pm.name', 'asc')
         ->paginate(10);
 
         return view('packingMaterial.packingMaterial', compact('packingMaterials', 'categoryitems'));
@@ -307,6 +309,34 @@ class PackingMaterialController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    public function deleteConfirmation(Request $request)
+    {
+        $ids = $request->input('ids'); // Get the 'ids' array from the request
+
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'No valid IDs provided.']);
+        }
+        try {
+            // Update only if the raw materials are NOT referenced in rm_for_recipe
+            $updatedCount = PackingMaterial::whereIn('id', $ids)
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('pm_for_recipe')
+                        ->whereColumn('pm_for_recipe.packing_material_id', 'packing_materials.id'); // Ensure correct column name
+                })
+                ->update(['status' => 'inactive']);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => $updatedCount > 0 ? 'Packing materials marked as inactive successfully.' : 'No packing materials were updated.',
+                ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating packing materials: ' . $e->getMessage(),
+            ]);
+        }
+    }
     public function delete(Request $request)
     {
         $ids = $request->input('ids'); // Get the 'ids' array from the request
@@ -314,15 +344,45 @@ class PackingMaterialController extends Controller
         if (!$ids || !is_array($ids)) {
             return response()->json(['success' => false, 'message' => 'No valid IDs provided.']);
         }
-
         try {
-            // Update the status of raw materials to 'inactive'
-            PackingMaterial::whereIn('id', $ids)->update(['status' => 'inactive']);
+            // First, check which items are not referenced in pm_for_recipe
+            $itemsToDelete = PackingMaterial::whereIn('id', $ids)
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('pm_for_recipe')
+                        ->whereColumn('pm_for_recipe.packing_material_id', 'packing_materials.id'); // Ensure correct column name
+                })
+                ->get();
 
-            return response()->json(['success' => true, 'message' => 'Raw materials marked as inactive successfully.']);
+            // If there are items that can be deleted, return a confirmation message
+            if ($itemsToDelete->isNotEmpty()) {
+                return response()->json([
+                    'success' => true,
+                    'confirm' => true,
+                    'message' => 'Are you want to delete this item of packing material. Do you want to proceed?',
+                    // 'items' => $itemsToDelete, // Send the list of items for confirmation
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No packing materials item can be deleted. They might be in use.',
+                ]);
+            }
         } catch (\Exception $e) {
-            // Handle exceptions
-            return response()->json(['success' => false, 'message' => 'Error updating raw materials: ' . $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error checking packing materials: ' . $e->getMessage(),
+            ]);
         }
+
+        // try {
+        //     // Update the status of raw materials to 'inactive'
+        //     PackingMaterial::whereIn('id', $ids)->update(['status' => 'inactive']);
+
+        //     return response()->json(['success' => true, 'message' => 'Raw materials marked as inactive successfully.']);
+        // } catch (\Exception $e) {
+        //     // Handle exceptions
+        //     return response()->json(['success' => false, 'message' => 'Error updating raw materials: ' . $e->getMessage()]);
+        // }
     }
 }

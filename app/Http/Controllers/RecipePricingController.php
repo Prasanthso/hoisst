@@ -168,24 +168,33 @@ class RecipePricingController extends Controller
     {
         // Retrieve all products to display in the dropdown
         // $products = Product::all();
+        $rawMaterials = DB::table('raw_materials')->get();
+        $packingMaterials = DB::table('packing_materials')->get();
+        $overheads = DB::table('overheads')->get();
         $products = DB::table('recipe_master')
             ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id') // Join with the products table
             ->select('recipe_master.product_id as id', 'product_master.name as name') // Select the product name from the products table
             ->where('recipe_master.status', 'active')
             ->get(); // Get all results
-
+        $productId = $request->input('product_id');
+        $pricingData = null;
+        $totalRmCost = 0;
+        $totalCost = 0;
         // If a product is selected, fetch the pricing data
-        if ($request->has('product_id')) {
-            $productId = $request->input('product_id');
-
+        if($productId) //($request->has('product_id'))
+        {
             // Assuming you are joining these tables based on product_id
             $pricingData = DB::table('recipe_master')
                 ->join('rm_for_recipe', 'rm_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->leftjoin('pm_for_recipe', 'pm_for_recipe.product_id', '=', 'recipe_master.product_id')
-                ->leftjoin('oh_for_recipe', 'oh_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->leftjoin('moh_for_recipe', 'moh_for_recipe.product_id', '=', 'recipe_master.product_id')
-                ->where('recipe_master.product_id', $productId)
-                ->select(
+                ->leftjoin('oh_for_recipe', 'oh_for_recipe.product_id', '=', 'recipe_master.product_id')
+                // Joining with Master Tables
+            ->leftJoin('raw_materials', 'rm_for_recipe.raw_material_id', '=', 'raw_materials.id')
+            ->leftJoin('packing_materials', 'pm_for_recipe.packing_material_id', '=', 'packing_materials.id')
+            ->leftJoin('overheads', 'oh_for_recipe.overheads_id', '=', 'overheads.id')
+            ->where('recipe_master.product_id', $productId)
+            ->select(
                     'rm_for_recipe.raw_material_id as rm_id',
                     'rm_for_recipe.quantity as rm_quantity',
                     'rm_for_recipe.code as rm_code',
@@ -237,7 +246,7 @@ class RecipePricingController extends Controller
             return view('viewPricing', compact('products', 'pricingData', 'totalCost', 'totalRmCost'));
         }
 
-        return view('viewPricing', compact('products'));
+        return view('viewPricing', compact('products','pricingData', 'totalCost', 'totalRmCost'));
     }
 
 

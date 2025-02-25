@@ -71,8 +71,10 @@ class RawMaterialController extends Controller
                             ->orWhereIn('c9.id', $selectedCategoryIds)
                             ->orWhereIn('c10.id', $selectedCategoryIds);
                     })
-                    ->where('rm.status', '=', 'active') // Filter by active status
+                    ->where('rm.status', '=', 'active')
+                    ->orderBy('rm.name', 'asc') // Filter by active status
                     ->get();
+                    // ->paginate(10);
             }
             // Return filtered raw materials as JSON response
             return response()->json([
@@ -111,7 +113,8 @@ class RawMaterialController extends Controller
             'c9.itemname as category_name9',
             'c10.itemname as category_name10'
         )
-            ->where('rm.status', '=', 'active') // Filter by active status
+            ->where('rm.status', '=', 'active')
+            ->orderBy('rm.name', 'asc') // Filter by active status
             ->paginate(10);
 
         return view('rawMaterial.rawMaterial', compact('rawMaterials', 'categoryitems'));
@@ -310,27 +313,80 @@ class RawMaterialController extends Controller
         return redirect()->route('rawMaterials.index')->with('success', 'Raw Material updated successfully.');
     }
 
-
-
     /**
      * Remove the specified resource from storage.
      */
+    public function deleteConfirmation(Request $request)
+    {
+        $ids = $request->input('ids'); // Get the 'ids' array from the request
+
+        if (!$ids || !is_array($ids)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No valid IDs provided.',
+            ]);
+        }
+
+        try {
+            // Update only if the raw materials are NOT referenced in rm_for_recipe
+            $updatedCount = RawMaterial::whereIn('id', $ids)
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('rm_for_recipe')
+                        ->whereColumn('rm_for_recipe.raw_material_id', 'raw_materials.id'); // Ensure correct column name
+                })
+                ->update(['status' => 'inactive']);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => $updatedCount > 0 ? 'Raw materials marked as inactive successfully.' : 'No raw materials were updated.',
+                ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating raw materials: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
     public function delete(Request $request)
     {
         $ids = $request->input('ids'); // Get the 'ids' array from the request
 
         if (!$ids || !is_array($ids)) {
-            return response()->json(['success' => false, 'message' => 'No valid IDs provided.']);
+            return response()->json([
+                'success' => false,
+                'message' => 'No valid IDs provided.',
+            ]);
         }
 
         try {
-            // Update the status of raw materials to 'inactive'
-            RawMaterial::whereIn('id', $ids)->update(['status' => 'inactive']);
+            // Update only if the raw materials are NOT referenced in rm_for_recipe
+            $itemsToDelete = RawMaterial::whereIn('id', $ids)
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('rm_for_recipe')
+                        ->whereColumn('rm_for_recipe.raw_material_id', 'raw_materials.id'); // Ensure correct column name
+                })
+                ->get();
 
-            return response()->json(['success' => true, 'message' => 'Raw materials marked as inactive successfully.']);
+            if ($itemsToDelete->isNotEmpty()) {
+                return response()->json([
+                    'success' => true,
+                    'confirm' => true,
+                    'message' => "Are you want to delete this item of raw material. Do you want to proceed?.",
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No raw materials item were deleted. They might be in use.',
+                ]);
+            }
         } catch (\Exception $e) {
-            // Handle exceptions
-            return response()->json(['success' => false, 'message' => 'Error updating raw materials: ' . $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating raw materials: ' . $e->getMessage(),
+            ]);
         }
     }
 
