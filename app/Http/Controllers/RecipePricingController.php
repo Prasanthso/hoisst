@@ -232,7 +232,8 @@ class RecipePricingController extends Controller
             $totalOhCost = $pricingData->sum(function ($data) {
                 return $data->oh_quantity * $data->oh_price;
             }) ?: 0;
-
+            $totalMohCost = 0;
+            
             if ($totalOhCost == 0) {
                 $totalMohCost = $pricingData->sum(function ($data) {
                     return $data->moh_price;

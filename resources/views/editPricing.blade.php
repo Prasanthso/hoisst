@@ -297,14 +297,21 @@
                     </div>
                 </div>
             </div>
+            @php
+            $ohTotal = 0;
+            $mohTotal = 0;
+            @endphp
+           <div><input type="hidden" id="oh_mohValue" value="{{ $pricingData->whereNotNull('oh_name')->isNotEmpty() ? 'masters' : ($pricingData->whereNotNull('moh_name')->isNotEmpty() ? 'manual' : '') }}"></div>
 
+            @if($pricingData->whereNotNull('oh_name')->isNotEmpty())
             <div class="row mb-2">
                 <div class="col-auto">
                     <label for="pricingoverheads" class="form-label text-primary" id="pricingoverheads">Overheads From Masters</label>
                 </div>
-                <!-- <div class="col-2 form-check">
+               <div class="col-2 form-check">
+                    <input type="checkbox" class="form-check-input" id="frommasters" checked>
                     <label class="form-check-label" for="frommasters"> From Masters </label>
-                </div> -->
+                </div>
                 <!-- <div class="col-2 form-check">
                     <input type="checkbox" class="form-check-input" id="entermanually"> <label class="form-check-label" for="entermanually"> Enter Manually </label>
                 </div> -->
@@ -354,11 +361,6 @@
                     {{-- </a> --}}
                 </div>
             </div>
-            @php
-                $ohTotal = 0;
-                $mohTotal = 0;
-            @endphp
-            @if($pricingData->whereNotNull('oh_name')->isNotEmpty())
             <div class="row mb-4">
                 <!-- Overheads Table -->
                 <div class="table-responsive">
@@ -424,7 +426,6 @@
                                 <td colspan="6">No records available for Manual Overheads</td>
                             </tr>
                             @endforelse
-
                         </tbody>
                     </table>
                     <div class="text-end" style="background-color:#F1F1F1; width:90%;">
@@ -438,13 +439,15 @@
             <div class="row mb-2">
                 <div class="col-auto">
                     <label for="pricingoverheads" class="form-label text-primary" id="pricingoverheads">Overheads Enter Manually</label>
+
                 </div>
                 <!-- <div class="col-2 form-check">
                     <label class="form-check-label" for="frommasters"> From Masters </label>
                 </div> -->
-                <!-- <div class="col-2 form-check">
+                <div class="col-2 form-check">
+                    <input type="checkbox" class="form-check-input" id="entermanually" checked>
                     <label class="form-check-label" for="entermanually"> Enter Manually </label>
-                </div> -->
+                </div>
                 <div class="col">
                     <hr />
                 </div>
@@ -475,7 +478,7 @@
                     </div>
 
                     <div class="d-flex flex-column" style="flex: 2;">
-                        <button type="button" class="btn btn-primary ohaddbtn" id="manualOhaddbtn">
+                        <button type="button" class="btn btn-primary manualOhaddbtn" id="manualOhaddbtn">
                             <i class="fas fa-plus"></i> Add
                         </button>
                     </div>
@@ -533,6 +536,119 @@
             </div>
             @endif
 
+            @if(collect($pricingData)->whereNotNull('oh_name')->isEmpty() && collect($pricingData)->whereNotNull('moh_name')->isEmpty())
+            <div class="row mb-2">
+                <div class="col-auto">
+                    <label for="pricingoverheads1" class="form-label text-primary" id="pricingoverheads1">Overheads</label>
+                </div>
+                <div class="col-2 form-check">
+                    <input type="checkbox" class="form-check-input" id="frommasters1" checked>
+                    <label class="form-check-label" for="frommasters1"> From Masters </label>
+                </div>
+                <div class="col-2 form-check">
+                    <input type="checkbox" class="form-check-input" id="entermanually1"> <label class="form-check-label" for="entermanually1"> Enter Manually </label>
+                </div>
+                <div class="col">
+                    <hr />
+                </div>
+            </div>
+            <div class="row mb-4" id="newOh">
+                <div class="col-md-3">
+                    <label for="overheads" class="form-label">Overheads</label>
+                    <select id="overheads" class="form-select select2">
+                        <option selected disabled>Choose...</option>
+                        @foreach($overheads as $overheadsItem)
+                        <option
+                            value="{{ $overheadsItem->id }}"
+                            data-code="{{ $overheadsItem->ohcode }}"
+                            data-uom="{{ $overheadsItem->uom }}"
+                            data-price="{{ $overheadsItem->price }}">
+                            {{ $overheadsItem->name }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="d-flex flex-column" style="flex: 1.5;">
+                    <label for="ohQuantity" class="form-label">Quantity</label>
+                    <input type="text" class="form-control rounded" id="ohQuantity" name="ohQuantity">
+                </div>
+                <div class="d-flex flex-column" style="flex: 1.5;">
+                    <label for="ohCode" class="form-label">OH Code</label>
+                    <input type="text" class="form-control rounded" id="ohCode" name="ohCode" disabled>
+                </div>
+                <div class="d-flex flex-column" style="flex: 1.5;">
+                    <label for="ohUoM" class="form-label">UoM</label>
+                    <input type="text" class="form-control" id="ohUoM" name="ohUoM" disabled>
+                </div>
+                <div class="d-flex flex-column" style="flex: 1.5;">
+                    <label for="ohPrice" class="form-label">Price</label>
+                    <input type="text" class="form-control rounded" id="ohPrice" name="ohPrice" disabled>
+                </div>
+                <div class="d-flex flex-column" style="flex: 1.5;">
+                    <label for="ohAmount" class="form-label">Amount</label>
+                    <input type="text" class="form-control" id="ohAmount" name="ohAmount">
+                </div>
+                <div class="d-flex flex-column" style="flex: 2;">
+                    {{-- <a href="#" class='text-decoration-none oh-ps-add-btn text-white py-4 px-4'> --}}
+                    <button type="button" class="btn btn-primary ohaddbtn" id="ohaddbtn"><i class="fas fa-plus"></i> Add</button>
+                    {{-- </a> --}}
+                </div>
+            </div>
+            <div id="manualEntry1" style="display: none;">
+                <div class="row mb-4">
+                    <div class="d-flex flex-column" style="flex: 1.5;">
+                        <label for="manualOverheads" class="form-label">Overheads Name</label>
+                        <input type="text" class="form-control rounded" id="manualOverheads" name="manualOverheads">
+                    </div>
+                    <!-- Dropdown for selecting Overheads Type -->
+                    <div class="d-flex flex-column" style="flex: 1.5;">
+                        <label for="manualOhType" class="form-label">Type</label>
+                        <select id="manualOhType" class="form-select">
+                            <option value="price" selected>Overheads Price</option>
+                            <option value="percentage">Overheads Percentage</option>
+                        </select>
+                    </div>
+                    <!-- Input Fields (Only One Will Be Visible at a Time) -->
+                    <div class="d-flex flex-column" style="flex: 1.5;">
+                        <label for="manualOhPrice" class="form-label" id="manualOhPricelab">Overheads Price</label>
+                        <input type="number" class="form-control rounded" id="manualOhPrice" name="manualOhPrice">
+
+                        <label for="manualOhPerc" class="form-label" id="manualOhPerclab">Overheads Percentage</label>
+                        <input type="number" class="form-control rounded" id="manualOhPerc" name="manualOhPerc" style="display: none;">
+                    </div>
+
+                    <div class="d-flex flex-column" style="flex: 2;">
+                        <button type="button" class="btn btn-primary ohaddbtn" id="manualOhaddbtn">
+                            <i class="fas fa-plus"></i> Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {{-- <div class="container-fluid mt-4"> --}}
+            <div class="row mb-4">
+                <div class="col-12 col-md-12 mx-auto table-responsive"> <!-- Use col-md-11 for slightly left alignment -->
+                    <table class="table table-bordered text-center" style=" background-color: #D7E1E4; width:90%;">
+                        <thead class="no border">
+                            <tr>
+                                <th>Overheads</th>
+                                <th>Quantity</th>
+                                <th>OH Code</th>
+                                <th>UoM</th>
+                                <th>Price</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="overheadsTable">
+                        </tbody>
+
+                    </table>
+                    <div class="text-end" style="background-color: #D7E1E4; width:90%;">
+                        <strong>OH Cost (C) : </strong> <span id="totalohCost">0.00</span>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <div class="d-flex justify-content-between">
                 <div class=" mb-2">
                     <div class="mt-2">
@@ -571,12 +687,84 @@
 
         window.oh_editRow = oh_editRow;
         window.oh_saveRow = oh_saveRow;
+        // create_OhMoh();
 
+        for_Oh_Manual();
         rmforRecipe();
         pmforRecipe();
         ohforRecipe();
         mohforRecipe();
     });
+
+    function for_Oh_Manual()
+    {
+        const fromMastersCheckbox = document.getElementById("frommasters1");
+        const enterManuallyCheckbox = document.getElementById("entermanually1");
+        const masterEntryDiv = document.getElementById("newOh");
+        const manualEntryDiv = document.getElementById("manualEntry1");
+        const ohMohValue = document.getElementById("oh_mohValue").value;
+        console.log("new overheads");
+        console.log(ohMohValue);
+        if(ohMohValue === "")
+        {
+            console.log("check 2");
+            // Function to toggle visibility based on checkbox selection
+            function toggleForms() {
+                if (fromMastersCheckbox.checked) {
+                    masterEntryDiv.style.display = "flex";
+                    manualEntryDiv.style.display = "none";
+                } else if (enterManuallyCheckbox.checked) {
+                    masterEntryDiv.style.display = "none";
+                    manualEntryDiv.style.display = "block";
+                } else {
+                    fromMastersCheckbox.checked = true;
+                    masterEntryDiv.style.display = "none";
+                    manualEntryDiv.style.display = "none";
+                }
+            }
+            const manualOhType = document.getElementById("manualOhType");
+            const manualOhPrice = document.getElementById("manualOhPrice");
+            const manualOhPricelab = document.getElementById("manualOhPricelab");
+            const manualOhPerc = document.getElementById("manualOhPerc");
+            const manualOhPerclab = document.getElementById("manualOhPerclab");
+
+            function toggleFields() {
+                if (manualOhType.value === "price") {
+                    manualOhPrice.style.display = "block";
+                    manualOhPricelab.style.display = "block";
+                    manualOhPerc.style.display = "none";
+                    manualOhPerclab.style.display = "none";
+                } else {
+                    manualOhPrice.style.display = "none";
+                    manualOhPricelab.style.display = "none";
+                    manualOhPerc.style.display = "block";
+                    manualOhPerclab.style.display = "block";
+                }
+            }
+            // Ensure correct field is shown when the page loads
+            toggleFields();
+
+            // Listen for changes in dropdown selection
+            manualOhType.addEventListener("change", toggleFields);
+
+            // Add event listeners to checkboxes to toggle the forms
+            fromMastersCheckbox.addEventListener("change", function() {
+                if (fromMastersCheckbox.checked) {
+                    enterManuallyCheckbox.checked = false; // Uncheck the "Enter Manually" checkbox
+                }
+                toggleForms();
+            });
+            enterManuallyCheckbox.addEventListener("change", function() {
+                if (enterManuallyCheckbox.checked) {
+                    fromMastersCheckbox.checked = false; // Uncheck the "From Masters" checkbox
+                }
+                toggleForms();
+            });
+            // Set default to "From Masters" and call toggleForms() to show the correct form
+            fromMastersCheckbox.checked = true;
+            toggleForms();
+        }
+    }
 
     function recipevalidation() {
         const rpvalue = document.getElementById('productSelect').value.trim();
@@ -1301,7 +1489,7 @@
     }
 
     function ohforRecipe() {
-        // const productSelect = document.getElementById('productSelect');
+        const productSelect = document.getElementById('productSelect');
         const overheadsSelect = document.getElementById('overheads');
         const ohQuantityInput = document.getElementById('ohQuantity');
         const ohCodeInput = document.getElementById('ohCode');
@@ -1309,7 +1497,7 @@
         const ohPriceInput = document.getElementById('ohPrice');
         const ohAmountInput = document.getElementById('ohAmount');
         const ohAddButton = document.getElementById('ohaddbtn');
-        const overheadsTable = document.getElementById('overheadsTable');
+        const overheadsTable = document.querySelector('#overheadsTable');
         const manualEntryTable = document.getElementById('manualEntryTable');
         const totalOhCostSpan = document.getElementById('totalohCost');
         const totalCostSpan = document.getElementById('totalRmCost');
@@ -1323,35 +1511,37 @@
                 alert("Please add raw materials");
                 return;
             }
-        // Update fields when packing material is selected
-        overheadsSelect.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            if (selectedOption.disabled) {
-                clearOhFields();
-                return;
-            }
-            const code = selectedOption.getAttribute('data-code');
-            const uom = selectedOption.getAttribute('data-uom');
-            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
-            ohCodeInput.value = code || '';
-            ohUoMInput.value = uom || '';
-            ohPriceInput.value = price.toFixed(2);
-            updateOhAmount();
-        });
+        if(overheadsSelect)
+        {
+            console.log("from masters");
+            overheadsSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                if (selectedOption.disabled) {
+                    clearOhFields();
+                    return;
+                }
+                const code = selectedOption.getAttribute('data-code');
+                const uom = selectedOption.getAttribute('data-uom');
+                const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+                ohCodeInput.value = code || '';
+                ohUoMInput.value = uom || '';
+                ohPriceInput.value = price.toFixed(2);
+                updateOhAmount();
+            });
 
         // Update amount on quantity input
         if (ohQuantityInput) {
         ohQuantityInput.addEventListener('input', updateOhAmount);
         }
         // ohQuantityInput.addEventListener('input', updateOhAmount);
-
-        // Add packing material
+        // Add overheads
         ohAddButton.addEventListener('click', function() {
             const product_id = productSelect.value;
             if (!product_id) {
                 alert('Please select a valid product.');
                 return;
             }
+
             const overheadsId = overheadsSelect.value;
             const overheadsName = overheadsSelect.options[overheadsSelect.selectedIndex]?.text;
             const quantity = parseFloat(ohQuantityInput.value) || 0;
@@ -1364,14 +1554,26 @@
                 alert('Please fill all fields before adding.');
                 return;
             }
-
+            if(overheadsTable)
+            {
             const rows = Array.from(overheadsTable.querySelectorAll('tr'));
             const isAlreadyAdded = rows.some(row => row.cells[0].textContent === overheadsName);
             if (isAlreadyAdded) {
                 alert('This overheads has already been added to the table.');
                 clearOhFields();
                 return;
+                }
             }
+            //     const newRow = ohtbody.insertRow();
+            // newRow.innerHTML = `
+            //    <td>${overheadsName}</td>
+            //     <td>${quantity}</td>
+            //     <td>${code}</td>
+            //     <td>${uom}</td>
+            //     <td>${price.toFixed(2)}</td>
+            //     <td>${amount.toFixed(2)}</td>
+            // `;
+
             const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
             if (!token) {
                 console.error('CSRF token not found.');
@@ -1431,8 +1633,8 @@
                     console.error('Error:', error);
                     // alert('An error occurred while adding overheads.');
                 });
-        });
-
+            });
+        }
         // Delete row functionality
         if(overheadsTable){
         overheadsTable.addEventListener('click', function(e) {
@@ -1510,52 +1712,60 @@
     {
         let manualOhPriceValue = 0;
         let manualOhPercValue = 0;
-        const totalCostSpan = document.getElementById('totalRmCost');
-
+        let totalCostSpan = document.getElementById('totalRmCost');
+        let totalOhCostSpan = document.getElementById('totalohCost');
+        let manualEntryTable = document.getElementById('manualEntryTable');
+        const manualOverheads = document.getElementById('manualOverheads');
+        const ohMohValue = document.getElementById("oh_mohValue").value;
+        let manualTable = document.getElementById('overheadsTable');
         if((parseFloat(totalCostSpan.textContent) || 0) <= 0) {
                 alert("Please add raw materials");
                 return;
             }
-
-        function calcForManual()
+        if(manualOverheads)
         {
-            let manualOhAmount = 0;
-            let manualOhPercent = 0;
-            const manualOhType = document.getElementById("manualOhType").value.trim();
-
-            let rmTotal = parseFloat(totalCostSpan.textContent) || 0;
-            let pmTotal = parseFloat(totalPmCostSpan.textContent) || 0;
-            if ((rmTotal + pmTotal) <= 0) {
-                alert("Please add raw materials & packing materials.");
-                return;
-            }
-            if(manualOhType == 'percentage')
+            function calcForManual()
             {
-                manualOhPercValue = parseFloat(document.getElementById("manualOhPerc").value) || 0;
-                console.log(parseFloat(rmTotal));
-                    manualOhAmount = ((rmTotal + pmTotal) * manualOhPercValue/100);
-                    console.log(manualOhAmount);
-                    manualOhPriceValue = manualOhAmount;
+                let manualOhAmount = 0;
+                let manualOhPercent = 0;
+                let totalRmCost = document.getElementById('totalRmCost');
+                let totalPmCost = document.getElementById('totalPmCost');
+                const manualOhType = document.getElementById("manualOhType").value.trim();
+
+                let rmTotal = parseFloat(totalRmCost.textContent) || 0;
+                let pmTotal = parseFloat(totalPmCost.textContent) || 0;
+                if ((rmTotal + pmTotal) <= 0) {
+                    alert("Please add raw materials & packing materials.");
+                    return;
+                }
+                if(manualOhType == 'percentage')
+                {
+                    manualOhPercValue = parseFloat(document.getElementById("manualOhPerc").value) || 0;
+                    console.log(parseFloat(rmTotal));
+                        manualOhAmount = ((rmTotal + pmTotal) * manualOhPercValue/100);
+                        console.log(manualOhAmount);
+                        manualOhPriceValue = manualOhAmount;
+                }
+                else if(manualOhType == 'price')
+                {
+                    manualOhPriceValue = parseFloat(document.getElementById("manualOhPrice").value) || 0;
+                    console.log(parseFloat(rmTotal));
+                    manualOhPercent = (manualOhPriceValue / (rmTotal + pmTotal)) * 100;
+                    console.log(manualOhPercent);
+                    manualOhPercValue = manualOhPercent;
+                }
             }
-            else if(manualOhType == 'price')
+            const manualOhAddButton = document.getElementById('manualOhaddbtn');
+            if(totalOhCostSpan)
             {
-                manualOhPriceValue = parseFloat(document.getElementById("manualOhPrice").value) || 0;
-                console.log(parseFloat(rmTotal));
-                manualOhPercent = (manualOhPriceValue / (rmTotal + pmTotal)) * 100;
-                console.log(manualOhPercent);
-                manualOhPercValue = manualOhPercent;
-            }
-        }
+                manualOhAddButton.addEventListener('click', function() {
+                    console.log("Add button clicked"); // Debugging
 
-        const manualOhAddButton = document.getElementById('manualOhaddbtn');
-        manualOhAddButton.addEventListener('click', function() {
-            console.log("Add button clicked"); // Debugging
-
-            const product_id = productSelect.value;
-            if (!product_id) {
-                alert('Please select a valid product.');
-                return;
-            }
+                    const product_id = productSelect.value;
+                    if (!product_id) {
+                        alert('Please select a valid product.');
+                        return;
+                    }
 
             const manualOverheadsName = document.getElementById('manualOverheads').value.trim();
             const manualOhType = document.getElementById("manualOhType").value;
@@ -1623,9 +1833,12 @@
                     </td>
                 </tr>`;
 
-                        const manualEntryTable = document.getElementById('manualEntryTable'); // Assuming you have a table with ID 'overheadsTable'
-                        manualEntryTable.insertAdjacentHTML('beforeend', row);
-
+                       // Assuming you have a table with ID 'overheadsTable'
+                       if(ohMohValue === 'manual')
+                       {  manualTable.insertAdjacentHTML('beforeend', row);  }
+                       else{
+                         manualEntryTable.insertAdjacentHTML('beforeend', row);
+                       }
                         clearMohFields()
                         window.location.reload();
                         // Optionally, update the total cost after adding a row
@@ -1637,6 +1850,7 @@
                 })
                 .catch(error => console.error("Fetch error:", error));
         });
+        }
 
         if(manualEntryTable){
         manualEntryTable.addEventListener('click', function(e) {
@@ -1684,8 +1898,9 @@
                         updateOhTotalCost(-amount);
                     })
                     .catch(error => console.error('Error:', error.message));
-            }
-        });
+                }
+            });
+        }
     }
     }
 
