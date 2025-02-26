@@ -56,8 +56,8 @@
                                     <input type="text" class="form-control" id="inputItemType" name="itemtype">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="price">
+                                    <label for="price" class="form-label">Price</label>
+                                    <input type="text" class="form-control" id="price" name="price">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputTax" class="form-label">Tax</label>

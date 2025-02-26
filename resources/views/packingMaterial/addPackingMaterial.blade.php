@@ -9,6 +9,25 @@
 
     <section class="section">
         <div class="row">
+            @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
+
+        @if ($errors->any())
+            <div class="alert" style="color: white; background-color: rgba(255, 123, 0, 0.742); padding: 10px; border-radius: 5px;">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <div id="error-message" class="text-danger mt-2"></div>
             <div class="col-lg-12">
                 <div class="col-lg-6">
 
@@ -19,19 +38,19 @@
                             <form method="POST" action="{{ route('packingmaterials.store') }}" class="row g-3 mt-2">
                                 @csrf
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Item Name</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name">
+                                    <label for="inputName" class="form-label">Item Name</label>
+                                    <input type="text" class="form-control" id="inputName" name="name">
                                 </div>
                                 <!-- <div class="col-12">
                                     <label for="inputNanme4" class="form-label">RM Code</label>
                                     <input type="text" class="form-control" id="inputNanme4">
                                 </div> -->
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">HSN Code</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="hsnCode">
+                                    <label for="hsnCode" class="form-label">HSN Code</label>
+                                    <input type="text" class="form-control" id="hsnCode" name="hsnCode">
                                 </div>
                                 <div class="col-md-12">
-                                    <label for="inputNanme4" class="form-label">Choose Unit</label>
+                                    <label for="inputState" class="form-label">Choose Unit</label>
                                     <select id="inputState" class="form-select select2" name="uom">
                                         <option selected>UoM</option>
                                         <option>Ltr</option>
@@ -40,8 +59,8 @@
                                     </select>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Net Weight</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="itemWeight">
+                                    <label for="itemWeight" class="form-label">Net Weight</label>
+                                    <input type="text" class="form-control" id="itemWeight" name="itemWeight">
                                 </div>
                                 <div class="col-md-12">
                                     <label for="categorySelect" class="form-label">Packing Material Category</label>
@@ -52,16 +71,16 @@
                                     </select>
                                 </div>
                                 <div class="col-12 mb-2">
-                                    <label for="inputNanme4" class="form-label">Item Type</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="itemType">
+                                    <label for="itemType" class="form-label">Item Type</label>
+                                    <input type="text" class="form-control" id="itemType" name="itemType">
                                 </div>
                                 <div class="col-12 mb-2">
-                                    <label for="inputNanme4" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="price">
+                                    <label for="price" class="form-label">Price</label>
+                                    <input type="text" class="form-control" id="price" name="price">
                                 </div>
                                 <div class="col-12 mb-2">
-                                    <label for="inputNanme4" class="form-label">Tax</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="tax">
+                                    <label for="tax" class="form-label">Tax</label>
+                                    <input type="text" class="form-control" id="tax" name="tax">
                                 </div>
                                 <div class="row">
                                     <label for="inputNanme4" class="form-label mb-2">Pricing update frequency</label>
@@ -76,15 +95,15 @@
                                     {{-- <div class="col-md-1">
                                 </div> --}}
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" id="inputNanme4" name="price_update_frequency">
+                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency">
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Price threshold</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="price_threshold">
+                                    <label for="price_threshold" class="form-label">Price threshold</label>
+                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold">
                                 </div>
                                 <div>
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="submit" class="btn btn-primary" id="btnsubmit">
                                         Save
                                     </button>
                                 </div>
@@ -126,6 +145,53 @@
             placeholder: 'Select UoM',
         });
     });
+    document.addEventListener("DOMContentLoaded", function() {
+       const btnsave = document.getElementById('btnsubmit');
+
+    btnsave.addEventListener('click', function(event) {
+    let isValid = true;
+    // let errorMessage = "";
+    document.querySelectorAll(".error-text").forEach(el => el.innerHTML = "");
+    // Get form fields
+    let name = document.getElementById("inputName");
+        let hsncode = document.getElementById("hsnCode");
+        let uom = document.getElementById("inputState");
+        let itemweight = document.getElementById("itemWeight");
+        let categorySelect = document.getElementById("categorySelect");
+        let itemtype = document.getElementById("itemType");
+        let price = document.getElementById("price");
+        let tax = document.getElementById("tax");
+        let priceUpdateFreq = document.getElementById("price_update_frequency");
+        let priceThreshold = document.getElementById("price_threshold");
+
+        let errorDiv = document.getElementById("error-message");
+        errorDiv.innerHTML = ""; // Clear previous errors
+
+        // Validation checks
+        if (name.value.trim() === "") { showError(name, "Name is required."); isValid = false; }
+        if (hsncode.value.trim() === "") { showError(hsncode, "HSN Code is required."); isValid = false; }
+        if (uom.value === "UoM") { showError(uom, "Please select a valid Unit of Measure."); isValid = false; }
+        if (itemweight.value.trim() === "") { showError(itemweight, "Net Weight is required."); isValid = false; }
+        if (categorySelect.selectedOptions.length === 0) { showError(categorySelect, "Please select at least one category."); isValid = false; }
+        if (itemtype.value.trim() === "") { showError(itemtype, "Item Type is required."); isValid = false; }
+        if (price.value.trim() === "" || isNaN(price.value)) { showError(price, "Valid Price is required."); isValid = false; }
+        if (tax.value.trim() === "" || isNaN(tax.value)) { showError(tax, "Valid Tax value is required."); isValid = false; }
+        if (priceUpdateFreq.value.trim() === "" || isNaN(priceUpdateFreq.value)) { showError(priceUpdateFreq, "Valid Pricing Update Frequency is required."); isValid = false; }
+        if (priceThreshold.value.trim() === "" || isNaN(priceThreshold.value)) { showError(priceThreshold, "Valid Price Threshold is required."); isValid = false; }
+
+        if (!isValid) {
+            event.preventDefault();
+        }
+    });
+    function showError(input, message) {
+        let errorElement = document.createElement("div");
+        errorElement.className = "error-text text-danger";
+        errorElement.innerHTML = message;
+        input.parentNode.appendChild(errorElement);
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+ });
+
 </script>
 
 

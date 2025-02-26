@@ -184,15 +184,15 @@ class RawMaterialController extends Controller
         }
         return redirect()->route('rawMaterials.index')->with('success', 'Raw Material created successfully.');
 
-    } catch (ValidationException $e) {
-        return redirect()->back()
-            ->withErrors($e->errors())
-            ->withInput();
-    } catch (\Exception $e) {
-        return redirect()->back()
-            ->with('error', 'Something went wrong! Could not save data.')
-            ->withInput();
-    }
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong! Could not save data.')
+                ->withInput();
+        }
     }
 
 

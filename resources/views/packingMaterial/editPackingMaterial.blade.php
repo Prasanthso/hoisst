@@ -18,6 +18,25 @@
 
     <section class="section">
         <div class="row">
+            @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert" style="color: white; background-color: rgba(255, 123, 0, 0.742); 10px; border-radius: 5px;">{{ session('error') }}</div>
+            @endif
+
+            @if ($errors->any())
+                <div class="alert" style="color: white; background-color: rgba(255, 123, 0, 0.742); padding: 10px; border-radius: 5px;">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div id="error-message" class="text-danger mt-2"></div>
             <div class="col-lg-12">
                 <div class="col-lg-6">
 
@@ -29,15 +48,15 @@
                                 @csrf
                                 @method('PUT')
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Name</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name" value="{{ $packingMaterial->name}}" disabled>
+                                    <label for="inputName" class="form-label">Name</label>
+                                    <input type="text" class="form-control" id="inputName" name="name" value="{{ $packingMaterial->name}}" disabled>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">HSN Code</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="hsnCode" value="{{ $packingMaterial->hsnCode}}" disabled>
+                                    <label for="hsnCode" class="form-label">HSN Code</label>
+                                    <input type="text" class="form-control" id="hsnCode" name="hsnCode" value="{{ $packingMaterial->hsnCode}}" disabled>
                                 </div>
                                 <div class="col-md-12">
-                                    <label for="inputNanme4" class="form-label">Choose Unit</label>
+                                    <label for="inputState" class="form-label">Choose Unit</label>
                                     <select id="inputState" class="form-select select2" name="uom" disabled>
                                         <option selected>{{ $packingMaterial->uom}}</option>
                                         <option>Ltr</option>
@@ -46,8 +65,8 @@
                                     </select>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Net Weight</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="itemWeight" value="{{ $packingMaterial->itemWeight}}" disabled>
+                                    <label for="itemWeight" class="form-label">Net Weight</label>
+                                    <input type="text" class="form-control" id="itemWeight" name="itemWeight" value="{{ $packingMaterial->itemWeight}}" disabled>
                                 </div>
                                 <div class="col-md-12">
                                     <label for="categorySelect" class="form-label">Packing Material Category</label>
@@ -68,18 +87,18 @@
                                 </div>
 
                                 <div class="col-12 mb-2">
-                                    <label for="inputNanme4" class="form-label">Item Type</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="itemType" value="{{ $packingMaterial->itemType}}" disabled>
+                                    <label for="itemType" class="form-label">Item Type</label>
+                                    <input type="text" class="form-control" id="itemType" name="itemType" value="{{ $packingMaterial->itemType}}" disabled>
                                 </div>
 
                                 <div class="col-12 mb-2">
-                                    <label for="inputNanme4" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="price" value="{{ $packingMaterial->price}}" disabled>
+                                    <label for="price" class="form-label">Price</label>
+                                    <input type="text" class="form-control" id="price" name="price" value="{{ $packingMaterial->price}}" disabled>
                                 </div>
 
                                 <div class="col-12 mb-2">
-                                    <label for="inputNanme4" class="form-label">Tax</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="tax" value="{{ $packingMaterial->tax}}" disabled>
+                                    <label for="tax" class="form-label">Tax</label>
+                                    <input type="text" class="form-control" id="tax" name="tax" value="{{ $packingMaterial->tax}}" disabled>
                                 </div>
 
                                 <div class="row">
@@ -94,12 +113,12 @@
                                         </select>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" id="inputNanme4" name="price_update_frequency" value="{{ $packingMaterial->price_update_frequency}}" disabled>
+                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ $packingMaterial->price_update_frequency}}" disabled>
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Price threshold in percentage</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="price_threshold" value="{{ $packingMaterial->price_threshold}}" disabled>
+                                    <label for="price_threshold" class="form-label">Price threshold in percentage</label>
+                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $packingMaterial->price_threshold}}" disabled>
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="saveButton" style="display: none;">
@@ -166,6 +185,47 @@
             $('#categorySelect').prop('disabled', false);
         });
     });
+    document.addEventListener("DOMContentLoaded", function() {
+       const btnsave = document.getElementById('saveButton');
+
+    btnsave.addEventListener('click', function(event) {
+    let isValid = true;
+    let errorMessage = "";
+
+    // Get form fields
+    let name = document.getElementById("inputName").value.trim();
+    let hsncode = document.getElementById("hsncode").value.trim();
+    let uom = document.getElementById("inputState").value;
+    let itemweight = document.getElementById("itemweight").value.trim();
+    let categorySelect = document.getElementById("categorySelect");
+    let itemtype = document.getElementById("itemtype").value.trim();
+    let price = document.getElementById("price").value.trim();
+    let tax = document.getElementById("tax").value.trim();
+    let priceUpdateFreq = document.getElementById("price_update_frequency").value.trim();
+    let priceThreshold = document.getElementById("price_threshold").value.trim();
+    let errorDiv = document.getElementById("error-message");
+    errorDiv.innerHTML = ""; // Clear previous errors
+
+    if (name === "") errorMessage += "Name is required.<br>";
+        if (hsncode === "") errorMessage += "HSN Code is required.<br>";
+        if (uom === "UoM") errorMessage += "Please select a valid Unit of Measure.<br>";
+        if (itemweight === "") errorMessage += "Net Weight is required.<br>";
+        if (categorySelect.selectedOptions.length === 0) errorMessage += "Please select at least one Raw Material Category.<br>";
+        if (itemtype === "") errorMessage += "Item Type is required.<br>";
+        if (price === "" || isNaN(price)) errorMessage += "Valid Price is required.<br>";
+        if (tax === "" || isNaN(tax)) errorMessage += "Valid Tax value is required.<br>";
+        if (priceUpdateFreq === "" || isNaN(priceUpdateFreq)) errorMessage += "Valid Pricing Update Frequency is required.<br>";
+        if (priceThreshold === "" || isNaN(priceThreshold)) errorMessage += "Valid Price Threshold is required.<br>";
+
+        // Display errors
+        if (errorMessage) {
+            errorDiv.innerHTML = `<div class="alert alert-danger">${errorMessage}</div>`;
+            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            event.preventDefault();
+        }
+    });
+
+ });
 </script>
 
 <!--Template Main JS File-->

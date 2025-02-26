@@ -23,11 +23,11 @@
             @endif
 
             @if (session('error'))
-                <div class="alert" style="color: white; background-color: rgba(255, 0, 0, 0.819); padding: 10px; border-radius: 5px;">{{ session('error') }}</div>
+                <div class="alert" style="color: white; background-color: rgba(255, 123, 0, 0.863); padding: 10px; border-radius: 5px;">{{ session('error') }}</div>
             @endif
 
             @if ($errors->any())
-                <div class="alert alert-danger">
+                <div class="alert" style="color: white; background-color: rgba(255, 123, 0, 0.742); padding: 10px; border-radius: 5px;">
                     <ul>
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>

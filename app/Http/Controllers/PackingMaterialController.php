@@ -7,6 +7,7 @@ use App\Models\CategoryItems;
 use App\Models\PackingMaterial;
 use App\Models\UniqueCode;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class PackingMaterialController extends Controller
 {
@@ -131,8 +132,9 @@ class PackingMaterialController extends Controller
      */
     public function store(Request $request)
     {
+        try{
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:packing_materials,name',
             'uom' => 'required|string|in:Ltr,Kgs,Nos',
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
@@ -140,7 +142,7 @@ class PackingMaterialController extends Controller
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
-            'hsnCode' => 'required|string',
+            'hsnCode' => 'required|string|unique:packing_materials,hsnCode',
             'itemType' => 'required|string',
             'itemWeight' => 'required|string',
             'tax' => 'required|string',
@@ -178,9 +180,16 @@ class PackingMaterialController extends Controller
             // \Log::error('Error inserting data: ' . $e->getMessage());
             dd($e->getMessage());
         }
-
-
         return redirect()->route('packingMaterials.index')->with('success', 'Packing Material created successfully.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong! Could not save data.')
+                ->withInput();
+        }
     }
 
     public function updatePrices(Request $request)
@@ -253,7 +262,25 @@ class PackingMaterialController extends Controller
     {
         // Find the existing packing material by ID
         $packingMaterial = PackingMaterial::findOrFail($id);
+        try {
+            // for duplicate
+            $existingMaterial = PackingMaterial::where(function ($query) use ($request) {
+                $query->whereRaw('LOWER(name) = LOWER(?)', [$request->name])
+                ->orWhereRaw('LOWER(hsnCode) = LOWER(?)', [$request->hsnCode]);
+            })
+            ->where('id', '!=', $packingMaterial->id) // Exclude current record from check
+            ->first();
 
+            if ($existingMaterial) {
+                if (strtolower($existingMaterial->name) == strtolower($request->name) &&
+                    strtolower($existingMaterial->hsnCode) == strtolower($request->hsnCode)) {
+                    return redirect()->back()->with('error', 'Both Material Name and HSN Code already exist.');
+                } elseif (strtolower($existingMaterial->name) == strtolower($request->name)) {
+                    return redirect()->back()->with('error', 'Material Name already exists.');
+                } elseif (strtolower($existingMaterial->hsnCode) == strtolower($request->hsnCode)) {
+                    return redirect()->back()->with('error', 'HSN Code already exists.');
+                }
+            }
         // Validate the incoming request data
         $request->validate([
             'name' => 'required|string|max:255',
@@ -301,9 +328,17 @@ class PackingMaterialController extends Controller
             // \Log::error('Error updating packing material: ' . $e->getMessage());
             return redirect()->back()->with('error', 'There was an issue updating the packing material.');
         }
-
         // Return a success message and redirect back
         return redirect()->route('packingMaterials.index')->with('success', 'packing Material updated successfully.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong! Could not update data.')
+                ->withInput();
+        }
     }
 
     /**
