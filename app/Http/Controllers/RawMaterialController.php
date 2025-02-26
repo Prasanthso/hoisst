@@ -6,7 +6,7 @@ use App\Models\CategoryItems;
 use App\Models\RawMaterial;
 use App\Models\UniqueCode;
 use Illuminate\Http\Request;
-
+use Illuminate\Validation\ValidationException;
 
 class RawMaterialController extends Controller
 {
@@ -134,9 +134,9 @@ class RawMaterialController extends Controller
      */
     public function store(Request $request)
     {
-
+        try{
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:raw_materials,name',
             'uom' => 'required|string|in:Ltr,Kgm,Gm,Nos',
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
@@ -144,7 +144,7 @@ class RawMaterialController extends Controller
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
-            'hsncode' => 'required|string',
+            'hsncode' => 'required|string|unique:raw_materials,hsncode',
             'itemweight' => 'required|string',
             'itemtype' => 'required|string',
             'tax' => 'required|string',
@@ -182,9 +182,17 @@ class RawMaterialController extends Controller
             // \Log::error('Error inserting data: ' . $e->getMessage());
             dd($e->getMessage());
         }
-
-
         return redirect()->route('rawMaterials.index')->with('success', 'Raw Material created successfully.');
+
+    } catch (ValidationException $e) {
+        return redirect()->back()
+            ->withErrors($e->errors())
+            ->withInput();
+    } catch (\Exception $e) {
+        return redirect()->back()
+            ->with('error', 'Something went wrong! Could not save data.')
+            ->withInput();
+    }
     }
 
 
@@ -261,6 +269,7 @@ class RawMaterialController extends Controller
         // Find the existing raw material by ID
         $rawMaterial = RawMaterial::findOrFail($id);
 
+    try{
         // Validate the incoming request data
         $request->validate([
             'name' => 'required|string|max:255',
@@ -280,6 +289,25 @@ class RawMaterialController extends Controller
         $categoryIds = $request->category_ids;
 
         try {
+            // for duplicate
+            $existingMaterial = RawMaterial::where(function ($query) use ($request) {
+                $query->whereRaw('LOWER(name) = LOWER(?)', [$request->name])
+                ->orWhereRaw('LOWER(hsncode) = LOWER(?)', [$request->hsncode]);
+            })
+            ->where('id', '!=', $rawMaterial->id) // Exclude current record from check
+            ->first();
+
+            if ($existingMaterial) {
+                if (strtolower($existingMaterial->name) == strtolower($request->name) &&
+                    strtolower($existingMaterial->hsncode) == strtolower($request->hsncode)) {
+                    return redirect()->back()->with('error', 'Both Material Name and HSN Code already exist.');
+                } elseif (strtolower($existingMaterial->name) == strtolower($request->name)) {
+                    return redirect()->back()->with('error', 'Material Name already exists.');
+                } elseif (strtolower($existingMaterial->hsncode) == strtolower($request->hsncode)) {
+                    return redirect()->back()->with('error', 'HSN Code already exists.');
+                }
+            }
+
             // Update the raw material record
             $rawMaterial->update([
                 'name' => $request->name,
@@ -308,9 +336,17 @@ class RawMaterialController extends Controller
             // \Log::error('Error updating raw material: ' . $e->getMessage());
             return redirect()->back()->with('error', 'There was an issue updating the raw material.');
         }
-
         // Return a success message and redirect back
         return redirect()->route('rawMaterials.index')->with('success', 'Raw Material updated successfully.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong! Could not update data.')
+                ->withInput();
+        }
     }
 
     /**

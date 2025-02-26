@@ -1834,7 +1834,7 @@
                 </tr>`;
 
                        // Assuming you have a table with ID 'overheadsTable'
-                       if(ohMohValue === 'manual')
+                       if(ohMohValue === '')
                        {  manualTable.insertAdjacentHTML('beforeend', row);  }
                        else{
                          manualEntryTable.insertAdjacentHTML('beforeend', row);
