@@ -44,7 +44,7 @@
                         <div class="card-body">
 
                             <!-- Vertical Form -->
-                            <form method="POST" action="{{ route('packingMaterial.edit', $packingMaterial->id) }}" class="row g-3 mt-2" id="rawMaterialForm">
+                            <form method="POST" action="{{ route('packingMaterial.edit', $packingMaterial->id) }}" class="row g-3 mt-2" id="packingMaterialForm">
                                 @csrf
                                 @method('PUT')
                                 <div class="col-12">
@@ -92,13 +92,13 @@
                                 </div>
 
                                 <div class="col-12 mb-2">
-                                    <label for="price" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="price" name="price" value="{{ $packingMaterial->price}}" disabled>
+                                    <label for="inputPrice" class="form-label">Price</label>
+                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $packingMaterial->price}}" disabled>
                                 </div>
 
                                 <div class="col-12 mb-2">
-                                    <label for="tax" class="form-label">Tax</label>
-                                    <input type="text" class="form-control" id="tax" name="tax" value="{{ $packingMaterial->tax}}" disabled>
+                                    <label for="inputTax" class="form-label">Tax</label>
+                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ $packingMaterial->tax}}" disabled>
                                 </div>
 
                                 <div class="row">
@@ -170,7 +170,7 @@
             $('#pageTitle').text('Edit Packing Material');
 
             // Enable form fields
-            $('#rawMaterialForm input, #rawMaterialForm select').prop('disabled', false);
+            $('#packingMaterialForm input, #packingMaterialForm select').prop('disabled', false);
 
             // Show the Save button
             $('#saveButton').show();
@@ -190,40 +190,45 @@
 
     btnsave.addEventListener('click', function(event) {
     let isValid = true;
-    let errorMessage = "";
-
+    document.querySelectorAll(".error-text").forEach(el => el.innerHTML = "");
     // Get form fields
-    let name = document.getElementById("inputName").value.trim();
-    let hsncode = document.getElementById("hsncode").value.trim();
-    let uom = document.getElementById("inputState").value;
-    let itemweight = document.getElementById("itemweight").value.trim();
-    let categorySelect = document.getElementById("categorySelect");
-    let itemtype = document.getElementById("itemtype").value.trim();
-    let price = document.getElementById("price").value.trim();
-    let tax = document.getElementById("tax").value.trim();
-    let priceUpdateFreq = document.getElementById("price_update_frequency").value.trim();
-    let priceThreshold = document.getElementById("price_threshold").value.trim();
-    let errorDiv = document.getElementById("error-message");
-    errorDiv.innerHTML = ""; // Clear previous errors
+    let name = document.getElementById("inputName");
+        let hsncode = document.getElementById("hsnCode");
+        let uom = document.getElementById("inputState");
+        let itemweight = document.getElementById("itemWeight");
+        let categorySelect = document.getElementById("categorySelect");
+        let itemtype = document.getElementById("itemType");
+        let price = document.getElementById("inputPrice");
+        let tax = document.getElementById("inputTax");
+        let priceUpdateFreq = document.getElementById("price_update_frequency");
+        let priceThreshold = document.getElementById("price_threshold");
 
-    if (name === "") errorMessage += "Name is required.<br>";
-        if (hsncode === "") errorMessage += "HSN Code is required.<br>";
-        if (uom === "UoM") errorMessage += "Please select a valid Unit of Measure.<br>";
-        if (itemweight === "") errorMessage += "Net Weight is required.<br>";
-        if (categorySelect.selectedOptions.length === 0) errorMessage += "Please select at least one Raw Material Category.<br>";
-        if (itemtype === "") errorMessage += "Item Type is required.<br>";
-        if (price === "" || isNaN(price)) errorMessage += "Valid Price is required.<br>";
-        if (tax === "" || isNaN(tax)) errorMessage += "Valid Tax value is required.<br>";
-        if (priceUpdateFreq === "" || isNaN(priceUpdateFreq)) errorMessage += "Valid Pricing Update Frequency is required.<br>";
-        if (priceThreshold === "" || isNaN(priceThreshold)) errorMessage += "Valid Price Threshold is required.<br>";
+        let errorDiv = document.getElementById("error-message");
+        errorDiv.innerHTML = ""; // Clear previous errors
 
-        // Display errors
-        if (errorMessage) {
-            errorDiv.innerHTML = `<div class="alert alert-danger">${errorMessage}</div>`;
-            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Validation checks
+        if (name.value.trim() === "") { showError(name, "Name is required."); isValid = false; }
+        if (hsncode.value.trim() === "") { showError(hsncode, "HSN Code is required."); isValid = false; }
+        if (uom.value === "UoM") { showError(uom, "Please select a valid Unit of Measure."); isValid = false; }
+        if (itemweight.value.trim() === "") { showError(itemweight, "Net Weight is required."); isValid = false; }
+        if (categorySelect.selectedOptions.length === 0) { showError(categorySelect, "Please select at least one category."); isValid = false; }
+        if (itemtype.value.trim() === "") { showError(itemtype, "Item Type is required."); isValid = false; }
+        if (price.value.trim() === "" || isNaN(price.value)) { showError(price, "Valid Price is required."); isValid = false; }
+        if (tax.value.trim() === "" || isNaN(tax.value)) { showError(tax, "Valid Tax value is required."); isValid = false; }
+        if (priceUpdateFreq.value.trim() === "" || isNaN(priceUpdateFreq.value)) { showError(priceUpdateFreq, "Valid Pricing Update Frequency is required."); isValid = false; }
+        if (priceThreshold.value.trim() === "" || isNaN(priceThreshold.value)) { showError(priceThreshold, "Valid Price Threshold is required."); isValid = false; }
+
+        if (!isValid) {
             event.preventDefault();
         }
     });
+    function showError(input, message) {
+        let errorElement = document.createElement("div");
+        errorElement.className = "error-text text-danger";
+        errorElement.innerHTML = message;
+        input.parentNode.appendChild(errorElement);
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
 
  });
 </script>

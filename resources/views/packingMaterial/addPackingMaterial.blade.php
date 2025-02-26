@@ -75,12 +75,12 @@
                                     <input type="text" class="form-control" id="itemType" name="itemType">
                                 </div>
                                 <div class="col-12 mb-2">
-                                    <label for="price" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="price" name="price">
+                                    <label for="inputPrice" class="form-label">Price</label>
+                                    <input type="text" class="form-control" id="inputPrice" name="price">
                                 </div>
                                 <div class="col-12 mb-2">
-                                    <label for="tax" class="form-label">Tax</label>
-                                    <input type="text" class="form-control" id="tax" name="tax">
+                                    <label for="inputTax" class="form-label">Tax</label>
+                                    <input type="text" class="form-control" id="inputTax" name="tax">
                                 </div>
                                 <div class="row">
                                     <label for="inputNanme4" class="form-label mb-2">Pricing update frequency</label>
@@ -159,8 +159,8 @@
         let itemweight = document.getElementById("itemWeight");
         let categorySelect = document.getElementById("categorySelect");
         let itemtype = document.getElementById("itemType");
-        let price = document.getElementById("price");
-        let tax = document.getElementById("tax");
+        let price = document.getElementById("inputPrice");
+        let tax = document.getElementById("inputTax");
         let priceUpdateFreq = document.getElementById("price_update_frequency");
         let priceThreshold = document.getElementById("price_threshold");
 

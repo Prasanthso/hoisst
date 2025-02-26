@@ -52,12 +52,12 @@
                                     </select>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputItemType" class="form-label">Item Type</label>
-                                    <input type="text" class="form-control" id="inputItemType" name="itemtype">
+                                    <label for="itemtype" class="form-label">Item Type</label>
+                                    <input type="text" class="form-control" id="itemtype" name="itemtype">
                                 </div>
                                 <div class="col-12">
-                                    <label for="price" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="price" name="price">
+                                    <label for="inputPrice" class="form-label">Price</label>
+                                    <input type="text" class="form-control" id="inputPrice" name="price">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputTax" class="form-label">Tax</label>
