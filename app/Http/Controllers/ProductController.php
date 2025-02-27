@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\RawMaterial;
 use App\Models\UniqueCode;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
 {
@@ -139,7 +140,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-
+        try{
         $request->validate([
             'name' => [
             'required',
@@ -203,9 +204,16 @@ class ProductController extends Controller
             // \Log::error('Error inserting data: ' . $e->getMessage());
             dd($e->getMessage());
         }
-
-
         return redirect()->route('products.index')->with('success', 'Product created successfully.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong! Could not save data.')
+                ->withInput();
+        }
     }
 
 

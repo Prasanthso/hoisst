@@ -21,11 +21,15 @@
                             <form method="POST" action="{{ route('categoryitem.store') }}" class="row g-3 mt-2">
                                 @csrf
                                 <div class="col-md-12">
-                                    <label for="inputNanme4" class="form-label">Choose Category For</label>
+                                    <label for="inputState" class="form-label">Choose Category For</label>
                                     <select id="inputState" name="categoryId" class="form-select select2">
                                         <option selected disabled>Choose...</option>
                                         @foreach($categories as $category)
-                                            <option value="{{ $category->id }}">{{ $category->categoryname }}</option>
+                                        <option value="{{ $category->id }}"
+                                            {{ old('categoryId') == $category->id ? 'selected' : '' }}>
+                                            {{ $category->categoryname }}
+                                        </option>
+                                            {{-- <option value="{{ $category->id }}">{{ $category->categoryname }}</option> --}}
                                         @endforeach
                                     </select>
                                     @error('categoryId')
@@ -33,21 +37,26 @@
                                 @enderror
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Category Name</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="itemname">
-                                </div>
-                                <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Description</label>
-                                    <div class="form-floating">
-                                        <textarea class="form-control" placeholder="Category Description" name="description" id="floatingTextarea" style="height: 100px;"></textarea>
-                                        <label for="floatingTextarea">Category Description</label>
-                                    </div>
-                                    @error('description')
+                                    <label for="itemname" class="form-label">Category Name</label>
+                                    <input type="text" class="form-control" id="itemname" name="itemname" value="{{ old('itemname') }}">
+                                    @error('itemname')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                                 </div>
+
+                                <div class="col-12">
+                                    <label for="inputNanme4" class="form-label">Description</label>
+                                    <div class="form-floating">
+                                        <textarea class="form-control" placeholder="Category Description" name="description" id="floatingTextarea" style="height: 100px;">{{ old('description') }}</textarea>
+                                        <label for="floatingTextarea">Category Description</label>
+                                        @error('description')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                    </div>
+
+                                </div>
                                 <div>
-                                    <button type="submit" class="btn btn-primary">Save</button>
+                                    <button type="submit" class="btn btn-primary" id="btnSubmit">Save</button>
                                 </div>
                             </form><!-- Vertical Form -->
 
@@ -84,4 +93,5 @@
             placeholder: 'Select UoM',
          });
     });
+
 </script>

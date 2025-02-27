@@ -38,11 +38,11 @@
                                 @csrf
                                 <div class="col-12">
                                     <label for="inputName" class="form-label">Name</label>
-                                    <input type="text" class="form-control" id="inputName" name="name">
+                                    <input type="text" class="form-control" id="inputName" name="name" value="{{ old('name') }}">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputHSNcode" class="form-label">HSN Code</label>
-                                    <input type="text" class="form-control" id="inputHSNcode" name="hsnCode">
+                                    <input type="text" class="form-control" id="inputHSNcode" name="hsnCode" value="{{ old('hsnCode') }}">
                                 </div>
                                 <!-- <div class="col-12">
                                     <label for="inputNanme4" class="form-label">RM Code</label>

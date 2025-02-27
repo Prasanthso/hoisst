@@ -47,7 +47,7 @@
                                 </div> -->
                                 <div class="col-12">
                                     <label for="hsnCode" class="form-label">HSN Code</label>
-                                    <input type="text" class="form-control" id="hsnCode" name="hsnCode" value="{{ old('name') }}">
+                                    <input type="text" class="form-control" id="hsnCode" name="hsnCode" value="{{ old('hsnCode') }}">
                                 </div>
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Unit</label>
@@ -61,7 +61,7 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="itemWeight" class="form-label">Net Weight</label>
-                                    <input type="text" class="form-control" id="itemWeight" name="itemWeight" value="{{ old('name') }}">
+                                    <input type="text" class="form-control" id="itemWeight" name="itemWeight" value="{{ old('itemWeight') }}">
                                 </div>
                                 <div class="col-md-12">
                                     <label for="categorySelect" class="form-label">Packing Material Category</label>
@@ -76,15 +76,15 @@
                                 </div>
                                 <div class="col-12 mb-2">
                                     <label for="itemType" class="form-label">Item Type</label>
-                                    <input type="text" class="form-control" id="itemType" name="itemType" value="{{ old('name') }}">
+                                    <input type="text" class="form-control" id="itemType" name="itemType" value="{{ old('itemType') }}">
                                 </div>
                                 <div class="col-12 mb-2">
                                     <label for="inputPrice" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ old('name') }}">
+                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ old('price') }}">
                                 </div>
                                 <div class="col-12 mb-2">
                                     <label for="inputTax" class="form-label">Tax</label>
-                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ old('name') }}">
+                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ old('tax') }}">
                                 </div>
                                 <div class="row">
                                     <label for="inputNanme4" class="form-label mb-2">Pricing update frequency</label>
@@ -99,12 +99,12 @@
                                     {{-- <div class="col-md-1">
                                 </div> --}}
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ old('name') }}">
+                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ old('price_update_frequency') }}">
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="price_threshold" class="form-label">Price threshold</label>
-                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ old('name') }}">
+                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ old('price_threshold') }}">
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="btnsubmit">
