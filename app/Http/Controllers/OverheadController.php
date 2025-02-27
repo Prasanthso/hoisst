@@ -7,6 +7,7 @@ use App\Models\CategoryItems;
 use App\Models\Overhead;
 use App\Models\UniqueCode;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class OverheadController extends Controller
 {
@@ -131,17 +132,33 @@ class OverheadController extends Controller
      */
     public function store(Request $request)
     {
-
+        try{
         $request->validate([
-            'name' => 'required|string|max:255',
-            'uom' => 'required|string|in:Ltr,Kgs,Nos',
+            'name' => [
+            'required',
+            'string',
+            'max:255',
+            'unique:overheads,name',
+            function ($attribute, $value, $fail) {
+                // Convert input to lowercase and remove spaces
+                $formattedValue = strtolower(str_replace(' ', '', $value));
+                // Fetch existing names from the database (case-insensitive)
+                $existingNames = Overhead::pluck('name')->map(function ($name) {
+                    return strtolower(str_replace(' ', '', $name));
+                })->toArray();
+                if (in_array($formattedValue, $existingNames)) {
+                    $fail('This name is duplicate. Please choose a different one.');
+                }
+            }
+        ],
+            'uom' => 'required|string|in:Ltr,Kgm,Gm,Nos',
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
             'price' => 'required|string',
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
-            'hsncode' => 'required|string',
+            'hsncode' => 'required|string|unique:overheads,hsncode',
             // 'itemweight' => 'string',
             'itemtype' => 'required|string',
             'tax' => 'required|string',
@@ -180,8 +197,16 @@ class OverheadController extends Controller
             dd($e->getMessage());
         }
 
-
         return redirect()->route('overheads.index')->with('success', 'Overheads created successfully.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong! Could not save data.')
+                ->withInput();
+        }
     }
 
     public function updatePrices(Request $request)
@@ -255,12 +280,34 @@ class OverheadController extends Controller
     public function update(Request $request, string $id)
     {
         // Find the existing raw material by ID
-        $rawMaterial = Overhead::findOrFail($id);
+        $overheads = Overhead::findOrFail($id);
+        try {
+            // for duplicate
+            $strName = strtolower(preg_replace('/\s+/', '', $request->name));
+            $strHsnCode = strtolower(preg_replace('/\s+/', '', $request->hsncode));
 
+            // Check for existing overheads with the same normalized name or HSN code
+            $existingOverhead = Overhead::where(function ($query) use ($strName, $strHsnCode) {
+                $query->whereRaw("LOWER(REPLACE(name, ' ', '')) = ?", [$strName])
+                    ->orWhereRaw("LOWER(REPLACE(hsncode, ' ', '')) = ?", [$strHsnCode]);
+            })
+            ->where('id', '!=', $overheads->id) // Exclude the current product
+            ->first();
+
+            if ($existingOverhead) {
+                if ($strName == strtolower(preg_replace('/\s+/', '', $existingOverhead->name)) &&
+                    $strHsnCode == strtolower(preg_replace('/\s+/', '', $existingOverhead->hsncode))) {
+                    return redirect()->back()->with('error', 'Both Overhead Name and HSN Code already exist.');
+                } elseif ($strName == strtolower(preg_replace('/\s+/', '', $existingOverhead->name))) {
+                    return redirect()->back()->with('error', 'Overhead Name already exists.');
+                } elseif ($strHsnCode == strtolower(preg_replace('/\s+/', '', $existingOverhead->hsncode))) {
+                    return redirect()->back()->with('error', 'HSN Code already exists.');
+                }
+            }
         // Validate the incoming request data
         $request->validate([
             'name' => 'required|string|max:255',
-            'uom' => 'required|string|in:Ltr,Kgs,Nos',
+            'uom' => 'required|string|in:Ltr,Kgm,Gm,Nos',
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
             'price' => 'required|string',
@@ -277,7 +324,7 @@ class OverheadController extends Controller
 
         try {
             // Update the raw material record
-            $rawMaterial->update([
+            $overheads->update([
                 'name' => $request->name,
                 'uom' => $request->uom,
                 'category_id1' => $categoryIds[0] ?? null,
@@ -307,6 +354,15 @@ class OverheadController extends Controller
 
         // Return a success message and redirect back
         return redirect()->route('overheads.index')->with('success', 'Overheads updated successfully.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong! Could not update data.')
+                ->withInput();
+        }
     }
 
     /**

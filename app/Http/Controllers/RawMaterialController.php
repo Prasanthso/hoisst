@@ -136,7 +136,24 @@ class RawMaterialController extends Controller
     {
         try{
         $request->validate([
-            'name' => 'required|string|max:255|unique:raw_materials,name',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:raw_materials,name',
+                function ($attribute, $value, $fail) {
+                    // Convert input to lowercase and remove spaces
+                    $formattedValue = strtolower(str_replace(' ', '', $value));
+                    // Fetch existing names from the database (case-insensitive)
+                    $existingNames = Overhead::pluck('name')->map(function ($name) {
+                        return strtolower(str_replace(' ', '', $name));
+                    })->toArray();
+                    // Check if the formatted input already exists
+                    if (in_array($formattedValue, $existingNames)) {
+                        $fail('This name is duplicate. Please choose a different one.');
+                    }
+                }
+            ],  //'name' => 'required|string|max:255|unique:raw_materials,name',
             'uom' => 'required|string|in:Ltr,Kgm,Gm,Nos',
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
@@ -290,20 +307,24 @@ class RawMaterialController extends Controller
 
         try {
             // for duplicate
-            $existingMaterial = RawMaterial::where(function ($query) use ($request) {
-                $query->whereRaw('LOWER(name) = LOWER(?)', [$request->name])
-                ->orWhereRaw('LOWER(hsncode) = LOWER(?)', [$request->hsncode]);
+            $strName = strtolower(preg_replace('/\s+/', '', $request->name));
+            $strHsnCode = strtolower(preg_replace('/\s+/', '', $request->hsncode));
+
+            // Check for existing product with the same normalized name or HSN code
+            $existingMaterial = RawMaterial::where(function ($query) use ($strName, $strHsnCode) {
+                $query->whereRaw("LOWER(REPLACE(name, ' ', '')) = ?", [$strName])
+                    ->orWhereRaw("LOWER(REPLACE(hsncode, ' ', '')) = ?", [$strHsnCode]);
             })
-            ->where('id', '!=', $rawMaterial->id) // Exclude current record from check
+            ->where('id', '!=', $rawMaterial->id) // Exclude the current product
             ->first();
 
             if ($existingMaterial) {
-                if (strtolower($existingMaterial->name) == strtolower($request->name) &&
-                    strtolower($existingMaterial->hsncode) == strtolower($request->hsncode)) {
+                if ($strName == strtolower(preg_replace('/\s+/', '', $existingMaterial->name)) &&
+                    $strHsnCode == strtolower(preg_replace('/\s+/', '', $existingMaterial->hsncode))) {
                     return redirect()->back()->with('error', 'Both Material Name and HSN Code already exist.');
-                } elseif (strtolower($existingMaterial->name) == strtolower($request->name)) {
+                } elseif ($strName == strtolower(preg_replace('/\s+/', '', $existingMaterial->name))) {
                     return redirect()->back()->with('error', 'Material Name already exists.');
-                } elseif (strtolower($existingMaterial->hsncode) == strtolower($request->hsncode)) {
+                } elseif ($strHsnCode == strtolower(preg_replace('/\s+/', '', $existingMaterial->hsncode))) {
                     return redirect()->back()->with('error', 'HSN Code already exists.');
                 }
             }

@@ -39,7 +39,7 @@
                                 @csrf
                                 <div class="col-12">
                                     <label for="inputName" class="form-label">Item Name</label>
-                                    <input type="text" class="form-control" id="inputName" name="name">
+                                    <input type="text" class="form-control" id="inputName" name="name" value="{{ old('name') }}">
                                 </div>
                                 <!-- <div class="col-12">
                                     <label for="inputNanme4" class="form-label">RM Code</label>
@@ -47,60 +47,64 @@
                                 </div> -->
                                 <div class="col-12">
                                     <label for="hsnCode" class="form-label">HSN Code</label>
-                                    <input type="text" class="form-control" id="hsnCode" name="hsnCode">
+                                    <input type="text" class="form-control" id="hsnCode" name="hsnCode" value="{{ old('name') }}">
                                 </div>
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Unit</label>
                                     <select id="inputState" class="form-select select2" name="uom">
-                                        <option selected>UoM</option>
-                                        <option>Ltr</option>
-                                        <option>Kgs</option>
-                                        <option>Nos</option>
+                                        <option value="UoM" {{ old('uom') == 'UoM' ? 'selected' : '' }}>UoM</option>
+                                        <option value="Ltr" {{ old('uom') == 'Ltr' ? 'selected' : '' }}>Ltr</option>
+                                        <option value="Kgm" {{ old('uom') == 'Kgm' ? 'selected' : '' }}>Kgm</option>
+                                        <option value="Gm" {{ old('uom') == 'Gm' ? 'selected' : '' }}>Gm</option>
+                                        <option value="Nos" {{ old('uom') == 'Nos' ? 'selected' : '' }}>Nos</option>
                                     </select>
                                 </div>
                                 <div class="col-12">
                                     <label for="itemWeight" class="form-label">Net Weight</label>
-                                    <input type="text" class="form-control" id="itemWeight" name="itemWeight">
+                                    <input type="text" class="form-control" id="itemWeight" name="itemWeight" value="{{ old('name') }}">
                                 </div>
                                 <div class="col-md-12">
                                     <label for="categorySelect" class="form-label">Packing Material Category</label>
                                     <select id="categorySelect" class="form-select select2" name="category_ids[]" multiple>
                                         @foreach($packingMaterialCategories as $categories)
-                                        <option value="{{ $categories->id }}">{{ $categories->itemname }}</option>
+                                        <option value="{{ $categories->id }}"
+                                            {{ in_array($categories->id, old('category_ids', [])) ? 'selected' : '' }}>
+                                            {{ $categories->itemname }}
+                                        </option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-12 mb-2">
                                     <label for="itemType" class="form-label">Item Type</label>
-                                    <input type="text" class="form-control" id="itemType" name="itemType">
+                                    <input type="text" class="form-control" id="itemType" name="itemType" value="{{ old('name') }}">
                                 </div>
                                 <div class="col-12 mb-2">
                                     <label for="inputPrice" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="inputPrice" name="price">
+                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ old('name') }}">
                                 </div>
                                 <div class="col-12 mb-2">
                                     <label for="inputTax" class="form-label">Tax</label>
-                                    <input type="text" class="form-control" id="inputTax" name="tax">
+                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ old('name') }}">
                                 </div>
                                 <div class="row">
                                     <label for="inputNanme4" class="form-label mb-2">Pricing update frequency</label>
                                     <div class="col-md-3">
-                                        <select class="form-select" id="update_frequency" name="update_frequency">
-                                            <option selected>Days</option>
-                                            <option>Weeks</option>
-                                            <option>Monthly</option>
-                                            <option>Yearly</option>
+                                        <select class="form-select mb-2" id="update_frequency" name="update_frequency">
+                                            <option value="Days" {{ old('update_frequency') == 'Days' ? 'selected' : '' }}>Days</option>
+                                            <option value="Weeks" {{ old('update_frequency') == 'Weeks' ? 'selected' : '' }}>Weeks</option>
+                                            <option value="Monthly" {{ old('update_frequency') == 'Monthly' ? 'selected' : '' }}>Monthly</option>
+                                            <option value="Yearly" {{ old('update_frequency') == 'Yearly' ? 'selected' : '' }}>Yearly</option>
                                         </select>
                                     </div>
                                     {{-- <div class="col-md-1">
                                 </div> --}}
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency">
+                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ old('name') }}">
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="price_threshold" class="form-label">Price threshold</label>
-                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold">
+                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ old('name') }}">
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="btnsubmit">

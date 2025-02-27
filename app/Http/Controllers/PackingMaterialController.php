@@ -134,8 +134,25 @@ class PackingMaterialController extends Controller
     {
         try{
         $request->validate([
-            'name' => 'required|string|max:255|unique:packing_materials,name',
-            'uom' => 'required|string|in:Ltr,Kgs,Nos',
+            'name' => [
+            'required',
+            'string',
+            'max:255',
+            'unique:packing_materials,name',
+            function ($attribute, $value, $fail) {
+                // Convert input to lowercase and remove spaces
+                $formattedValue = strtolower(str_replace(' ', '', $value));
+                // Fetch existing names from the database (case-insensitive)
+                $existingNames = Overhead::pluck('name')->map(function ($name) {
+                    return strtolower(str_replace(' ', '', $name));
+                })->toArray();
+                // Check if the formatted input already exists
+                if (in_array($formattedValue, $existingNames)) {
+                    $fail('This name is duplicate. Please choose a different one.');
+                }
+            }
+        ],  // 'name' => 'required|string|max:255|unique:packing_materials,name',
+            'uom' => 'required|string|in:Ltr,Kgm,Gm,Nos',
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
             'price' => 'required|string',
@@ -263,28 +280,31 @@ class PackingMaterialController extends Controller
         // Find the existing packing material by ID
         $packingMaterial = PackingMaterial::findOrFail($id);
         try {
+
+              $strName = strtolower(preg_replace('/\s+/', '', $request->name));
+              $strHsnCode = strtolower(preg_replace('/\s+/', '', $request->hsnCode));
             // for duplicate
-            $existingMaterial = PackingMaterial::where(function ($query) use ($request) {
-                $query->whereRaw('LOWER(name) = LOWER(?)', [$request->name])
-                ->orWhereRaw('LOWER(hsnCode) = LOWER(?)', [$request->hsnCode]);
+            $existingMaterial = PackingMaterial::where(function ($query) use ($strName, $strHsnCode) {
+                $query->whereRaw("LOWER(REPLACE(name, ' ', '')) = ?", [$strName])
+                    ->orWhereRaw("LOWER(REPLACE(hsncode, ' ', '')) = ?", [$strHsnCode]);
             })
-            ->where('id', '!=', $packingMaterial->id) // Exclude current record from check
+            ->where('id', '!=', $packingMaterial->id) // Exclude the current product
             ->first();
 
             if ($existingMaterial) {
-                if (strtolower($existingMaterial->name) == strtolower($request->name) &&
-                    strtolower($existingMaterial->hsnCode) == strtolower($request->hsnCode)) {
+                if ($strName == strtolower(preg_replace('/\s+/', '', $existingMaterial->name)) &&
+                    $strHsnCode == strtolower(preg_replace('/\s+/', '', $existingMaterial->hsnCode))) {
                     return redirect()->back()->with('error', 'Both Material Name and HSN Code already exist.');
-                } elseif (strtolower($existingMaterial->name) == strtolower($request->name)) {
+                } elseif ($strName == strtolower(preg_replace('/\s+/', '', $existingMaterial->name))) {
                     return redirect()->back()->with('error', 'Material Name already exists.');
-                } elseif (strtolower($existingMaterial->hsnCode) == strtolower($request->hsnCode)) {
+                } elseif ($strHsnCode == strtolower(preg_replace('/\s+/', '', $existingMaterial->hsnCode))) {
                     return redirect()->back()->with('error', 'HSN Code already exists.');
                 }
             }
         // Validate the incoming request data
         $request->validate([
             'name' => 'required|string|max:255',
-            'uom' => 'required|string|in:Ltr,Kgs,Nos',
+            'uom' => 'required|string|in:Ltr,Kgm,Gm,Nos',
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
             'price' => 'required|string',

@@ -23,11 +23,11 @@
             @endif
 
             @if (session('error'))
-                <div class="alert" style="color: white; background-color: rgba(255, 123, 0, 0.742); 10px; border-radius: 5px;">{{ session('error') }}</div>
+                <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
 
             @if ($errors->any())
-                <div class="alert" style="color: white; background-color: rgba(255, 123, 0, 0.742); padding: 10px; border-radius: 5px;">
+                <div class="alert alert-danger">
                     <ul>
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -60,7 +60,8 @@
                                     <select id="inputState" class="form-select select2" name="uom" disabled>
                                         <option selected>{{ $packingMaterial->uom}}</option>
                                         <option>Ltr</option>
-                                        <option>Kgs</option>
+                                        <option>Kgm</option>
+                                        <option>Gm</option>
                                         <option>Nos</option>
                                     </select>
                                 </div>

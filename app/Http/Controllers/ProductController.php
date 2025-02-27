@@ -141,15 +141,31 @@ class ProductController extends Controller
     {
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'uom' => 'required|string|in:Ltr,Kgs,Nos',
+            'name' => [
+            'required',
+            'string',
+            'max:255',
+            'unique:product_master,name',
+            function ($attribute, $value, $fail) {
+                // Convert input to lowercase and remove spaces
+                $formattedValue = strtolower(str_replace(' ', '', $value));
+                // Fetch existing names from the database (case-insensitive)
+                $existingNames = Product::pluck('name')->map(function ($name) {
+                    return strtolower(str_replace(' ', '', $name));
+                })->toArray();
+                if (in_array($formattedValue, $existingNames)) {
+                    $fail('This name is duplicate. Please choose a different one.');
+                }
+            }
+        ],   //'name' => 'required|string|max:255',
+            'uom' => 'required|string|in:Ltr,Kgm,Gm,Nos',
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
             'price' => 'required|string',
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
-            'hsnCode' => 'required|string',
+            'hsnCode' => 'required|string|unique:product_master,hsnCode',
             'itemType' => 'required|string',
             'itemWeight' => 'required|string',
             'tax' => 'required|string',
@@ -266,11 +282,33 @@ class ProductController extends Controller
     {
         // Find the existing raw material by ID
         $product = Product::findOrFail($id);
+        try {
+            // for duplicate
+            $strName = strtolower(preg_replace('/\s+/', '', $request->name));
+            $strHsnCode = strtolower(preg_replace('/\s+/', '', $request->hsnCode));
 
+            // Check for existing product with the same normalized name or HSN code
+            $existingProduct = Product::where(function ($query) use ($strName, $strHsnCode) {
+                $query->whereRaw("LOWER(REPLACE(name, ' ', '')) = ?", [$strName])
+                    ->orWhereRaw("LOWER(REPLACE(hsnCode, ' ', '')) = ?", [$strHsnCode]);
+            })
+            ->where('id', '!=', $product->id) // Exclude the current product
+            ->first();
+
+            if ($existingProduct) {
+                if ($strName == strtolower(preg_replace('/\s+/', '', $existingProduct->name)) &&
+                    $strHsnCode == strtolower(preg_replace('/\s+/', '', $existingProduct->hsnCode))) {
+                    return redirect()->back()->with('error', 'Both Product Name and HSN Code already exist.');
+                } elseif ($strName == strtolower(preg_replace('/\s+/', '', $existingProduct->name))) {
+                    return redirect()->back()->with('error', 'Product Name already exists.');
+                } elseif ($strHsnCode == strtolower(preg_replace('/\s+/', '', $existingProduct->hsnCode))) {
+                    return redirect()->back()->with('error', 'HSN Code already exists.');
+                }
+            }
         // Validate the incoming request data
         $request->validate([
             'name' => 'required|string|max:255',
-            'uom' => 'required|string|in:Ltr,Kgs,Nos',
+            'uom' => 'required|string|in:Ltr,Kgm,Gm,Nos',
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
             'price' => 'required|string',
@@ -314,9 +352,17 @@ class ProductController extends Controller
             // \Log::error('Error updating raw material: ' . $e->getMessage());
             return redirect()->back()->with('error', 'There was an issue updating the l.');
         }
-
         // Return a success message and redirect back
         return redirect()->route('products.index')->with('success', 'Product updated successfully.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong! Could not update data.')
+                ->withInput();
+        }
     }
 
     /**

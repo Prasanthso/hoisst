@@ -18,7 +18,7 @@
             @endif
 
             @if ($errors->any())
-                <div class="alert" style="color: white; background-color: rgba(255, 123, 0, 0.742); padding: 10px; border-radius: 5px;">
+                <div class="alert alert-danger">
                     <ul>
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -39,7 +39,7 @@
                                 @csrf
                                 <div class="col-12">
                                     <label for="inputName" class="form-label">Name</label>
-                                    <input type="text" class="form-control" id="inputName" name="name">
+                                    <input type="text" class="form-control" id="inputName" name="name" value="{{ old('name') }}">
                                 </div>
                                 <!-- <div class="col-12">
                                     <label for="inputNanme4" class="form-label">RM Code</label>
@@ -47,64 +47,65 @@
                                 </div> -->
                                 <div class="col-12">
                                     <label for="hsncode" class="form-label">HSN Code</label>
-                                    <input type="text" class="form-control" id="hsncode" name="hsncode">
+                                    <input type="text" class="form-control" id="hsncode" name="hsncode" value="{{ old('hsncode') }}">
                                 </div>
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Unit</label>
                                     <select id="inputState" class="form-select select2" name="uom">
-                                        <option selected>UoM</option>
-                                        <option>Ltr</option>
-                                        <option>Kgm</option>
-                                        <option>Gm</option>
-                                        <option>Nos</option>
+                                        <option value="UoM" {{ old('uom') == 'UoM' ? 'selected' : '' }}>UoM</option>
+                                        <option value="Ltr" {{ old('uom') == 'Ltr' ? 'selected' : '' }}>Ltr</option>
+                                        <option value="Kgm" {{ old('uom') == 'Kgm' ? 'selected' : '' }}>Kgm</option>
+                                        <option value="Gm" {{ old('uom') == 'Gm' ? 'selected' : '' }}>Gm</option>
+                                        <option value="Nos" {{ old('uom') == 'Nos' ? 'selected' : '' }}>Nos</option>
                                     </select>
                                 </div>
                                 <div class="col-12">
                                     <label for="itemweight" class="form-label">Net Weight</label>
-                                    <input type="text" class="form-control" id="itemweight" name="itemweight">
+                                    <input type="text" class="form-control" id="itemweight" name="itemweight" value="{{ old('itemweight') }}"">
                                 </div>
                                 <div class="col-md-12">
                                     <label for="categorySelect" class="form-label">Raw Material Category</label>
                                     <select id="categorySelect" class="form-select select2" name="category_ids[]" multiple>
                                         @foreach($rawMaterialCategories as $categories)
-                                        <option value="{{ $categories->id }}">{{ $categories->itemname }}</option>
+                                        <option value="{{ $categories->id }}"
+                                            {{ in_array($categories->id, old('category_ids', [])) ? 'selected' : '' }}>
+                                            {{ $categories->itemname }}
+                                        </option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-12">
                                     <label for="itemtype" class="form-label">Item Type</label>
-                                    <input type="text" class="form-control" id="itemtype" name="itemtype">
+                                    <input type="text" class="form-control" id="itemtype" name="itemtype" value="{{ old('itemtype') }}">
                                 </div>
                                 <div class="col-12 mb-2">
                                     <label for="inputPrice" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="inputPrice" name="price">
+                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ old('price') }}">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputTax" class="form-label">Tax</label>
-                                    <input type="text" class="form-control mb-2" id="inputTax" name="tax">
+                                    <input type="text" class="form-control mb-2" id="inputTax" name="tax" value="{{ old('tax') }}">
                                 </div>
                                 <div class="row">
                                     <label for="inputNanme4" class="form-label">Pricing update frequency</label>
                                     <div class="col-md-3">
                                         <select class="form-select mb-2" id="update_frequency" name="update_frequency">
-                                            <option selected>Days</option>
-                                            <option>Weeks</option>
-                                            <option>Monthly</option>
-                                            <option>Yearly</option>
+                                            <option value="Days" {{ old('update_frequency') == 'Days' ? 'selected' : '' }}>Days</option>
+                                            <option value="Weeks" {{ old('update_frequency') == 'Weeks' ? 'selected' : '' }}>Weeks</option>
+                                            <option value="Monthly" {{ old('update_frequency') == 'Monthly' ? 'selected' : '' }}>Monthly</option>
+                                            <option value="Yearly" {{ old('update_frequency') == 'Yearly' ? 'selected' : '' }}>Yearly</option>
                                         </select>
                                     </div>
                                 {{-- <div class="col-md-1">
                                 </div> --}}
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency">
+                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ old('price_update_frequency') }}">
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="price_threshold" class="form-label">Price threshold</label>
-                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold">
+                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold"  value="{{ old('price_threshold') }}">
                                 </div>
-
-
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="btnsubmit">
                                         Save
