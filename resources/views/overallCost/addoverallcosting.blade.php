@@ -169,9 +169,10 @@
     //    const totalPmCost = 0;
     //    const totalOhCost = 0;
 
-        let permargin = permarginInput; // 25; // Default margin percentage
-        let perdiscount = Discount; // 33.33; // Default discount percentage
-        let pertax = pertaxInput; // 18;
+            // Fetch the values correctly
+        let permargin = parseFloat(permarginInput.value) || 0;
+        let perdiscount = parseFloat(Discount.value) || 0;
+        let pertax = parseFloat(pertaxInput.value) || 0;
 
         $(document).ready(function() {
             $('#recipeSelect').select2({
@@ -301,14 +302,14 @@
 
     // **Call updateCalculations when margin input changes**
     permarginInput.addEventListener('change', () => {
-       let permargin = parseFloat(permarginInput.value) || 0; // Update margin percentage
+     let permargin = parseFloat(permarginInput.value) || 0; // Update margin percentage
         console.log(`Margin updated: ${permargin}%`);
         calculate();
     });
 
      // **Call updateCalculations when tax input changes**
      Discount.addEventListener('change', () => {
-        perdiscount = parseFloat(Discount.value) || 0; // Update margin percentage
+       let perdiscount = parseFloat(Discount.value) || 0; // Update margin percentage
         console.log(`Discount updated: ${perdiscount}%`);
         calculate();
     });

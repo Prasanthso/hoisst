@@ -172,9 +172,10 @@
     //    const totalPmCost = 0;
     //    const totalOhCost = 0;
 
-        let permargin = permarginInput ; //25; // Default margin percentage
-        let perdiscount = Discount; // 33.33; // Default discount percentage
-        let pertax = pertaxInput; //18;
+        let permargin = parseFloat(permarginInput.value) || 0;
+        let perdiscount = parseFloat(Discount.value) || 0;
+        let pertax = parseFloat(pertaxInput.value) || 0;
+
         $(document).ready(function() {
             $('#recipeSelect').select2({
                 theme: 'bootstrap-5',
@@ -334,7 +335,7 @@
 
   // **Call updateCalculations when Discount input changes**
   Discount.addEventListener('change', () => {
-        perdiscount = parseFloat(Discount.value) || 0; // Update margin percentage
+       let perdiscount = parseFloat(Discount.value) || 0; // Update margin percentage
         console.log(`Discount updated: ${perdiscount}%`);
         calculate();
     });
