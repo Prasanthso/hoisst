@@ -78,8 +78,8 @@ class RecipePricingController extends Controller
                 -- Final Cost Calculation
                 SUM(
 
-                    COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) + 
-                    COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) + 
+                    COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) +
+                    COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) +
                     COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1) +
                     COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1)
                 ) AS COST,
@@ -130,9 +130,9 @@ class RecipePricingController extends Controller
             WHERE
                 rmst.status = 'active' AND oc.suggested_mrp IS NOT NULL
 
-            GROUP BY 
+            GROUP BY
             pm.id, pm.name, pm.price, pm.tax, oc.suggested_mrp, rmst.Output, ofr.quantity
-            ORDER BY 
+            ORDER BY
             pm.name ASC;
 
         ");
@@ -370,7 +370,9 @@ class RecipePricingController extends Controller
         DB::table('moh_for_recipe')
             ->where('product_id', $request->product_id)
             ->delete();
-
+        DB::table('overall_costing')
+            ->where('productId', $request->product_id)
+            ->delete();
         // Redirect back with a success message
         return redirect()->route('receipepricing.index')->with('success', 'Recipe-Pricing data deleted successfully!');
     }

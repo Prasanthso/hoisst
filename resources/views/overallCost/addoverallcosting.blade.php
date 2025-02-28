@@ -169,9 +169,9 @@
     //    const totalPmCost = 0;
     //    const totalOhCost = 0;
 
-        let permargin = 25; // Default margin percentage
-        let perdiscount = 33.33; // Default discount percentage
-        let pertax = 18;
+        let permargin = permarginInput; // 25; // Default margin percentage
+        let perdiscount = Discount; // 33.33; // Default discount percentage
+        let pertax = pertaxInput; // 18;
 
         $(document).ready(function() {
             $('#recipeSelect').select2({
@@ -249,35 +249,48 @@
     }
 
     function updateCalculations(data) {
-        if (!data) return;
+    if (!data) return;
 
-        RmCostA.value = data.rpoutput > 0 ? (data.totalRmCost / data.rpoutput).toFixed(2) : 'N/A';
-        PmCostB.value = data.rpoutput > 0 ? (data.totalPmCost / data.rpoutput).toFixed(2) : 'N/A';
-        OhCostC.value = data.rpoutput > 0 ? (data.totalOhCost / data.rpoutput).toFixed(2) : 'N/A';
-        console.log(RmCostA, PmCostB,OhCostC);
+    RmCostA.value = data.rpoutput > 0 ? (data.totalRmCost / data.rpoutput).toFixed(2) : 'N/A';
+    PmCostB.value = data.rpoutput > 0 ? (data.totalPmCost / data.rpoutput).toFixed(2) : 'N/A';
+    OhCostC.value = data.rpoutput > 0 ? (data.totalOhCost / data.rpoutput).toFixed(2) : 'N/A';
+    console.log(RmCostA, PmCostB, OhCostC);
 
-        RmPmCost.value = (parseFloat(RmCostA.value) + parseFloat(PmCostB.value)).toFixed(2);
-        TotalCost.value = (parseFloat(RmCostA.value) + parseFloat(PmCostB.value) + parseFloat(OhCostC.value)).toFixed(2);
-        // Recalculate margin
-        MarginAmt.value = (parseFloat(TotalCost.value) * permargin / 100).toFixed(2);
-        let margin_Total = (parseFloat(TotalCost.value) + parseFloat(MarginAmt.value)).toFixed(2);
+    // Ensure numerical values before calculations
+    let rmCost = parseFloat(RmCostA.value) || 0;
+    let pmCost = parseFloat(PmCostB.value) || 0;
+    let ohCost = parseFloat(OhCostC.value) || 0;
 
-        // Recalculate tax
-        let pertax = parseFloat(pertaxInput.value) || 0;
-        let tax_amt = (parseFloat(margin_Total) * pertax / 100).toFixed(2);
-        let tax_Total = (parseFloat(margin_Total) + parseFloat(tax_amt)).toFixed(2);
+    // Calculate Costs
+    RmPmCost.value = (rmCost + pmCost).toFixed(2);
+    TotalCost.value = (rmCost + pmCost + ohCost).toFixed(2);
 
-        // Recalculate discount
-        let disc_amt = (parseFloat(tax_Total) * perdiscount / 100).toFixed(2);
-        let discount_Total = (parseFloat(tax_Total) + parseFloat(disc_amt)).toFixed(2);
-        discountAmt.innerHTML = "Discount Amount: "+ disc_amt; //parseFloat(disc_amt).toFixed(2);
+    // Recalculate margin
+    let totalCostNum = parseFloat(TotalCost.value);
+    let marginAmount = (totalCostNum * permargin / 100).toFixed(2);
+    MarginAmt.value = marginAmount;
 
-        // Final calculations
-        let netTotal = parseFloat(discount_Total).toFixed(2);
-        suggRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value)).toFixed(2) : 'N/A';
-        suggRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total)).toFixed(2) : 'N/A';
-        suggestedMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal)).toFixed(2) : 'N/A';
-    }
+    let margin_Total = (totalCostNum + parseFloat(marginAmount)).toFixed(2);
+
+    // Recalculate tax
+    let pertax = parseFloat(pertaxInput.value) || 0;
+    let tax_amt = (parseFloat(margin_Total) * pertax / 100).toFixed(2);
+    let tax_Total = (parseFloat(margin_Total) + parseFloat(tax_amt)).toFixed(2);
+
+    // Recalculate discount
+    let disc_amt = (parseFloat(tax_Total) * perdiscount / 100).toFixed(2);
+    let discount_Total = (parseFloat(tax_Total) + parseFloat(disc_amt)).toFixed(2);
+    discountAmt.innerHTML = "Discount Amount: " + disc_amt;
+
+    // Final calculations
+    let netTotal = parseFloat(discount_Total).toFixed(2);
+    let recipeOut = parseFloat(recipeOutput.value) || 0;
+
+    suggRate.value = recipeOut > 0 ? totalCostNum.toFixed(2) : 'N/A';
+    suggRatebftax.value = recipeOut > 0 ? margin_Total : 'N/A';
+    suggestedMrp.value = recipeOut > 0 ? netTotal : 'N/A';
+}
+
 
     // **Call updateCalculations when tax input changes**
     pertaxInput.addEventListener('change', () => {
@@ -288,7 +301,7 @@
 
     // **Call updateCalculations when margin input changes**
     permarginInput.addEventListener('change', () => {
-        permargin = parseFloat(permarginInput.value) || 0; // Update margin percentage
+       let permargin = parseFloat(permarginInput.value) || 0; // Update margin percentage
         console.log(`Margin updated: ${permargin}%`);
         calculate();
     });
@@ -300,6 +313,41 @@
         calculate();
     });
 
+    function calculate() {
+    let totalCost = parseFloat(TotalCost.value) || 0;
+    let permargin = parseFloat(permarginInput.value) || 0;
+    let pertax = parseFloat(pertaxInput.value) || 0;
+    let perdiscount = parseFloat(Discount.value) || 0;
+
+    // Calculate Margin Amount
+    let marginAmt = (totalCost * permargin / 100).toFixed(2);
+    let marginTotal = (totalCost + parseFloat(marginAmt)).toFixed(2);
+
+    // Calculate Tax Amount
+    let taxAmt = (parseFloat(marginTotal) * pertax / 100).toFixed(2);
+    let taxTotal = (parseFloat(marginTotal) + parseFloat(taxAmt)).toFixed(2);
+
+    // Calculate Discount Amount
+    let discAmt = (parseFloat(taxTotal) * perdiscount / 100).toFixed(2);
+    let netTotal = (parseFloat(taxTotal) + parseFloat(discAmt)).toFixed(2);
+
+    // Update UI Elements
+    MarginAmt.value = marginAmt;
+    // pertaxInput.value = taxAmt;
+    discountAmt.innerHTML = discAmt;
+    suggestedMrp.value = netTotal;
+
+    // Debugging Logs
+    console.log("Total Cost:", totalCost);
+    console.log("Margin Amount:", marginAmt);
+    console.log("Margin Total:", marginTotal);
+    console.log("Tax Amount:", taxAmt);
+    console.log("Tax Total:", taxTotal);
+    console.log("Discount Amount:", discAmt);
+    console.log("Final Suggested MRP:", netTotal);
+}
+
+/*
     function calculate() {
         // Trigger the recalculation of margin-related values based on updated margin
          // Recalculate margin
@@ -323,6 +371,7 @@
         suggRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total)).toFixed(2) : 'N/A';
         suggestedMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal)).toFixed(2) : 'N/A';
     }
+    */
 
     setTimeout(function () {
         const successMessage = document.getElementById('success-message');
