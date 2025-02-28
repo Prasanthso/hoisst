@@ -44,18 +44,20 @@ class RecipePricingController extends Controller
                 oc.suggested_mrp AS S_MRP,
 
                 -- Raw Material Cost
-                SUM(COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) AS RM_Cost,
+                SUM(DISTINCT COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) AS RM_Cost,
                 SUM((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(oc.suggested_mrp, 1)) AS RM_perc,
 
                 -- Packing Material Cost
-                SUM(COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1)) AS PM_Cost,
+                SUM(DISTINCT COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1)) AS PM_Cost,
                 SUM((COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(oc.suggested_mrp, 1)) AS PM_perc,
 
                 -- Overhead Cost (excluding mofr.quantity from multiplication)
 
-                (COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1)) +
+                SUM(
+                    DISTINCT COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1) +
                     COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1)
-                 AS OH_Cost,
+                ) AS OH_Cost,
+
 
                 -- Overhead Percentage
                 SUM(
@@ -75,16 +77,16 @@ class RecipePricingController extends Controller
 
                 -- Final Cost Calculation
                 SUM(
-                        (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) +
-                        (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))
-                    ) + (COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1)) +
-                        COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1)
-                    AS COST,
 
+                    COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) + 
+                    COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) + 
+                    COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1) +
+                    COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1)
+                ) AS COST,
 
                 -- Selling Cost and Margin Calculations
-                COALESCE(oc.suggested_mrp, 0) * 0.75 AS Selling_Cost,
-                ((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + pm.tax) AS Before_tax,
+                SUM(COALESCE(oc.suggested_mrp, 0) * 0.75) AS Selling_Cost,
+                SUM(((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + pm.tax)) AS Before_tax,
 
                 -- Margin Calculation
                 SUM((((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + pm.tax)) -
@@ -127,9 +129,10 @@ class RecipePricingController extends Controller
                 overall_costing oc ON pm.id = oc.productId AND oc.status = 'active'
             WHERE
                 rmst.status = 'active' AND oc.suggested_mrp IS NOT NULL
-            GROUP BY
-            pm.id, pm.name, pm.price, pm.tax, oc.suggested_mrp, rmst.Output, ofr.quantity, oh.price, mofr.price
-            ORDER BY
+
+            GROUP BY 
+            pm.id, pm.name, pm.price, pm.tax, oc.suggested_mrp, rmst.Output, ofr.quantity
+            ORDER BY 
             pm.name ASC;
 
         ");
