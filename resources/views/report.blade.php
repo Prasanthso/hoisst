@@ -150,10 +150,16 @@
                             <tbody id="ReportTable">
                                 @foreach ($reports as $index => $report)
                                 @php
+                                $rm_perc = $report->RM_Cost * 100 / $report->S_MRP;
+                                $pm_perc = $report->PM_Cost * 100 / $report->S_MRP;
+                                $oh_perc = ($report->RM_Cost + $report->PM_Cost) * $report->PM_Cost / 100;
+                                $total = $report->RM_Cost + $report->PM_Cost;
+                                $total_perc = ($total * 100) / $report->S_MRP;
+                                $cost = $total + $report->OH_Cost;
                                 $sellingRate = $report->S_MRP * 0.75;
                                 $beforeTax = ($sellingRate * 100) / 118;
-                                $OH_PERC = ($report->OH_Cost/$report->TOTAL) * 100;
-                                $MARGINAMOUNT = $beforeTax-$report->COST;
+                                $OH_PERC = ($report->OH_Cost/$total) * 100;
+                                $MARGINAMOUNT = $beforeTax-$cost;
                                 $marginPerc = ($MARGINAMOUNT/$beforeTax)*100;
                                 @endphp
                                 <tr data-rm="{{ strtolower($report->RM_Names) }}" data-pm="{{ strtolower($report->PM_Names) }}">
@@ -162,15 +168,15 @@
                                     <!-- <td>{{ $report->S_MRP }}</td> -->
                                     <td>{{ $report->S_MRP  }}</td>
                                     <td>{{ $report->RM_Cost }}</td>
-                                    <td>{{ number_format($report->RM_perc, 2) }}</td>
+                                    <td>{{ number_format($rm_perc, 2) }}</td>
                                     <td>{{ $report->PM_Cost }}</td>
-                                    <td>{{ number_format($report->PM_perc, 2) }}</td>
-                                    <td>{{ number_format($report->TOTAL, 2) }}</td>
-                                    <td>{{ number_format($report->Total_perc, 2) }}</td>
-                                    <td>{{ number_format($report->OH_Cost) }}</td>
+                                    <td>{{ number_format($pm_perc, 2) }}</td>
+                                    <td>{{ number_format($total, 2) }}</td>
+                                    <td>{{ number_format($total_perc, 2) }}</td>
+                                    <td>{{ $report->OH_Cost }}</td>
                                     <td>{{ number_format($OH_PERC, 2) }}</td>
-                                    <td>{{ $report->COST }}</td>
-                                    <td>{{ number_format($report->Selling_Cost, 2) }}</td>
+                                    <td>{{ $cost }}</td>
+                                    <td>{{ number_format($sellingRate, 2) }}</td>
                                     <td>18</td>
                                     <td>{{ number_format($beforeTax, 2) }}</td>
                                     <td>{{ number_format($MARGINAMOUNT, 2) }}</td>

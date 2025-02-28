@@ -58,9 +58,11 @@
                         <tbody id="ReportTable">
                             @foreach ($reports as $index => $report)
                             @php
+                            $total = $report->RM_Cost + $report->PM_Cost;
+                            $cost = $total + $report->OH_Cost;
                             $sellingRate = $report->S_MRP * 0.75;
                             $beforeTax = ($sellingRate * 100) / 118;
-                            $margin = $beforeTax - $report->COST;
+                            $margin = $beforeTax - $cost;
                             $marginPercentage = ($beforeTax > 0) ? ($margin / $beforeTax) * 100 : 0;
                             @endphp
                             <tr>
@@ -75,17 +77,17 @@
                                 <!-- <td>{{ number_format($report->RM_perc, 2) }}</td> -->
                                 <td>{{ $report->PM_Cost }}</td>
                                 <!-- <td>{{ number_format($report->PM_perc, 2) }}</td> -->
-                                <td>{{ $report->TOTAL }}</td>
+                                <td>{{ $total }}</td>
                                 <!-- <td>{{ $report->Total_perc }}</td> -->
-                                <td>{{ number_format($report->OH_Cost) }}</td>
+                                <td>{{ $report->OH_Cost }}</td>
                                 <!-- <td>{{ number_format($report->OH_perc, 2) }}</td> -->
-                                <td class="cost">{{ $report->COST }}</td>
+                                <td class="cost">{{ $cost }}</td>
                                 <td class="selling-rate">{{ number_format($report->S_MRP * 0.75, 2) }}</td>
                                 <td>18</td>
                                 <td class="before-tax">{{ number_format($beforeTax, 2) }}</td>
-                                <td class="margin">{{ number_format($beforeTax - $report->COST, 2) }}</td>
+                                <td class="margin">{{ number_format($beforeTax - $cost, 2) }}</td>
                                 <td class="margin-perc">
-                                    {{ $beforeTax > 0 ? number_format((($beforeTax - $report->COST) / $beforeTax) * 100, 2) . '%' : '0%' }}
+                                    {{ $beforeTax > 0 ? number_format((($beforeTax -$cost) / $beforeTax) * 100, 2) . '%' : '0%' }}
                                 </td>
                                 @endforeach
 
