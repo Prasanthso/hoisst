@@ -7,6 +7,7 @@ use App\Models\CategoryItems;
 use App\Models\PackingMaterial;
 use App\Models\UniqueCode;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class PackingMaterialController extends Controller
 {
@@ -131,16 +132,34 @@ class PackingMaterialController extends Controller
      */
     public function store(Request $request)
     {
+        try{
         $request->validate([
-            'name' => 'required|string|max:255',
-            'uom' => 'required|string|in:Ltr,Kgs,Nos',
+            'name' => [
+            'required',
+            'string',
+            'max:255',
+            'unique:packing_materials,name',
+            function ($attribute, $value, $fail) {
+                // Convert input to lowercase and remove spaces
+                $formattedValue = strtolower(str_replace(' ', '', $value));
+                // Fetch existing names from the database (case-insensitive)
+                $existingNames = Overhead::pluck('name')->map(function ($name) {
+                    return strtolower(str_replace(' ', '', $name));
+                })->toArray();
+                // Check if the formatted input already exists
+                if (in_array($formattedValue, $existingNames)) {
+                    $fail('This name is duplicate. Please choose a different one.');
+                }
+            }
+        ],  // 'name' => 'required|string|max:255|unique:packing_materials,name',
+            'uom' => 'required|string|in:Ltr,Kgm,Gm,Nos',
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
             'price' => 'required|string',
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
-            'hsnCode' => 'required|string',
+            'hsnCode' => 'required|string|unique:packing_materials,hsnCode',
             'itemType' => 'required|string',
             'itemWeight' => 'required|string',
             'tax' => 'required|string',
@@ -178,9 +197,16 @@ class PackingMaterialController extends Controller
             // \Log::error('Error inserting data: ' . $e->getMessage());
             dd($e->getMessage());
         }
-
-
         return redirect()->route('packingMaterials.index')->with('success', 'Packing Material created successfully.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong! Could not save data.')
+                ->withInput();
+        }
     }
 
     public function updatePrices(Request $request)
@@ -253,11 +279,32 @@ class PackingMaterialController extends Controller
     {
         // Find the existing packing material by ID
         $packingMaterial = PackingMaterial::findOrFail($id);
+        try {
 
+              $strName = strtolower(preg_replace('/\s+/', '', $request->name));
+              $strHsnCode = strtolower(preg_replace('/\s+/', '', $request->hsnCode));
+            // for duplicate
+            $existingMaterial = PackingMaterial::where(function ($query) use ($strName, $strHsnCode) {
+                $query->whereRaw("LOWER(REPLACE(name, ' ', '')) = ?", [$strName])
+                    ->orWhereRaw("LOWER(REPLACE(hsncode, ' ', '')) = ?", [$strHsnCode]);
+            })
+            ->where('id', '!=', $packingMaterial->id) // Exclude the current product
+            ->first();
+
+            if ($existingMaterial) {
+                if ($strName == strtolower(preg_replace('/\s+/', '', $existingMaterial->name)) &&
+                    $strHsnCode == strtolower(preg_replace('/\s+/', '', $existingMaterial->hsnCode))) {
+                    return redirect()->back()->with('error', 'Both Material Name and HSN Code already exist.');
+                } elseif ($strName == strtolower(preg_replace('/\s+/', '', $existingMaterial->name))) {
+                    return redirect()->back()->with('error', 'Material Name already exists.');
+                } elseif ($strHsnCode == strtolower(preg_replace('/\s+/', '', $existingMaterial->hsnCode))) {
+                    return redirect()->back()->with('error', 'HSN Code already exists.');
+                }
+            }
         // Validate the incoming request data
         $request->validate([
             'name' => 'required|string|max:255',
-            'uom' => 'required|string|in:Ltr,Kgs,Nos',
+            'uom' => 'required|string|in:Ltr,Kgm,Gm,Nos',
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
             'price' => 'required|string',
@@ -301,9 +348,17 @@ class PackingMaterialController extends Controller
             // \Log::error('Error updating packing material: ' . $e->getMessage());
             return redirect()->back()->with('error', 'There was an issue updating the packing material.');
         }
-
         // Return a success message and redirect back
         return redirect()->route('packingMaterials.index')->with('success', 'packing Material updated successfully.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong! Could not update data.')
+                ->withInput();
+        }
     }
 
     /**

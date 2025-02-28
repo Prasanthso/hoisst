@@ -24,13 +24,16 @@
                         @if(session('success'))
                             <div class="alert alert-success">{{ session('success') }}</div>
                             @endif
+                            @if (session('error'))
+                            <div class="alert alert-danger">{{ session('error') }}</div>
+                        @endif
                         <div class="card-body">
                             <!-- Vertical Form -->
                             <form method="POST" action="{{ route('categoryitem.update',$items->id) }}" class="row g-3 mt-2" id="categoryItemsForm">
                                 @csrf
                                 @method('PUT')
                                 <div class="col-md-12">
-                                    <label for="inputNanme4" class="form-label">Choose Category For</label>
+                                    <label for="inputState" class="form-label">Choose Category For</label>
                                     <select id="inputState" name="categoryId" class="form-select" disabled>
                                         <option value="{{ $items->category->id }}" selected disabled>{{ $items->category->categoryname }}</option>
                                     </select>
@@ -39,11 +42,14 @@
                                 @enderror
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Category Name</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="itemname" value="{{ $items->itemname}}" disabled>
+                                    <label for="itemname" class="form-label">Category Name</label>
+                                    <input type="text" class="form-control" id="itemname" name="itemname" value="{{ $items->itemname}}" disabled>
+                                    @error('itemname')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Description</label>
+                                    <label for="floatingTextarea" class="form-label">Description</label>
                                     <div class="form-floating">
                                         <textarea class="form-control" placeholder="Category Description" name="description" id="floatingTextarea" style="height: 100px;" disabled>{{ $items->description}}</textarea>
                                     </div>

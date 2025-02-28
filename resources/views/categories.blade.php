@@ -385,7 +385,7 @@
                     if (data.success) {
                         if (data.confirm) {
                         // If confirmation is required, show a confirmation dialog
-                        if (confirm("Are you want to delete this item of category-item. Do you want to proceed?")) {
+                        if (confirm("Do you want to delete this item of category-item . Do you want to proceed?")) {
                             fetch('/confirmcategory', {
                                 method: 'POST',
                                 headers: {
@@ -402,7 +402,7 @@
                                         row.remove();
                                     });
                                     updateSerialNumbers();
-                                    alert("Selected rows deleted successfully!");
+                                    alert("Selected row(s) deleted successfully!");
                                 }
                             })
                             .catch(error => {

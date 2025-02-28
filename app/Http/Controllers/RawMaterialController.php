@@ -6,7 +6,7 @@ use App\Models\CategoryItems;
 use App\Models\RawMaterial;
 use App\Models\UniqueCode;
 use Illuminate\Http\Request;
-
+use Illuminate\Validation\ValidationException;
 
 class RawMaterialController extends Controller
 {
@@ -134,9 +134,26 @@ class RawMaterialController extends Controller
      */
     public function store(Request $request)
     {
-
+        try{
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:raw_materials,name',
+                function ($attribute, $value, $fail) {
+                    // Convert input to lowercase and remove spaces
+                    $formattedValue = strtolower(str_replace(' ', '', $value));
+                    // Fetch existing names from the database (case-insensitive)
+                    $existingNames = Overhead::pluck('name')->map(function ($name) {
+                        return strtolower(str_replace(' ', '', $name));
+                    })->toArray();
+                    // Check if the formatted input already exists
+                    if (in_array($formattedValue, $existingNames)) {
+                        $fail('This name is duplicate. Please choose a different one.');
+                    }
+                }
+            ],  //'name' => 'required|string|max:255|unique:raw_materials,name',
             'uom' => 'required|string|in:Ltr,Kgm,Gm,Nos',
             'category_ids' => 'required|array',
             'category_ids.*' => 'integer|exists:categoryitems,id',
@@ -144,7 +161,7 @@ class RawMaterialController extends Controller
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
-            'hsncode' => 'required|string',
+            'hsncode' => 'required|string|unique:raw_materials,hsncode',
             'itemweight' => 'required|string',
             'itemtype' => 'required|string',
             'tax' => 'required|string',
@@ -182,9 +199,17 @@ class RawMaterialController extends Controller
             // \Log::error('Error inserting data: ' . $e->getMessage());
             dd($e->getMessage());
         }
-
-
         return redirect()->route('rawMaterials.index')->with('success', 'Raw Material created successfully.');
+
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong! Could not save data.')
+                ->withInput();
+        }
     }
 
 
@@ -261,6 +286,7 @@ class RawMaterialController extends Controller
         // Find the existing raw material by ID
         $rawMaterial = RawMaterial::findOrFail($id);
 
+    try{
         // Validate the incoming request data
         $request->validate([
             'name' => 'required|string|max:255',
@@ -280,6 +306,29 @@ class RawMaterialController extends Controller
         $categoryIds = $request->category_ids;
 
         try {
+            // for duplicate
+            $strName = strtolower(preg_replace('/\s+/', '', $request->name));
+            $strHsnCode = strtolower(preg_replace('/\s+/', '', $request->hsncode));
+
+            // Check for existing product with the same normalized name or HSN code
+            $existingMaterial = RawMaterial::where(function ($query) use ($strName, $strHsnCode) {
+                $query->whereRaw("LOWER(REPLACE(name, ' ', '')) = ?", [$strName])
+                    ->orWhereRaw("LOWER(REPLACE(hsncode, ' ', '')) = ?", [$strHsnCode]);
+            })
+            ->where('id', '!=', $rawMaterial->id) // Exclude the current product
+            ->first();
+
+            if ($existingMaterial) {
+                if ($strName == strtolower(preg_replace('/\s+/', '', $existingMaterial->name)) &&
+                    $strHsnCode == strtolower(preg_replace('/\s+/', '', $existingMaterial->hsncode))) {
+                    return redirect()->back()->with('error', 'Both Material Name and HSN Code already exist.');
+                } elseif ($strName == strtolower(preg_replace('/\s+/', '', $existingMaterial->name))) {
+                    return redirect()->back()->with('error', 'Material Name already exists.');
+                } elseif ($strHsnCode == strtolower(preg_replace('/\s+/', '', $existingMaterial->hsncode))) {
+                    return redirect()->back()->with('error', 'HSN Code already exists.');
+                }
+            }
+
             // Update the raw material record
             $rawMaterial->update([
                 'name' => $request->name,
@@ -308,9 +357,17 @@ class RawMaterialController extends Controller
             // \Log::error('Error updating raw material: ' . $e->getMessage());
             return redirect()->back()->with('error', 'There was an issue updating the raw material.');
         }
-
         // Return a success message and redirect back
         return redirect()->route('rawMaterials.index')->with('success', 'Raw Material updated successfully.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong! Could not update data.')
+                ->withInput();
+        }
     }
 
     /**

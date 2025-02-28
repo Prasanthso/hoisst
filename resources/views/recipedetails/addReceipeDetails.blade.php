@@ -38,17 +38,26 @@
 
                                     <div class="form-floating">
                                     <textarea class="form-control" placeholder="Receipe Description" name="recipeDescription" id="recipeDescription" style="height: 100px;"></textarea>
-                                    </div>
+                                    @error('recipeDescription')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="receipeInstruction" class="form-label fw-bold">Recipe Making Instruction</label>
                                     <div class="form-floating">
                                     <textarea class="form-control" placeholder="Receipe Making Instruction" name="receipeInstruction" id="receipeInstruction" style="height: 100px;"></textarea>
-                                    </div>
+                                    @error('receipeInstruction')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="receipevideo" class="form-label fw-bold">Recipe Making Video</label>
                                     <input type="file" name="receipevideo" class="form-control" id="receipevideo">
+                                    @error('receipevideo')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary">

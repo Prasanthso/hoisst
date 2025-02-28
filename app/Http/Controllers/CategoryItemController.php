@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Category;
 use App\Models\CategoryItems;
 use Illuminate\Http\Request;
-
+use Illuminate\Validation\ValidationException;
 
 class CategoryItemController extends Controller
 {
@@ -60,9 +60,26 @@ class CategoryItemController extends Controller
      */
     public function store(Request $request)
     {
+        try{
         $request->validate([
             'categoryId' => 'required|integer',
-            'itemname' => 'required|string|max:255',
+            'itemname' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:categoryitems,itemname',
+                function ($attribute, $value, $fail) {
+                    // Convert input to lowercase and remove spaces
+                    $formattedValue = strtolower(str_replace(' ', '', $value));
+                    // Fetch existing names from the database (case-insensitive)
+                    $existingNames = CategoryItems::pluck('itemname')->map(function ($itemname) {
+                        return strtolower(str_replace(' ', '', $itemname));
+                    })->toArray();
+                    if (in_array($formattedValue, $existingNames)) {
+                        $fail('This name is duplicate. Please choose a different one.');
+                    }
+                }
+            ],  // 'itemname' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
 
@@ -75,6 +92,15 @@ class CategoryItemController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Category item created successfully.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong! Could not save data.')
+                ->withInput();
+        }
     }
 
 
@@ -95,6 +121,20 @@ class CategoryItemController extends Controller
     public function update(Request $request,$id)
     {
         $categoriesitems = CategoryItems::findOrFail($id);
+        try{
+        $stritemName = strtolower(preg_replace('/\s+/', '', $request->itemname));
+        // Check for existing CategoryItems with the same normalized name or HSN code
+        $existingItems = CategoryItems::where(function ($query) use ($stritemName) {
+            $query->whereRaw("LOWER(REPLACE(itemname, ' ', '')) = ?", [$stritemName]);
+        })
+        ->where('id', '!=', $categoriesitems->id) // Exclude the current product
+        ->first();
+
+        if ($existingItems) {
+            if ($strName == strtolower(preg_replace('/\s+/', '', $existingItems->itemname))) {
+                return redirect()->back()->with('error', 'Category name already exist.');
+            }
+        }
 
         $request->validate([
             // 'categoryId' => 'required|integer',
@@ -116,6 +156,15 @@ class CategoryItemController extends Controller
         }
         session()->flash('success', 'Category item updated successfully.');
         return redirect()->route('categoryitem.index');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong! Could not update data.')
+                ->withInput();
+        }
     }
 
     public function deleteConfirmation(Request $request)

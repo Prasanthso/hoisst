@@ -18,6 +18,24 @@
 
     <section class="section">
         <div class="row">
+            @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert alert-danger">{{ session('error') }}</div>
+            @endif
+
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <div id="error-message" class="text-danger mt-2"></div>
             <div class="col-lg-12">
                 <div class="col-lg-6">
 
@@ -29,25 +47,26 @@
                                 @csrf
                                 @method('PUT')
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Name</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="name" value="{{ $product->name}}" disabled>
+                                    <label for="inputName" class="form-label">Name</label>
+                                    <input type="text" class="form-control" id="inputName" name="name" value="{{ $product->name}}" disabled>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">HSN Code</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="hsnCode" value="{{ $product->hsnCode}}" disabled>
+                                    <label for="inputHSNcode" class="form-label">HSN Code</label>
+                                    <input type="text" class="form-control" id="inputHSNcode" name="hsnCode" value="{{ $product->hsnCode}}" disabled>
                                 </div>
                                 <div class="col-md-12">
-                                    <label for="inputNanme4" class="form-label">Choose Category For</label>
+                                    <label for="inputState" class="form-label">Choose Category For</label>
                                     <select id="inputState" class="form-select select2" name="uom" disabled>
                                         <option selected>{{ $product->uom}}</option>
                                         <option>Ltr</option>
-                                        <option>Kgs</option>
+                                        <option>Kgm</option>
+                                        <option>Gm</option>
                                         <option>Nos</option>
                                     </select>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Net Weight</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="itemWeight" value="{{ $product->itemWeight}}" disabled>
+                                    <label for="inputItemWeight" class="form-label">Net Weight</label>
+                                    <input type="text" class="form-control" id="inputItemWeight" name="itemWeight" value="{{ $product->itemWeight}}" disabled>
                                 </div>
                                 <div class="col-md-12">
                                     <label for="categorySelect" class="form-label">Product Category</label>
@@ -68,22 +87,22 @@
                                 </div>
 
                                 <div class="col-12 mb-2">
-                                    <label for="inputNanme4" class="form-label">Item Type</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="itemType" value="{{ $product->itemType}}" disabled>
+                                    <label for="itemType" class="form-label">Item Type</label>
+                                    <input type="text" class="form-control" id="itemType" name="itemType" value="{{ $product->itemType}}" disabled>
                                 </div>
 
                                 <div class="col-12 mb-2">
-                                    <label for="inputNanme4" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="price" value="{{ $product->price}}" disabled>
+                                    <label for="inputPrice" class="form-label">Price</label>
+                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $product->price}}" disabled>
                                 </div>
 
                                 <div class="col-12 mb-2">
-                                    <label for="inputNanme4" class="form-label">Tax</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="tax" value="{{ $product->tax}}" disabled>
+                                    <label for="inputTax" class="form-label">Tax</label>
+                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ $product->tax}}" disabled>
                                 </div>
 
                                 <div class="row">
-                                    <label for="inputNanme4" class="form-label">Pricing update frequency</label>
+                                    <label for="update_frequency" class="form-label">Pricing update frequency</label>
                                     <div class="col-md-3">
                                         <select class="form-select mb-2" id="update_frequency" name="update_frequency" disabled>
                                             <option selected>{{ $product->update_frequency}}</option>
@@ -94,12 +113,12 @@
                                         </select>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" id="inputNanme4" name="price_update_frequency" value="{{ $product->price_update_frequency}}" disabled>
+                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ $product->price_update_frequency}}" disabled>
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputNanme4" class="form-label">Price threshold in percentage</label>
-                                    <input type="text" class="form-control" id="inputNanme4" name="price_threshold" value="{{ $product->price_threshold}}" disabled>
+                                    <label for="price_threshold" class="form-label">Price threshold in percentage</label>
+                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $product->price_threshold}}" disabled>
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="saveButton" style="display: none;">
@@ -165,6 +184,52 @@
             $('#categorySelect').prop('disabled', false);
         });
     });
+    document.addEventListener("DOMContentLoaded", function() {
+       const btnsave = document.getElementById('saveButton');
+
+    btnsave.addEventListener('click', function(event) {
+    let isValid = true;
+    document.querySelectorAll(".error-text").forEach(el => el.innerHTML = "");
+    // Get form fields
+    let name = document.getElementById("inputName");
+    let hsncode = document.getElementById("inputHSNcode");
+    let uom = document.getElementById("inputState");
+    let itemweight = document.getElementById("inputItemWeight");
+    let categorySelect = document.getElementById("categorySelect");
+    let itemtype = document.getElementById("itemType");
+    let price = document.getElementById("inputPrice");
+    let tax = document.getElementById("inputTax");
+    let priceUpdateFreq = document.getElementById("price_update_frequency");
+    let priceThreshold = document.getElementById("price_threshold");
+
+    let errorDiv = document.getElementById("error-message");
+    errorDiv.innerHTML = ""; // Clear previous errors
+
+   // Validation checks
+   if (name.value.trim() === "") { showError(name, "Name is required."); isValid = false; }
+        if (hsncode.value.trim() === "") { showError(hsncode, "HSN Code is required."); isValid = false; }
+        if (uom.value === "UoM") { showError(uom, "Please select a valid Unit of Measure."); isValid = false; }
+        if (itemweight.value.trim() === "") { showError(itemweight, "Net Weight is required."); isValid = false; }
+        if (categorySelect.selectedOptions.length === 0) { showError(categorySelect, "Please select at least one category."); isValid = false; }
+        if (itemtype.value.trim() === "") { showError(itemtype, "Item Type is required."); isValid = false; }
+        if (price.value.trim() === "" || isNaN(price.value)) { showError(price, "Valid Price is required."); isValid = false; }
+        if (tax.value.trim() === "" || isNaN(tax.value)) { showError(tax, "Valid Tax value is required."); isValid = false; }
+        if (priceUpdateFreq.value.trim() === "" || isNaN(priceUpdateFreq.value)) { showError(priceUpdateFreq, "Valid Pricing Update Frequency is required."); isValid = false; }
+        if (priceThreshold.value.trim() === "" || isNaN(priceThreshold.value)) { showError(priceThreshold, "Valid Price Threshold is required."); isValid = false; }
+
+        if (!isValid) {
+            event.preventDefault();
+        }
+    });
+    function showError(input, message) {
+        let errorElement = document.createElement("div");
+        errorElement.className = "error-text text-danger";
+        errorElement.innerHTML = message;
+        input.parentNode.appendChild(errorElement);
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+});
+
 </script>
 
 <!--Template Main JS File-->
