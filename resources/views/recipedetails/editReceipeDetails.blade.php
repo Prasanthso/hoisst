@@ -35,13 +35,19 @@
 
                                     <div class="form-floating">
                                     <textarea class="form-control" placeholder="Receipe Description" name="recipeDescription" id="recipeDescription" style="height: 100px;">{{$editrecipe->description}}</textarea>
-                                    </div>
+                                    @error('recipeDescription')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="receipeInstruction" class="form-label fw-bold">Recipe Making Instruction</label>
                                     <div class="form-floating">
                                     <textarea class="form-control" placeholder="Receipe Making Instruction" name="receipeInstruction" id="receipeInstruction" style="height: 150px;" >{{$editrecipe->instructions}}</textarea>
-                                    </div>
+                                    @error('receipeInstruction')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="receipevideo" class="form-label fw-bold">Recipe Making Video</label>
