@@ -166,7 +166,7 @@ class ProductController extends Controller
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
-            'hsnCode' => 'required|string|unique:product_master,hsnCode',
+            'hsnCode' => 'required|string',
             'itemType' => 'required|string',
             'itemWeight' => 'required|string',
             'tax' => 'required|string',
@@ -293,25 +293,27 @@ class ProductController extends Controller
         try {
             // for duplicate
             $strName = strtolower(preg_replace('/\s+/', '', $request->name));
-            $strHsnCode = strtolower(preg_replace('/\s+/', '', $request->hsnCode));
+            // $strHsnCode = strtolower(preg_replace('/\s+/', '', $request->hsnCode));
 
             // Check for existing product with the same normalized name or HSN code
-            $existingProduct = Product::where(function ($query) use ($strName, $strHsnCode) {
-                $query->whereRaw("LOWER(REPLACE(name, ' ', '')) = ?", [$strName])
-                    ->orWhereRaw("LOWER(REPLACE(hsnCode, ' ', '')) = ?", [$strHsnCode]);
+            $existingProduct = Product::where(function ($query) use ($strName) {
+                $query->whereRaw("LOWER(REPLACE(name, ' ', '')) = ?", [$strName]);
+                    // ->orWhereRaw("LOWER(REPLACE(hsnCode, ' ', '')) = ?", [$strHsnCode]);
             })
             ->where('id', '!=', $product->id) // Exclude the current product
             ->first();
 
             if ($existingProduct) {
-                if ($strName == strtolower(preg_replace('/\s+/', '', $existingProduct->name)) &&
-                    $strHsnCode == strtolower(preg_replace('/\s+/', '', $existingProduct->hsnCode))) {
-                    return redirect()->back()->with('error', 'Both Product Name and HSN Code already exist.');
-                } elseif ($strName == strtolower(preg_replace('/\s+/', '', $existingProduct->name))) {
+                // if ($strName == strtolower(preg_replace('/\s+/', '', $existingProduct->name)) &&
+                //     $strHsnCode == strtolower(preg_replace('/\s+/', '', $existingProduct->hsnCode))) {
+                //     return redirect()->back()->with('error', 'Both Product Name and HSN Code already exist.');
+                // }
+                if ($strName == strtolower(preg_replace('/\s+/', '', $existingProduct->name))) {
                     return redirect()->back()->with('error', 'Product Name already exists.');
-                } elseif ($strHsnCode == strtolower(preg_replace('/\s+/', '', $existingProduct->hsnCode))) {
-                    return redirect()->back()->with('error', 'HSN Code already exists.');
                 }
+                // elseif ($strHsnCode == strtolower(preg_replace('/\s+/', '', $existingProduct->hsnCode))) {
+                //     return redirect()->back()->with('error', 'HSN Code already exists.');
+                // }
             }
         // Validate the incoming request data
         $request->validate([

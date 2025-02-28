@@ -159,7 +159,7 @@ class PackingMaterialController extends Controller
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
-            'hsnCode' => 'required|string|unique:packing_materials,hsnCode',
+            'hsnCode' => 'required|string',
             'itemType' => 'required|string',
             'itemWeight' => 'required|string',
             'tax' => 'required|string',
@@ -282,24 +282,26 @@ class PackingMaterialController extends Controller
         try {
 
               $strName = strtolower(preg_replace('/\s+/', '', $request->name));
-              $strHsnCode = strtolower(preg_replace('/\s+/', '', $request->hsnCode));
+            //   $strHsnCode = strtolower(preg_replace('/\s+/', '', $request->hsnCode));
             // for duplicate
-            $existingMaterial = PackingMaterial::where(function ($query) use ($strName, $strHsnCode) {
-                $query->whereRaw("LOWER(REPLACE(name, ' ', '')) = ?", [$strName])
-                    ->orWhereRaw("LOWER(REPLACE(hsncode, ' ', '')) = ?", [$strHsnCode]);
+            $existingMaterial = PackingMaterial::where(function ($query) use ($strName) {
+                $query->whereRaw("LOWER(REPLACE(name, ' ', '')) = ?", [$strName]);
+                    // ->orWhereRaw("LOWER(REPLACE(hsncode, ' ', '')) = ?", [$strHsnCode]);
             })
             ->where('id', '!=', $packingMaterial->id) // Exclude the current product
             ->first();
 
             if ($existingMaterial) {
-                if ($strName == strtolower(preg_replace('/\s+/', '', $existingMaterial->name)) &&
-                    $strHsnCode == strtolower(preg_replace('/\s+/', '', $existingMaterial->hsnCode))) {
-                    return redirect()->back()->with('error', 'Both Material Name and HSN Code already exist.');
-                } elseif ($strName == strtolower(preg_replace('/\s+/', '', $existingMaterial->name))) {
+                // if ($strName == strtolower(preg_replace('/\s+/', '', $existingMaterial->name)) &&
+                //     $strHsnCode == strtolower(preg_replace('/\s+/', '', $existingMaterial->hsnCode))) {
+                //     return redirect()->back()->with('error', 'Both Material Name and HSN Code already exist.');
+                // }
+                if ($strName == strtolower(preg_replace('/\s+/', '', $existingMaterial->name))) {
                     return redirect()->back()->with('error', 'Material Name already exists.');
-                } elseif ($strHsnCode == strtolower(preg_replace('/\s+/', '', $existingMaterial->hsnCode))) {
-                    return redirect()->back()->with('error', 'HSN Code already exists.');
                 }
+                // elseif ($strHsnCode == strtolower(preg_replace('/\s+/', '', $existingMaterial->hsnCode))) {
+                //     return redirect()->back()->with('error', 'HSN Code already exists.');
+                // }
             }
         // Validate the incoming request data
         $request->validate([

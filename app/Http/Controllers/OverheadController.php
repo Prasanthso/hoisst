@@ -158,7 +158,7 @@ class OverheadController extends Controller
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
-            'hsncode' => 'required|string|unique:overheads,hsncode',
+            'hsncode' => 'required|string',
             // 'itemweight' => 'string',
             'itemtype' => 'required|string',
             'tax' => 'required|string',
@@ -284,25 +284,27 @@ class OverheadController extends Controller
         try {
             // for duplicate
             $strName = strtolower(preg_replace('/\s+/', '', $request->name));
-            $strHsnCode = strtolower(preg_replace('/\s+/', '', $request->hsncode));
+            // $strHsnCode = strtolower(preg_replace('/\s+/', '', $request->hsncode));
 
             // Check for existing overheads with the same normalized name or HSN code
-            $existingOverhead = Overhead::where(function ($query) use ($strName, $strHsnCode) {
-                $query->whereRaw("LOWER(REPLACE(name, ' ', '')) = ?", [$strName])
-                    ->orWhereRaw("LOWER(REPLACE(hsncode, ' ', '')) = ?", [$strHsnCode]);
+            $existingOverhead = Overhead::where(function ($query) use ($strName) {
+                $query->whereRaw("LOWER(REPLACE(name, ' ', '')) = ?", [$strName]);
+                    // ->orWhereRaw("LOWER(REPLACE(hsncode, ' ', '')) = ?", [$strHsnCode]);
             })
             ->where('id', '!=', $overheads->id) // Exclude the current product
             ->first();
 
             if ($existingOverhead) {
-                if ($strName == strtolower(preg_replace('/\s+/', '', $existingOverhead->name)) &&
-                    $strHsnCode == strtolower(preg_replace('/\s+/', '', $existingOverhead->hsncode))) {
-                    return redirect()->back()->with('error', 'Both Overhead Name and HSN Code already exist.');
-                } elseif ($strName == strtolower(preg_replace('/\s+/', '', $existingOverhead->name))) {
+                // if ($strName == strtolower(preg_replace('/\s+/', '', $existingOverhead->name)) &&
+                //     $strHsnCode == strtolower(preg_replace('/\s+/', '', $existingOverhead->hsncode))) {
+                //     return redirect()->back()->with('error', 'Both Overhead Name and HSN Code already exist.');
+                // }
+                if ($strName == strtolower(preg_replace('/\s+/', '', $existingOverhead->name))) {
                     return redirect()->back()->with('error', 'Overhead Name already exists.');
-                } elseif ($strHsnCode == strtolower(preg_replace('/\s+/', '', $existingOverhead->hsncode))) {
-                    return redirect()->back()->with('error', 'HSN Code already exists.');
                 }
+                // elseif ($strHsnCode == strtolower(preg_replace('/\s+/', '', $existingOverhead->hsncode))) {
+                //     return redirect()->back()->with('error', 'HSN Code already exists.');
+                // }
             }
         // Validate the incoming request data
         $request->validate([
