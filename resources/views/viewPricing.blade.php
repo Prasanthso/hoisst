@@ -163,7 +163,7 @@
                         </thead>
                         <tbody id="overheadsTable">
                             @php $ohTotal = 0;
-                            $filteredData = collect($pricingData)->unique('m')->values();
+                            $filteredData = collect($pricingData)->unique('ohid')->values();
                             @endphp
                             @foreach($filteredData as $data)
                             @if($data->oh_name)

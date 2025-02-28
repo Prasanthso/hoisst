@@ -36,9 +36,9 @@ class RecipePricingController extends Controller
     public function showRecipePricingList()
     {
         $reports = DB::select("
-            SELECT 
-                pm.id AS SNO, 
-                pm.name AS Product_Name, 
+            SELECT
+                pm.id AS SNO,
+                pm.name AS Product_Name,
                 pm.price AS P_MRP,
                 pm.tax As tax,
                 oc.suggested_mrp AS S_MRP,
@@ -52,30 +52,30 @@ class RecipePricingController extends Controller
                 SUM((COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(oc.suggested_mrp, 1)) AS PM_perc,
 
                 -- Overhead Cost (excluding mofr.quantity from multiplication)
-               
+
                 (COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1)) +
                     COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1)
                  AS OH_Cost,
 
                 -- Overhead Percentage
                 SUM(
-                    ((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
-                    (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 
+                    ((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) +
+                    (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) *
                     (COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1) +
                     COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1)) / 100
                 ) AS OH_perc,
 
                 -- Total Cost
-                SUM((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
+                SUM((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) +
                     (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) AS TOTAL,
 
                 -- Total Percentage
-                SUM(((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
+                SUM(((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) +
                     (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 100 / COALESCE(oc.suggested_mrp, 1)) AS Total_perc,
 
                 -- Final Cost Calculation
                 SUM(
-                        (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) + 
+                        (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) +
                         (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))
                     ) + (COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1)) +
                         COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1)
@@ -87,33 +87,33 @@ class RecipePricingController extends Controller
                 ((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + pm.tax) AS Before_tax,
 
                 -- Margin Calculation
-                SUM((((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + pm.tax)) - 
-                    (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) + 
-                    COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) + 
+                SUM((((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + pm.tax)) -
+                    (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) +
+                    COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) +
                     COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1) +
                     COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1))
                 ) AS Margin,
 
                 -- Margin Percentage
                 SUM(
-                    ((((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + pm.tax)) - 
-                    (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) + 
-                    COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) + 
+                    ((((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + pm.tax)) -
+                    (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) +
+                    COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) +
                     COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1) +
                     COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1))
                     ) / (((oc.suggested_mrp * 0.75) * 100) / (100 + pm.tax)) * 100
                 ) AS Margin_perc,
 
-                rmst.Output 
-            FROM 
-                product_master pm 
-            JOIN 
-                recipe_master rmst ON pm.id = rmst.product_id 
-            LEFT JOIN 
-                rm_for_recipe rfr ON rmst.product_id = rfr.product_id 
-            LEFT JOIN 
-                raw_materials rm ON rfr.raw_material_id = rm.id 
-            LEFT JOIN 
+                rmst.Output
+            FROM
+                product_master pm
+            JOIN
+                recipe_master rmst ON pm.id = rmst.product_id
+            LEFT JOIN
+                rm_for_recipe rfr ON rmst.product_id = rfr.product_id
+            LEFT JOIN
+                raw_materials rm ON rfr.raw_material_id = rm.id
+            LEFT JOIN
                 pm_for_recipe pfr ON rmst.product_id = pfr.product_id
             LEFT JOIN
                 packing_materials pkm ON pfr.packing_material_id = pkm.id
@@ -121,15 +121,15 @@ class RecipePricingController extends Controller
                 oh_for_recipe ofr ON rmst.product_id = ofr.product_id
             LEFT JOIN
                 overheads oh ON ofr.overheads_id = oh.id
-            LEFT JOIN 
+            LEFT JOIN
                 moh_for_recipe mofr ON rmst.product_id = mofr.product_id
-            LEFT JOIN 
+            LEFT JOIN
                 overall_costing oc ON pm.id = oc.productId AND oc.status = 'active'
-            WHERE 
+            WHERE
                 rmst.status = 'active' AND oc.suggested_mrp IS NOT NULL
-            GROUP BY 
+            GROUP BY
             pm.id, pm.name, pm.price, pm.tax, oc.suggested_mrp, rmst.Output, ofr.quantity, oh.price, mofr.price
-            ORDER BY 
+            ORDER BY
             pm.name ASC;
 
         ");
@@ -163,7 +163,6 @@ class RecipePricingController extends Controller
         //
     }
 
-
     public function showPricingForm(Request $request)
     {
         // Retrieve all products to display in the dropdown
@@ -187,8 +186,8 @@ class RecipePricingController extends Controller
             $pricingData = DB::table('recipe_master')
                 ->join('rm_for_recipe', 'rm_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->leftjoin('pm_for_recipe', 'pm_for_recipe.product_id', '=', 'recipe_master.product_id')
-                ->leftjoin('moh_for_recipe', 'moh_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->leftjoin('oh_for_recipe', 'oh_for_recipe.product_id', '=', 'recipe_master.product_id')
+                ->leftjoin('moh_for_recipe', 'moh_for_recipe.product_id', '=', 'recipe_master.product_id')
                 // Joining with Master Tables
             ->leftJoin('raw_materials', 'rm_for_recipe.raw_material_id', '=', 'raw_materials.id')
             ->leftJoin('packing_materials', 'pm_for_recipe.packing_material_id', '=', 'packing_materials.id')
@@ -221,6 +220,7 @@ class RecipePricingController extends Controller
                     'recipe_master.Output as rp_output',
                     // 'recipe_master.uom as rp_uom',
                 )
+                ->distinct()
                 ->get();
 
             // Fetch names for IDs separately
