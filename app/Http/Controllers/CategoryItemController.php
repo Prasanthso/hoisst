@@ -52,7 +52,7 @@ class CategoryItemController extends Controller
     public function create()
     {
     $categories = DB::table('categories')->get(); // Fetch all category data
-    return view('addcategory', compact('categories')); // Match view name
+    return view('addCategory', compact('categories')); // Match view name
     }
 
     /**
