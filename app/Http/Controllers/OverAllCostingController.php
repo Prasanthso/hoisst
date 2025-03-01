@@ -179,7 +179,7 @@ class OverAllCostingController extends Controller
             return back()->with('error', 'Error saving data: ' . $e->getMessage());
         }
         // Redirect to another page with a success message
-        return redirect()->route('overallcosting.delete')->with('success', 'Costing saved successfully!');
+        return redirect()->route('overallcosting.index')->with('success', 'Costing saved successfully!');
     }
     public function show($id)
     {
