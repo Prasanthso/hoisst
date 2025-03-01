@@ -18,7 +18,7 @@ class CategoryController extends Controller
         $categories = DB::table('categories')->pluck('categoryname');
 
         // Pass categories to the view
-        return view('categories', ['categories' => $categories]);
+        return view('category.categories', ['categories' => $categories]);
     }
 
     /**

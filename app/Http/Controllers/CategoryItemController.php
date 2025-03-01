@@ -42,7 +42,7 @@ class CategoryItemController extends Controller
             ]);
         }
 
-        return view('categories', compact('categories', 'categoriesitems'));
+        return view('category.categories', compact('categories', 'categoriesitems'));
     }
 
 
@@ -52,7 +52,7 @@ class CategoryItemController extends Controller
     public function create()
     {
     $categories = DB::table('categories')->get(); // Fetch all category data
-    return view('addCategory', compact('categories')); // Match view name
+    return view('category.addCategory', compact('categories')); // Match view name
     }
 
     /**
@@ -86,7 +86,7 @@ class CategoryItemController extends Controller
         CategoryItems::create([
             'categoryId' => $request->categoryId,
             'itemname' => $request->itemname,
-            'description' => $request->description,
+            'description' => $request->description ?: null,
             'created_user' => auth()->id(), // Assuming the user is authenticated
             'status' => 'active',
         ]);
@@ -115,7 +115,7 @@ class CategoryItemController extends Controller
         $items = CategoryItems::with('category')->findOrFail($id);
 
         // Return the view with categories and category items
-        return view('editCategory', compact('items'));
+        return view('category.editCategory', compact('items'));
     }
 
     public function update(Request $request,$id)

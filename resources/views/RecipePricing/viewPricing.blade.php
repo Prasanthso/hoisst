@@ -267,8 +267,8 @@
                 </div>
             </div>
 
-            @else
-            <p>No pricing recipe selected.</p>
+           {{-- @else
+            <p>No pricing recipe selected.</p> --}}
             @endif
         </div>
         <div>

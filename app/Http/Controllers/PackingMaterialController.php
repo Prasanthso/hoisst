@@ -143,7 +143,7 @@ class PackingMaterialController extends Controller
                 // Convert input to lowercase and remove spaces
                 $formattedValue = strtolower(str_replace(' ', '', $value));
                 // Fetch existing names from the database (case-insensitive)
-                $existingNames = Overhead::pluck('name')->map(function ($name) {
+                $existingNames = PackingMaterial::pluck('name')->map(function ($name) {
                     return strtolower(str_replace(' ', '', $name));
                 })->toArray();
                 // Check if the formatted input already exists
