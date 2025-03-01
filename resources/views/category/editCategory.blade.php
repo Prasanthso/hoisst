@@ -53,9 +53,9 @@
                                     <div class="form-floating">
                                         <textarea class="form-control" placeholder="Category Description" name="description" id="floatingTextarea" style="height: 100px;" disabled>{{ $items->description}}</textarea>
                                     </div>
-                                    @error('description')
+                                    {{-- @error('description')
                                     <span class="text-danger">{{ $message }}</span>
-                                @enderror
+                                @enderror --}}
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="saveButton" style="display: none;">Update</button>

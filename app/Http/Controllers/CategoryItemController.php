@@ -86,7 +86,7 @@ class CategoryItemController extends Controller
         CategoryItems::create([
             'categoryId' => $request->categoryId,
             'itemname' => $request->itemname,
-            'description' => $request->description,
+            'description' => $request->description ?: null,
             'created_user' => auth()->id(), // Assuming the user is authenticated
             'status' => 'active',
         ]);

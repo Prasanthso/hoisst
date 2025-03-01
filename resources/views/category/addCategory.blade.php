@@ -64,11 +64,9 @@
                                 <div class="col-12">
                                     <label for="inputNanme4" class="form-label">Description</label>
                                     <div class="form-floating">
-                                        <textarea class="form-control" placeholder="Category Description" name="description" id="floatingTextarea" style="height: 100px;">{{ old('description') }}</textarea>
+                                        <textarea class="form-control" placeholder="Category Description" name="description" id="floatingTextarea" style="height: 100px;"></textarea>
                                         <label for="floatingTextarea">Category Description</label>
-                                        @error('description')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
+
                                     </div>
 
                                 </div>
