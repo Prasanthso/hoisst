@@ -29,7 +29,7 @@ class RecipePricingController extends Controller
             })
             ->get();
 
-        return view('pricing', compact('rawMaterials', 'packingMaterials', 'overheads', 'products'));
+        return view('RecipePricing.pricing', compact('rawMaterials', 'packingMaterials', 'overheads', 'products'));
     }
 
 
@@ -136,7 +136,7 @@ class RecipePricingController extends Controller
             pm.name ASC;
 
         ");
-        return view('recipePricing', compact('reports'));
+        return view('RecipePricing', compact('reports'));
     }
 
     /**
@@ -246,10 +246,10 @@ class RecipePricingController extends Controller
             $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
 
             // Pass the data to the view
-            return view('viewPricing', compact('products', 'pricingData', 'totalCost', 'totalRmCost'));
+            return view('RecipePricing.viewPricing', compact('products', 'pricingData', 'totalCost', 'totalRmCost'));
         }
 
-        return view('viewPricing', compact('products','pricingData', 'totalCost', 'totalRmCost'));
+        return view('RecipePricing.viewPricing', compact('products','pricingData', 'totalCost', 'totalRmCost'));
     }
 
 
@@ -332,10 +332,10 @@ class RecipePricingController extends Controller
             $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
 
             // Pass the data to the view
-            return view('editPricing', compact('rawMaterials', 'packingMaterials', 'overheads', 'products', 'pricingData', 'totalCost'));
+            return view('RecipePricing.editPricing', compact('rawMaterials', 'packingMaterials', 'overheads', 'products', 'pricingData', 'totalCost'));
         }
 
-        return view('editPricing', compact('rawMaterials', 'packingMaterials', 'overheads', 'products', 'pricingData', 'totalCost'));
+        return view('RecipePricing.editPricing', compact('rawMaterials', 'packingMaterials', 'overheads', 'products', 'pricingData', 'totalCost'));
     }
 
     /**
