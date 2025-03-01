@@ -30,9 +30,9 @@
                 <div class="col-lg-6">
 
                     <div class="card">
-                        @if(session('success'))
+                        {{-- @if(session('success'))
                             <div class="alert alert-success">{{ session('success') }}</div>
-                            @endif
+                        @endif --}}
                         <div class="card-body">
                             <!-- Vertical Form -->
                             <form method="POST" action="{{ route('categoryitem.store') }}" class="row g-3 mt-2">
