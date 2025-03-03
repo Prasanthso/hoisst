@@ -209,12 +209,56 @@ class OverAllCostingController extends Controller
 
     public function edit($id)
     {
+
+
+        $productId = DB::table('overall_costing')  // get product id
+        ->where('id', $id)
+        ->value('productId');
+
+        $producttax = DB::table('product_master') // get product tax
+        ->where('id', $productId)
+        ->value('tax');
+
+        $rpoutput = DB::table('recipe_master')
+        ->where('product_id', $productId)
+            ->where('status', 'active')
+            ->value('Output');
+
+        $totalRmCost = DB::table('rm_for_recipe')
+        ->where('product_id', $productId)
+            ->sum('amount');
+
+        $costA = ($rpoutput && $rpoutput > 0) ? ($totalRmCost / $rpoutput) : 0;
+        $rmCost = number_format($costA, 2);
+
+        $totalPmCost = DB::table('pm_for_recipe')
+        ->where('product_id', $productId)
+            ->sum('amount');
+
+        $costB = ($rpoutput && $rpoutput > 0) ? ($totalPmCost / $rpoutput) : 0;
+        $pmCost = number_format($costB, 2);
+
+        $totalOhCost = DB::table('oh_for_recipe')
+        ->where('product_id', $productId)
+        ->sum('amount');
+
+        // $totalMohCost = 0;
+
+        if (empty($totalOhCost)) { // If NULL or 0
+            $totalOhCost = DB::table('moh_for_recipe')
+            ->where('product_id', $productId)
+            ->sum('price');
+        }
+
+        $costC = ($rpoutput && $rpoutput > 0) ? ($totalOhCost / $rpoutput) : 0;
+        $ohCost = number_format($costC, 2);
+
         // Fetch the specific OverallCosting record
         $costing = DB::table('overall_costing')
             ->join('product_master', 'overall_costing.productId', '=', 'product_master.id')
             ->select(
                 'overall_costing.*',
-                'product_master.name as product_name'
+                'product_master.name as product_name',
             )
             ->where('overall_costing.id', $id)
             ->first(); // Retrieve only one record
@@ -225,7 +269,7 @@ class OverAllCostingController extends Controller
         }
 
         // Return the view with costing data
-        return view('overallCost.editoverallCosting', compact('costing'));
+        return view('overallCost.editoverallCosting', compact('costing','rmCost','pmCost','ohCost','rpoutput','producttax'));
     }
 
     public function update(Request $request, $id)
