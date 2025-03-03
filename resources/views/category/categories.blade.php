@@ -425,7 +425,7 @@
 
         function updateSerialNumbers() {
             // Get all visible rows
-            const visibleRows = Array.from(document.querySelectorAll("#packingMaterialTable tr"))
+            const visibleRows = Array.from(document.querySelectorAll("#catagoriesTable tr"))
                 .filter(row => row.style.display !== 'none');
 
             // Update serial numbers for visible rows only

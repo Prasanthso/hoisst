@@ -39,7 +39,7 @@
                                 @csrf
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Category For</label>
-                                    <select id="inputState" name="categoryId" class="form-select select2">
+                                    <select id="inputState" name="categoryId" class="form-select select2 @error('categoryId') is-invalid @enderror">
                                         <option selected disabled>Choose...</option>
                                         @foreach($categories as $category)
                                         <option value="{{ $category->id }}"
@@ -50,14 +50,14 @@
                                         @endforeach
                                     </select>
                                     @error('categoryId')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <span id="category-error" class="text-danger">{{ $message }}</span>
                                 @enderror
                                 </div>
                                 <div class="col-12">
                                     <label for="itemname" class="form-label">Category Name</label>
                                     <input type="text" class="form-control" id="itemname" name="itemname" value="{{ old('itemname') }}">
                                     @error('itemname')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <span id="itemname-error" class="text-danger">{{ $message }}</span>
                                 @enderror
                                 </div>
 
@@ -66,7 +66,9 @@
                                     <div class="form-floating">
                                         <textarea class="form-control" placeholder="Category Description" name="description" id="floatingTextarea" style="height: 100px;"></textarea>
                                         <label for="floatingTextarea">Category Description</label>
-
+                                        @error('description')
+                                        <span id="desc-error" class="text-danger">{{ $message }}</span>
+                                    @enderror
                                     </div>
 
                                 </div>
@@ -101,12 +103,41 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    $(document).ready(function() {
 
+
+    $(document).ready(function() {
         $('#inputState').select2({
             theme: 'bootstrap-5',
             placeholder: 'Select UoM',
          });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const itemNameInput = document.getElementById("itemname");
+    const categoryfor = document.getElementById("inputState");//category-error
+    const desc = document.getElementById("floatingTextarea");
+
+        itemNameInput.addEventListener("input", function () {
+            let errorMsg = document.getElementById("itemname-error");
+            if (this.value.trim() !== "") {
+                errorMsg.remove(); // Remove error message
+            }
+        });
+        categoryfor.addEventListener("change", function () {
+            let selectedValue = $(this).val();
+            console.log(selectedValue);
+            let errorMsg = document.getElementById("category-error");
+            if (selectedValue !== "Choose...") {
+                errorMsg.remove(); // Remove error message
+            }
+
+        });
+        desc.addEventListener("input", function () {
+            let errorMsg = document.getElementById("desc-error");
+            if (this.value.trim() !== "") {
+                errorMsg.remove(); // Remove error message
+            }
+        });
     });
 
 </script>
