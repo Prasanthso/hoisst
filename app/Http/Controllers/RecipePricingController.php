@@ -36,104 +36,95 @@ class RecipePricingController extends Controller
     public function showRecipePricingList()
     {
         $reports = DB::select("
-            SELECT
-                pm.id AS SNO,
-                pm.name AS Product_Name,
-                pm.price AS P_MRP,
-                pm.tax As tax,
-                oc.suggested_mrp AS S_MRP,
+            SELECT 
+    pm.id AS SNO, 
+    pm.name AS Product_Name, 
+    pm.price AS P_MRP,
+    pm.tax AS tax,
+    oc.suggested_mrp AS S_MRP,
 
-                -- Raw Material Cost
-                SUM(DISTINCT COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) AS RM_Cost,
-                SUM((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(oc.suggested_mrp, 1)) AS RM_perc,
+    -- Get Raw Material IDs
+    rm_total.RM_IDs,
 
-                -- Packing Material Cost
-                SUM(DISTINCT COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1)) AS PM_Cost,
-                SUM((COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1)) * 100 / COALESCE(oc.suggested_mrp, 1)) AS PM_perc,
+    -- Get Raw Material Names
+    rm_total.RM_Names,
 
-                -- Overhead Cost (excluding mofr.quantity from multiplication)
+    -- Get Packing Material IDs
+    pm_total.PM_IDs,
 
-                SUM(
-                    DISTINCT COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1) +
-                    COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1)
-                ) AS OH_Cost,
+    -- Get Packing Material Names
+    pm_total.PM_Names,
 
+    -- Raw Material Cost (Divided by Output)
+    COALESCE(rm_total.RM_Cost, 0) / COALESCE(rmst.Output, 1) AS RM_Cost,
 
-                -- Overhead Percentage
-                SUM(
-                    ((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) +
-                    (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) *
-                    (COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1) +
-                    COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1)) / 100
-                ) AS OH_perc,
+    -- Packing Material Cost (Divided by Output)
+    COALESCE(pm_total.PM_Cost, 0) / COALESCE(rmst.Output, 1) AS PM_Cost,
+    
+    -- Overhead Cost (Divided by Output)
+    COALESCE(oh_total.Overhead_Cost, 0) / COALESCE(rmst.Output, 1) AS OH_Cost,
 
-                -- Total Cost
-                SUM((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) +
-                    (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) AS TOTAL,
+    -- Manufacturing Overhead Cost (Divided by Output)
+    COALESCE(moh_total.MOH_Cost, 0) / COALESCE(rmst.Output, 1) AS MOH_Cost,
 
-                -- Total Percentage
-                SUM(((COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1)) +
-                    (COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1))) * 100 / COALESCE(oc.suggested_mrp, 1)) AS Total_perc,
+    -- Output
+    rmst.Output 
 
-                -- Final Cost Calculation
-                SUM(
+FROM 
+    product_master pm 
+JOIN 
+    recipe_master rmst ON pm.id = rmst.product_id 
 
-                    COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) +
-                    COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) +
-                    COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1) +
-                    COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1)
-                ) AS COST,
+-- Aggregate Raw Material Cost Separately
+LEFT JOIN (
+    SELECT 
+        rfr.product_id,
+        GROUP_CONCAT(DISTINCT rfr.raw_material_id ORDER BY rfr.raw_material_id ASC SEPARATOR ', ') AS RM_IDs,
+        GROUP_CONCAT(DISTINCT rm.name ORDER BY rm.name ASC SEPARATOR ', ') AS RM_Names,
+        SUM(COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0)) AS RM_Cost
+    FROM rm_for_recipe rfr
+    JOIN raw_materials rm ON rfr.raw_material_id = rm.id
+    GROUP BY rfr.product_id
+) AS rm_total ON pm.id = rm_total.product_id
 
-                -- Selling Cost and Margin Calculations
-                SUM(COALESCE(oc.suggested_mrp, 0) * 0.75) AS Selling_Cost,
-                SUM(((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + pm.tax)) AS Before_tax,
+-- Aggregate Packing Material Cost Separately
+LEFT JOIN (
+    SELECT 
+        pfr.product_id,
+        GROUP_CONCAT(DISTINCT pfr.packing_material_id ORDER BY pfr.packing_material_id ASC SEPARATOR ', ') AS PM_IDs,
+        GROUP_CONCAT(DISTINCT pkm.name ORDER BY pkm.name ASC SEPARATOR ', ') AS PM_Names,
+        SUM(COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0)) AS PM_Cost
+    FROM pm_for_recipe pfr
+    JOIN packing_materials pkm ON pfr.packing_material_id = pkm.id
+    GROUP BY pfr.product_id
+) AS pm_total ON pm.id = pm_total.product_id
 
-                -- Margin Calculation
-                SUM((((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + pm.tax)) -
-                    (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) +
-                    COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) +
-                    COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1) +
-                    COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1))
-                ) AS Margin,
+-- Aggregate Overhead Cost Separately
+LEFT JOIN (
+    SELECT 
+        ofr.product_id, 
+        SUM(COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0)) AS Overhead_Cost
+    FROM oh_for_recipe ofr
+    JOIN overheads oh ON ofr.overheads_id = oh.id
+    GROUP BY ofr.product_id
+) AS oh_total ON pm.id = oh_total.product_id
 
-                -- Margin Percentage
-                SUM(
-                    ((((COALESCE(oc.suggested_mrp, 0) * 0.75) * 100) / (100 + pm.tax)) -
-                    (COALESCE(rfr.quantity, 0) * COALESCE(rm.price, 0) / COALESCE(rmst.Output, 1) +
-                    COALESCE(pfr.quantity, 0) * COALESCE(pkm.price, 0) / COALESCE(rmst.Output, 1) +
-                    COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0) / COALESCE(rmst.Output, 1) +
-                    COALESCE(mofr.price, 0) / COALESCE(rmst.Output, 1))
-                    ) / (((oc.suggested_mrp * 0.75) * 100) / (100 + pm.tax)) * 100
-                ) AS Margin_perc,
+-- Aggregate Manufacturing Overhead Cost Separately
+LEFT JOIN (
+    SELECT 
+        product_id, 
+        SUM(COALESCE(price, 0)) AS MOH_Cost
+    FROM moh_for_recipe
+    GROUP BY product_id
+) AS moh_total ON pm.id = moh_total.product_id
 
-                rmst.Output
-            FROM
-                product_master pm
-            JOIN
-                recipe_master rmst ON pm.id = rmst.product_id
-            LEFT JOIN
-                rm_for_recipe rfr ON rmst.product_id = rfr.product_id
-            LEFT JOIN
-                raw_materials rm ON rfr.raw_material_id = rm.id
-            LEFT JOIN
-                pm_for_recipe pfr ON rmst.product_id = pfr.product_id
-            LEFT JOIN
-                packing_materials pkm ON pfr.packing_material_id = pkm.id
-            LEFT JOIN
-                oh_for_recipe ofr ON rmst.product_id = ofr.product_id
-            LEFT JOIN
-                overheads oh ON ofr.overheads_id = oh.id
-            LEFT JOIN
-                moh_for_recipe mofr ON rmst.product_id = mofr.product_id
-            LEFT JOIN
-                overall_costing oc ON pm.id = oc.productId AND oc.status = 'active'
-            WHERE
-                rmst.status = 'active' AND oc.suggested_mrp IS NOT NULL
+LEFT JOIN 
+    overall_costing oc ON pm.id = oc.productId AND oc.status = 'active'
+WHERE 
+    rmst.status = 'active' AND oc.suggested_mrp IS NOT NULL
+ORDER BY 
+    pm.name ASC;
 
-            GROUP BY
-            pm.id, pm.name, pm.price, pm.tax, oc.suggested_mrp, rmst.Output, ofr.quantity
-            ORDER BY
-            pm.name ASC;
 
         ");
         return view('RecipePricing', compact('reports'));

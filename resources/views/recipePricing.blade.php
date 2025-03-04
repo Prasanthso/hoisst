@@ -59,7 +59,7 @@
                             @foreach ($reports as $index => $report)
                             @php
                             $total = $report->RM_Cost + $report->PM_Cost;
-                            $cost = $total + $report->OH_Cost;
+                            $cost = $total + $report->OH_Cost + $report->MOH_Cost;
                             $sellingRate = $report->S_MRP * 0.75;
                             $beforeTax = ($sellingRate * 100) / 118;
                             $margin = $beforeTax - $cost;
@@ -74,13 +74,9 @@
                                     <input type="text" class="form-control mrp-input d-none" value="{{ $report->S_MRP }}">
                                 </td>
                                 <td>{{ $report->RM_Cost }}</td>
-                                <!-- <td>{{ number_format($report->RM_perc, 2) }}</td> -->
                                 <td>{{ $report->PM_Cost }}</td>
-                                <!-- <td>{{ number_format($report->PM_perc, 2) }}</td> -->
                                 <td>{{ $total }}</td>
-                                <!-- <td>{{ $report->Total_perc }}</td> -->
-                                <td>{{ $report->OH_Cost }}</td>
-                                <!-- <td>{{ number_format($report->OH_perc, 2) }}</td> -->
+                                <td>{{ $report->OH_Cost + $report->MOH_Cost }}</td>
                                 <td class="cost">{{ $cost }}</td>
                                 <td class="selling-rate">{{ number_format($report->S_MRP * 0.75, 2) }}</td>
                                 <td>18</td>
