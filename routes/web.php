@@ -156,6 +156,8 @@ Route::post('/update-pricing/{id}', [RmForRecipeController::class, 'update']);
 Route::post('/pm-update-pricing/{id}', [PmForRecipeController::class, 'update']);
 Route::post('/oh-update-pricing/{id}', [OhForRecipeController::class, 'update']);
 
+Route::get('/check-product-exists', [RecipePricingController::class, 'checkProductExists']);
+
 Route::get('/recipepricing', [RecipePricingController::class, 'showRecipePricingList'])->name('showRecipePricingList');
 
 Route::get('/overallcosting', [OverAllCostingController::class, 'index'])->name('overallcosting.index');

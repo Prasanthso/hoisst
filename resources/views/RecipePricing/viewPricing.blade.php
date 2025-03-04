@@ -309,7 +309,7 @@
         });
 
         // edit products//
-        document.querySelector('.edit-table-btn').addEventListener('click', function() {
+        document.querySelector('.edit-table-btn')?.addEventListener('click', function() {
             const productId = document.getElementById('productSelect').value;
 
             if (productId) {
@@ -321,28 +321,41 @@
         });
 
         // delete products//
-        document.querySelector('.delete-table-btn').addEventListener('click', function() {
+        document.querySelector('.delete-table-btn')?.addEventListener('click', async function() {
             var productId = document.getElementById('productSelect').value.trim();
             console.log(productId);
             if (productId === 'Choose...') {
                 alert('Please select a product before deleting.');
                 return;
             }
-            if (productId) {
-                // Show confirmation dialog
-                if (confirm('Are you sure you want to delete the pricing data for this product?')) {
-                    // Set the product ID to the hidden input
-                    document.getElementById('product_id_to_delete').value = productId;
-
-                    // Submit the form
-                    document.getElementById('deleteForm').submit();
-                } else {
-                    // User canceled the action
-                    console.log('Delete action canceled by user.');
-                }
-            } else {
-                alert('Please select a product before deleting.');
+            try {
+            // AJAX request to check if the product exists in overall_costing
+            let response = await fetch(`/check-product-exists?productId=${productId}`);
+            let data = await response.json();
+            console.log("Server Response:", data);
+            if (data.exists) {
+                alert('Recipe-Pricing data might be in use and cannot be deleted.');
+                return;
             }
+                // if (productId) {
+                    // Show confirmation dialog
+                    if (confirm('Are you sure you want to delete the pricing data for this product?')) {
+                        // Set the product ID to the hidden input
+                        document.getElementById('product_id_to_delete').value = productId;
+
+                        // Submit the form
+                        document.getElementById('deleteForm').submit();
+                    } else {
+                        // User canceled the action
+                        console.log('Delete action canceled by user.');
+                    }
+                // } else {
+                //     alert('Please select a product before deleting.');
+                // }
+            } catch (error) {
+            console.error('Error checking product existence:', error);
+            alert('Something went wrong. Please try again.');
+        }
         });
 
     });

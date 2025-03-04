@@ -4,7 +4,7 @@
 <main id="main" class="main">
 
     <div class="pagetitle">
-        <h1>View CategoryItems</h1>
+        <h1 id="pageTitle">View CategoryItem</h1>
         <div class="d-flex justify-content-end mb-2 action-buttons">
             <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;" id="editButton">
                 <i class="fas fa-edit" style="color: black;"></i>
@@ -13,7 +13,7 @@
                 <i class="fas fa-trash" style="color: red;"></i>
             </button>-->
         </div>
-    </div><!-- End Page Title -->
+    </div> <!-- End Page Title -->
 
     <section class="section">
         <div class="row">
@@ -22,10 +22,10 @@
 
                     <div class="card">
                         @if(session('success'))
-                            <div class="alert alert-success">{{ session('success') }}</div>
+                            <div id="success-message" class="alert alert-success">{{ session('success') }}</div>
                             @endif
                             @if (session('error'))
-                            <div class="alert alert-danger">{{ session('error') }}</div>
+                            <div id="error-message" class="alert alert-danger">{{ session('error') }}</div>
                         @endif
                         <div class="card-body">
                             <!-- Vertical Form -->
@@ -45,7 +45,7 @@
                                     <label for="itemname" class="form-label">Category Name</label>
                                     <input type="text" class="form-control" id="itemname" name="itemname" value="{{ $items->itemname}}" disabled>
                                     @error('itemname')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <span id="itemname-error" class="text-danger">{{ $message }}</span>
                                 @enderror
                                 </div>
                                 <div class="col-12">
@@ -54,7 +54,7 @@
                                         <textarea class="form-control" placeholder="Category Description" name="description" id="floatingTextarea" style="height: 100px;" disabled>{{ $items->description}}</textarea>
                                     </div>
                                     {{-- @error('description')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <span id="desc-error" class="text-danger">{{ $message }}</span>
                                 @enderror --}}
                                 </div>
                                 <div>
@@ -98,7 +98,7 @@
         // Toggle edit mode
         $('#editButton').on('click', function() {
             // Change the page title text
-            $('#pageTitle').text('Edit CategoryItems');
+            $('#pageTitle').text('Edit CategoryItem');
 
             // Enable form fields
             $('#categoryItemsForm input, #categoryItemsForm select').prop('disabled', false);
@@ -116,4 +116,29 @@
             $('#categorySelect').prop('disabled', false);
         });
     });
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const itemNameInput = document.getElementById("itemname");
+    // const desc = document.getElementById("floatingTextarea");
+
+        itemNameInput.addEventListener("input", function () {
+            let errorMsg = document.getElementById("itemname-error");
+            if (this.value !== "") {
+                if(errorMsg){
+                errorMsg.remove(); }  // Remove error message
+            }
+        });
+
+        setTimeout(() => {
+        ['success-message', 'error-message', 'itemname-error'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.style.display = 'none';
+            }
+        });
+    }, 900);
+
+    });
+
+
 </script>

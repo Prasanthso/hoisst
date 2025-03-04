@@ -18,8 +18,8 @@
         @endif
 
         @if ($errors->any())
-            <div class="alert" style="color: white; background-color: rgba(255, 123, 0, 0.742); padding: 10px; border-radius: 5px;">
-                <ul>
+            <div class="alert alert-danger">
+               <ul>
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -187,6 +187,16 @@
             event.preventDefault();
         }
     });
+    document.querySelectorAll("input, select").forEach(input => {
+        input.addEventListener("input", () => clearError(input));
+        input.addEventListener("change", () => clearError(input));
+    });
+
+    // Special handling for select2 dropdowns
+    $('#inputState, #categorySelect').on("select2:select", function () {
+        clearError(this); // Pass the select element to clearError function
+    });
+});
     function showError(input, message) {
         let errorElement = document.createElement("div");
         errorElement.className = "error-text text-danger";
@@ -194,7 +204,12 @@
         input.parentNode.appendChild(errorElement);
         input.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
- });
+    function clearError(input) {
+            let errorMsg = input.parentNode.querySelector(".error-text");
+            if (errorMsg) {
+                errorMsg.remove();
+            }
+        }
 
 </script>
 

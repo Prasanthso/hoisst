@@ -223,6 +223,17 @@
             event.preventDefault();
         }
     });
+    document.querySelectorAll("input, select").forEach(input => {
+        input.addEventListener("input", () => clearError(input));
+        input.addEventListener("change", () => clearError(input));
+    });
+
+    // Special handling for select2 dropdowns
+    $('#inputState, #categorySelect').on("select2:select", function () {
+        clearError(this); // Pass the select element to clearError function
+    });
+});
+
     function showError(input, message) {
         let errorElement = document.createElement("div");
         errorElement.className = "error-text text-danger";
@@ -230,8 +241,13 @@
         input.parentNode.appendChild(errorElement);
         input.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+    function clearError(input) {
+            let errorMsg = input.parentNode.querySelector(".error-text");
+            if (errorMsg) {
+                errorMsg.remove();
+            }
+        }
 
- });
 </script>
 
 <!--Template Main JS File-->
