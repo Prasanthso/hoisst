@@ -26,7 +26,7 @@
                                         @endforeach
                                         </select>
                                         @error('productId')
-                                        <span class="text-danger">{{ $message }}</span>
+                                        <span  id="error-productId" class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
                                 </div>
@@ -39,7 +39,7 @@
                                     <div class="form-floating">
                                     <textarea class="form-control" placeholder="Receipe Description" name="recipeDescription" id="recipeDescription" style="height: 100px;"></textarea>
                                     @error('recipeDescription')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <span id="error-recipeDescription" class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 </div>
@@ -48,7 +48,7 @@
                                     <div class="form-floating">
                                     <textarea class="form-control" placeholder="Receipe Making Instruction" name="receipeInstruction" id="receipeInstruction" style="height: 100px;"></textarea>
                                     @error('receipeInstruction')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <span id="error-receipeInstruction" class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 </div>
@@ -56,7 +56,7 @@
                                     <label for="receipevideo" class="form-label fw-bold">Recipe Making Video</label>
                                     <input type="file" name="receipevideo" class="form-control" id="receipevideo">
                                     @error('receipevideo')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <span id="error-receipevideo" class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div>
@@ -64,7 +64,7 @@
                                         Save
                                     </button>
                                 </div>
-                            </form><!-- Vertical Form -->
+                            </form> <!-- Vertical Form -->
                         </div>
                    </div>
                 </div>
@@ -113,5 +113,19 @@
             });
 
         }
+        // Clear error messages when user types or selects a value
+        clearErrorMessage('recipeSelect', 'error-productId');
+        clearErrorMessage('recipeDescription', 'error-recipeDescription');
+        clearErrorMessage('receipeInstruction', 'error-receipeInstruction');
+        clearErrorMessage('receipevideo', 'error-receipevideo');
+
     });
+
+    function clearErrorMessage(inputField, errorField) {
+            document.getElementById(inputField)?.addEventListener('input', function() {
+                document.getElementById(errorField).innerText = '';
+            });
+        }
+
+
 </script>

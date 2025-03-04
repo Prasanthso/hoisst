@@ -216,7 +216,6 @@ class ProductController extends Controller
         }
     }
 
-
     public function updatePrices(Request $request)
     {
         $validatedData = $request->validate([
