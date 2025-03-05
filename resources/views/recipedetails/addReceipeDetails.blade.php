@@ -22,7 +22,7 @@
                                         <select id="recipeSelect" class="form-select" name="productId" aria-labelledby="recipeSelectLabel">
                                         <option selected disabled>Choose...</option>
                                         @foreach($recipes as $recipesitems)
-                                        <option value="{{ $recipesitems->id }}">{{ $recipesitems->name }}</option>
+                                        <option value="{{ $recipesitems->id }}" {{ old('productId') == $recipesitems->id ? 'selected' : '' }}>{{ $recipesitems->name }}</option>
                                         @endforeach
                                         </select>
                                         @error('productId')
@@ -37,7 +37,7 @@
                                     <label for="recipeDescription" class="form-label fw-bold">Recipe Description</label>
 
                                     <div class="form-floating">
-                                    <textarea class="form-control" placeholder="Receipe Description" name="recipeDescription" id="recipeDescription" style="height: 100px;"></textarea>
+                                    <textarea class="form-control" placeholder="Receipe Description" name="recipeDescription" id="recipeDescription" style="height: 100px;">{{ old('recipeDescription') }}</textarea>
                                     @error('recipeDescription')
                                     <span id="error-recipeDescription" class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -46,7 +46,7 @@
                                 <div class="col-12">
                                     <label for="receipeInstruction" class="form-label fw-bold">Recipe Making Instruction</label>
                                     <div class="form-floating">
-                                    <textarea class="form-control" placeholder="Receipe Making Instruction" name="receipeInstruction" id="receipeInstruction" style="height: 100px;"></textarea>
+                                    <textarea class="form-control" placeholder="Receipe Making Instruction" name="receipeInstruction" id="receipeInstruction" style="height: 100px;">{{ old('receipeInstruction') }}</textarea>
                                     @error('receipeInstruction')
                                     <span id="error-receipeInstruction" class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -94,6 +94,8 @@
     document.addEventListener("DOMContentLoaded", () => {
         const recipeSelect = document.getElementById('recipeSelect');
         const selectedRecipesName = document.getElementById('selectedrecipesname');
+        // const recipedescr = document.getElementById('recipeDescription');
+        // const recipeinstr = document.getElementById('receipeInstruction');
 
         $('#recipeSelect').select2({
             theme: 'bootstrap-5',
@@ -113,8 +115,17 @@
             });
 
         }
+
+        $('#recipeSelect').on("select2:select", function (e) {
+        let selectedValue = $(this).val(); // Get selected value
+        console.log(selectedValue);
+        let errorMsg = document.getElementById("error-productId");
+        if (selectedValue !== "Choose..." && errorMsg) {
+            errorMsg.remove();
+        }
+        });
         // Clear error messages when user types or selects a value
-        clearErrorMessage('recipeSelect', 'error-productId');
+        // clearErrorMessage('recipeSelect', 'error-productId');
         clearErrorMessage('recipeDescription', 'error-recipeDescription');
         clearErrorMessage('receipeInstruction', 'error-receipeInstruction');
         clearErrorMessage('receipevideo', 'error-receipevideo');

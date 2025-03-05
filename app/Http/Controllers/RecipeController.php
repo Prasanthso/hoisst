@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Recipe;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class RecipeController extends Controller
 {
@@ -56,6 +57,7 @@ class RecipeController extends Controller
 
     public function store(Request $request)
     {
+        try{
         $validated = $request->validate([
             'productId' => 'required|exists:product_master,id',
             'recipeDescription' => 'required|string',
@@ -91,6 +93,15 @@ class RecipeController extends Controller
         ->update(['recipe_created_status' => 'yes']);
 
         return redirect()->route('receipedetails.index')->with('success', 'Recipe details added successfully!');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong! Could not save data.')
+                ->withInput();
+        }
     }
 
     public function edit($id)
