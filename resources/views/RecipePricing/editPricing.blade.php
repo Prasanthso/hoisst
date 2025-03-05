@@ -470,7 +470,7 @@
 
                     <!-- Input Fields (Only One Will Be Visible at a Time) -->
                     <div class="d-flex flex-column" style="flex: 1.5;">
-                        <label for="manualOhPrice" class="form-label" id="manualOhPricelab">Overheads Price</label>
+                        <label for="manualOhPrice" class="form-label" id="manualOhPricelab">Overheads Value</label>
                         <input type="number" class="form-control rounded" id="manualOhPrice" name="manualOhPrice">
 
                         <label for="manualOhPerc" class="form-label" id="manualOhPerclab" style="display: none;">Overheads Percentage</label>
@@ -694,6 +694,7 @@
         pmforRecipe();
         ohforRecipe();
         mohforRecipe();
+        // manualOhType.addEventListener("change", toggleFields);
     });
 
     function for_Oh_Manual()
@@ -740,7 +741,7 @@
                     manualOhPerc.style.display = "block";
                     manualOhPerclab.style.display = "block";
                 }
-            }
+        }
             // Ensure correct field is shown when the page loads
             toggleFields();
 
@@ -1724,6 +1725,26 @@
             }
         if(manualOverheads)
         {
+
+            function toggleFields1() {
+                let manualOhPrice = document.getElementById("manualOhPrice");
+                let manualOhPricelab = document.getElementById("manualOhPricelab");
+                let manualOhPerc = document.getElementById("manualOhPerc");
+                let manualOhPerclab = document.getElementById("manualOhPerclab");
+                if (manualOhType.value === "price") {
+                    manualOhPrice.style.display = "block";
+                    manualOhPricelab.style.display = "block";
+                    manualOhPerc.style.display = "none";
+                    manualOhPerclab.style.display = "none";
+                } else {
+                    manualOhPrice.style.display = "none";
+                    manualOhPricelab.style.display = "none";
+                    manualOhPerc.style.display = "block";
+                    manualOhPerclab.style.display = "block";
+                }
+            }
+            manualOhType.addEventListener("change", toggleFields1);
+
             function calcForManual()
             {
                 let manualOhAmount = 0;
@@ -1731,16 +1752,19 @@
                 let totalRmCost = document.getElementById('totalRmCost');
                 let totalPmCost = document.getElementById('totalPmCost');
                 const manualOhType = document.getElementById("manualOhType").value.trim();
-
+                console.log("manual type is:", manualOhType);
                 let rmTotal = parseFloat(totalRmCost.textContent) || 0;
                 let pmTotal = parseFloat(totalPmCost.textContent) || 0;
                 if ((rmTotal + pmTotal) <= 0) {
                     alert("Please add raw materials & packing materials.");
                     return;
                 }
+
                 if(manualOhType == 'percentage')
                 {
                     manualOhPercValue = parseFloat(document.getElementById("manualOhPerc").value) || 0;
+                    // manualOhPercValue = parseFloat(document.getElementById("manualOhPrice").value) || 0;
+                    console.log("manualOhPerc/price : ", manualOhPercValue);
                     console.log(parseFloat(rmTotal));
                         manualOhAmount = ((rmTotal + pmTotal) * manualOhPercValue/100);
                         console.log(manualOhAmount);
@@ -1775,10 +1799,12 @@
                 calcForManual();
             } else {
                 manualOhPercValue = parseFloat(document.getElementById('manualOhPerc').value) || 0;
+                console.log("manualOhPercValue: ", manualOhPercValue);
                 calcForManual();
             }
 
             if (!manualOverheadsName || (manualOhType === "price" && manualOhPriceValue <= 0) || (manualOhType === "percentage" && manualOhPercValue <= 0)) {
+                console.log(manualOhPercValue);
                 alert('Please fill all fields before adding.');
                 return;
             }
@@ -1893,9 +1919,9 @@
                         // Remove the row from the table
                         const amount = parseFloat(row.cells[5].textContent) || 0;
                         row.remove();
-
+                        window.location.reload();
                         // Update the total cost
-                        updateOhTotalCost(-amount);
+                        // updateOhTotalCost(-amount);
                     })
                     .catch(error => console.error('Error:', error.message));
                 }
