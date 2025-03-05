@@ -22,11 +22,11 @@
                                         <select id="recipeSelect" class="form-select" name="productId" aria-labelledby="recipeSelectLabel">
                                         <option selected disabled>Choose...</option>
                                         @foreach($recipes as $recipesitems)
-                                        <option value="{{ $recipesitems->id }}">{{ $recipesitems->name }}</option>
+                                        <option value="{{ $recipesitems->id }}" {{ old('productId') == $recipesitems->id ? 'selected' : '' }}>{{ $recipesitems->name }}</option>
                                         @endforeach
                                         </select>
                                         @error('productId')
-                                        <span class="text-danger">{{ $message }}</span>
+                                        <span  id="error-productId" class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
                                 </div>
@@ -37,18 +37,18 @@
                                     <label for="recipeDescription" class="form-label fw-bold">Recipe Description</label>
 
                                     <div class="form-floating">
-                                    <textarea class="form-control" placeholder="Receipe Description" name="recipeDescription" id="recipeDescription" style="height: 100px;"></textarea>
+                                    <textarea class="form-control" placeholder="Receipe Description" name="recipeDescription" id="recipeDescription" style="height: 100px;">{{ old('recipeDescription') }}</textarea>
                                     @error('recipeDescription')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <span id="error-recipeDescription" class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="receipeInstruction" class="form-label fw-bold">Recipe Making Instruction</label>
                                     <div class="form-floating">
-                                    <textarea class="form-control" placeholder="Receipe Making Instruction" name="receipeInstruction" id="receipeInstruction" style="height: 100px;"></textarea>
+                                    <textarea class="form-control" placeholder="Receipe Making Instruction" name="receipeInstruction" id="receipeInstruction" style="height: 100px;">{{ old('receipeInstruction') }}</textarea>
                                     @error('receipeInstruction')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <span id="error-receipeInstruction" class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 </div>
@@ -56,7 +56,7 @@
                                     <label for="receipevideo" class="form-label fw-bold">Recipe Making Video</label>
                                     <input type="file" name="receipevideo" class="form-control" id="receipevideo">
                                     @error('receipevideo')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <span id="error-receipevideo" class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div>
@@ -64,7 +64,7 @@
                                         Save
                                     </button>
                                 </div>
-                            </form><!-- Vertical Form -->
+                            </form> <!-- Vertical Form -->
                         </div>
                    </div>
                 </div>
@@ -94,6 +94,8 @@
     document.addEventListener("DOMContentLoaded", () => {
         const recipeSelect = document.getElementById('recipeSelect');
         const selectedRecipesName = document.getElementById('selectedrecipesname');
+        // const recipedescr = document.getElementById('recipeDescription');
+        // const recipeinstr = document.getElementById('receipeInstruction');
 
         $('#recipeSelect').select2({
             theme: 'bootstrap-5',
@@ -113,5 +115,28 @@
             });
 
         }
+
+        $('#recipeSelect').on("select2:select", function (e) {
+        let selectedValue = $(this).val(); // Get selected value
+        console.log(selectedValue);
+        let errorMsg = document.getElementById("error-productId");
+        if (selectedValue !== "Choose..." && errorMsg) {
+            errorMsg.remove();
+        }
+        });
+        // Clear error messages when user types or selects a value
+        // clearErrorMessage('recipeSelect', 'error-productId');
+        clearErrorMessage('recipeDescription', 'error-recipeDescription');
+        clearErrorMessage('receipeInstruction', 'error-receipeInstruction');
+        clearErrorMessage('receipevideo', 'error-receipevideo');
+
     });
+
+    function clearErrorMessage(inputField, errorField) {
+            document.getElementById(inputField)?.addEventListener('input', function() {
+                document.getElementById(errorField).innerText = '';
+            });
+        }
+
+
 </script>

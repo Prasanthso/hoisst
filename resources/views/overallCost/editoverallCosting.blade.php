@@ -108,7 +108,7 @@
                                     <input type="text" class="form-control" id="inputDiscount" name="inputDiscount" value="{{ $costing->discount }}" disabled>
                                     <div id="DiscountAmt" class="mb-2" style="color:blue;"></div>
                                 </div>
-                                <div class="col-12">
+                                <div class="col-12" hidden>
                                     <label for="inputSuggRate" class="form-label">Suggested Rate</label>
                                     <input type="text" class="form-control mb-2" id="inputSuggRate" name="inputSuggRate" value="{{ number_format(($rmCost ?? 0) + ($pmCost ?? 0) + ($ohCost ?? 0), 2) }}" disabled readonly>
                                 </div>

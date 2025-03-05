@@ -10,7 +10,7 @@
     <section class="section">
         <div class="row">
             @if (session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
+                <div id="" class="alert alert-success">{{ session('success') }}</div>
             @endif
 
             @if (session('error'))
@@ -149,7 +149,10 @@
             theme: 'bootstrap-5',
             placeholder: 'Select UoM',
         });
+
     });
+
+
 
     document.addEventListener("DOMContentLoaded", function() {
        const btnsave = document.getElementById('btnsubmit');
@@ -188,15 +191,34 @@
             event.preventDefault();
         }
     });
-    function showError(input, message) {
-        let errorElement = document.createElement("div");
-        errorElement.className = "error-text text-danger";
-        errorElement.innerHTML = message;
-        input.parentNode.appendChild(errorElement);
-        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
 
- });
+    document.querySelectorAll("input, select").forEach(input => {
+        input.addEventListener("input", () => clearError(input));
+        input.addEventListener("change", () => clearError(input));
+    });
+
+    // Special handling for select2 dropdowns
+    $('#inputState, #categorySelect').on("select2:select", function () {
+        clearError(this); // Pass the select element to clearError function
+    });
+});
+
+    function showError(input, message) {
+            let errorElement = document.createElement("div");
+            errorElement.className = "error-text text-danger";
+            errorElement.innerHTML = message;
+            input.parentNode.appendChild(errorElement);
+            input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            //  Remove error message when user starts typing or selecting
+            //  input.addEventListener("input", function () { clearError(input); });
+            //  input.addEventListener("change", function () { clearError(input); });
+        }
+    function clearError(input) {
+            let errorMsg = input.parentNode.querySelector(".error-text");
+            if (errorMsg) {
+                errorMsg.remove();
+            }
+        }
 
 </script>
 

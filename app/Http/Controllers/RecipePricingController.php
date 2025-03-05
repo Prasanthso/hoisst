@@ -337,6 +337,17 @@ ORDER BY
     /**
      * Remove the specified resource from storage.
      */
+
+     public function checkProductExists(Request $request)
+    {
+        $exists = DB::table('overall_costing')
+            ->where('productId', $request->productId)
+            ->where('status', 'active')
+            ->exists();
+
+        return response()->json(['exists' => $exists]);
+    }
+
     public function destroy(Request $request)
     {
         // Validate the product_id
@@ -344,9 +355,23 @@ ORDER BY
             'product_id' => 'required|exists:product_master,id',
         ]);
 
+        $exists = DB::table('overall_costing')
+        ->where('productId', $request->product_id)
+        ->where('status', 'active')
+        ->exists();
+
+        if ($exists) {
+            return redirect()->route('receipepricing.index')->with('error', 'Recipe-Pricing data might be in use.');
+        }
+
         // Delete the pricing data for the selected product
         DB::table('recipe_master')
             ->where('product_id', $request->product_id)
+            // ->whereNotExists(function ($query) {
+            //     $query->select(DB::raw(1))
+            //         ->from('overall_costing')
+            //         ->whereColumn('overall_costing.productId', 'recipe_master.product_id');
+            // })
             ->update(['status' => 'inactive']);
 
         DB::table('rm_for_recipe')
@@ -366,5 +391,6 @@ ORDER BY
             ->delete();
         // Redirect back with a success message
         return redirect()->route('receipepricing.index')->with('success', 'Recipe-Pricing data deleted successfully!');
+
     }
 }

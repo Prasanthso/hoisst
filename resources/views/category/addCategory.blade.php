@@ -39,7 +39,7 @@
                                 @csrf
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Category For</label>
-                                    <select id="inputState" name="categoryId" class="form-select select2 @error('categoryId') is-invalid @enderror">
+                                    <select id="inputState" name="categoryId" class="form-select select2">
                                         <option selected disabled>Choose...</option>
                                         @foreach($categories as $category)
                                         <option value="{{ $category->id }}"
@@ -104,40 +104,40 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 
-
-    $(document).ready(function() {
+$(document).ready(function() {
         $('#inputState').select2({
             theme: 'bootstrap-5',
-            placeholder: 'Select UoM',
+            placeholder: 'Select',
          });
     });
 
     document.addEventListener("DOMContentLoaded", function () {
     const itemNameInput = document.getElementById("itemname");
-    const categoryfor = document.getElementById("inputState");//category-error
-    const desc = document.getElementById("floatingTextarea");
+    // const desc = document.getElementById("floatingTextarea");
 
         itemNameInput.addEventListener("input", function () {
             let errorMsg = document.getElementById("itemname-error");
-            if (this.value.trim() !== "") {
-                errorMsg.remove(); // Remove error message
+            if (this.value !== "") {
+                if(errorMsg){
+                errorMsg.remove(); }  // Remove error message
             }
         });
-        categoryfor.addEventListener("change", function () {
-            let selectedValue = $(this).val();
-            console.log(selectedValue);
-            let errorMsg = document.getElementById("category-error");
-            if (selectedValue !== "Choose...") {
-                errorMsg.remove(); // Remove error message
-            }
+        $('#inputState').on("select2:select", function (e) {
+        let selectedValue = $(this).val(); // Get selected value
+        console.log(selectedValue);
+        let errorMsg = document.getElementById("category-error");
+        if (selectedValue !== "Choose..." && errorMsg) {
+            errorMsg.remove();
+        }
+        });
 
-        });
-        desc.addEventListener("input", function () {
-            let errorMsg = document.getElementById("desc-error");
-            if (this.value.trim() !== "") {
-                errorMsg.remove(); // Remove error message
-            }
-        });
+        // desc.addEventListener("input", function () {
+        //     let errorMsg = document.getElementById("desc-error");
+        //     if (this.value.trim() !== "" && errorMsg) {
+        //         errorMsg.remove(); // Remove error message
+        //     }
+        // });
+
     });
 
 </script>
