@@ -85,12 +85,13 @@
                                     <label for="inputTotalCost" class="form-label">Total cost(A+B+C)</label>
                                     <input type="text" class="form-control mb-2" id="inputTotalCost" name="inputTotalCost" readonly>
                                 </div>
+
+                            </div>
+                            <div class="col">
                                 <div class="col-12">
                                     <label for="inputMargin" class="form-label">Margin</label>
                                     <input type="text" class="form-control mb-2" id="inputMargin" name="inputMargin">
                                 </div>
-                            </div>
-                            <div class="col">
                                 <div class="col-12">
                                     <label for="inputMarginAmt" class="form-label">Margin Amount</label>
                                     <input type="text" class="form-control mb-2" id="inputMarginAmt" name="inputMarginAmt" readonly>
@@ -104,7 +105,7 @@
                                     <input type="text" class="form-control" id="inputDiscount" name="inputDiscount">
                                     <div id="DiscountAmt" class="mb-2" style="color:blue;"></div>
                                 </div>
-                                <div class="col-12">
+                                <div class="col-12" hidden>
                                     <label for="inputSuggRate" class="form-label">Suggested Rate</label>
                                     <input type="text" class="form-control mb-2" id="inputSuggRate" name="inputSuggRate" readonly>
                                 </div>
