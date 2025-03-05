@@ -37,16 +37,16 @@
                 <div id="columnsContainer">
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="1" checked> S.NO</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="2" checked> Product Name</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="3" checked> P.MRP</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="3" checked> S.MRP</label>
+                    <!-- <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="3" checked> P.MRP</label> -->
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="4" checked> RM Cost</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="5" checked> RM %</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="6" checked> Packing Cost</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="7" checked> Packing %</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="8" checked> Total</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="9" checked> %</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="10" checked> Overhead %</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="11" checked> Overhead</label>
+                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="10" checked> Overhead</label>
+                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="11" checked> Overhead %</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="12" checked> Cost</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="13" checked> Selling Rate</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="14" checked> Tax</label>

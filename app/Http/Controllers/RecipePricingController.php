@@ -127,7 +127,7 @@ ORDER BY
 
 
         ");
-        return view('RecipePricing', compact('reports'));
+        return view('recipePricing', compact('reports'));
     }
 
     /**
