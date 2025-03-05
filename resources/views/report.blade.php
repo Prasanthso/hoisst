@@ -167,15 +167,15 @@
                                     <td>{{ $report->Product_Name }}</td>
                                     <!-- <td>{{ $report->S_MRP }}</td> -->
                                     <td>{{ $report->S_MRP  }}</td>
-                                    <td>{{ $report->RM_Cost }}</td>
+                                    <td>{{ number_format($report->RM_Cost, 2) }}</td>
                                     <td>{{ number_format($rm_perc, 2) }}</td>
-                                    <td>{{ $report->PM_Cost }}</td>
+                                    <td>{{ number_format($report->PM_Cost, 2) }}</td>
                                     <td>{{ number_format($pm_perc, 2) }}</td>
                                     <td>{{ number_format($total, 2) }}</td>
                                     <td>{{ number_format($total_perc, 2) }}</td>
-                                    <td>{{ $report->OH_Cost + $report->MOH_Cost }}</td>
+                                    <td>{{ number_format($report->OH_Cost + $report->MOH_Cost, 2) }}</td>
                                     <td>{{ number_format($OH_PERC, 2) }}</td>
-                                    <td>{{ $cost }}</td>
+                                    <td>{{ number_format($cost, 2) }}</td>
                                     <td>{{ number_format($sellingRate, 2) }}</td>
                                     <td>18</td>
                                     <td>{{ number_format($beforeTax, 2) }}</td>

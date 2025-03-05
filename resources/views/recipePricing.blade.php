@@ -73,11 +73,11 @@
                                     <span class="mrp-text">{{ $report->S_MRP }}</span>
                                     <input type="text" class="form-control mrp-input d-none" value="{{ $report->S_MRP }}">
                                 </td>
-                                <td>{{ $report->RM_Cost }}</td>
-                                <td>{{ $report->PM_Cost }}</td>
+                                <td>{{ number_format($report->RM_Cost, 2) }}</td>
+                                <td>{{ number_format($report->PM_Cost, 2) }}</td>
                                 <td>{{ $total }}</td>
-                                <td>{{ $report->OH_Cost + $report->MOH_Cost }}</td>
-                                <td class="cost">{{ $cost }}</td>
+                                <td>{{ number_format($report->OH_Cost + $report->MOH_Cost, 2) }}</td>
+                                <td class="cost">{{ number_format($cost, 2) }}</td>
                                 <td class="selling-rate">{{ number_format($report->S_MRP * 0.75, 2) }}</td>
                                 <td>18</td>
                                 <td class="before-tax">{{ number_format($beforeTax, 2) }}</td>
