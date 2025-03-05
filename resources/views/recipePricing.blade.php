@@ -75,7 +75,7 @@
                                 </td>
                                 <td>{{ number_format($report->RM_Cost, 2) }}</td>
                                 <td>{{ number_format($report->PM_Cost, 2) }}</td>
-                                <td>{{ $total }}</td>
+                                <td>{{ number_format($total, 2) }}</td>
                                 <td>{{ number_format($report->OH_Cost + $report->MOH_Cost, 2) }}</td>
                                 <td class="cost">{{ number_format($cost, 2) }}</td>
                                 <td class="selling-rate">{{ number_format($report->S_MRP * 0.75, 2) }}</td>
