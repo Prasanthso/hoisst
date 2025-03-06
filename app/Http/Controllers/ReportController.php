@@ -20,6 +20,7 @@ class ReportController extends Controller
     pm.name AS Product_Name, 
     pm.price AS P_MRP,
     pm.tax AS tax,
+    pm.margin AS margin,
     oc.suggested_mrp AS S_MRP,
 
     -- Get Raw Material IDs

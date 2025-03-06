@@ -180,7 +180,12 @@
                                     <td>18</td>
                                     <td>{{ number_format($beforeTax, 2) }}</td>
                                     <td>{{ number_format($MARGINAMOUNT, 2) }}</td>
-                                    <td>{{ number_format($marginPerc, 2) }}</td>
+                                    <td style="background-color: 
+                                            {{ ($marginPerc < $report->margin) ? '#ffb3b3' : 
+                                                (($marginPerc > $report->margin) ? '#b3ffcc' : '#fff79a') 
+                                                }}">
+                                        {{ number_format($marginPerc, 2) }}
+                                    </td>
                                 </tr>
                                 @endforeach
 
@@ -364,7 +369,7 @@
                 const pmNames = row.getAttribute('data-pm');
                 const rmPercent = parseFloat(row.children[4].textContent);
                 const pmPercent = parseFloat(row.children[6].textContent);
-                const margin = parseFloat(row.children[7].textContent); // Convert to number
+                const margin = parseFloat(row.children[16].textContent); // Convert to number
 
                 let rmMatch = true;
                 if (rmValue.value) {
@@ -396,8 +401,8 @@
             // Sorting Logic for Margin
             if (marginSortOrder === "asc" || marginSortOrder === "desc") {
                 rowsArray.sort((a, b) => {
-                    const marginA = parseFloat(a.children[7].textContent);
-                    const marginB = parseFloat(b.children[7].textContent);
+                    const marginA = parseFloat(a.children[16].textContent);
+                    const marginB = parseFloat(b.children[16].textContent);
                     return marginSortOrder === "asc" ? marginA - marginB : marginB - marginA;
                 });
 
