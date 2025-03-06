@@ -95,7 +95,7 @@
                                     <input type="text" class="form-control" id="inputPurCost" name="purcCost" value="{{ $product->purcCost }}" disabled>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputMargin" class="form-label">Margin(%)</label>
+                                    <label for="inputMargin" class="form-label">Margin</label>
                                     <input type="text" class="form-control" id="inputMargin" name="margin" value="{{ $product->margin }}" disabled>
                                 </div>
 
@@ -104,7 +104,7 @@
                                     <input type="text" class="form-control" id="inputTax" name="tax" value="{{ $product->tax }}" disabled>
                                 </div>
                                 <div class="col-12 mb-2">
-                                    <label for="inputPrice" class="form-label">Suggested MRP</label>
+                                    <label for="inputPrice" class="form-label">Present MRP</label>
                                     <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $product->price }}" disabled>
                                 </div>
 
