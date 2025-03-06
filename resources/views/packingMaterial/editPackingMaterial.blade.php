@@ -49,11 +49,11 @@
                                 @method('PUT')
                                 <div class="col-12">
                                     <label for="inputName" class="form-label">Name</label>
-                                    <input type="text" class="form-control" id="inputName" name="name" value="{{ $packingMaterial->name}}" disabled>
+                                    <input type="text" class="form-control" id="inputName" name="name" value="{{ $packingMaterial->name }}" disabled>
                                 </div>
                                 <div class="col-12">
                                     <label for="hsnCode" class="form-label">HSN Code</label>
-                                    <input type="text" class="form-control" id="hsnCode" name="hsnCode" value="{{ $packingMaterial->hsnCode}}" disabled>
+                                    <input type="text" class="form-control" id="hsnCode" name="hsnCode" value="{{ $packingMaterial->hsnCode }}" disabled>
                                 </div>
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Unit</label>
@@ -67,7 +67,7 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="itemWeight" class="form-label">Net Weight</label>
-                                    <input type="text" class="form-control" id="itemWeight" name="itemWeight" value="{{ $packingMaterial->itemWeight}}" disabled>
+                                    <input type="text" class="form-control" id="itemWeight" name="itemWeight" value="{{ $packingMaterial->itemWeight }}" disabled>
                                 </div>
                                 <div class="col-md-12">
                                     <label for="categorySelect" class="form-label">Packing Material Category</label>
@@ -89,24 +89,24 @@
 
                                 <div class="col-12 mb-2">
                                     <label for="itemType" class="form-label">Item Type</label>
-                                    <input type="text" class="form-control" id="itemType" name="itemType" value="{{ $packingMaterial->itemType}}" disabled>
+                                    <input type="text" class="form-control" id="itemType" name="itemType" value="{{ $packingMaterial->itemType }}" disabled>
                                 </div>
 
                                 <div class="col-12 mb-2">
                                     <label for="inputPrice" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $packingMaterial->price}}" disabled>
+                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $packingMaterial->price }}" disabled>
                                 </div>
 
                                 <div class="col-12 mb-2">
                                     <label for="inputTax" class="form-label">Tax</label>
-                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ $packingMaterial->tax}}" disabled>
+                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ $packingMaterial->tax }}" disabled>
                                 </div>
 
                                 <div class="row">
                                     <label for="inputNanme4" class="form-label">Pricing update frequency</label>
                                     <div class="col-md-3">
                                         <select class="form-select mb-2" id="update_frequency" name="update_frequency" disabled>
-                                            <option selected>{{ $packingMaterial->update_frequency}}</option>
+                                            <option selected>{{ $packingMaterial->update_frequency }}</option>
                                             <option>Days</option>
                                             <option>Weeks</option>
                                             <option>Monthly</option>
@@ -114,12 +114,12 @@
                                         </select>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ $packingMaterial->price_update_frequency}}" disabled>
+                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ $packingMaterial->price_update_frequency }}" disabled>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="price_threshold" class="form-label">Price threshold in percentage</label>
-                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $packingMaterial->price_threshold}}" disabled>
+                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $packingMaterial->price_threshold }}" disabled>
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="saveButton" style="display: none;">

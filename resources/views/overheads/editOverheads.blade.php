@@ -43,16 +43,16 @@
                         <div class="card-body">
 
                             <!-- Vertical Form -->
-                            <form method="POST" action="{{ route('overheads.edit', $overheads->id) }}" class="row g-3 mt-2" id="rawMaterialForm">
+                            <form method="POST" action="{{ route('overheads.edit', $overheads->id) }}" class="row g-3 mt-2" id="overheadsForm">
                                 @csrf
                                 @method('PUT')
                                 <div class="col-12">
                                     <label for="inputName" class="form-label">Item Name</label>
-                                    <input type="text" class="form-control" id="inputName" name="name" value="{{ $overheads->name}}" disabled>
+                                    <input type="text" class="form-control" id="inputName" name="name" value="{{ $overheads->name }}" disabled>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputHSNcode" class="form-label">HSN Code</label>
-                                    <input type="text" class="form-control" id="inputHSNcode" name="hsncode" value="{{ $overheads->hsncode}}" disabled>
+                                    <input type="text" class="form-control" id="inputHSNcode" name="hsncode" value="{{ $overheads->hsncode }}" disabled>
                                 </div>
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Category For</label>
@@ -66,7 +66,7 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="inputItemWeight" class="form-label">Net Weight</label>
-                                    <input type="text" class="form-control" id="inputItemWeight" name="itemweight" value="{{ $overheads->itemweight}}" disabled>
+                                    <input type="text" class="form-control" id="inputItemWeight" name="itemweight" value="{{ $overheads->itemweight }}" disabled>
                                 </div>
                                 <div class="col-md-12">
                                     <label for="categorySelect" class="form-label">Overheads Category</label>
@@ -87,21 +87,21 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="inputItemType" class="form-label">Item Type</label>
-                                    <input type="text" class="form-control" id="inputItemType" name="itemtype" value="{{ $overheads->itemtype}}" disabled>
+                                    <input type="text" class="form-control" id="inputItemType" name="itemtype" value="{{ $overheads->itemtype }}" disabled>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputPrice" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $overheads->price}}" disabled>
+                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $overheads->price }}" disabled>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputTax" class="form-label">Tax</label>
-                                    <input type="text" class="form-control mb-2" id="inputTax" name="tax" value="{{ $overheads->tax}}" disabled>
+                                    <input type="text" class="form-control mb-2" id="inputTax" name="tax" value="{{ $overheads->tax }}" disabled>
                                 </div>
                                 <div class="row mb-4">
                                     <label for="update_frequency" class="form-label">Pricing update frequency</label>
                                     <div class="col-md-3">
                                         <select class="form-select mb-2" id="update_frequency" name="update_frequency" disabled>
-                                            <option selected>{{ $overheads->update_frequency}}</option>
+                                            <option selected>{{ $overheads->update_frequency }}</option>
                                             <option>Days</option>
                                             <option>Weeks</option>
                                             <option>Monthly</option>
@@ -109,12 +109,12 @@
                                         </select>
                                     </div>
                                      <div class="col-md-9">
-                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ $overheads->price_update_frequency}}" disabled>
+                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ $overheads->price_update_frequency }}" disabled>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="price_threshold" class="form-label">Price threshold</label>
-                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $overheads->price_threshold}}" disabled>
+                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $overheads->price_threshold }}" disabled>
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="saveButton" style="display: none;">
@@ -165,7 +165,7 @@
             $('#pageTitle').text('Edit Overheads');
 
             // Enable form fields
-            $('#rawMaterialForm input, #rawMaterialForm select').prop('disabled', false);
+            $('#overheadsForm input, #overheadsForm select').prop('disabled', false);
 
             // Show the Save button
             $('#saveButton').show();
@@ -192,7 +192,7 @@
     let uom = document.getElementById("inputState");
     let itemweight = document.getElementById("inputItemWeight");
     let categorySelect = document.getElementById("categorySelect");
-    let itemtype = document.getElementById("itemtype");
+    let itemtype = document.getElementById("inputItemType");
     let price = document.getElementById("inputPrice");
     let tax = document.getElementById("inputTax");
     let priceUpdateFreq = document.getElementById("price_update_frequency");
