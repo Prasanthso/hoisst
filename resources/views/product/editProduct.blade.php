@@ -87,15 +87,23 @@
                                 </div>
 
                                 <div class="col-12 mb-2">
-                                    <label for="itemType" class="form-label">Item Type</label>
-                                    <input type="text" class="form-control" id="itemType" name="itemType" value="{{ $product->itemType }}" disabled>
+                                    <label for="itemType_id" class="form-label">Item Type</label>
+                                    <select id="itemType_id" class="form-select" name="itemType_id" disabled>
+                                        @foreach($itemtype as $types)
+                                        <option value="{{ $types->id }}"
+                                            {{ $product->itemType_id == $types->id ? 'selected' : '' }}>
+                                            {{ $types->itemtypename }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                    {{-- <input type="text" class="form-control" id="itemType" name="itemType" value="{{ $product->itemType }}" disabled> --}}
                                 </div>
                                 <div class="col-12">
                                     <label for="inputPurCost" class="form-label">Purchase Cost</label>
                                     <input type="text" class="form-control" id="inputPurCost" name="purcCost" value="{{ $product->purcCost }}" disabled>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputMargin" class="form-label">Margin</label>
+                                    <label for="inputMargin" class="form-label">Margin(%)</label>
                                     <input type="text" class="form-control" id="inputMargin" name="margin" value="{{ $product->margin }}" disabled>
                                 </div>
 
@@ -203,7 +211,7 @@
     let uom = document.getElementById("inputState");
     let itemweight = document.getElementById("inputItemWeight");
     let categorySelect = document.getElementById("categorySelect");
-    let itemtype = document.getElementById("itemType");
+    let itemtype = document.getElementById("itemType_id");
     let purcCost = document.getElementById("inputPurCost");
     let mrp = document.getElementById("inputMargin");
     let price = document.getElementById("inputPrice");

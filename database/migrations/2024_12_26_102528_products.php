@@ -28,7 +28,7 @@ return new class extends Migration
             $table->integer('category_id8')->nullable();
             $table->integer('category_id9')->nullable();
             $table->integer('category_id10')->nullable();
-            $table->string('itemType');
+            $table->string('itemType_id');
             $table->string('purcCost');
             $table->string('margin');
             $table->string('price');

@@ -27,7 +27,7 @@ class Product extends Model
         'category_id8',
         'category_id9',
         'category_id10',
-        'itemType',
+        'itemType_id',
         'purcCost',
         'margin',
         'price', // for this MRP
@@ -38,4 +38,9 @@ class Product extends Model
         'price_update_frequency',
         'price_threshold'
     ];
+
+    // public function itemtypeId()
+    // {
+    //     return $this->belongsTo(ItemType::class, 'itemType_id', 'id');
+    // }
 }
