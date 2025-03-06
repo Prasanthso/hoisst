@@ -76,15 +76,23 @@
 
                                 <div class="col-12 mb-2">
                                     <label for="itemType" class="form-label">Item Type</label>
-                                    <input type="text" class="form-control" id="itemType" name="itemType" value="{{ old('itemType') }}">
+                                    <input type="text" class="form-control" placeholder="eg.Daily, Own, Trading" id="itemType" name="itemType" value="{{ old('itemType') }}">
                                 </div>
-                                <div class="col-12 mb-2">
-                                    <label for="inputPrice" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ old('price') }}">
+                                <div class="col-12">
+                                    <label for="inputPurCost" class="form-label">Purchase Cost</label>
+                                    <input type="text" class="form-control" id="inputPurCost" name="purcCost" value="{{ old('purcCost') }}">
                                 </div>
-                                <div class="col-12 mb-2">
-                                    <label for="inputTax" class="form-label">Tax</label>
+                                <div class="col-12">
+                                    <label for="inputMargin" class="form-label">Margin(%)</label>
+                                    <input type="text" class="form-control" id="inputMargin" name="margin" value="{{ old('margin') }}">
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputTax" class="form-label">Tax(%)</label>
                                     <input type="text" class="form-control" id="inputTax" name="tax" value="{{ old('tax') }}">
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <label for="inputPrice" class="form-label">Suggested MRP</label>
+                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ old('price') }}">
                                 </div>
                                 <div class="row">
                                     <label for="update_frequency" class="form-label mb-2">Pricing update frequency</label>
@@ -161,6 +169,8 @@
     let itemweight = document.getElementById("inputItemWeight");
     let categorySelect = document.getElementById("categorySelect");
     let itemtype = document.getElementById("itemType");
+    let purcCost = document.getElementById("inputPurCost");
+    let mrp = document.getElementById("inputMargin");
     let price = document.getElementById("inputPrice");
     let tax = document.getElementById("inputTax");
     let priceUpdateFreq = document.getElementById("price_update_frequency");
@@ -176,6 +186,8 @@
         if (itemweight.value.trim() === "") { showError(itemweight, "Net Weight is required."); isValid = false; }
         if (categorySelect.selectedOptions.length === 0) { showError(categorySelect, "Please select at least one category."); isValid = false; }
         if (itemtype.value.trim() === "") { showError(itemtype, "Item Type is required."); isValid = false; }
+        if (purcCost.value.trim() === "" || isNaN(purcCost.value)) { showError(purcCost, "Valid purcCost is required."); isValid = false; }
+        if (mrp.value.trim() === "" || isNaN(mrp.value)) { showError(mrp, "Valid MRP is required."); isValid = false; }
         if (price.value.trim() === "" || isNaN(price.value)) { showError(price, "Valid Price is required."); isValid = false; }
         if (tax.value.trim() === "" || isNaN(tax.value)) { showError(tax, "Valid Tax value is required."); isValid = false; }
         if (priceUpdateFreq.value.trim() === "" || isNaN(priceUpdateFreq.value)) { showError(priceUpdateFreq, "Valid Pricing Update Frequency is required."); isValid = false; }

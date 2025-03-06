@@ -28,10 +28,12 @@ class Product extends Model
         'category_id9',
         'category_id10',
         'itemType',
-        'price',
+        'purcCost',
+        'margin',
+        'price', // for this MRP
         'tax',
         'update_frequency',
-        'cost',
+        // 'cost',
         'recipe_crated_status',
         'price_update_frequency',
         'price_threshold'
