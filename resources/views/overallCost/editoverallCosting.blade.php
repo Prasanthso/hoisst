@@ -85,16 +85,17 @@
                                     <label for="inputOhAmt" class="form-label">Overhead Amount D</label>
                                     <input type="text" class="form-control" id="inputOhAmt" name="inputOhAmt" value="" disabled>
                                 </div>-->
-                                <div class="col-12">
+                                <div class="col-12 mb-2">
                                     <label for="inputTotalCost" class="form-label">Total cost</label>
                                     <input type="text" class="form-control mb-2" id="inputTotalCost" name="inputTotalCost" value="{{ number_format(($rmCost ?? 0) + ($pmCost ?? 0) + ($ohCost ?? 0), 2) }}" disabled readonly>
                                 </div>
-                                <div class="col-12">
-                                    <label for="inputMargin" class="form-label">Margin</label>
-                                    <input type="text" class="form-control mb-2" id="inputMargin" name="inputMargin" value="{{ $costing->margin}}" disabled>
-                                </div>
+
                                 </div>
                                 <div class="col">
+                                <div class="col-12">
+                                        <label for="inputMargin" class="form-label">Margin</label>
+                                        <input type="text" class="form-control mb-2" id="inputMargin" name="inputMargin" value="{{ $costing->margin}}" disabled>
+                                </div>
                                 <div class="col-12">
                                     <label for="inputMarginAmt" class="form-label">Margin Amount</label>
                                     <input type="text" class="form-control mb-2" id="inputMarginAmt" name="inputMarginAmt" value="{{ $costing->margin_amt }}" disabled readonly>

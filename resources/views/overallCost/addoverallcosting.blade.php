@@ -81,7 +81,7 @@
                                     <label for="inputOhAmt" class="form-label">Overhead Amount D</label>
                                     <input type="text" class="form-control" id="inputOhAmt" name="inputOhAmt">
                                 </div>-->
-                                <div class="col-12">
+                                <div class="col-12 mb-2">
                                     <label for="inputTotalCost" class="form-label">Total cost(A+B+C)</label>
                                     <input type="text" class="form-control mb-2" id="inputTotalCost" name="inputTotalCost" readonly>
                                 </div>
