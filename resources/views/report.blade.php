@@ -103,10 +103,10 @@
             id="marginFilter"
             style="width: 160px; background: white; border: 1px solid #ccc; border-radius: 5px;"
             onchange="filterMargin(this.value)">
-            <option value="" disabled selected>Margin</option>
-            <!-- <option value="low" style="background-color:rgb(245, 171, 177); color:rgb(183, 18, 34);">Low</option>
-            <option value="medium" style="background-color:rgb(228, 206, 133); color:rgb(186, 141, 6);">Medium</option>
-            <option value="high" style="background-color:rgb(119, 220, 143); color: #155724;">High</option> -->
+            <option value="" disabled selected>Margin %</option>
+            <option value="low" style="color:rgb(183, 18, 34);"><i class="bi bi-filter"></i>⬤ Low</option>
+            <!-- <option value="medium" style="color:rgb(186, 141, 6);"><i class="bi bi-filter"></i> Medium</option> -->
+            <option value="high" style="color: #155724;">⬤ High</option>
             <option value="asc">Sort Ascending</option>
             <option value="desc">Sort Descending</option>
         </select>
@@ -359,17 +359,18 @@
         const applyFilters = () => {
             const searchValue = searchInput.value.toLowerCase();
             const selectedCategory = searchCategory.value;
-            const marginSortOrder = marginFilter.value; // Get sorting order (asc/desc)
+            const marginFilterValue = marginFilter.value; // Get selected margin filter
 
             let rowsArray = Array.from(tableRows); // Convert NodeList to array for sorting
 
             rowsArray.forEach(row => {
                 const productName = row.children[1].textContent.toLowerCase();
-                const rmNames = row.getAttribute('data-rm'); // RM Names stored in data attribute
+                const rmNames = row.getAttribute('data-rm');
                 const pmNames = row.getAttribute('data-pm');
                 const rmPercent = parseFloat(row.children[4].textContent);
                 const pmPercent = parseFloat(row.children[6].textContent);
-                const margin = parseFloat(row.children[16].textContent); // Convert to number
+                const marginCell = row.children[16]; // Margin % cell
+                const marginColor = window.getComputedStyle(marginCell).backgroundColor; // Get background color
 
                 let rmMatch = true;
                 if (rmValue.value) {
@@ -392,18 +393,32 @@
                     searchMatch = pmNames && pmNames.includes(searchValue);
                 }
 
-                const marginMatch = marginFilter.value === "" || ["asc", "desc"].includes(marginFilter.value) || marginFilter.value === row.children[7].textContent;
+                // Map color codes to margin categories
+                let marginCategory = "";
+                if (marginColor === "rgb(255, 179, 179)") { // #ffb3b3 (low)
+                    marginCategory = "low";
+                } else if (marginColor === "rgb(255, 247, 154)") { // #fff79a (medium)
+                    marginCategory = "medium";
+                } else if (marginColor === "rgb(179, 255, 204)") { // #b3ffcc (high)
+                    marginCategory = "high";
+                }
 
-                // Show or hide row based on filters
+                // Apply margin category filtering
+                let marginMatch = true;
+                if (["low", "medium", "high"].includes(marginFilterValue)) {
+                    marginMatch = marginCategory === marginFilterValue;
+                }
+
+                // Show or hide row based on all applied filters
                 row.style.display = (searchMatch && rmMatch && pmMatch && marginMatch) ? '' : 'none';
             });
 
             // Sorting Logic for Margin
-            if (marginSortOrder === "asc" || marginSortOrder === "desc") {
+            if (marginFilterValue === "asc" || marginFilterValue === "desc") {
                 rowsArray.sort((a, b) => {
                     const marginA = parseFloat(a.children[16].textContent);
                     const marginB = parseFloat(b.children[16].textContent);
-                    return marginSortOrder === "asc" ? marginA - marginB : marginB - marginA;
+                    return marginFilterValue === "asc" ? marginA - marginB : marginB - marginA;
                 });
 
                 // Reorder rows in the table
@@ -415,6 +430,9 @@
             updateSerialNumbers();
         };
 
+        // Listen for margin filter changes
+        marginFilter.addEventListener('change', applyFilters);
+
 
         // Event Listeners for Filters
         searchInput.addEventListener('input', applyFilters);
@@ -423,7 +441,7 @@
         rmValue.addEventListener('input', applyFilters);
         pmRangeType.addEventListener('change', applyFilters);
         pmValue.addEventListener('input', applyFilters);
-        marginFilter.addEventListener('change', applyFilters);
+        // marginFilter.addEventListener('change', applyFilters);
 
         // Function to update serial numbers dynamically
         const updateSerialNumbers = () => {
