@@ -22,7 +22,7 @@
                             <form method="POST" action="{{ route('overallcosting.store') }}" class="row g-3 mt-2">
                                 @csrf
                                 <div class="col-md-12">
-                                    <label for="inputState" class="form-label">Choose Recipe</label>
+                                    <label for="recipeSelect" class="form-label">Choose Recipe</label>
                                     <div class="col-12">
                                         <select id="recipeSelect" name="productId" class="form-select select2" aria-labelledby="recipeSelectLabel">
                                         <option selected disabled>Choose...</option>
