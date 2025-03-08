@@ -102,7 +102,7 @@
                                     <input type="text" class="form-control" id="inputPurCost" name="purcCost" value="{{ $product->purcCost }}" disabled>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputMargin" class="form-label">Margin(%)</label>
+                                    <label for="inputMargin" class="form-label">Preferred Margin(%)</label>
                                     <input type="text" class="form-control" id="inputMargin" name="margin" value="{{ $product->margin }}" disabled>
                                 </div>
 

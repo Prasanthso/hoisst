@@ -42,6 +42,7 @@ class OverAllCostingController extends Controller
 
     public function getABCcost(Request $request)
     {
+
         // If a product is selected, fetch the pricing data
         $productId = $request->query('productId');  // Get productId from request
 
@@ -68,7 +69,6 @@ class OverAllCostingController extends Controller
             ->where('product_id', $productId)
             ->sum('price');
         }
-
 
         // Assuming you are joining these tables based on product_id
         $pricingData = DB::table('recipe_master')
@@ -129,6 +129,7 @@ class OverAllCostingController extends Controller
 
     public function store(Request $request)
     {
+
         // dd($request);
         $validatedData = $request->validate([
             'productId' => 'required|exists:recipe_master,product_id',
@@ -173,6 +174,7 @@ class OverAllCostingController extends Controller
                 'suggested_mrp' => (float) $request->inputSuggMrp,
                 'status' => 'active',
             ]);
+
         } catch (\Exception $e) {
             // Handle error by logging or displaying the message
             \Log::error('Error inserting OverallCosting data: ' . $e->getMessage());

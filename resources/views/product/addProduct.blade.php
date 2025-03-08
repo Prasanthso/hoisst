@@ -91,7 +91,7 @@
                                     <input type="text" class="form-control" id="inputPurCost" name="purcCost" value="{{ old('purcCost') }}">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputMargin" class="form-label">Margin(%)</label>
+                                    <label for="inputMargin" class="form-label"> Preferred Margin(%)</label>
                                     <input type="text" class="form-control" id="inputMargin" name="margin" value="{{ old('margin') }}">
                                 </div>
                                 <div class="col-12">
