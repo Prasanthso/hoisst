@@ -76,10 +76,10 @@
 
                                 <div class="col-12 mb-2">
                                     <label for="itemType" class="form-label">Item Type</label>
-                                    <select id="itemType" class="form-select" name="itemtype_ids[]">
+                                    <select id="itemType" class="form-select" name="itemType_id">
                                         @foreach($itemtype as $types)
                                         <option value="{{ $types->id }}"
-                                            {{ in_array($types->id, old('itemtype_ids', [])) ? 'selected' : '' }}>
+                                            {{ old('itemType_id') == $types->id ? 'selected' : '' }}>
                                             {{ $types->itemtypename }}
                                         </option>
                                         @endforeach

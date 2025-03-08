@@ -85,18 +85,17 @@
                                         @endforeach
                                     </select>
                                 </div>
-
                                 <div class="col-12 mb-2">
-                                    <label for="itemType_id" class="form-label">Item Type</label>
-                                    <select id="itemType_id" class="form-select" name="itemType_id" disabled>
+                                    <label for="itemType" class="form-label">Item Type</label>
+                                    <select id="itemType" class="form-select" name="itemType_id" disabled>
                                         @foreach($itemtype as $types)
                                         <option value="{{ $types->id }}"
-                                            {{ $product->itemType_id == $types->id ? 'selected' : '' }}>
+                                            {{ (old('itemType_id', $product->itemType_id) == $types->id) ? 'selected' : '' }}>
                                             {{ $types->itemtypename }}
                                         </option>
-                                        @endforeach
+                                    @endforeach
                                     </select>
-                                    {{-- <input type="text" class="form-control" id="itemType" name="itemType" value="{{ $product->itemType }}" disabled> --}}
+                                    {{-- <input type="text" class="form-control" placeholder="eg.Daily, Own, Trading" id="itemType" name="itemType" value="{{ old('itemType') }}"> --}}
                                 </div>
                                 <div class="col-12">
                                     <label for="inputPurCost" class="form-label">Purchase Cost</label>

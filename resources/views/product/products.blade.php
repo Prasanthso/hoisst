@@ -119,10 +119,13 @@
                              @endforeach
                          </tbody>
                      </table>
+
                      <div class="d-flex justify-content-between align-items-center">
                          <div>
                              <!-- Content like "Showing 1 to 10 of 50 entries" -->
                              Showing {{ $product->firstItem() }} to {{ $product->lastItem() }} of {{ $product->total() }} entries
+                             <input type="hidden" id="currentPage" value="{{ $product->currentPage() }}">
+                             <input type="hidden" id="perPage" value="{{ $product->perPage() }}">
                          </div>
                          <div>
                              <!-- Pagination Links -->
@@ -540,6 +543,7 @@
                  });
          };
 
+
          // Function to handle row deletion
          const deleteRows = () => {
              const selectedRows = Array.from(getRowCheckboxes()).filter(checkbox => checkbox.checked);
@@ -592,6 +596,7 @@
                                     });
                                     updateSerialNumbers();
                                     alert("Selected rows deleted successfully!");
+                                    window.location.reload();
                                 }
                             })
                             .catch(error => {
@@ -611,6 +616,8 @@
                      alert("An error occurred. Please try again.");
                  });
          };
+
+         deleteTableBtn.addEventListener("click", deleteRows);
 
          // Attach click event listener to each price column
          table.querySelectorAll(".price-text").forEach((priceElement) => {
@@ -725,8 +732,11 @@
           }
              */
 
+
          function updateSerialNumbers() {
              // Get all visible rows
+             let currentPage = parseInt(document.querySelector("#currentPage").value) || 1; // Get current page number
+             let perPage = parseInt(document.querySelector("#perPage").value) || 10;
              const visibleRows = Array.from(document.querySelectorAll("#productsTable tr"))
                  .filter(row => row.style.display !== 'none');
 
@@ -734,7 +744,7 @@
              visibleRows.forEach((row, index) => {
                  const snoCell = row.querySelector("td:nth-child(2)"); // Adjust the column index for S.NO
                  if (snoCell) {
-                     snoCell.textContent = `${index + 1}.`; // Update the serial number
+                     snoCell.textContent = ((currentPage - 1) * perPage + index + 1) + ".";  // `${index + 1}.`; // Update the serial number
                  }
              });
          }

@@ -188,7 +188,7 @@ class OverheadController extends Controller
                 'price_update_frequency' => $request->price_update_frequency,
                 'price_threshold' => $request->price_threshold,
                 'hsncode' => $request->hsncode,
-                // 'itemweight' => $request->itemweight,
+                'itemweight' => $request->itemweight,
                 'itemtype' => $request->itemtype,
                 'tax' => $request->tax,
             ]);
