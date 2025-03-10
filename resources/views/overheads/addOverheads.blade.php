@@ -39,10 +39,10 @@
                                     <input type="text" class="form-control" id="inputName" name="name" value="{{ old('name') }}">
                                 </div>
 
-                                <div class="col-12">
+                                {{-- <div class="col-12">
                                     <label for="inputHSNcode" class="form-label">HSN Code</label>
                                     <input type="text" class="form-control" id="inputHSNcode" name="hsncode" value="{{ old('hsncode') }}">
-                                </div>
+                                </div> --}}
 
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Category For</label>
@@ -82,10 +82,10 @@
                                     <input type="text" class="form-control" id="inputPrice" name="price" value="{{ old('price') }}">
                                 </div>
 
-                                <div class="col-12">
+                                {{-- <div class="col-12">
                                     <label for="inputTax" class="form-label">Tax</label>
                                     <input type="text" class="form-control mb-2" id="inputTax" name="tax" value="{{ old('tax') }}">
-                                </div>
+                                </div> --}}
 
                                 <div class="row mb-4">
                                     <label for="update_frequency" class="form-label">Pricing update frequency</label>
@@ -158,13 +158,13 @@
     document.querySelectorAll(".error-text").forEach(el => el.innerHTML = "");
     // Get form fields
     let name = document.getElementById("inputName");
-    let hsncode = document.getElementById("inputHSNcode");
+    // let hsncode = document.getElementById("inputHSNcode");
     let uom = document.getElementById("inputState");
     let itemweight = document.getElementById("inputItemWeight");
     let categorySelect = document.getElementById("categorySelect");
     let itemtype = document.getElementById("itemtype");
     let price = document.getElementById("inputPrice");
-    let tax = document.getElementById("inputTax");
+    // let tax = document.getElementById("inputTax");
     let priceUpdateFreq = document.getElementById("price_update_frequency");
     let priceThreshold = document.getElementById("price_threshold");
 
@@ -173,13 +173,13 @@
 
    // Validation checks
    if (name.value.trim() === "") { showError(name, "Name is required."); isValid = false; }
-        if (hsncode.value.trim() === "") { showError(hsncode, "HSN Code is required."); isValid = false; }
+        // if (hsncode.value.trim() === "") { showError(hsncode, "HSN Code is required."); isValid = false; }
         if (uom.value === "UoM") { showError(uom, "Please select a valid Unit of Measure."); isValid = false; }
         if (itemweight.value.trim() === "") { showError(itemweight, "Net Weight is required."); isValid = false; }
         if (categorySelect.selectedOptions.length === 0) { showError(categorySelect, "Please select at least one category."); isValid = false; }
         if (itemtype.value.trim() === "") { showError(itemtype, "Item Type is required."); isValid = false; }
         if (price.value.trim() === "" || isNaN(price.value)) { showError(price, "Valid Price is required."); isValid = false; }
-        if (tax.value.trim() === "" || isNaN(tax.value)) { showError(tax, "Valid Tax value is required."); isValid = false; }
+        // if (tax.value.trim() === "" || isNaN(tax.value)) { showError(tax, "Valid Tax value is required."); isValid = false; }
         if (priceUpdateFreq.value.trim() === "" || isNaN(priceUpdateFreq.value)) { showError(priceUpdateFreq, "Valid Pricing Update Frequency is required."); isValid = false; }
         if (priceThreshold.value.trim() === "" || isNaN(priceThreshold.value)) { showError(priceThreshold, "Valid Price Threshold is required."); isValid = false; }
 
