@@ -84,6 +84,7 @@
                                 </div>-->
 
                                 <div class="col-12 mb-2">
+                                    <input type="hidden" class="form-control mb-2" name="productType" id="productType" value="">
                                     <label for="inputTotalCost" class="form-label">Total cost(A+B+C)</label>
                                     <input type="text" class="form-control mb-2" id="inputTotalCost" name="inputTotalCost" readonly>
                                 </div>
@@ -216,6 +217,7 @@
                 Discount.value = perdiscount.toFixed(2);
                 updateCalculations(data);
                 toVisiable(data);
+
                 // discountAmt.style.display = 'block';
 
                 // if (selectedText) {
@@ -269,7 +271,9 @@
     RmPmCost.value = (rmCost + pmCost).toFixed(2);
     if(data.itemtype == 'Trading')
     {
-        console.log("Trading item price :",parseFloat(data.tradingCost));
+        console.log("Trading item price :", parseFloat(data.tradingCost));
+        console.log("item type" , data.itemtype);
+        document.getElementById('productType').value = 'Trading';
         TotalCost.value = parseFloat(data.tradingCost).toFixed(2) || 0;
     }
     else{
@@ -312,20 +316,24 @@
             document.getElementById("lblinputPmcost").style.display = "none";
             document.getElementById("lblinputRmPmcost").style.display = "none";
             document.getElementById("lblinputOverhead").style.display = "none";
-            RmCostA.style.display = "none";
-            PmCostB.style.display = "none";
-            RmPmCost.style.display = "none";
-            OhCostC.style.display  = "none";
+            RmCostA.style.visibility = "hidden";
+            PmCostB.style.visibility = "hidden";
+            RmPmCost.style.visibility = "hidden";
+            OhCostC.style.visibility  = "hidden";
+            RmCostA.value = 0;
+            PmCostB.value = 0;
+            RmPmCost.value = 0;
+            OhCostC.value = 0;
         }
         else{
             document.getElementById("lblinputRmcost").style.display = "block";
             document.getElementById("lblinputPmcost").style.display = "block";
             document.getElementById("lblinputRmPmcost").style.display = "block";
             document.getElementById("lblinputOverhead").style.display = "block";
-            RmCostA.style.display = "block";
-            PmCostB.style.display = "block";
-            RmPmCost.style.display = "block";
-            OhCostC.style.display  = "block";
+            RmCostA.style.visibility = "visible";
+            PmCostB.style.visibility = "visible";
+            RmPmCost.style.visibility = "visible";
+            OhCostC.style.visibility  = "visible";
         }
     }
 

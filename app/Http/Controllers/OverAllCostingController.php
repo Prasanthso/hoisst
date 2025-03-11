@@ -168,19 +168,18 @@ class OverAllCostingController extends Controller
 
     public function store(Request $request)
     {
-
         // dd($request);
         $request->validate([
-            'productId' => 'required|exists:recipe_master,product_id',
-            'inputRmcost' => 'required|numeric',
-            'inputPmcost' => 'required|numeric',
-            'inputRmPmcost' => 'required|numeric',
-            'inputOverhead' => 'required|numeric',
-            // 'inputRmSgmrp' => 'required|numeric',
-            // 'inputPmSgmrp' => 'required|numeric',
-            // 'inputSgMrp' => 'required|numeric',
-            // 'inputSgMargin' => 'required|numeric',
-            // 'inputOhAmt' => 'required|numeric',
+            'productId' => 'required',
+            // 'inputRmcost' => 'required|numeric',
+            // 'inputPmcost' => 'required|numeric',
+            // 'inputRmPmcost' => 'required|numeric',
+            // 'inputOverhead' => 'required|numeric',
+                // 'inputRmSgmrp' => 'required|numeric',
+                // 'inputPmSgmrp' => 'required|numeric',
+                // 'inputSgMrp' => 'required|numeric',
+                // 'inputSgMargin' => 'required|numeric',
+                // 'inputOhAmt' => 'required|numeric',
             'inputTax' => 'required|numeric',
             'inputMargin' => 'required|numeric',
             'inputMarginAmt' => 'required|numeric',
@@ -190,13 +189,15 @@ class OverAllCostingController extends Controller
             'inputSuggRatebf' => 'required|numeric',
             'inputSuggMrp' => 'required|numeric',
         ]);
-
+        // $isTrading = $request->input('productType') === 'Trading';
+        // dd($request->inputPmcost,$request->inputRmPmcost,$request->inputOverhead);
         try {
+
             OverallCosting::create([
                 'productId' => $request->productId,
                 'rm_cost_unit' => (float) $request->inputRmcost,
                 'pm_cost_unit' => (float) $request->inputPmcost,
-                'rm_pm_cost' => (float) $request->inputRmPmcost,
+                'rm_pm_cost' =>  (float) $request->inputRmPmcost,
                 'overhead' => (float) $request->inputOverhead,
                 // 'rm_sg_mrp' => (float) $request->inputRmSgmrp,
                 // 'pm_sg_mrp' => (float) $request->inputPmSgmrp,
@@ -215,8 +216,7 @@ class OverAllCostingController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            // Handle error by logging or displaying the message
-            \Log::error('Error inserting OverallCosting data: ' . $e->getMessage());
+           \Log::error('Error inserting OverallCosting data: ' . $e->getMessage());
             return back()->with('error', 'Error saving data: ' . $e->getMessage());
         }
         // Redirect to another page with a success message
