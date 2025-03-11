@@ -192,7 +192,7 @@ class OverAllCostingController extends Controller
         // $isTrading = $request->input('productType') === 'Trading';
         // dd($request->inputPmcost,$request->inputRmPmcost,$request->inputOverhead);
         try {
-
+            // dd($request->all());
             OverallCosting::create([
                 'productId' => $request->productId,
                 'rm_cost_unit' => (float) $request->inputRmcost,
