@@ -316,24 +316,24 @@
             document.getElementById("lblinputPmcost").style.display = "none";
             document.getElementById("lblinputRmPmcost").style.display = "none";
             document.getElementById("lblinputOverhead").style.display = "none";
-            RmCostA.style.visibility = "hidden";
-            PmCostB.style.visibility = "hidden";
-            RmPmCost.style.visibility = "hidden";
-            OhCostC.style.visibility  = "hidden";
-            RmCostA.value = 0;
-            PmCostB.value = 0;
-            RmPmCost.value = 0;
-            OhCostC.value = 0;
+            RmCostA.style.display = "none";
+            PmCostB.style.display = "none";
+            RmPmCost.style.display = "none";
+            OhCostC.style.display  = "none";
+            // RmCostA.value = 0;
+            // PmCostB.value = 0;
+            // RmPmCost.value = 0;
+            // OhCostC.value = 0;
         }
         else{
             document.getElementById("lblinputRmcost").style.display = "block";
             document.getElementById("lblinputPmcost").style.display = "block";
             document.getElementById("lblinputRmPmcost").style.display = "block";
             document.getElementById("lblinputOverhead").style.display = "block";
-            RmCostA.style.visibility = "visible";
-            PmCostB.style.visibility = "visible";
-            RmPmCost.style.visibility = "visible";
-            OhCostC.style.visibility  = "visible";
+            RmCostA.style.display = "block";
+            PmCostB.style.display = "block";
+            RmPmCost.style.display = "block";
+            OhCostC.style.display  = "block";
         }
     }
 
