@@ -45,7 +45,7 @@
                                 </div> --}}
 
                                 <div class="col-md-12">
-                                    <label for="inputState" class="form-label">Choose Category For</label>
+                                    <label for="inputState" class="form-label">Choose Unit </label>
                                     <select id="inputState" class="form-select select2" name="uom">
                                         <option value="UoM" {{ old('uom') == 'UoM' ? 'selected' : '' }}>UoM</option>
                                         <option value="Ltr" {{ old('uom') == 'Ltr' ? 'selected' : '' }}>Ltr</option>

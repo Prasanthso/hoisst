@@ -55,7 +55,7 @@
                                     <input type="text" class="form-control" id="inputHSNcode" name="hsncode" value="{{ $overheads->hsncode }}" disabled>
                                 </div> --}}
                                 <div class="col-md-12">
-                                    <label for="inputState" class="form-label">Choose Category For</label>
+                                    <label for="inputState" class="form-label">Choose Unit </label>
                                     <select id="inputState" class="form-select select2" name="uom" disabled>
                                         <option selected>{{ $overheads->uom}}</option>
                                         <option>Ltr</option>

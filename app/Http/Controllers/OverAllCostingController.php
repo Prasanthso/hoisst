@@ -26,16 +26,34 @@ class OverAllCostingController extends Controller
 
     public function create()
     {
-        $recipeproducts = DB::table('recipe_master')
-            ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id')
-            ->leftJoin('overall_costing', function ($join) {
-                $join->on('recipe_master.product_id', '=', 'overall_costing.productId')
-                     ->where('overall_costing.status', 'active'); // Ensures active costing is filtered out
+        // $recipeproducts = DB::table('recipe_master')
+        //     ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id')
+        //     ->leftJoin('overall_costing', function ($join) {
+        //         $join->on('recipe_master.product_id', '=', 'overall_costing.productId')
+        //              ->where('overall_costing.status', 'active'); // Ensures active costing is filtered out
+        //     })
+        //     ->where('recipe_master.status', 'active')
+        //     ->whereNull('overall_costing.productId') // This now ensures there's no active costing
+        //     ->select('recipe_master.product_id as id', 'product_master.name as name')
+        //     ->get();
+
+        $recipeproducts = DB::table('product_master as pd')
+        ->leftJoin('item_type as it', 'pd.itemType_Id', '=', 'it.id')
+        ->leftJoin('recipe_master as rp', 'pd.id', '=', 'rp.product_id')
+        ->leftJoin('overall_costing as ovc', function ($join) {
+            $join->on('pd.id', '=', 'ovc.productId')
+                 ->where('ovc.status', 'active'); // Exclude active costing
+        })
+        ->where(function ($query) {
+            $query->where(function ($q) {
+                $q->where('it.itemtypename', 'Trading')
+                  ->where('pd.status', 'active'); // Rule 1: Active Trading products
             })
-            ->where('recipe_master.status', 'active')
-            ->whereNull('overall_costing.productId') // This now ensures there's no active costing
-            ->select('recipe_master.product_id as id', 'product_master.name as name')
-            ->get();
+            ->orWhere('rp.status', 'active'); // Rule 2: Recipe exists & active
+        })
+        ->whereNull('ovc.productId') // Rule 3: Not in active overall_costing
+        ->select('pd.id as id', 'pd.name as name')
+        ->get();
 
         return view('overallCost.addOverallCosting', compact('recipeproducts'));
     }
@@ -49,26 +67,43 @@ class OverAllCostingController extends Controller
         if (!$productId) {
             return response()->json(['error' => 'Product ID is required'], 400);
         }
+        $product = DB::table('product_master')
+            ->join('item_type', 'product_master.itemType_Id', '=', 'item_type.id') // Join product with itemtype
+            ->where('product_master.id', $productId) // Filter by productId
+            ->where('item_type.itemtypename', 'Trading') // Check if item type is 'Trading'
+            ->select('product_master.*') // Select product details
+            ->first();
 
-        $totalRmCost = DB::table('rm_for_recipe')
-        ->where('product_id', $productId)
+           if($product)
+           {
+            $totalRmCost = 0;
+            $totalPmCost = 0;
+            $totalOhCost = 0;
+            $rpoutput = 1;
+            $tradingCost = $product->price ?? 0;  // Ensure price is set, default to 0 if null
+            $product_tax = $product->tax ?? 0;
+            $itemtype = 'Trading';
+           }
+           else{
+            $totalRmCost = DB::table('rm_for_recipe')
+            ->where('product_id', $productId)
+                ->sum('amount');
+
+            $totalPmCost = DB::table('pm_for_recipe')
+            ->where('product_id', $productId)
+                ->sum('amount');
+
+            $totalOhCost = DB::table('oh_for_recipe')
+            ->where('product_id', $productId)
             ->sum('amount');
-
-        $totalPmCost = DB::table('pm_for_recipe')
-        ->where('product_id', $productId)
-            ->sum('amount');
-
-        $totalOhCost = DB::table('oh_for_recipe')
-        ->where('product_id', $productId)
-        ->sum('amount');
 
         // $totalMohCost = 0;
 
-        if (empty($totalOhCost)) { // If NULL or 0
-            $totalOhCost = DB::table('moh_for_recipe')
-            ->where('product_id', $productId)
-            ->sum('price');
-        }
+            if (empty($totalOhCost)) { // If NULL or 0
+                $totalOhCost = DB::table('moh_for_recipe')
+                ->where('product_id', $productId)
+                ->sum('price');
+            }
 
         // Assuming you are joining these tables based on product_id
         $pricingData = DB::table('recipe_master')
@@ -99,22 +134,24 @@ class OverAllCostingController extends Controller
             )
             ->get();
 
-        // Fetch names for IDs separately
-        $pricingData->transform(function ($item) {
-            $item->rm_name = DB::table('raw_materials')->where('id', $item->rm_id)->value('name');
-            $item->pm_name = DB::table('packing_materials')->where('id', $item->pm_id)->value('name');
-            $item->oh_name = DB::table('overheads')->where('id', $item->oh_id)->value('name');
-            return $item;
-        });
+            // Fetch names for IDs separately
+            $pricingData->transform(function ($item) {
+                $item->rm_name = DB::table('raw_materials')->where('id', $item->rm_id)->value('name');
+                $item->pm_name = DB::table('packing_materials')->where('id', $item->pm_id)->value('name');
+                $item->oh_name = DB::table('overheads')->where('id', $item->oh_id)->value('name');
+                return $item;
+            });
 
         // $totalRmCost = $pricingData->rm_amount;
-        // $totalPmCost = $pricingData->pm_amount;
-        // $totalOhCost = $pricingData->oh_amount;
-        $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
+            // $totalPmCost = $pricingData->pm_amount;
+            // $totalOhCost = $pricingData->oh_amount;
+            $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
 
-        $rpoutput = $pricingData->isNotEmpty() ? $pricingData->first()->rpoutput : null;
-        $product_tax = $pricingData->isNotEmpty() ? $pricingData->first()->product_tax : null;
-
+            $rpoutput = $pricingData->isNotEmpty() ? $pricingData->first()->rpoutput : null;
+            $product_tax = $pricingData->isNotEmpty() ? $pricingData->first()->product_tax : null;
+            $itemtype = 'Own';
+            $tradingCost = 0;
+        }
         // Pass the data to the view
         // return view('overallCost.addoverallcosting', compact('totalOhCost','totalPmCost','totalRmCost'));
 
@@ -123,7 +160,9 @@ class OverAllCostingController extends Controller
             'totalPmCost' => $totalPmCost,
             'totalOhCost' => $totalOhCost,
             'rpoutput' => $rpoutput,
+            'tradingCost' => $tradingCost,
             'product_tax' => $product_tax,
+            'itemtype' => $itemtype,
         ]);
     }
 
