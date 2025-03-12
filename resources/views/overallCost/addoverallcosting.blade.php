@@ -22,7 +22,7 @@
                             <form method="POST" action="{{ route('overallcosting.store') }}" class="row g-3 mt-2">
                                 @csrf
                                 <div class="col-md-12">
-                                    <label for="inputState" class="form-label">Choose Recipe</label>
+                                    <label for="recipeSelect" class="form-label">Choose Recipe</label>
                                     <div class="col-12">
                                         <select id="recipeSelect" name="productId" class="form-select select2" aria-labelledby="recipeSelectLabel">
                                         <option selected disabled>Choose...</option>
@@ -43,19 +43,19 @@
                                 <div class="col-12">
                                     <input type="text" class="form-control" id="inputRpoutput" name="inputRpoutput" hidden>
 
-                                    <label for="inputRmcost" class="form-label">RM Cost/Unit(A)</label>
+                                    <label for="inputRmcost" id="lblinputRmcost" class="form-label">RM Cost/Unit(A)</label>
                                     <input type="text" class="form-control mb-2" id="inputRmcost" name="inputRmcost" readonly>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputPmcost" class="form-label">PM Cost/Unit(B)</label>
+                                    <label for="inputPmcost" id="lblinputPmcost" class="form-label">PM Cost/Unit(B)</label>
                                     <input type="text" class="form-control mb-2" id="inputPmcost" name="inputPmcost" readonly>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputRmPmcost" class="form-label">RM & PM Cost(A+B)</label>
+                                    <label for="inputRmPmcost" id="lblinputRmPmcost" class="form-label">RM & PM Cost(A+B)</label>
                                     <input type="text" class="form-control mb-2" id="inputRmPmcost" name="inputRmPmcost" readonly>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputOverhead" class="form-label">Overhead(C)</label>
+                                    <label for="inputOverhead" id="lblinputOverhead" class="form-label">Overhead(C)</label>
                                     <input type="text" class="form-control mb-2" id="inputOverhead" name="inputOverhead" readonly>
                                 </div>
 
@@ -77,11 +77,14 @@
                                     <input type="text" class="form-control" id="inputSgMargin" name="inputSgMargin">
                                 </div>
                             </div>-->
+
                                <!-- <div class="col-12">
                                     <label for="inputOhAmt" class="form-label">Overhead Amount D</label>
                                     <input type="text" class="form-control" id="inputOhAmt" name="inputOhAmt">
                                 </div>-->
+
                                 <div class="col-12 mb-2">
+                                    <input type="hidden" class="form-control mb-2" name="productType" id="productType" value="">
                                     <label for="inputTotalCost" class="form-label">Total cost(A+B+C)</label>
                                     <input type="text" class="form-control mb-2" id="inputTotalCost" name="inputTotalCost" readonly>
                                 </div>
@@ -213,6 +216,7 @@
                 permarginInput.value = permargin;
                 Discount.value = perdiscount.toFixed(2);
                 updateCalculations(data);
+                toVisiable(data);
 
                 // discountAmt.style.display = 'block';
 
@@ -265,7 +269,16 @@
 
     // Calculate Costs
     RmPmCost.value = (rmCost + pmCost).toFixed(2);
-    TotalCost.value = (rmCost + pmCost + ohCost).toFixed(2);
+    if(data.itemtype == 'Trading')
+    {
+        console.log("Trading item price :", parseFloat(data.tradingCost));
+        console.log("item type" , data.itemtype);
+        document.getElementById('productType').value = 'Trading';
+        TotalCost.value = parseFloat(data.tradingCost).toFixed(2) || 0;
+    }
+    else{
+        TotalCost.value = (rmCost + pmCost + ohCost).toFixed(2);
+    }
 
     // Recalculate margin
     let totalCostNum = parseFloat(TotalCost.value);
@@ -293,6 +306,36 @@
     suggestedMrp.value = recipeOut > 0 ? netTotal : 'N/A';
 }
 
+    function toVisiable(data)
+    {
+        if (!data) return;
+
+        if(data.itemtype == 'Trading')
+        {
+            document.getElementById("lblinputRmcost").style.display = "none";
+            document.getElementById("lblinputPmcost").style.display = "none";
+            document.getElementById("lblinputRmPmcost").style.display = "none";
+            document.getElementById("lblinputOverhead").style.display = "none";
+            RmCostA.style.display = "none";
+            PmCostB.style.display = "none";
+            RmPmCost.style.display = "none";
+            OhCostC.style.display  = "none";
+            // RmCostA.value = 0;
+            // PmCostB.value = 0;
+            // RmPmCost.value = 0;
+            // OhCostC.value = 0;
+        }
+        else{
+            document.getElementById("lblinputRmcost").style.display = "block";
+            document.getElementById("lblinputPmcost").style.display = "block";
+            document.getElementById("lblinputRmPmcost").style.display = "block";
+            document.getElementById("lblinputOverhead").style.display = "block";
+            RmCostA.style.display = "block";
+            PmCostB.style.display = "block";
+            RmPmCost.style.display = "block";
+            OhCostC.style.display  = "block";
+        }
+    }
 
     // **Call updateCalculations when tax input changes**
     pertaxInput.addEventListener('change', () => {

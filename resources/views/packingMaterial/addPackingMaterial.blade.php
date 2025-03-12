@@ -38,7 +38,7 @@
                             <form method="POST" action="{{ route('packingmaterials.store') }}" class="row g-3 mt-2">
                                 @csrf
                                 <div class="col-12">
-                                    <label for="inputName" class="form-label">Item Name</label>
+                                    <label for="inputName" class="form-label">Name</label>
                                     <input type="text" class="form-control" id="inputName" name="name" value="{{ old('name') }}">
                                 </div>
                                 <!-- <div class="col-12">

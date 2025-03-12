@@ -64,7 +64,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <label for="categorySelect" class="form-label">Product Category</label>
-                                    <select id="categorySelect" class="form-select select2" name="category_ids[]" multiple>
+                                    <select id="categorySelect" class="form-select" name="category_ids[]" multiple>
                                         @foreach($product as $categories)
                                         <option value="{{ $categories->id }}"
                                             {{ in_array($categories->id, old('category_ids', [])) ? 'selected' : '' }}>
@@ -76,14 +76,22 @@
 
                                 <div class="col-12 mb-2">
                                     <label for="itemType" class="form-label">Item Type</label>
-                                    <input type="text" class="form-control" placeholder="eg.Daily, Own, Trading" id="itemType" name="itemType" value="{{ old('itemType') }}">
+                                    <select id="itemType" class="form-select" name="itemType_id">
+                                        @foreach($itemtype as $types)
+                                        <option value="{{ $types->id }}"
+                                            {{ old('itemType_id') == $types->id ? 'selected' : '' }}>
+                                            {{ $types->itemtypename }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                    {{-- <input type="text" class="form-control" placeholder="eg.Daily, Own, Trading" id="itemType" name="itemType" value="{{ old('itemType') }}"> --}}
                                 </div>
                                 <div class="col-12">
                                     <label for="inputPurCost" class="form-label">Purchase Cost</label>
                                     <input type="text" class="form-control" id="inputPurCost" name="purcCost" value="{{ old('purcCost') }}">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputMargin" class="form-label">Margin(%)</label>
+                                    <label for="inputMargin" class="form-label"> Preferred Margin(%)</label>
                                     <input type="text" class="form-control" id="inputMargin" name="margin" value="{{ old('margin') }}">
                                 </div>
                                 <div class="col-12">
@@ -91,7 +99,7 @@
                                     <input type="text" class="form-control" id="inputTax" name="tax" value="{{ old('tax') }}">
                                 </div>
                                 <div class="col-12 mb-2">
-                                    <label for="inputPrice" class="form-label">Suggested MRP</label>
+                                    <label for="inputPrice" class="form-label">Present MRP</label>
                                     <input type="text" class="form-control" id="inputPrice" name="price" value="{{ old('price') }}">
                                 </div>
                                 <div class="row">
@@ -155,6 +163,10 @@
             theme: 'bootstrap-5',
             placeholder: 'Select UoM',
         });
+        $('#itemType').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select itemtype',
+        });
     });
     document.addEventListener("DOMContentLoaded", function() {
        const btnsave = document.getElementById('btnsubmit');
@@ -185,7 +197,7 @@
         if (uom.value === "UoM") { showError(uom, "Please select a valid Unit of Measure."); isValid = false; }
         if (itemweight.value.trim() === "") { showError(itemweight, "Net Weight is required."); isValid = false; }
         if (categorySelect.selectedOptions.length === 0) { showError(categorySelect, "Please select at least one category."); isValid = false; }
-        if (itemtype.value.trim() === "") { showError(itemtype, "Item Type is required."); isValid = false; }
+        if (itemtype.selectedOptions.length === 0) { showError(itemtype, "Item Type is required."); isValid = false; }
         if (purcCost.value.trim() === "" || isNaN(purcCost.value)) { showError(purcCost, "Valid purcCost is required."); isValid = false; }
         if (mrp.value.trim() === "" || isNaN(mrp.value)) { showError(mrp, "Valid MRP is required."); isValid = false; }
         if (price.value.trim() === "" || isNaN(price.value)) { showError(price, "Valid Price is required."); isValid = false; }
@@ -203,7 +215,7 @@
     });
 
     // Special handling for select2 dropdowns
-    $('#inputState, #categorySelect').on("select2:select", function () {
+    $('#inputState, #categorySelect','#itemType').on("select2:select", function () {
         clearError(this); // Pass the select element to clearError function
     });
 });

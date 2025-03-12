@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('ohcode', 64)->unique();
             $table->string('uom');
-            $table->string('hsncode');
+            // $table->string('hsncode');
             $table->string('itemweight');
             $table->integer('category_id1')->nullable();
             $table->integer('category_id2')->nullable();
@@ -30,7 +30,7 @@ return new class extends Migration
             $table->integer('category_id10')->nullable();
             $table->string('itemtype');
             $table->string('price');
-            $table->string('tax');
+            // $table->string('tax');
             $table->string('update_frequency');
             $table->string('price_update_frequency');
             $table->string('price_threshold');

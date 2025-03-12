@@ -85,17 +85,24 @@
                                         @endforeach
                                     </select>
                                 </div>
-
                                 <div class="col-12 mb-2">
                                     <label for="itemType" class="form-label">Item Type</label>
-                                    <input type="text" class="form-control" id="itemType" name="itemType" value="{{ $product->itemType }}" disabled>
+                                    <select id="itemType" class="form-select" name="itemType_id" disabled>
+                                        @foreach($itemtype as $types)
+                                        <option value="{{ $types->id }}"
+                                            {{ (old('itemType_id', $product->itemType_id) == $types->id) ? 'selected' : '' }}>
+                                            {{ $types->itemtypename }}
+                                        </option>
+                                    @endforeach
+                                    </select>
+                                    {{-- <input type="text" class="form-control" placeholder="eg.Daily, Own, Trading" id="itemType" name="itemType" value="{{ old('itemType') }}"> --}}
                                 </div>
                                 <div class="col-12">
                                     <label for="inputPurCost" class="form-label">Purchase Cost</label>
                                     <input type="text" class="form-control" id="inputPurCost" name="purcCost" value="{{ $product->purcCost }}" disabled>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputMargin" class="form-label">Margin(%)</label>
+                                    <label for="inputMargin" class="form-label">Preferred Margin(%)</label>
                                     <input type="text" class="form-control" id="inputMargin" name="margin" value="{{ $product->margin }}" disabled>
                                 </div>
 
@@ -104,7 +111,7 @@
                                     <input type="text" class="form-control" id="inputTax" name="tax" value="{{ $product->tax }}" disabled>
                                 </div>
                                 <div class="col-12 mb-2">
-                                    <label for="inputPrice" class="form-label">Suggested MRP</label>
+                                    <label for="inputPrice" class="form-label">Present MRP</label>
                                     <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $product->price }}" disabled>
                                 </div>
 
@@ -203,7 +210,7 @@
     let uom = document.getElementById("inputState");
     let itemweight = document.getElementById("inputItemWeight");
     let categorySelect = document.getElementById("categorySelect");
-    let itemtype = document.getElementById("itemType");
+    let itemtype = document.getElementById("itemType_id");
     let purcCost = document.getElementById("inputPurCost");
     let mrp = document.getElementById("inputMargin");
     let price = document.getElementById("inputPrice");
