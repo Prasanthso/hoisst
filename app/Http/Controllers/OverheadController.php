@@ -125,7 +125,8 @@ class OverheadController extends Controller
     public function create()
     {
         $overheadsCategories = CategoryItems::ohCategoryItem();
-        return view('overheads.addOverheads', compact('overheadsCategories')); // Match view name
+        $itemtype = DB::table('item_type')->where('status', '=', 'active')->get();
+        return view('overheads.addOverheads', compact('overheadsCategories', 'itemtype')); // Match view name
     }
     /**
      * Store a newly created resource in storage.
@@ -160,7 +161,7 @@ class OverheadController extends Controller
             'price_threshold' => 'required|string',
             // 'hsncode' => 'required|string',
             'itemweight' => 'required|string',
-            'itemtype' => 'required|string',
+            'itemType_id' => 'integer|exists:item_type,id',
             // 'tax' => 'required|string',
         ]);
 
@@ -189,7 +190,7 @@ class OverheadController extends Controller
                 'price_threshold' => $request->price_threshold,
                 // 'hsncode' => $request->hsncode,
                 'itemweight' => $request->itemweight,
-                'itemtype' => $request->itemtype,
+                'itemType_id' => $request->itemType_id,
                 // 'tax' => $request->tax,
             ]);
         } catch (\Exception $e) {
@@ -267,11 +268,13 @@ class OverheadController extends Controller
         // / Fetch all categories
         $overheadsCategories = CategoryItems::ohCategoryItem();
 
+        $itemtype = DB::table('item_type')->where('status', '=', 'active')->get();
+        $selectedItemType = $overheads->itemType_id ?? null;
         // Fetch the specific raw material by its ID
         $overheads = DB::table('overheads')->where('id', $id)->first(); // Fetch the single raw material entry
 
         // Return the view with raw material data and categories
-        return view('overheads.editOverheads', compact('overheads', 'overheadsCategories'));
+        return view('overheads.editOverheads', compact('overheads', 'overheadsCategories', 'itemtype', 'selectedItemType'));
     }
 
     /**
@@ -314,9 +317,9 @@ class OverheadController extends Controller
             'price_threshold' => 'required|string',
             // 'hsncode' => 'required|string',
             'itemweight' => 'required|string',
-            'itemtype' => 'required|string',
-            // 'tax' => 'required|string',
-        ]);
+                'itemType_id' => 'integer|exists:item_type,id',
+                // 'tax' => 'required|string',
+            ]);
 
         $categoryIds = $request->category_ids;
 
@@ -341,9 +344,9 @@ class OverheadController extends Controller
                 'price_threshold' => $request->price_threshold,
                 // 'hsncode' => $request->hsncode,
                 'itemweight' => $request->itemweight,
-                'itemtype' => $request->itemtype,
-                // 'tax' => $request->tax,
-            ]);
+                'itemType_id' => $request->itemType_id,
+                    // 'tax' => $request->tax,
+                ]);
         } catch (\Exception $e) {
             // Handle the error gracefully (e.g., log it and show an error message)
             // \Log::error('Error updating raw material: ' . $e->getMessage());

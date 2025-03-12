@@ -27,7 +27,7 @@ class PackingMaterial extends Model
         'category_id8',
         'category_id9',
         'category_id10',
-        'itemType',
+        'itemType_id',
         'price',
         'tax',
         'update_frequency',

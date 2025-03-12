@@ -126,7 +126,9 @@ class RawMaterialController extends Controller
     public function create()
     {
         $rawMaterialCategories = CategoryItems::rmCategoryItem();
-        return view('rawMaterial.addRawMaterial', compact('rawMaterialCategories')); // Match view name
+        $itemtype = DB::table('item_type')->where('status', '=', 'active')->get();
+
+        return view('rawMaterial.addRawMaterial', compact('rawMaterialCategories', 'itemtype')); // Match view name
     }
 
     /**
@@ -163,7 +165,8 @@ class RawMaterialController extends Controller
             'price_threshold' => 'required|string',
             'hsncode' => 'required|string',
             'itemweight' => 'required|string',
-            'itemtype' => 'required|string',
+            'itemType_id' => 'integer|exists:item_type,id',
+                // 'itemtype' => 'required|string',
             'tax' => 'required|string',
         ]);
 
@@ -192,8 +195,8 @@ class RawMaterialController extends Controller
                 'price_threshold' => $request->price_threshold,
                 'hsncode' => $request->hsncode,
                 'itemweight' => $request->itemweight,
-                'itemtype' => $request->itemtype,
-                'tax' => $request->tax,
+                    'itemType_id' => $request->itemType_id,
+                    'tax' => $request->tax,
             ]);
         } catch (\Exception $e) {
             // \Log::error('Error inserting data: ' . $e->getMessage());
@@ -271,11 +274,13 @@ class RawMaterialController extends Controller
         // Fetch all categories
         $rawMaterialCategories = CategoryItems::rmCategoryItem();
 
+        $itemtype = DB::table('item_type')->where('status', '=', 'active')->get();
+        $selectedItemType = $rawMaterial->itemType_id ?? null;
         // Fetch the specific raw material by its ID
         $rawMaterial = DB::table('raw_materials')->where('id', $id)->first(); // Fetch the single raw material entry
 
         // Return the view with raw material data and categories
-        return view('rawMaterial.editRawMaterial', compact('rawMaterial', 'rawMaterialCategories'));
+        return view('rawMaterial.editRawMaterial', compact('rawMaterial', 'rawMaterialCategories', 'itemtype', 'selectedItemType'));
     }
 
     /**
@@ -299,8 +304,8 @@ class RawMaterialController extends Controller
             'price_threshold' => 'required|string',
             'hsncode' => 'required|string',
             'itemweight' => 'required|string',
-            'itemtype' => 'required|string',
-            'tax' => 'required|string',
+                'itemType_id' => 'integer|exists:item_type,id',
+                'tax' => 'required|string',
         ]);
 
         $categoryIds = $request->category_ids;
@@ -351,8 +356,8 @@ class RawMaterialController extends Controller
                 'price_threshold' => $request->price_threshold,
                 'hsncode' => $request->hsncode,
                 'itemweight' => $request->itemweight,
-                'itemtype' => $request->itemtype,
-                'tax' => $request->tax,
+                    'itemType_id' => $request->itemType_id,
+                    'tax' => $request->tax,
             ]);
         } catch (\Exception $e) {
             // Handle the error gracefully (e.g., log it and show an error message)

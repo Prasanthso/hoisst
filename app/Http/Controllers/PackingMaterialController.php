@@ -124,7 +124,9 @@ class PackingMaterialController extends Controller
     public function create()
     {
         $packingMaterialCategories = CategoryItems::pmCategoryItem();
-        return view('packingMaterial.addPackingMaterial', compact('packingMaterialCategories'));
+        $itemtype = DB::table('item_type')->where('status', '=', 'active')->get();
+
+        return view('packingMaterial.addPackingMaterial', compact('packingMaterialCategories', 'itemtype'));
     }
 
     /**
@@ -160,7 +162,7 @@ class PackingMaterialController extends Controller
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
             'hsnCode' => 'required|string',
-            'itemType' => 'required|string',
+            'itemType_id' => 'integer|exists:item_type,id',
             'itemWeight' => 'required|string',
             'tax' => 'required|string',
         ]);
@@ -186,7 +188,7 @@ class PackingMaterialController extends Controller
                 'category_id8' => $categoryIds[7] ?? null,
                 'category_id9' => $categoryIds[8] ?? null,
                 'category_id10' => $categoryIds[9] ?? null,
-                'itemType' => $request->itemType,
+                'itemType_id' => $request->itemType_id,
                 'price' => $request->price,
                 'tax' => $request->tax,
                 'update_frequency' => $request->update_frequency,
@@ -265,11 +267,13 @@ class PackingMaterialController extends Controller
     {
         $packingMaterialCategories = CategoryItems::pmCategoryItem();
 
+        $itemtype = DB::table('item_type')->where('status', '=', 'active')->get();
+        $selectedItemType = $packingMaterial->itemType_id ?? null;
         // Fetch the specific packing material by its ID
         $packingMaterial = DB::table('packing_materials')->where('id', $id)->first(); // Fetch the single packing material entry
 
         // Return the view with packing material data and categories
-        return view('packingMaterial.editPackingMaterial', compact('packingMaterial', 'packingMaterialCategories'));
+        return view('packingMaterial.editPackingMaterial', compact('packingMaterial', 'packingMaterialCategories', 'itemtype', 'selectedItemType'));
     }
 
     /**
@@ -314,8 +318,8 @@ class PackingMaterialController extends Controller
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
             'hsnCode' => 'required|string',
-            'itemType' => 'required|string',
-            'itemWeight' => 'required|string',
+                'itemType_id' => 'integer|exists:item_type,id',
+                'itemWeight' => 'required|string',
             'tax' => 'required|string',
         ]);
 
@@ -338,7 +342,7 @@ class PackingMaterialController extends Controller
                 'category_id8' => $categoryIds[7] ?? null,
                 'category_id9' => $categoryIds[8] ?? null,
                 'category_id10' => $categoryIds[9] ?? null,
-                'itemType' => $request->itemType,
+                'itemType_id' => $request->itemType_id,
                 'price' => $request->price,
                 'tax' => $request->tax,
                 'update_frequency' => $request->update_frequency,

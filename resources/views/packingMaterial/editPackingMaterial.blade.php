@@ -23,17 +23,17 @@
             @endif
 
             @if (session('error'))
-                <div class="alert alert-danger">{{ session('error') }}</div>
+            <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
 
             @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
             @endif
 
             <div id="error-message" class="text-danger mt-2"></div>
@@ -89,7 +89,14 @@
 
                                 <div class="col-12 mb-2">
                                     <label for="itemType" class="form-label">Item Type</label>
-                                    <input type="text" class="form-control" id="itemType" name="itemType" value="{{ $packingMaterial->itemType }}" disabled>
+                                    <select id="itemType" class="form-select" name="itemType_id" disabled>
+                                        @foreach($itemtype as $types)
+                                        <option value="{{ $types->id }}"
+                                            {{ (old('itemType_id', $packingMaterial->itemType_id) == $types->id) ? 'selected' : '' }}>
+                                            {{ $types->itemtypename }}
+                                        </option>
+                                        @endforeach
+                                    </select>
                                 </div>
 
                                 <div class="col-12 mb-2">
@@ -187,67 +194,100 @@
         });
     });
     document.addEventListener("DOMContentLoaded", function() {
-       const btnsave = document.getElementById('saveButton');
+        const btnsave = document.getElementById('saveButton');
 
-    btnsave.addEventListener('click', function(event) {
-    let isValid = true;
-    document.querySelectorAll(".error-text").forEach(el => el.innerHTML = "");
-    // Get form fields
-    let name = document.getElementById("inputName");
-        let hsncode = document.getElementById("hsnCode");
-        let uom = document.getElementById("inputState");
-        let itemweight = document.getElementById("itemWeight");
-        let categorySelect = document.getElementById("categorySelect");
-        let itemtype = document.getElementById("itemType");
-        let price = document.getElementById("inputPrice");
-        let tax = document.getElementById("inputTax");
-        let priceUpdateFreq = document.getElementById("price_update_frequency");
-        let priceThreshold = document.getElementById("price_threshold");
+        btnsave.addEventListener('click', function(event) {
+            let isValid = true;
+            document.querySelectorAll(".error-text").forEach(el => el.innerHTML = "");
+            // Get form fields
+            let name = document.getElementById("inputName");
+            let hsncode = document.getElementById("hsnCode");
+            let uom = document.getElementById("inputState");
+            let itemweight = document.getElementById("itemWeight");
+            let categorySelect = document.getElementById("categorySelect");
+            let itemtype = document.getElementById("itemType");
+            let price = document.getElementById("inputPrice");
+            let tax = document.getElementById("inputTax");
+            let priceUpdateFreq = document.getElementById("price_update_frequency");
+            let priceThreshold = document.getElementById("price_threshold");
 
-        let errorDiv = document.getElementById("error-message");
-        errorDiv.innerHTML = ""; // Clear previous errors
+            let errorDiv = document.getElementById("error-message");
+            errorDiv.innerHTML = ""; // Clear previous errors
 
-        // Validation checks
-        if (name.value.trim() === "") { showError(name, "Name is required."); isValid = false; }
-        if (hsncode.value.trim() === "") { showError(hsncode, "HSN Code is required."); isValid = false; }
-        if (uom.value === "UoM") { showError(uom, "Please select a valid Unit of Measure."); isValid = false; }
-        if (itemweight.value.trim() === "") { showError(itemweight, "Net Weight is required."); isValid = false; }
-        if (categorySelect.selectedOptions.length === 0) { showError(categorySelect, "Please select at least one category."); isValid = false; }
-        if (itemtype.value.trim() === "") { showError(itemtype, "Item Type is required."); isValid = false; }
-        if (price.value.trim() === "" || isNaN(price.value)) { showError(price, "Valid Price is required."); isValid = false; }
-        if (tax.value.trim() === "" || isNaN(tax.value)) { showError(tax, "Valid Tax value is required."); isValid = false; }
-        if (priceUpdateFreq.value.trim() === "" || isNaN(priceUpdateFreq.value)) { showError(priceUpdateFreq, "Valid Pricing Update Frequency is required."); isValid = false; }
-        if (priceThreshold.value.trim() === "" || isNaN(priceThreshold.value)) { showError(priceThreshold, "Valid Price Threshold is required."); isValid = false; }
+            // Validation checks
+            if (name.value.trim() === "") {
+                showError(name, "Name is required.");
+                isValid = false;
+            }
+            if (hsncode.value.trim() === "") {
+                showError(hsncode, "HSN Code is required.");
+                isValid = false;
+            }
+            if (uom.value === "UoM") {
+                showError(uom, "Please select a valid Unit of Measure.");
+                isValid = false;
+            }
+            if (itemweight.value.trim() === "") {
+                showError(itemweight, "Net Weight is required.");
+                isValid = false;
+            }
+            if (categorySelect.selectedOptions.length === 0) {
+                showError(categorySelect, "Please select at least one category.");
+                isValid = false;
+            }
+            if (itemtype.value.trim() === "") {
+                showError(itemtype, "Item Type is required.");
+                isValid = false;
+            }
+            if (price.value.trim() === "" || isNaN(price.value)) {
+                showError(price, "Valid Price is required.");
+                isValid = false;
+            }
+            if (tax.value.trim() === "" || isNaN(tax.value)) {
+                showError(tax, "Valid Tax value is required.");
+                isValid = false;
+            }
+            if (priceUpdateFreq.value.trim() === "" || isNaN(priceUpdateFreq.value)) {
+                showError(priceUpdateFreq, "Valid Pricing Update Frequency is required.");
+                isValid = false;
+            }
+            if (priceThreshold.value.trim() === "" || isNaN(priceThreshold.value)) {
+                showError(priceThreshold, "Valid Price Threshold is required.");
+                isValid = false;
+            }
 
-        if (!isValid) {
-            event.preventDefault();
-        }
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+        document.querySelectorAll("input, select").forEach(input => {
+            input.addEventListener("input", () => clearError(input));
+            input.addEventListener("change", () => clearError(input));
+        });
+
+        // Special handling for select2 dropdowns
+        $('#inputState, #categorySelect').on("select2:select", function() {
+            clearError(this); // Pass the select element to clearError function
+        });
     });
-    document.querySelectorAll("input, select").forEach(input => {
-        input.addEventListener("input", () => clearError(input));
-        input.addEventListener("change", () => clearError(input));
-    });
-
-    // Special handling for select2 dropdowns
-    $('#inputState, #categorySelect').on("select2:select", function () {
-        clearError(this); // Pass the select element to clearError function
-    });
-});
 
     function showError(input, message) {
         let errorElement = document.createElement("div");
         errorElement.className = "error-text text-danger";
         errorElement.innerHTML = message;
         input.parentNode.appendChild(errorElement);
-        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        input.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
     }
-    function clearError(input) {
-            let errorMsg = input.parentNode.querySelector(".error-text");
-            if (errorMsg) {
-                errorMsg.remove();
-            }
-        }
 
+    function clearError(input) {
+        let errorMsg = input.parentNode.querySelector(".error-text");
+        if (errorMsg) {
+            errorMsg.remove();
+        }
+    }
 </script>
 
 <!--Template Main JS File-->
