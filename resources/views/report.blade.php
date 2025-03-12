@@ -19,43 +19,6 @@
     <!-- Filter Section -->
     <!-- Filter Section -->
     <div class="d-flex align-items-center px-4 py-3">
-        <div class="me-3 dropdown py-3">
-
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                Select Columns
-            </button>
-
-            <div class="dropdown-menu" style="width: 300px; padding: 10px;">
-                <!-- Search Option -->
-                <input type="text" id="searchColumns" class="form-control mb-2" placeholder="Search columns...">
-
-                <!-- Select All Option -->
-                <label class="dropdown-item">
-                    <input type="checkbox" id="selectAllColumns" checked> Select All
-                </label>
-
-                <div id="columnsContainer">
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="1" checked> S.NO</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="2" checked> Product Name</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="3" checked> S.MRP</label>
-                    <!-- <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="3" checked> P.MRP</label> -->
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="4" checked> RM Cost</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="5" checked> RM %</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="6" checked> Packing Cost</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="7" checked> Packing %</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="8" checked> Total</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="9" checked> %</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="10" checked> Overhead</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="11" checked> Overhead %</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="12" checked> Cost</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="13" checked> Selling Rate</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="14" checked> Tax</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="15" checked> Before Tax</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="16" checked> Margin Amount</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="17" checked> Margin %</label>
-                </div>
-            </div>
-        </div>
         <span class="me-3" style="color: gray;">
             <i class="bi bi-filter"></i> Filters
         </span>
@@ -157,7 +120,7 @@
                                 $total_perc = ($total * 100) / $report->S_MRP;
                                 $cost = $total + $report->OH_Cost + $report->MOH_Cost;
                                 $sellingRate = $report->S_MRP * 0.75;
-                                $beforeTax = ($sellingRate * 100) / 118;
+                                $beforeTax = ($sellingRate * 100) / (100 + $report->tax);
                                 $OH_PERC = ($report->OH_Cost + $report->MOH_Cost/$total) * 100;
                                 $MARGINAMOUNT = $beforeTax-$cost;
                                 $marginPerc = ($MARGINAMOUNT/$beforeTax)*100;
@@ -177,7 +140,7 @@
                                     <td>{{ number_format($OH_PERC, 2) }}</td>
                                     <td>{{ number_format($cost, 2) }}</td>
                                     <td>{{ number_format($sellingRate, 2) }}</td>
-                                    <td>18</td>
+                                    <td>{{$report->tax}}</td>
                                     <td>{{ number_format($beforeTax, 2) }}</td>
                                     <td>{{ number_format($MARGINAMOUNT, 2) }}</td>
                                     <td style="background-color: 
@@ -454,5 +417,35 @@
             });
         };
 
+    });
+
+    $(document).ready(function() {
+        $(".margin-perc").each(function() {
+            var marginPercText = $(this).text().trim();
+            var marginPerc = parseFloat(marginPercText.replace('%', '')); // Remove % sign and parse as float
+
+            if (!isNaN(marginPerc) && marginPerc < 10) { // Threshold: 10%
+                var row = $(this).closest("tr");
+                var productId = row.data('id');
+                var productName = row.find("td:eq(1)").text(); // Assuming the product name is in the second column
+
+                $.ajax({
+                    url: '/notify-low-margin',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        product_id: productId,
+                        product_name: productName,
+                        margin_percentage: marginPerc
+                    },
+                    success: function(response) {
+                        console.log('Email notification sent successfully for ' + productName);
+                    },
+                    error: function(error) {
+                        console.error('Failed to send email notification.', error);
+                    }
+                });
+            }
+        });
     });
 </script>
