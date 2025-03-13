@@ -84,7 +84,7 @@
                                 </div>-->
 
                                 <div class="col-12 mb-2">
-                                    <input type="hidden" class="form-control mb-2" name="productType" id="productType" value="">
+                                    {{-- <input type="hidden" class="form-control mb-2" name="productType" id="productType" value=""> --}}
                                     <label for="inputTotalCost" class="form-label">Total cost(A+B+C)</label>
                                     <input type="text" class="form-control mb-2" id="inputTotalCost" name="inputTotalCost" readonly>
                                 </div>
@@ -151,6 +151,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<!--Template Main JS File-->
+<script src="{{ asset('js/main.js') }}"></script>
 <script>
      document.addEventListener("DOMContentLoaded", () => {
         const recipeSelect = document.getElementById('recipeSelect');
@@ -216,7 +218,7 @@
                 permarginInput.value = permargin;
                 Discount.value = perdiscount.toFixed(2);
                 updateCalculations(data);
-                toVisiable(data);
+                // toVisiable(data);
 
                 // discountAmt.style.display = 'block';
 
@@ -269,16 +271,15 @@
 
     // Calculate Costs
     RmPmCost.value = (rmCost + pmCost).toFixed(2);
-    if(data.itemtype == 'Trading')
-    {
-        console.log("Trading item price :", parseFloat(data.tradingCost));
-        console.log("item type" , data.itemtype);
-        document.getElementById('productType').value = 'Trading';
-        TotalCost.value = parseFloat(data.tradingCost).toFixed(2) || 0;
-    }
-    else{
+    // if(data.itemtype == 'Trading')
+    // {
+    //     console.log("Trading item price :", parseFloat(data.tradingCost));
+    //     console.log("item type" , data.itemtype);
+    //     document.getElementById('productType').value = 'Trading';
+    //     TotalCost.value = parseFloat(data.tradingCost).toFixed(2) || 0;
+    // }
+
         TotalCost.value = (rmCost + pmCost + ohCost).toFixed(2);
-    }
 
     // Recalculate margin
     let totalCostNum = parseFloat(TotalCost.value);
@@ -306,6 +307,7 @@
     suggestedMrp.value = recipeOut > 0 ? netTotal : 'N/A';
 }
 
+/*
     function toVisiable(data)
     {
         if (!data) return;
@@ -336,7 +338,7 @@
             OhCostC.style.display  = "block";
         }
     }
-
+*/
     // **Call updateCalculations when tax input changes**
     pertaxInput.addEventListener('change', () => {
         pertax = parseFloat(pertaxInput.value) || 0; // Update margin percentage
@@ -425,8 +427,4 @@
         }
     }, 5000);
 });
-</script>
-
-<!--Template Main JS File-->
-<script src="{{ asset('js/main.js') }}">
 </script>
