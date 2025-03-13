@@ -60,7 +60,7 @@
                             @php
                             $total = $report->RM_Cost + $report->PM_Cost;
                             $cost = $total + $report->OH_Cost + $report->MOH_Cost;
-                            $sellingRate = $cost * 0.75;
+                            $sellingRate = $report->S_MRP * 0.75;
                             $beforeTax = ($sellingRate * 100) / (100 + $report->tax);
                             $margin = $beforeTax - $cost;
                             $marginPercentage = ($beforeTax > 0) ? ($margin / $beforeTax) * 100 : 0;
