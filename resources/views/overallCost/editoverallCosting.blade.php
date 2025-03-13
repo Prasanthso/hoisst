@@ -154,6 +154,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<!--Template Main JS File-->
+<script src="{{ asset('js/main.js') }}"></script>
+
 <script>
      document.addEventListener("DOMContentLoaded", () => {
         const recipeSelect = document.getElementById('recipeSelect');
@@ -226,7 +229,7 @@
                 const selectedText = recipeSelect.options[recipeSelect.selectedIndex].text.trim();
                 recipeOutput.value = data.rpoutput;
                 updateCalculations(data);
-                toVisiable(data);
+                // toVisiable(data);
                     // if(selectedText != null)
                     // {
                     //     RmCostA.value = data.rpoutput !== 0 ? (data.totalRmCost / data.rpoutput).toFixed(2) : 0;
@@ -264,15 +267,15 @@
         // Calculate Costs
         RmPmCost.value = (rmCost + pmCost).toFixed(2);
 
-        if(data.itemtype == 'Trading')
-        {
-            console.log("Trading item price :",parseFloat(data.tradingCost));
-            document.getElementById('productType').value = data.itemtype;
-            TotalCost.value = parseFloat(data.tradingCost).toFixed(2) || 0;
-        }
-        else{
+        // if(data.itemtype == 'Trading')
+        // {
+        //     console.log("Trading item price :",parseFloat(data.tradingCost));
+        //     document.getElementById('productType').value = data.itemtype;
+        //     TotalCost.value = parseFloat(data.tradingCost).toFixed(2) || 0;
+        // }
+
             TotalCost.value = (rmCost + pmCost + ohCost).toFixed(2);
-        }
+
 
         // Recalculate margin
         let totalCostNum = parseFloat(TotalCost.value);
@@ -300,7 +303,7 @@
         suggestedMrp.value = recipeOut > 0 ? netTotal : 'N/A';
     }
 
-
+/*
     function toVisiable(data)
         {
             if (!data) return;
@@ -327,6 +330,7 @@
                 OhCostC.style.display  = "block";
             }
         }
+        */
 
 /*
     function updateCalculations(data) {
@@ -452,8 +456,4 @@
 
 
 });
-</script>
-
-<!--Template Main JS File-->
-<script src="{{ asset('js/main.js') }}">
 </script>
