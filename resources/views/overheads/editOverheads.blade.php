@@ -87,10 +87,10 @@
                         </div>
                         <div class="col-12">
                             <label for="inputItemType" class="form-label">Item Type</label>
-                            <select id="itemType" class="form-select" name="itemType_id">
+                            <select id="itemType" class="form-select" name="itemType_id" disabled>
                                 @foreach($itemtype as $types)
                                 <option value="{{ $types->id }}"
-                                    {{ old('itemType_id') == $types->id ? 'selected' : '' }}>
+                                    {{ (old('itemType_id', $overheads->itemType_id) == $types->id) ? 'selected' : '' }}>
                                     {{ $types->itemtypename }}
                                 </option>
                                 @endforeach
