@@ -47,7 +47,8 @@
                                 </div> -->
                                 <div class="col-12">
                                     <label for="hsncode" class="form-label">HSN Code</label>
-                                    <input type="text" class="form-control" id="hsncode" name="hsncode" value="{{ old('hsncode') }}">
+                                    <input type="text" class="form-control" id="hsncode" name="hsncode" value="{{ old('hsncode') }}"  maxlength="8"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)">
                                 </div>
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Unit</label>

@@ -53,7 +53,8 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="hsncode" class="form-label">HSN Code</label>
-                                    <input type="text" class="form-control" id="hsncode" name="hsncode" value="{{ $rawMaterial->hsncode}}" disabled>
+                                    <input type="numeric" class="form-control" id="hsncode" name="hsncode" value="{{ $rawMaterial->hsncode}}"
+                                    maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)" disabled>
                                 </div>
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Unit </label>
@@ -208,6 +209,7 @@
 
             let errorDiv = document.getElementById("error-message");
             errorDiv.innerHTML = ""; // Clear previous errors
+            // hsncode.value = hsncode.value.replace(/[^0-9]/g, '').slice(0, 8);
 
             // Validation checks
             if (name.value.trim() === "") {
@@ -216,6 +218,10 @@
             }
             if (hsncode.value.trim() === "") {
                 showError(hsncode, "HSN Code is required.");
+                isValid = false;
+            }
+            else if(!/^\d{1,8}$/.test(hsncode.value)) {
+                showError(hsncode, "HSN Code must be numeric and up to 8 digits.");
                 isValid = false;
             }
             if (uom.value === "UoM") {
