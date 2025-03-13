@@ -60,8 +60,8 @@
                             @php
                             $total = $report->RM_Cost + $report->PM_Cost;
                             $cost = $total + $report->OH_Cost + $report->MOH_Cost;
-                            $sellingRate = $report->S_MRP * 0.75;
-                            $beforeTax = ($sellingRate * 100) / 118;
+                            $sellingRate = $cost * 0.75;
+                            $beforeTax = ($sellingRate * 100) / (100 + $report->tax);
                             $margin = $beforeTax - $cost;
                             $marginPercentage = ($beforeTax > 0) ? ($margin / $beforeTax) * 100 : 0;
                             @endphp
@@ -78,7 +78,7 @@
                                 <td>{{ number_format($total, 2) }}</td>
                                 <td>{{ number_format($report->OH_Cost + $report->MOH_Cost, 2) }}</td>
                                 <td class="cost">{{ number_format($cost, 2) }}</td>
-                                <td class="selling-rate">{{ number_format($report->S_MRP * 0.75, 2) }}</td>
+                                <td class="selling-rate">{{ number_format($sellingRate, 2) }}</td>
                                 <td>18</td>
                                 <td class="before-tax">{{ number_format($beforeTax, 2) }}</td>
                                 <td class="margin">{{ number_format($beforeTax - $cost, 2) }}</td>
