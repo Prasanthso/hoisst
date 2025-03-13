@@ -166,9 +166,9 @@ class OverAllCostingController extends Controller
 
     public function store(Request $request)
     {
-        dd($request->all());
+
         $request->validate([
-            'productId' => 'required',
+            'productId' => 'required|exists:product_master,id',
             'inputRmcost' => 'required|numeric',
             'inputPmcost' => 'required|numeric',
             'inputRmPmcost' => 'required|numeric',
@@ -190,7 +190,6 @@ class OverAllCostingController extends Controller
         // $isTrading = $request->input('productType') === 'Trading';
         // dd($request->inputPmcost,$request->inputRmPmcost,$request->inputOverhead);
         try {
-
             OverallCosting::create([
                 'productId' => $request->productId,
                 'rm_cost_unit' => (float) $request->inputRmcost,
@@ -219,6 +218,7 @@ class OverAllCostingController extends Controller
         }
         // Redirect to another page with a success message
         return redirect()->route('overallcosting.index')->with('success', 'Costing saved successfully!');
+
     }
     public function show($id)
     {
