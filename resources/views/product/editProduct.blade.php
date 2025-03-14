@@ -52,7 +52,8 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="inputHSNcode" class="form-label">HSN Code</label>
-                                    <input type="text" class="form-control" id="inputHSNcode" name="hsnCode" value="{{ $product->hsnCode }}" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)" disabled>
+                                    <input type="text" class="form-control" id="inputHSNcode" name="hsnCode" value="{{ $product->hsnCode }}"
+                                    maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)" disabled>
                                 </div>
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Unit</label>
@@ -215,7 +216,7 @@
             let uom = document.getElementById("inputState");
             let itemweight = document.getElementById("inputItemWeight");
             let categorySelect = document.getElementById("categorySelect");
-            let itemtype = document.getElementById("itemType_id");
+            let itemtype = document.getElementById("itemType");
             let purcCost = document.getElementById("inputPurCost");
             let mrp = document.getElementById("inputMargin");
             let price = document.getElementById("inputPrice");
