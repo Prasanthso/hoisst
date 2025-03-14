@@ -101,12 +101,12 @@
 
                                 <div class="col-12 mb-2">
                                     <label for="inputPrice" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $packingMaterial->price }}" disabled>
+                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $packingMaterial->price }}"  oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
 
                                 <div class="col-12 mb-2">
-                                    <label for="inputTax" class="form-label">Tax</label>
-                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ $packingMaterial->tax }}" disabled>
+                                    <label for="inputTax" class="form-label">Tax(%)</label>
+                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ $packingMaterial->tax }}"  oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
 
                                 <div class="row">
@@ -121,12 +121,14 @@
                                         </select>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ $packingMaterial->price_update_frequency }}" disabled>
+                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ $packingMaterial->price_update_frequency }}"
+                                        oninput="this.value = this.value.replace(/\D/g, '');" disabled>
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <label for="price_threshold" class="form-label">Price threshold in percentage</label>
-                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $packingMaterial->price_threshold }}" disabled>
+                                    <label for="price_threshold" class="form-label">Price threshold</label>
+                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $packingMaterial->price_threshold }}"
+                                    oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="saveButton" style="display: none;">
@@ -223,6 +225,10 @@
                 showError(hsncode, "HSN Code is required.");
                 isValid = false;
             }
+            if (!/^\d{1,8}$/.test(hsncode.value)) {
+                showError(hsncode, "HSN Code must be numeric and up to 8 digits.");
+                isValid = false;
+            }
             if (uom.value === "UoM") {
                 showError(uom, "Please select a valid Unit of Measure.");
                 isValid = false;
@@ -260,9 +266,19 @@
                 event.preventDefault();
             }
         });
+
         document.querySelectorAll("input, select").forEach(input => {
-            input.addEventListener("input", () => clearError(input));
-            input.addEventListener("change", () => clearError(input));
+            let hasTyped = false; // Track if the user has typed
+
+            input.addEventListener("input", () => { hasTyped = true; clearError(input)});
+            input.addEventListener("change", () => { hasTyped = true; clearError(input)});
+            input.addEventListener("blur", () => {
+                clearError(input);
+                    if (input.value.trim() === "") {
+                        hasTyped = false;
+                        showError(input, "This field is required!");
+                    }
+                });
         });
 
         // Special handling for select2 dropdowns

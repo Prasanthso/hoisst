@@ -53,7 +53,7 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="hsncode" class="form-label">HSN Code</label>
-                                    <input type="numeric" class="form-control" id="hsncode" name="hsncode" value="{{ $rawMaterial->hsncode}}"
+                                    <input type="text" class="form-control" id="hsncode" name="hsncode" value="{{ $rawMaterial->hsncode}}"
                                     maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)" disabled>
                                 </div>
                                 <div class="col-md-12">
@@ -88,7 +88,7 @@
                                     </select>
                                 </div>
                                 <div class="col-12">
-                                    <label for="itemtype" class="form-label">Item Type</label>
+                                    <label for="itemType" class="form-label">Item Type</label>
                                     <select id="itemType" class="form-select" name="itemType_id" disabled>
                                         @foreach($itemtype as $types)
                                         <option value="{{ $types->id }}"
@@ -100,16 +100,17 @@
                                 </div>
                                 <div class="col-12 mb-2">
                                     <label for="inputPrice" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $rawMaterial->price}}" disabled>
+                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $rawMaterial->price}}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputTax" class="form-label">Tax</label>
-                                    <input type="text" class="form-control mb-2" id="inputTax" name="tax" value="{{ $rawMaterial->tax}}" disabled>
+                                    <label for="inputTax" class="form-label">Tax(%)</label>
+                                    <input type="text" class="form-control mb-2" id="inputTax" name="tax" value="{{ $rawMaterial->tax}}"
+                                    oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
                                 <div class="row">
                                     <label for="update_frequency" class="form-label">Pricing update frequency</label>
                                     <div class="col-md-3">
-                                        <select class="form-select mb-2" id="update_frequency" name="update_frequency" disabled>
+                                        <select class="form-select mb-2" id="update_frequency" name="update_frequency" placeholder="select" disabled>
                                             <option selected>{{ $rawMaterial->update_frequency}}</option>
                                             <option>Days</option>
                                             <option>Weeks</option>
@@ -118,12 +119,14 @@
                                         </select>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ $rawMaterial->price_update_frequency}}" disabled>
+                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ $rawMaterial->price_update_frequency}}"
+                                        oninput="this.value = this.value.replace(/\D/g, '');" disabled>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="price_threshold" class="form-label">Price threshold</label>
-                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $rawMaterial->price_threshold}}" disabled>
+                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $rawMaterial->price_threshold}}"
+                                    oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="saveButton" style="display: none;">
@@ -201,7 +204,7 @@
             let uom = document.getElementById("inputState");
             let itemweight = document.getElementById("itemweight");
             let categorySelect = document.getElementById("categorySelect");
-            let itemtype = document.getElementById("itemtype");
+            let itemtype = document.getElementById("itemType");
             let price = document.getElementById("inputPrice");
             let tax = document.getElementById("inputTax");
             let priceUpdateFreq = document.getElementById("price_update_frequency");
@@ -211,6 +214,10 @@
             errorDiv.innerHTML = ""; // Clear previous errors
             // hsncode.value = hsncode.value.replace(/[^0-9]/g, '').slice(0, 8);
 
+            // if (!/^\d{1,8}$/.test(hsncode.value)) {
+            //         showError(hsncode, "HSN Code must be numeric and up to 8 digits.");
+            //         isValid = false;
+            //     }
             // Validation checks
             if (name.value.trim() === "") {
                 showError(name, "Name is required.");
@@ -220,7 +227,7 @@
                 showError(hsncode, "HSN Code is required.");
                 isValid = false;
             }
-            else if(!/^\d{1,8}$/.test(hsncode.value)) {
+            if (!/^\d{1,8}$/.test(hsncode.value)) {
                 showError(hsncode, "HSN Code must be numeric and up to 8 digits.");
                 isValid = false;
             }
@@ -263,8 +270,16 @@
         });
 
         document.querySelectorAll("input, select").forEach(input => {
-            input.addEventListener("input", () => clearError(input));
-            input.addEventListener("change", () => clearError(input));
+            let hasTyped = false; // Track if the user has typed
+            input.addEventListener("input", () => { hasTyped = true; clearError(input)});
+            input.addEventListener("change", () => { hasTyped = true; clearError(input)});
+            input.addEventListener("blur", () => {
+                clearError(input);
+                    if (input.value.trim() === "") {
+                        hasTyped = false;
+                        showError(input, "This field is required!");
+                    }
+                });
         });
 
         // Special handling for select2 dropdowns

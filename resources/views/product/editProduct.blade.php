@@ -52,10 +52,10 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="inputHSNcode" class="form-label">HSN Code</label>
-                                    <input type="text" class="form-control" id="inputHSNcode" name="hsnCode" value="{{ $product->hsnCode }}" disabled>
+                                    <input type="text" class="form-control" id="inputHSNcode" name="hsnCode" value="{{ $product->hsnCode }}" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)" disabled>
                                 </div>
                                 <div class="col-md-12">
-                                    <label for="inputState" class="form-label">Choose Category For</label>
+                                    <label for="inputState" class="form-label">Choose Unit</label>
                                     <select id="inputState" class="form-select select2" name="uom" disabled>
                                         <option selected>{{ $product->uom }}</option>
                                         <option>Ltr</option>
@@ -99,20 +99,20 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="inputPurCost" class="form-label">Purchase Cost</label>
-                                    <input type="text" class="form-control" id="inputPurCost" name="purcCost" value="{{ $product->purcCost }}" disabled>
+                                    <input type="text" class="form-control" id="inputPurCost" name="purcCost" value="{{ $product->purcCost }}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputMargin" class="form-label">Preferred Margin(%)</label>
-                                    <input type="text" class="form-control" id="inputMargin" name="margin" value="{{ $product->margin }}" disabled>
+                                    <input type="text" class="form-control" id="inputMargin" name="margin" value="{{ $product->margin }}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
 
                                 <div class="col-12 mb-2">
                                     <label for="inputTax" class="form-label">Tax(%)</label>
-                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ $product->tax }}" disabled>
+                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ $product->tax }}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
                                 <div class="col-12 mb-2">
                                     <label for="inputPrice" class="form-label">Present MRP</label>
-                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $product->price }}" disabled>
+                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $product->price }}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
 
                                 <div class="row">
@@ -131,8 +131,9 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <label for="price_threshold" class="form-label">Price threshold in percentage</label>
-                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $product->price_threshold }}" disabled>
+                                    <label for="price_threshold" class="form-label">Price threshold</label>
+                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $product->price_threshold }}"
+                                    oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="saveButton" style="display: none;">
@@ -234,6 +235,10 @@
                 showError(hsncode, "HSN Code is required.");
                 isValid = false;
             }
+            if (!/^\d{1,8}$/.test(hsncode.value)) {
+                showError(hsncode, "HSN Code must be numeric and up to 8 digits.");
+                isValid = false;
+            }
             if (uom.value === "UoM") {
                 showError(uom, "Please select a valid Unit of Measure.");
                 isValid = false;
@@ -281,8 +286,17 @@
         });
 
         document.querySelectorAll("input, select").forEach(input => {
-            input.addEventListener("input", () => clearError(input));
-            input.addEventListener("change", () => clearError(input));
+            let hasTyped = false; // Track if the user has typed
+
+            input.addEventListener("input", () => { hasTyped = true; clearError(input)});
+            input.addEventListener("change", () => { hasTyped = true; clearError(input)});
+            input.addEventListener("blur", () => {
+                clearError(input);
+                    if (input.value.trim() === "") {
+                        hasTyped = false;
+                        showError(input, "This field is required!");
+                    }
+                });
         });
 
         // Special handling for select2 dropdowns

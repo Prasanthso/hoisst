@@ -73,7 +73,7 @@
                         </div>
 
                         <div class="col-12">
-                            <label for="itemtype" class="form-label">Item Type</label>
+                            <label for="itemType" class="form-label">Item Type</label>
                             <select id="itemType" class="form-select" name="itemType_id">
                                 @foreach($itemtype as $types)
                                 <option value="{{ $types->id }}"
@@ -82,12 +82,13 @@
                                 </option>
                                 @endforeach
                             </select>
-                            <!-- <input type="text" class="form-control" id="itemtype" name="itemtype" value="{{ old('itemtype') }}"> -->
+                            {{-- <!-- <input type="text" class="form-control" id="itemtype" name="itemtype" value="{{ old('itemtype') }}"> --> --}}
                         </div>
 
                         <div class="col-12">
                             <label for="inputPrice" class="form-label">Price</label>
-                            <input type="text" class="form-control" id="inputPrice" name="price" value="{{ old('price') }}">
+                            <input type="text" class="form-control" id="inputPrice" name="price" value="{{ old('price') }}"
+                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
                         </div>
 
                         {{-- <div class="col-12">
@@ -106,13 +107,15 @@
                             </select>
                         </div>
                         <div class="col-md-9">
-                            <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ old('price_update_frequency') }}">
+                            <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ old('price_update_frequency') }}"
+                            oninput="this.value = this.value.replace(/\D/g, '');">
                         </div>
                     </div>
 
                     <div class="col-12">
                         <label for="price_threshold" class="form-label">Price threshold</label>
-                        <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ old('price_threshold') }}">
+                        <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ old('price_threshold') }}"
+                        oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
                     </div>
 
                     <div>
@@ -174,7 +177,7 @@
             let uom = document.getElementById("inputState");
             let itemweight = document.getElementById("inputItemWeight");
             let categorySelect = document.getElementById("categorySelect");
-            let itemtype = document.getElementById("itemtype");
+            let itemtype = document.getElementById("itemType");
             let price = document.getElementById("inputPrice");
             // let tax = document.getElementById("inputTax");
             let priceUpdateFreq = document.getElementById("price_update_frequency");
@@ -223,9 +226,19 @@
                 event.preventDefault();
             }
         });
+
         document.querySelectorAll("input, select").forEach(input => {
-            input.addEventListener("input", () => clearError(input));
-            input.addEventListener("change", () => clearError(input));
+            let hasTyped = false; // Track if the user has typed
+
+            input.addEventListener("input", () => { hasTyped = true; clearError(input)});
+            input.addEventListener("change", () => { hasTyped = true; clearError(input)});
+            input.addEventListener("blur", () => {
+                clearError(input);
+                    if (input.value.trim() === "") {
+                        hasTyped = false;
+                        showError(input, "This field is required!");
+                    }
+                });
         });
 
         // Special handling for select2 dropdowns

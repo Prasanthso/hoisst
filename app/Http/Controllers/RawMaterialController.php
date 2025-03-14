@@ -302,7 +302,7 @@ class RawMaterialController extends Controller
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
-            'hsncode' => 'required|numeric|max:8',
+            'hsncode' => 'required|string',
             'itemweight' => 'required|string',
                 'itemType_id' => 'integer|exists:item_type,id',
                 'tax' => 'required|string',
