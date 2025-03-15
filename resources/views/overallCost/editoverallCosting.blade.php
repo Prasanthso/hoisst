@@ -94,7 +94,10 @@
                                 </div>
                                 <div class="col">
                                 <div class="col-12">
+                                  <div  class="d-flex justify-content-between align-items-center">
                                         <label for="inputMargin" class="form-label">Margin</label>
+                                        <label class="form-label md-2"> <a href="#" data-bs-toggle="modal" data-bs-target="#markupModal">Markup</a></label>
+                                  </div>
                                         <input type="text" class="form-control mb-2" id="inputMargin" name="inputMargin" value="{{ $costing->margin}}" disabled>
                                 </div>
                                 <div class="col-12">
@@ -137,9 +140,28 @@
                 </div>
             </div>
         </div>
-    </section>
 
-</main><!-- End #main -->
+    <!-- Modal Structure -->
+        <div class="modal fade" id="markupModal" tabindex="-1" aria-labelledby="markupModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="markupModalLabel">Markup Calculation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <label>Enter Margin %:</label>
+                            <input type="number" id="marginInput" class="form-control" placeholder="Enter margin %" oninput="calculateMarkup()">
+                        </form>
+                        <p>Markup is the percentage added to the cost price to determine the selling price.</p>
+                        <p><strong>Markup %:</strong> <span id="markupResult">-</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main> <!-- End #main -->
 @endsection
 
 <!-- Vendor JS Files -->
@@ -158,6 +180,17 @@
 <script src="{{ asset('js/main.js') }}"></script>
 
 <script>
+
+    function calculateMarkup() {
+        let margin = parseFloat(document.getElementById('marginInput').value);
+        if (!isNaN(margin) && margin < 100) {
+            let markup = (margin * 100) / (100 - margin);
+            document.getElementById('markupResult').textContent = markup.toFixed(2) + "%";
+        } else {
+            document.getElementById('markupResult').textContent = "-";
+        }
+    }
+
      document.addEventListener("DOMContentLoaded", () => {
         const recipeSelect = document.getElementById('recipeSelect');
         const RmCostA = document.getElementById('inputRmcost');
