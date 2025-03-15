@@ -132,7 +132,8 @@ class ProductController extends Controller
     public function create()
     {
         $product = CategoryItems::pdCategoryItem();
-        return view('product.addProduct', compact('product')); // Match view name
+        $itemtype = DB::table('item_type')->where('status','=','active')->get();
+        return view('product.addProduct', compact('product','itemtype')); // Match view name
     }
 
     /**
@@ -167,7 +168,7 @@ class ProductController extends Controller
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
             'hsnCode' => 'required|string',
-            'itemType' => 'required|string',
+            'itemType_id' => 'integer|exists:item_type,id',
             'itemWeight' => 'required|string',
             'tax' => 'required|string',
         ]);
@@ -193,7 +194,7 @@ class ProductController extends Controller
                 'category_id8' => $categoryIds[7] ?? null,
                 'category_id9' => $categoryIds[8] ?? null,
                 'category_id10' => $categoryIds[9] ?? null,
-                'itemType' => $request->itemType,
+                'itemType_id' => $request->itemType_id,
                 'purcCost' => $request->purcCost,
                 'margin' => $request->margin,
                 'price' => $request->price,
@@ -276,11 +277,13 @@ class ProductController extends Controller
         // Fetch all categories
         // $productCategories = DB::table('categoryitems')->get();
         $productCategories = CategoryItems::pdCategoryItem();
+        $itemtype = DB::table('item_type')->where('status','=','active')->get();
+        $selectedItemType = $product->itemType_id ?? null;
         // Fetch the specific raw material by its ID
         $product = DB::table('product_master')->where('id', $id)->first(); // Fetch the single raw material entry
 
         // Return the view with raw material data and categories
-        return view('product.editProduct', compact('product', 'productCategories'));
+        return view('product.editProduct', compact('product', 'productCategories','itemtype','selectedItemType'));
     }
 
 
@@ -327,7 +330,7 @@ class ProductController extends Controller
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
             'hsnCode' => 'required|string',
-            'itemType' => 'required|string',
+            'itemType_id' => 'integer|exists:item_type,id',
             'itemWeight' => 'required|string',
             'tax' => 'required|string',
         ]);
@@ -351,7 +354,7 @@ class ProductController extends Controller
                 'category_id8' => $categoryIds[7] ?? null,
                 'category_id9' => $categoryIds[8] ?? null,
                 'category_id10' => $categoryIds[9] ?? null,
-                'itemType' => $request->itemType,
+                'itemType_id' => $request->itemType_id,
                 'purcCost' => $request->purcCost,
                 'margin' => $request->margin,
                 'price' => $request->price,
@@ -437,12 +440,14 @@ class ProductController extends Controller
             ->whereNotExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('recipedetails')
-                    ->whereColumn('recipedetails.product_id', 'product_master.id'); // Ensure correct column name
+                    ->whereColumn('recipedetails.product_id', 'product_master.id')
+                    ->where('status', '!=', 'active');
             })
             ->whereNotExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('recipe_master')
-                    ->whereColumn('recipe_master.product_id', 'product_master.id');
+                    ->whereColumn('recipe_master.product_id', 'product_master.id')
+                    ->where('status', '!=', 'active');
             })
             ->get();
 

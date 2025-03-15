@@ -119,7 +119,7 @@
                                 $total = $report->RM_Cost + $report->PM_Cost;
                                 $total_perc = ($total * 100) / $report->S_MRP;
                                 $cost = $total + $report->OH_Cost + $report->MOH_Cost;
-                                $sellingRate = $report->S_MRP * 0.75;
+                                $sellingRate = ($report->S_MRP * 100)/(100 + $report->discount);
                                 $beforeTax = ($sellingRate * 100) / (100 + $report->tax);
                                 $OH_PERC = ($report->OH_Cost + $report->MOH_Cost/$total) * 100;
                                 $MARGINAMOUNT = $beforeTax-$cost;
@@ -140,7 +140,7 @@
                                     <td>{{ number_format($OH_PERC, 2) }}</td>
                                     <td>{{ number_format($cost, 2) }}</td>
                                     <td>{{ number_format($sellingRate, 2) }}</td>
-                                    <td>{{$report->tax}}</td>
+                                    <td>{{ $report->tax }}</td>
                                     <td>{{ number_format($beforeTax, 2) }}</td>
                                     <td>{{ number_format($MARGINAMOUNT, 2) }}</td>
                                     <td style="background-color: 

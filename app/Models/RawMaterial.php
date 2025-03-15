@@ -31,7 +31,7 @@ class RawMaterial extends Model
         'price_threshold',
         'hsncode',
         'itemweight',
-        'itemtype',
+        'itemType_id',
         'tax',
     ];
 

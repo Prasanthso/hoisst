@@ -37,6 +37,24 @@ class OverAllCostingController extends Controller
             ->select('recipe_master.product_id as id', 'product_master.name as name')
             ->get();
 
+        // $recipeproducts = DB::table('product_master as pd')
+        // ->leftJoin('item_type as it', 'pd.itemType_Id', '=', 'it.id')
+        // ->leftJoin('recipe_master as rp', 'pd.id', '=', 'rp.product_id')
+        // ->leftJoin('overall_costing as ovc', function ($join) {
+        //     $join->on('pd.id', '=', 'ovc.productId')
+        //          ->where('ovc.status', 'active'); // Exclude active costing
+        // })
+        // ->where(function ($query) {
+        //     $query->where(function ($q) {
+        //         $q->where('it.itemtypename', 'Trading')
+        //           ->where('pd.status', 'active'); // Rule 1: Active Trading products
+        //     })
+        //     ->orWhere('rp.status', 'active'); // Rule 2: Recipe exists & active
+        // })
+        // ->whereNull('ovc.productId') // Rule 3: Not in active overall_costing
+        // ->select('pd.id as id', 'pd.name as name')
+        // ->get();
+
         return view('overallCost.addOverallCosting', compact('recipeproducts'));
     }
 
@@ -48,27 +66,42 @@ class OverAllCostingController extends Controller
         if (!$productId) {
             return response()->json(['error' => 'Product ID is required'], 400);
         }
+        // $product = DB::table('product_master')
+        //     ->join('item_type', 'product_master.itemType_Id', '=', 'item_type.id') // Join product with itemtype
+        //     ->where('product_master.id', $productId) // Filter by productId
+        //     ->where('item_type.itemtypename', 'Trading') // Check if item type is 'Trading'
+        //     ->select('product_master.*') // Select product details
+        //     ->first();
 
-        $totalRmCost = DB::table('rm_for_recipe')
-        ->where('product_id', $productId)
+        //    if($product)
+        //    {
+        //     $totalRmCost = 0;
+        //     $totalPmCost = 0;
+        //     $totalOhCost = 0;
+        //     $rpoutput = 1;
+        //     $tradingCost = $product->price ?? 0;  // Ensure price is set, default to 0 if null
+        //     $product_tax = $product->tax ?? 0;
+        //     $itemtype = 'Trading';
+        //    }
+        //    else{
+            $totalRmCost = DB::table('rm_for_recipe')
+            ->where('product_id', $productId)
+                ->sum('amount');
+
+            $totalPmCost = DB::table('pm_for_recipe')
+            ->where('product_id', $productId)
+                ->sum('amount');
+
+            $totalOhCost = DB::table('oh_for_recipe')
+            ->where('product_id', $productId)
             ->sum('amount');
-
-        $totalPmCost = DB::table('pm_for_recipe')
-        ->where('product_id', $productId)
-            ->sum('amount');
-
-        $totalOhCost = DB::table('oh_for_recipe')
-        ->where('product_id', $productId)
-        ->sum('amount');
 
         // $totalMohCost = 0;
-
-        if (empty($totalOhCost)) { // If NULL or 0
-            $totalOhCost = DB::table('moh_for_recipe')
-            ->where('product_id', $productId)
-            ->sum('price');
-        }
-
+            if (empty($totalOhCost)) { // If NULL or 0
+                $totalOhCost = DB::table('moh_for_recipe')
+                ->where('product_id', $productId)
+                ->sum('price');
+            }
 
         // Assuming you are joining these tables based on product_id
         $pricingData = DB::table('recipe_master')
@@ -99,21 +132,23 @@ class OverAllCostingController extends Controller
             )
             ->get();
 
-        // Fetch names for IDs separately
-        $pricingData->transform(function ($item) {
-            $item->rm_name = DB::table('raw_materials')->where('id', $item->rm_id)->value('name');
-            $item->pm_name = DB::table('packing_materials')->where('id', $item->pm_id)->value('name');
-            $item->oh_name = DB::table('overheads')->where('id', $item->oh_id)->value('name');
-            return $item;
-        });
+            // Fetch names for IDs separately
+            $pricingData->transform(function ($item) {
+                $item->rm_name = DB::table('raw_materials')->where('id', $item->rm_id)->value('name');
+                $item->pm_name = DB::table('packing_materials')->where('id', $item->pm_id)->value('name');
+                $item->oh_name = DB::table('overheads')->where('id', $item->oh_id)->value('name');
+                return $item;
+            });
 
         // $totalRmCost = $pricingData->rm_amount;
-        // $totalPmCost = $pricingData->pm_amount;
-        // $totalOhCost = $pricingData->oh_amount;
-        $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
+            // $totalPmCost = $pricingData->pm_amount;
+            // $totalOhCost = $pricingData->oh_amount;
+            $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
 
-        $rpoutput = $pricingData->isNotEmpty() ? $pricingData->first()->rpoutput : null;
-        $product_tax = $pricingData->isNotEmpty() ? $pricingData->first()->product_tax : null;
+            $rpoutput = $pricingData->isNotEmpty() ? $pricingData->first()->rpoutput : null;
+            $product_tax = $pricingData->isNotEmpty() ? $pricingData->first()->product_tax : null;
+            // $itemtype = 'Own';
+            // $tradingCost = 0;
 
         // Pass the data to the view
         // return view('overallCost.addoverallcosting', compact('totalOhCost','totalPmCost','totalRmCost'));
@@ -123,24 +158,26 @@ class OverAllCostingController extends Controller
             'totalPmCost' => $totalPmCost,
             'totalOhCost' => $totalOhCost,
             'rpoutput' => $rpoutput,
+            // 'tradingCost' => $tradingCost,
             'product_tax' => $product_tax,
+            // 'itemtype' => $itemtype,
         ]);
     }
 
     public function store(Request $request)
     {
-        // dd($request);
-        $validatedData = $request->validate([
-            'productId' => 'required|exists:recipe_master,product_id',
+
+        $request->validate([
+            'productId' => 'required|exists:product_master,id',
             'inputRmcost' => 'required|numeric',
             'inputPmcost' => 'required|numeric',
             'inputRmPmcost' => 'required|numeric',
             'inputOverhead' => 'required|numeric',
-            // 'inputRmSgmrp' => 'required|numeric',
-            // 'inputPmSgmrp' => 'required|numeric',
-            // 'inputSgMrp' => 'required|numeric',
-            // 'inputSgMargin' => 'required|numeric',
-            // 'inputOhAmt' => 'required|numeric',
+                // 'inputRmSgmrp' => 'required|numeric',
+                // 'inputPmSgmrp' => 'required|numeric',
+                // 'inputSgMrp' => 'required|numeric',
+                // 'inputSgMargin' => 'required|numeric',
+                // 'inputOhAmt' => 'required|numeric',
             'inputTax' => 'required|numeric',
             'inputMargin' => 'required|numeric',
             'inputMarginAmt' => 'required|numeric',
@@ -150,13 +187,14 @@ class OverAllCostingController extends Controller
             'inputSuggRatebf' => 'required|numeric',
             'inputSuggMrp' => 'required|numeric',
         ]);
-
+        // $isTrading = $request->input('productType') === 'Trading';
+        // dd($request->inputPmcost,$request->inputRmPmcost,$request->inputOverhead);
         try {
             OverallCosting::create([
                 'productId' => $request->productId,
                 'rm_cost_unit' => (float) $request->inputRmcost,
                 'pm_cost_unit' => (float) $request->inputPmcost,
-                'rm_pm_cost' => (float) $request->inputRmPmcost,
+                'rm_pm_cost' =>  (float) $request->inputRmPmcost,
                 'overhead' => (float) $request->inputOverhead,
                 // 'rm_sg_mrp' => (float) $request->inputRmSgmrp,
                 // 'pm_sg_mrp' => (float) $request->inputPmSgmrp,
@@ -173,13 +211,14 @@ class OverAllCostingController extends Controller
                 'suggested_mrp' => (float) $request->inputSuggMrp,
                 'status' => 'active',
             ]);
+
         } catch (\Exception $e) {
-            // Handle error by logging or displaying the message
-            \Log::error('Error inserting OverallCosting data: ' . $e->getMessage());
+           \Log::error('Error inserting OverallCosting data: ' . $e->getMessage());
             return back()->with('error', 'Error saving data: ' . $e->getMessage());
         }
         // Redirect to another page with a success message
         return redirect()->route('overallcosting.index')->with('success', 'Costing saved successfully!');
+
     }
     public function show($id)
     {
@@ -209,8 +248,6 @@ class OverAllCostingController extends Controller
 
     public function edit($id)
     {
-
-
         $productId = DB::table('overall_costing')  // get product id
         ->where('id', $id)
         ->value('productId');
@@ -274,7 +311,7 @@ class OverAllCostingController extends Controller
 
     public function update(Request $request, $id)
     {
-        $validatedData = $request->validate([
+        $request->validate([
             'inputRmcost' => 'required|numeric',
             'inputPmcost' => 'required|numeric',
             'inputRmPmcost' => 'required|numeric',

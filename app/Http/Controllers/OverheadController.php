@@ -125,7 +125,8 @@ class OverheadController extends Controller
     public function create()
     {
         $overheadsCategories = CategoryItems::ohCategoryItem();
-        return view('overheads.addOverheads', compact('overheadsCategories')); // Match view name
+        $itemtype = DB::table('item_type')->where('status', '=', 'active')->get();
+        return view('overheads.addOverheads', compact('overheadsCategories', 'itemtype')); // Match view name
     }
     /**
      * Store a newly created resource in storage.
@@ -158,10 +159,10 @@ class OverheadController extends Controller
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
-            'hsncode' => 'required|string',
+            // 'hsncode' => 'required|string',
             'itemweight' => 'required|string',
-            'itemtype' => 'required|string',
-            'tax' => 'required|string',
+            'itemType_id' => 'integer|exists:item_type,id',
+            // 'tax' => 'required|string',
         ]);
 
         $categoryIds = $request->category_ids;
@@ -187,10 +188,10 @@ class OverheadController extends Controller
                 'update_frequency' => $request->update_frequency,
                 'price_update_frequency' => $request->price_update_frequency,
                 'price_threshold' => $request->price_threshold,
-                'hsncode' => $request->hsncode,
-                // 'itemweight' => $request->itemweight,
-                'itemtype' => $request->itemtype,
-                'tax' => $request->tax,
+                // 'hsncode' => $request->hsncode,
+                'itemweight' => $request->itemweight,
+                'itemType_id' => $request->itemType_id,
+                // 'tax' => $request->tax,
             ]);
         } catch (\Exception $e) {
             // \Log::error('Error inserting data: ' . $e->getMessage());
@@ -267,11 +268,13 @@ class OverheadController extends Controller
         // / Fetch all categories
         $overheadsCategories = CategoryItems::ohCategoryItem();
 
+        $itemtype = DB::table('item_type')->where('status', '=', 'active')->get();
+        $selectedItemType = $overheads->itemType_id ?? null;
         // Fetch the specific raw material by its ID
         $overheads = DB::table('overheads')->where('id', $id)->first(); // Fetch the single raw material entry
 
         // Return the view with raw material data and categories
-        return view('overheads.editOverheads', compact('overheads', 'overheadsCategories'));
+        return view('overheads.editOverheads', compact('overheads', 'overheadsCategories', 'itemtype', 'selectedItemType'));
     }
 
     /**
@@ -284,21 +287,17 @@ class OverheadController extends Controller
         try {
             // for duplicate
             $strName = strtolower(preg_replace('/\s+/', '', $request->name));
-            // $strHsnCode = strtolower(preg_replace('/\s+/', '', $request->hsncode));
 
             // Check for existing overheads with the same normalized name or HSN code
             $existingOverhead = Overhead::where(function ($query) use ($strName) {
                 $query->whereRaw("LOWER(REPLACE(name, ' ', '')) = ?", [$strName]);
-                    // ->orWhereRaw("LOWER(REPLACE(hsncode, ' ', '')) = ?", [$strHsnCode]);
+
             })
             ->where('id', '!=', $overheads->id) // Exclude the current product
             ->first();
 
             if ($existingOverhead) {
-                // if ($strName == strtolower(preg_replace('/\s+/', '', $existingOverhead->name)) &&
-                //     $strHsnCode == strtolower(preg_replace('/\s+/', '', $existingOverhead->hsncode))) {
-                //     return redirect()->back()->with('error', 'Both Overhead Name and HSN Code already exist.');
-                // }
+
                 if ($strName == strtolower(preg_replace('/\s+/', '', $existingOverhead->name))) {
                     return redirect()->back()->with('error', 'Overhead Name already exists.');
                 }
@@ -316,11 +315,11 @@ class OverheadController extends Controller
             'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
-            'hsncode' => 'required|string',
-            // 'itemweight' => 'required|string',
-            'itemtype' => 'required|string',
-            'tax' => 'required|string',
-        ]);
+            // 'hsncode' => 'required|string',
+            'itemweight' => 'required|string',
+                'itemType_id' => 'integer|exists:item_type,id',
+                // 'tax' => 'required|string',
+            ]);
 
         $categoryIds = $request->category_ids;
 
@@ -343,11 +342,11 @@ class OverheadController extends Controller
                 'update_frequency' => $request->update_frequency,
                 'price_update_frequency' => $request->price_update_frequency,
                 'price_threshold' => $request->price_threshold,
-                'hsncode' => $request->hsncode,
+                // 'hsncode' => $request->hsncode,
                 'itemweight' => $request->itemweight,
-                'itemtype' => $request->itemtype,
-                'tax' => $request->tax,
-            ]);
+                'itemType_id' => $request->itemType_id,
+                    // 'tax' => $request->tax,
+                ]);
         } catch (\Exception $e) {
             // Handle the error gracefully (e.g., log it and show an error message)
             // \Log::error('Error updating raw material: ' . $e->getMessage());

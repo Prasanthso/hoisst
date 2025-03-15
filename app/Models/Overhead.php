@@ -29,9 +29,9 @@ class Overhead extends Model
         'update_frequency',
         'price_update_frequency',
         'price_threshold',
-        'hsncode',
+        // 'hsncode',
         'itemweight',
-        'itemtype',
-        'tax',
+        'itemType_id',
+        // 'tax',
     ];
 }

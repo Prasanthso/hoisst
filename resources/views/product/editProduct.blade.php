@@ -23,17 +23,17 @@
             @endif
 
             @if (session('error'))
-                <div class="alert alert-danger">{{ session('error') }}</div>
+            <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
 
             @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
             @endif
             <div id="error-message" class="text-danger mt-2"></div>
             <div class="col-lg-12">
@@ -52,10 +52,11 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="inputHSNcode" class="form-label">HSN Code</label>
-                                    <input type="text" class="form-control" id="inputHSNcode" name="hsnCode" value="{{ $product->hsnCode }}" disabled>
+                                    <input type="text" class="form-control" id="inputHSNcode" name="hsnCode" value="{{ $product->hsnCode }}"
+                                    maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)" disabled>
                                 </div>
                                 <div class="col-md-12">
-                                    <label for="inputState" class="form-label">Choose Category For</label>
+                                    <label for="inputState" class="form-label">Choose Unit</label>
                                     <select id="inputState" class="form-select select2" name="uom" disabled>
                                         <option selected>{{ $product->uom }}</option>
                                         <option>Ltr</option>
@@ -85,27 +86,34 @@
                                         @endforeach
                                     </select>
                                 </div>
-
                                 <div class="col-12 mb-2">
                                     <label for="itemType" class="form-label">Item Type</label>
-                                    <input type="text" class="form-control" id="itemType" name="itemType" value="{{ $product->itemType }}" disabled>
+                                    <select id="itemType" class="form-select" name="itemType_id" disabled>
+                                        @foreach($itemtype as $types)
+                                        <option value="{{ $types->id }}"
+                                            {{ (old('itemType_id', $product->itemType_id) == $types->id) ? 'selected' : '' }}>
+                                            {{ $types->itemtypename }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                    {{-- <input type="text" class="form-control" placeholder="eg.Daily, Own, Trading" id="itemType" name="itemType" value="{{ old('itemType') }}"> --}}
                                 </div>
                                 <div class="col-12">
                                     <label for="inputPurCost" class="form-label">Purchase Cost</label>
-                                    <input type="text" class="form-control" id="inputPurCost" name="purcCost" value="{{ $product->purcCost }}" disabled>
+                                    <input type="text" class="form-control" id="inputPurCost" name="purcCost" value="{{ $product->purcCost }}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputMargin" class="form-label">Margin(%)</label>
-                                    <input type="text" class="form-control" id="inputMargin" name="margin" value="{{ $product->margin }}" disabled>
+                                    <label for="inputMargin" class="form-label">Preferred Margin(%)</label>
+                                    <input type="text" class="form-control" id="inputMargin" name="margin" value="{{ $product->margin }}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
 
                                 <div class="col-12 mb-2">
                                     <label for="inputTax" class="form-label">Tax(%)</label>
-                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ $product->tax }}" disabled>
+                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ $product->tax }}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
                                 <div class="col-12 mb-2">
-                                    <label for="inputPrice" class="form-label">Suggested MRP</label>
-                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $product->price }}" disabled>
+                                    <label for="inputPrice" class="form-label">Present MRP</label>
+                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $product->price }}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
 
                                 <div class="row">
@@ -124,8 +132,9 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <label for="price_threshold" class="form-label">Price threshold in percentage</label>
-                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $product->price_threshold }}" disabled>
+                                    <label for="price_threshold" class="form-label">Price threshold</label>
+                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $product->price_threshold }}"
+                                    oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="saveButton" style="display: none;">
@@ -169,6 +178,10 @@
             theme: 'bootstrap-5',
             placeholder: 'Select UoM',
         });
+        $('#itemType').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select itemtype',
+        });
 
         // Toggle edit mode
         $('#editButton').on('click', function() {
@@ -192,71 +205,124 @@
         });
     });
     document.addEventListener("DOMContentLoaded", function() {
-       const btnsave = document.getElementById('saveButton');
+        const btnsave = document.getElementById('saveButton');
 
-    btnsave.addEventListener('click', function(event) {
-    let isValid = true;
-    document.querySelectorAll(".error-text").forEach(el => el.innerHTML = "");
-    // Get form fields
-    let name = document.getElementById("inputName");
-    let hsncode = document.getElementById("inputHSNcode");
-    let uom = document.getElementById("inputState");
-    let itemweight = document.getElementById("inputItemWeight");
-    let categorySelect = document.getElementById("categorySelect");
-    let itemtype = document.getElementById("itemType");
-    let purcCost = document.getElementById("inputPurCost");
-    let mrp = document.getElementById("inputMargin");
-    let price = document.getElementById("inputPrice");
-    let tax = document.getElementById("inputTax");
-    let priceUpdateFreq = document.getElementById("price_update_frequency");
-    let priceThreshold = document.getElementById("price_threshold");
+        btnsave.addEventListener('click', function(event) {
+            let isValid = true;
+            document.querySelectorAll(".error-text").forEach(el => el.innerHTML = "");
+            // Get form fields
+            let name = document.getElementById("inputName");
+            let hsncode = document.getElementById("inputHSNcode");
+            let uom = document.getElementById("inputState");
+            let itemweight = document.getElementById("inputItemWeight");
+            let categorySelect = document.getElementById("categorySelect");
+            let itemtype = document.getElementById("itemType");
+            let purcCost = document.getElementById("inputPurCost");
+            let mrp = document.getElementById("inputMargin");
+            let price = document.getElementById("inputPrice");
+            let tax = document.getElementById("inputTax");
+            let priceUpdateFreq = document.getElementById("price_update_frequency");
+            let priceThreshold = document.getElementById("price_threshold");
 
-    let errorDiv = document.getElementById("error-message");
-    errorDiv.innerHTML = ""; // Clear previous errors
+            let errorDiv = document.getElementById("error-message");
+            errorDiv.innerHTML = ""; // Clear previous errors
 
-   // Validation checks
-   if (name.value.trim() === "") { showError(name, "Name is required."); isValid = false; }
-        if (hsncode.value.trim() === "") { showError(hsncode, "HSN Code is required."); isValid = false; }
-        if (uom.value === "UoM") { showError(uom, "Please select a valid Unit of Measure."); isValid = false; }
-        if (itemweight.value.trim() === "") { showError(itemweight, "Net Weight is required."); isValid = false; }
-        if (categorySelect.selectedOptions.length === 0) { showError(categorySelect, "Please select at least one category."); isValid = false; }
-        if (itemtype.value.trim() === "") { showError(itemtype, "Item Type is required."); isValid = false; }
-        if (purcCost.value.trim() === "" || isNaN(purcCost.value)) { showError(purcCost, "Valid purcCost is required."); isValid = false; }
-        if (mrp.value.trim() === "" || isNaN(mrp.value)) { showError(mrp, "Valid MRP is required."); isValid = false; }
-        if (price.value.trim() === "" || isNaN(price.value)) { showError(price, "Valid Price is required."); isValid = false; }
-        if (tax.value.trim() === "" || isNaN(tax.value)) { showError(tax, "Valid Tax value is required."); isValid = false; }
-        if (priceUpdateFreq.value.trim() === "" || isNaN(priceUpdateFreq.value)) { showError(priceUpdateFreq, "Valid Pricing Update Frequency is required."); isValid = false; }
-        if (priceThreshold.value.trim() === "" || isNaN(priceThreshold.value)) { showError(priceThreshold, "Valid Price Threshold is required."); isValid = false; }
+            // Validation checks
+            if (name.value.trim() === "") {
+                showError(name, "Name is required.");
+                isValid = false;
+            }
+            if (hsncode.value.trim() === "") {
+                showError(hsncode, "HSN Code is required.");
+                isValid = false;
+            }
+            if (!/^\d{1,8}$/.test(hsncode.value)) {
+                showError(hsncode, "HSN Code must be numeric and up to 8 digits.");
+                isValid = false;
+            }
+            if (uom.value === "UoM") {
+                showError(uom, "Please select a valid Unit of Measure.");
+                isValid = false;
+            }
+            if (itemweight.value.trim() === "") {
+                showError(itemweight, "Net Weight is required.");
+                isValid = false;
+            }
+            if (categorySelect.selectedOptions.length === 0) {
+                showError(categorySelect, "Please select at least one category.");
+                isValid = false;
+            }
+            if (itemtype.value.trim() === "") {
+                showError(itemtype, "Item Type is required.");
+                isValid = false;
+            }
+            if (purcCost.value.trim() === "" || isNaN(purcCost.value)) {
+                showError(purcCost, "Valid purcCost is required.");
+                isValid = false;
+            }
+            if (mrp.value.trim() === "" || isNaN(mrp.value)) {
+                showError(mrp, "Valid MRP is required.");
+                isValid = false;
+            }
+            if (price.value.trim() === "" || isNaN(price.value)) {
+                showError(price, "Valid Price is required.");
+                isValid = false;
+            }
+            if (tax.value.trim() === "" || isNaN(tax.value)) {
+                showError(tax, "Valid Tax value is required.");
+                isValid = false;
+            }
+            if (priceUpdateFreq.value.trim() === "" || isNaN(priceUpdateFreq.value)) {
+                showError(priceUpdateFreq, "Valid Pricing Update Frequency is required.");
+                isValid = false;
+            }
+            if (priceThreshold.value.trim() === "" || isNaN(priceThreshold.value)) {
+                showError(priceThreshold, "Valid Price Threshold is required.");
+                isValid = false;
+            }
 
-        if (!isValid) {
-            event.preventDefault();
-        }
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+
+        document.querySelectorAll("input, select").forEach(input => {
+            let hasTyped = false; // Track if the user has typed
+
+            input.addEventListener("input", () => { hasTyped = true; clearError(input)});
+            input.addEventListener("change", () => { hasTyped = true; clearError(input)});
+            input.addEventListener("blur", () => {
+                clearError(input);
+                    if (input.value.trim() === "") {
+                        hasTyped = false;
+                        showError(input, "This field is required!");
+                    }
+                });
+        });
+
+        // Special handling for select2 dropdowns
+        $('#inputState, #categorySelect').on("select2:select", function() {
+            clearError(this); // Pass the select element to clearError function
+        });
     });
 
-    document.querySelectorAll("input, select").forEach(input => {
-        input.addEventListener("input", () => clearError(input));
-        input.addEventListener("change", () => clearError(input));
-    });
-
-    // Special handling for select2 dropdowns
-    $('#inputState, #categorySelect').on("select2:select", function () {
-        clearError(this); // Pass the select element to clearError function
-    });
-});
     function showError(input, message) {
         let errorElement = document.createElement("div");
         errorElement.className = "error-text text-danger";
         errorElement.innerHTML = message;
         input.parentNode.appendChild(errorElement);
-        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        input.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
     }
-    function clearError(input) {
-            let errorMsg = input.parentNode.querySelector(".error-text");
-            if (errorMsg) {
-                errorMsg.remove();
-            }
-        }
 
+    function clearError(input) {
+        let errorMsg = input.parentNode.querySelector(".error-text");
+        if (errorMsg) {
+            errorMsg.remove();
+        }
+    }
 </script>
 
 <!--Template Main JS File-->

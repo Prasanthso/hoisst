@@ -36,12 +36,13 @@ class RecipePricingController extends Controller
     public function showRecipePricingList()
     {
         $reports = DB::select("
-            SELECT 
-    pm.id AS SNO, 
-    pm.name AS Product_Name, 
+            SELECT
+    pm.id AS SNO,
+    pm.name AS Product_Name,
     pm.price AS P_MRP,
     pm.tax AS tax,
     oc.suggested_mrp AS S_MRP,
+    oc.discount AS discount,
 
     -- Get Raw Material IDs
     rm_total.RM_IDs,
@@ -60,7 +61,7 @@ class RecipePricingController extends Controller
 
     -- Packing Material Cost (Divided by Output)
     COALESCE(pm_total.PM_Cost, 0) / COALESCE(rmst.Output, 1) AS PM_Cost,
-    
+
     -- Overhead Cost (Divided by Output)
     COALESCE(oh_total.Overhead_Cost, 0) / COALESCE(rmst.Output, 1) AS OH_Cost,
 
@@ -68,16 +69,16 @@ class RecipePricingController extends Controller
     COALESCE(moh_total.MOH_Cost, 0) / COALESCE(rmst.Output, 1) AS MOH_Cost,
 
     -- Output
-    rmst.Output 
+    rmst.Output
 
-FROM 
-    product_master pm 
-JOIN 
-    recipe_master rmst ON pm.id = rmst.product_id 
+FROM
+    product_master pm
+JOIN
+    recipe_master rmst ON pm.id = rmst.product_id
 
 -- Aggregate Raw Material Cost Separately
 LEFT JOIN (
-    SELECT 
+    SELECT
         rfr.product_id,
         GROUP_CONCAT(DISTINCT rfr.raw_material_id ORDER BY rfr.raw_material_id ASC SEPARATOR ', ') AS RM_IDs,
         GROUP_CONCAT(DISTINCT rm.name ORDER BY rm.name ASC SEPARATOR ', ') AS RM_Names,
@@ -89,7 +90,7 @@ LEFT JOIN (
 
 -- Aggregate Packing Material Cost Separately
 LEFT JOIN (
-    SELECT 
+    SELECT
         pfr.product_id,
         GROUP_CONCAT(DISTINCT pfr.packing_material_id ORDER BY pfr.packing_material_id ASC SEPARATOR ', ') AS PM_IDs,
         GROUP_CONCAT(DISTINCT pkm.name ORDER BY pkm.name ASC SEPARATOR ', ') AS PM_Names,
@@ -101,8 +102,8 @@ LEFT JOIN (
 
 -- Aggregate Overhead Cost Separately
 LEFT JOIN (
-    SELECT 
-        ofr.product_id, 
+    SELECT
+        ofr.product_id,
         SUM(COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0)) AS Overhead_Cost
     FROM oh_for_recipe ofr
     JOIN overheads oh ON ofr.overheads_id = oh.id
@@ -111,18 +112,18 @@ LEFT JOIN (
 
 -- Aggregate Manufacturing Overhead Cost Separately
 LEFT JOIN (
-    SELECT 
-        product_id, 
+    SELECT
+        product_id,
         SUM(COALESCE(price, 0)) AS MOH_Cost
     FROM moh_for_recipe
     GROUP BY product_id
 ) AS moh_total ON pm.id = moh_total.product_id
 
-LEFT JOIN 
+LEFT JOIN
     overall_costing oc ON pm.id = oc.productId AND oc.status = 'active'
-WHERE 
+WHERE
     rmst.status = 'active' AND oc.suggested_mrp IS NOT NULL
-ORDER BY 
+ORDER BY
     pm.name ASC;
 
 
@@ -192,17 +193,17 @@ ORDER BY
                     'rm_for_recipe.quantity as rm_quantity',
                     'rm_for_recipe.code as rm_code',
                     'rm_for_recipe.uom as rm_uom',
-                    'rm_for_recipe.price as rm_price',
+                    'raw_materials.price as rm_price',
                     'pm_for_recipe.packing_material_id as pm_id',
                     'pm_for_recipe.quantity as pm_quantity',
                     'pm_for_recipe.code as pm_code',
                     'pm_for_recipe.uom as pm_uom',
-                    'pm_for_recipe.price as pm_price',
+                    'packing_materials.price as pm_price',
                     'oh_for_recipe.overheads_id as oh_id',
                     'oh_for_recipe.quantity as oh_quantity',
                     'oh_for_recipe.code as oh_code',
                     'oh_for_recipe.uom as oh_uom',
-                    'oh_for_recipe.price as oh_price',
+                    'overheads.price as oh_price',
                     'moh_for_recipe.name as moh_name',
                     'moh_for_recipe.oh_type as moh_type',
                     'moh_for_recipe.price as moh_price',
@@ -273,23 +274,27 @@ ORDER BY
                 ->leftjoin('pm_for_recipe', 'pm_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->leftjoin('oh_for_recipe', 'oh_for_recipe.product_id', '=', 'recipe_master.product_id')
                 ->leftjoin('moh_for_recipe', 'moh_for_recipe.product_id', '=', 'recipe_master.product_id')
+                     // Joining with Master Tables
+            ->leftJoin('raw_materials', 'rm_for_recipe.raw_material_id', '=', 'raw_materials.id')
+            ->leftJoin('packing_materials', 'pm_for_recipe.packing_material_id', '=', 'packing_materials.id')
+            ->leftJoin('overheads', 'oh_for_recipe.overheads_id', '=', 'overheads.id')
                 ->where('recipe_master.product_id', $productId)
                 ->select(
                     'rm_for_recipe.raw_material_id as rm_id',
                     'rm_for_recipe.quantity as rm_quantity',
                     'rm_for_recipe.code as rm_code',
                     'rm_for_recipe.uom as rm_uom',
-                    'rm_for_recipe.price as rm_price',
+                    'raw_materials.price as rm_price',
                     'pm_for_recipe.packing_material_id as pm_id',
                     'pm_for_recipe.quantity as pm_quantity',
                     'pm_for_recipe.code as pm_code',
                     'pm_for_recipe.uom as pm_uom',
-                    'pm_for_recipe.price as pm_price',
+                    'packing_materials.price as pm_price',
                     'oh_for_recipe.overheads_id as oh_id',
                     'oh_for_recipe.quantity as oh_quantity',
                     'oh_for_recipe.code as oh_code',
                     'oh_for_recipe.uom as oh_uom',
-                    'oh_for_recipe.price as oh_price',
+                    'overheads.price as oh_price',
                     'moh_for_recipe.name as moh_name',
                     'moh_for_recipe.oh_type as moh_type',
                     'moh_for_recipe.price as moh_price',

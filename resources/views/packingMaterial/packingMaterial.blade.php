@@ -123,6 +123,8 @@
                         <div>
                             <!-- Content like "Showing 1 to 10 of 50 entries" -->
                             Showing {{ $packingMaterials->firstItem() }} to {{ $packingMaterials->lastItem() }} of {{ $packingMaterials->total() }} entries
+                            <input type="hidden" id="currentPage" value="{{ $packingMaterials->currentPage() }}">
+                            <input type="hidden" id="perPage" value="{{ $packingMaterials->perPage() }}">
                         </div>
                         <div>
                             <!-- Pagination Links -->
@@ -591,6 +593,7 @@
                                     });
                                     updateSerialNumbers();
                                     alert("Selected rows deleted successfully!");
+                                    window.location.reload();
                                 }
                             })
                             .catch(error => {
@@ -610,7 +613,7 @@
                     alert("An error occurred. Please try again.");
                 });
         };
-
+        deleteTableBtn.addEventListener("click", deleteRows);
         // Attach click event listener to each price column
         table.querySelectorAll(".price-text").forEach((priceElement) => {
             const row = priceElement.closest("tr");
@@ -725,6 +728,8 @@
         */
 
         function updateSerialNumbers() {
+            let currentPage = parseInt(document.querySelector("#currentPage").value) || 1; // Get current page number
+            let perPage = parseInt(document.querySelector("#perPage").value) || 10;
             // Get all visible rows
             const visibleRows = Array.from(document.querySelectorAll("#packingMaterialTable tr"))
                 .filter(row => row.style.display !== 'none');
@@ -733,7 +738,7 @@
             visibleRows.forEach((row, index) => {
                 const snoCell = row.querySelector("td:nth-child(2)"); // Adjust the column index for S.NO
                 if (snoCell) {
-                    snoCell.textContent = `${index + 1}.`; // Update the serial number
+                    snoCell.textContent =  ((currentPage - 1) * perPage + index + 1) + ".";  // `${index + 1}.`; // Update the serial number
                 }
             });
         }

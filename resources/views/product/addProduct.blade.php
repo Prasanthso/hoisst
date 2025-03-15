@@ -42,11 +42,12 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="inputHSNcode" class="form-label">HSN Code</label>
-                                    <input type="text" class="form-control" id="inputHSNcode" name="hsnCode" value="{{ old('hsnCode') }}">
+                                    <input type="text" class="form-control" id="inputHSNcode" name="hsnCode" value="{{ old('hsnCode') }}"
+                                    maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)">
                                 </div>
                                 <!-- <div class="col-12">
                                     <label for="inputNanme4" class="form-label">RM Code</label>
-                                    <input type="text" class="form-control" id="inputNanme4">
+                                    <input type="text" class="form-control" id="inutNanpme4">
                                 </div> -->
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Unit</label>
@@ -64,7 +65,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <label for="categorySelect" class="form-label">Product Category</label>
-                                    <select id="categorySelect" class="form-select select2" name="category_ids[]" multiple>
+                                    <select id="categorySelect" class="form-select" name="category_ids[]" multiple>
                                         @foreach($product as $categories)
                                         <option value="{{ $categories->id }}"
                                             {{ in_array($categories->id, old('category_ids', [])) ? 'selected' : '' }}>
@@ -76,23 +77,33 @@
 
                                 <div class="col-12 mb-2">
                                     <label for="itemType" class="form-label">Item Type</label>
-                                    <input type="text" class="form-control" placeholder="eg.Daily, Own, Trading" id="itemType" name="itemType" value="{{ old('itemType') }}">
+                                    <select id="itemType" class="form-select" name="itemType_id">
+                                        @foreach($itemtype as $types)
+                                        <option value="{{ $types->id }}"
+                                            {{ old('itemType_id') == $types->id ? 'selected' : '' }}>
+                                            {{ $types->itemtypename }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                    {{-- <input type="text" class="form-control" placeholder="eg.Daily, Own, Trading" id="itemType" name="itemType" value="{{ old('itemType') }}"> --}}
                                 </div>
                                 <div class="col-12">
                                     <label for="inputPurCost" class="form-label">Purchase Cost</label>
-                                    <input type="text" class="form-control" id="inputPurCost" name="purcCost" value="{{ old('purcCost') }}">
+                                    <input type="text" class="form-control" id="inputPurCost" name="purcCost" value="{{ old('purcCost') }}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
                                 </div>
                                 <div class="col-12">
-                                    <label for="inputMargin" class="form-label">Margin(%)</label>
-                                    <input type="text" class="form-control" id="inputMargin" name="margin" value="{{ old('margin') }}">
+                                    <label for="inputMargin" class="form-label"> Preferred Margin(%)</label>
+                                    <input type="text" class="form-control" id="inputMargin" name="margin" value="{{ old('margin') }}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
                                 </div>
                                 <div class="col-12">
                                     <label for="inputTax" class="form-label">Tax(%)</label>
-                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ old('tax') }}">
+                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ old('tax') }}"
+                                    oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
                                 </div>
                                 <div class="col-12 mb-2">
-                                    <label for="inputPrice" class="form-label">Suggested MRP</label>
-                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ old('price') }}">
+                                    <label for="inputPrice" class="form-label">Present MRP</label>
+                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ old('price') }}"
+                                    oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
                                 </div>
                                 <div class="row">
                                     <label for="update_frequency" class="form-label mb-2">Pricing update frequency</label>
@@ -107,12 +118,14 @@
                                     {{-- <div class="col-md-1">
                                 </div> --}}
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ old('price_update_frequency') }}">
+                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ old('price_update_frequency') }}"
+                                        oninput="this.value = this.value.replace(/\D/g, '');">
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="price_threshold" class="form-label">Price threshold</label>
-                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ old('price_threshold') }}">
+                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ old('price_threshold') }}"
+                                    oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="btnsubmit">
@@ -155,6 +168,10 @@
             theme: 'bootstrap-5',
             placeholder: 'Select UoM',
         });
+        $('#itemType').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select itemtype',
+        });
     });
     document.addEventListener("DOMContentLoaded", function() {
        const btnsave = document.getElementById('btnsubmit');
@@ -182,10 +199,14 @@
    // Validation checks
    if (name.value.trim() === "") { showError(name, "Name is required."); isValid = false; }
         if (hsncode.value.trim() === "") { showError(hsncode, "HSN Code is required."); isValid = false; }
+        else if (!/^\d{1,8}$/.test(hsncode.value)) {
+                showError(hsncode, "HSN Code must be numeric and up to 8 digits.");
+                isValid = false;
+            }
         if (uom.value === "UoM") { showError(uom, "Please select a valid Unit of Measure."); isValid = false; }
         if (itemweight.value.trim() === "") { showError(itemweight, "Net Weight is required."); isValid = false; }
         if (categorySelect.selectedOptions.length === 0) { showError(categorySelect, "Please select at least one category."); isValid = false; }
-        if (itemtype.value.trim() === "") { showError(itemtype, "Item Type is required."); isValid = false; }
+        if (itemtype.selectedOptions.length === 0) { showError(itemtype, "Item Type is required."); isValid = false; }
         if (purcCost.value.trim() === "" || isNaN(purcCost.value)) { showError(purcCost, "Valid purcCost is required."); isValid = false; }
         if (mrp.value.trim() === "" || isNaN(mrp.value)) { showError(mrp, "Valid MRP is required."); isValid = false; }
         if (price.value.trim() === "" || isNaN(price.value)) { showError(price, "Valid Price is required."); isValid = false; }
@@ -197,13 +218,22 @@
             event.preventDefault();
         }
     });
-    document.querySelectorAll("input, select").forEach(input => {
-        input.addEventListener("input", () => clearError(input));
-        input.addEventListener("change", () => clearError(input));
-    });
 
+    document.querySelectorAll("input, select").forEach(input => {
+            let hasTyped = false; // Track if the user has typed
+
+            input.addEventListener("input", () => { hasTyped = true; clearError(input)});
+            input.addEventListener("change", () => { hasTyped = true; clearError(input)});
+            input.addEventListener("blur", () => {
+                clearError(input);
+                    if (input.value.trim() === "") {
+                        hasTyped = false;
+                        showError(input, "This field is required!");
+                    }
+                });
+        });
     // Special handling for select2 dropdowns
-    $('#inputState, #categorySelect').on("select2:select", function () {
+    $('#inputState, #categorySelect','#itemType').on("select2:select", function () {
         clearError(this); // Pass the select element to clearError function
     });
 });
