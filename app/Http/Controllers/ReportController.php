@@ -22,6 +22,7 @@ class ReportController extends Controller
     pm.tax AS tax,
     pm.margin AS margin,
     oc.suggested_mrp AS S_MRP,
+    oc.discount AS discount,
 
     -- Get Raw Material IDs
     rm_total.RM_IDs,
