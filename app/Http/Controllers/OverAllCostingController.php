@@ -222,6 +222,54 @@ class OverAllCostingController extends Controller
     }
     public function show($id)
     {
+        $productId = DB::table('overall_costing')  // get product id
+        ->where('id', $id)
+        ->value('productId');
+
+        $producttax = DB::table('product_master') // get product tax
+        ->where('id', $productId)
+        ->value('tax');
+
+        $rpoutput = DB::table('recipe_master')
+        ->where('product_id', $productId)
+            ->where('status', 'active')
+            ->value('Output');
+
+        $totalRmCost = DB::table('rm_for_recipe')
+            ->join('raw_materials', 'rm_for_recipe.raw_material_id', '=', 'raw_materials.id')
+            ->where('rm_for_recipe.product_id', $productId)
+            ->where('raw_materials.status', 'active') // Ensure the status column exists
+            ->sum(DB::raw('rm_for_recipe.quantity * COALESCE(raw_materials.price, 0)'));
+
+        $costA = ($rpoutput && $rpoutput > 0) ? ($totalRmCost / $rpoutput) : 0;
+        $rmCost = number_format($costA, 2);
+
+        $totalPmCost = DB::table('pm_for_recipe')
+        ->join('packing_materials', 'pm_for_recipe.packing_material_id', '=', 'packing_materials.id')
+        ->where('pm_for_recipe.product_id', $productId)
+        ->where('packing_materials.status', 'active') // Ensure the status column exists
+        ->sum(DB::raw('pm_for_recipe.quantity * COALESCE(packing_materials.price, 0)'));
+
+        $costB = ($rpoutput && $rpoutput > 0) ? ($totalPmCost / $rpoutput) : 0;
+        $pmCost = number_format($costB, 2);
+
+        $totalOhCost = DB::table('oh_for_recipe')
+       ->join('overheads', 'oh_for_recipe.overheads_id', '=', 'overheads.id')
+        ->where('oh_for_recipe.product_id', $productId)
+        ->where('overheads.status', 'active') // Ensure the status column exists
+        ->sum(DB::raw('oh_for_recipe.quantity * COALESCE(overheads.price, 0)'));
+
+        // $totalMohCost = 0;
+        if (empty($totalOhCost)) { // If NULL or 0
+            $totalOhCost = DB::table('moh_for_recipe')
+            ->where('product_id', $productId)
+            ->sum('price');
+        }
+
+        $costC = ($rpoutput && $rpoutput > 0) ? ($totalOhCost / $rpoutput) : 0;
+        $ohCost = number_format($costC, 2);
+        $totalCost = $rmCost + $pmCost + $ohCost;
+
         // Fetch the specific OverallCosting record
         $costing = DB::table('overall_costing')
             ->join('product_master', 'overall_costing.productId', '=', 'product_master.id')
@@ -233,15 +281,19 @@ class OverAllCostingController extends Controller
             ->where('overall_costing.status', 'active')
             ->get(); // Retrieve only records
 
-        // Check if data exists
-        if (!$costing) {
-            return response()->json(['success' => false, 'message' => 'Overall-Costing was not found.'],404);
-        }
+            // Check if data exists
+            if (!$costing) {
+                return response()->json(['success' => false, 'message' => 'Overall-Costing was not found.'],404);
+            }
 
         return response()->json([
             'success' => true,
             'message' => 'Overall-Costing was fetched.',
-            'data' => $costing
+           'data' => [
+                    'costing' => $costing,
+                    'rmCost' => $rmCost,
+                    'totalCost' => $totalCost
+                ]
         ]);
     }
 
@@ -262,25 +314,30 @@ class OverAllCostingController extends Controller
             ->value('Output');
 
         $totalRmCost = DB::table('rm_for_recipe')
-        ->where('product_id', $productId)
-            ->sum('amount');
+            ->join('raw_materials', 'rm_for_recipe.raw_material_id', '=', 'raw_materials.id')
+            ->where('rm_for_recipe.product_id', $productId)
+            ->where('raw_materials.status', 'active') // Ensure the status column exists
+            ->sum(DB::raw('rm_for_recipe.quantity * COALESCE(raw_materials.price, 0)'));
 
         $costA = ($rpoutput && $rpoutput > 0) ? ($totalRmCost / $rpoutput) : 0;
         $rmCost = number_format($costA, 2);
 
         $totalPmCost = DB::table('pm_for_recipe')
-        ->where('product_id', $productId)
-            ->sum('amount');
+        ->join('packing_materials', 'pm_for_recipe.packing_material_id', '=', 'packing_materials.id')
+        ->where('pm_for_recipe.product_id', $productId)
+        ->where('packing_materials.status', 'active') // Ensure the status column exists
+        ->sum(DB::raw('pm_for_recipe.quantity * COALESCE(packing_materials.price, 0)'));
 
         $costB = ($rpoutput && $rpoutput > 0) ? ($totalPmCost / $rpoutput) : 0;
         $pmCost = number_format($costB, 2);
 
         $totalOhCost = DB::table('oh_for_recipe')
-        ->where('product_id', $productId)
-        ->sum('amount');
+       ->join('overheads', 'oh_for_recipe.overheads_id', '=', 'overheads.id')
+        ->where('oh_for_recipe.product_id', $productId)
+        ->where('overheads.status', 'active') // Ensure the status column exists
+        ->sum(DB::raw('oh_for_recipe.quantity * COALESCE(overheads.price, 0)'));
 
         // $totalMohCost = 0;
-
         if (empty($totalOhCost)) { // If NULL or 0
             $totalOhCost = DB::table('moh_for_recipe')
             ->where('product_id', $productId)

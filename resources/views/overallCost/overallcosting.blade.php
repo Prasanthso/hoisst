@@ -50,6 +50,7 @@
                             <th>Margin</th>
                             {{-- <th>Suggeted Price</th> --}}
                             <th>Suggeted MRP</th>
+                            {{-- <th>product</th> --}}
                         </tr>
                     </thead>
                     <tbody>
@@ -180,22 +181,40 @@
                 // const tableBody = table.querySelector("tbody");
                 tableBody.innerHTML = "";   // Clear table before adding new data
 
-                if (recipe.data && recipe.data.length > 0) {
-                    recipe.data.forEach((item) => {
-                        const row = `<tr>
-                            <td><a href="/editoverallcosting/${item.id}" style="color: black;font-size:16px;text-decoration: none;">${item.product_name || '-'}</a></td>
-                            <td>${item.rm_cost_unit || '-'}</td>
-                            <td>${item.total_cost || '-'}</td>
-                            <td>${item.margin || '-'}</td>
+                if (recipe.data && recipe.data.costing.length > 0) {
+                    const costing = recipe.data.costing[0]; // Get the first item in costing array
 
-                            <td>${item.suggested_mrp || '-'}</td>
-                        </tr>`;
-                        tableBody.innerHTML += row;
+                    const totalCost = parseFloat(recipe.data.totalCost) || 0;
 
-                    });
+                    // Convert margin, tax, and discount to numbers
+                    const margin = parseFloat(costing.margin) || 0;
+                    const tax = parseFloat(costing.tax) || 0;
+                    const discount = parseFloat(costing.discount) || 0;
+
+                    // Calculate values
+                    const cost_margin = totalCost * (margin / 100);
+                    const cost_with_margin = totalCost + cost_margin; // Adding margin to total cost
+
+                    const cost_tax = cost_with_margin * (tax / 100); // Applying tax after margin
+                    const cost_with_tax = cost_with_margin + cost_tax; // Adding tax to total cost
+
+                    const cost_disc = cost_with_tax * (discount / 100); // Applying discount after tax
+                    const suggestedMrp = (cost_with_tax + cost_disc).toFixed(2);
+                    const row = `<tr>
+                        <td><a href="/editoverallcosting/${costing.id}" style="color: black;font-size:16px;text-decoration: none;">
+                            ${costing.product_name ?? '-'}
+                        </a></td>
+                        <td>${recipe.data.rmCost ?? '-'}</td>  <!-- Access rmCost directly from recipe.data -->
+                        <td>${recipe.data.totalCost ?? '-'}</td>  <!-- Access totalCost directly from recipe.data -->
+                        <td>${costing.margin ?? '-'}</td>
+                        <td>${suggestedMrp ?? '-'}</td>
+                    </tr>`;
+
+                    tableBody.innerHTML += row;
                 } else {
                     tableBody.innerHTML = "<tr><td colspan='6'>No data available</td></tr>";
                 }
+
                 table.style.display = "table";
                 // window.location.href = `/editoverallcosting/${recipeId}`;
 
