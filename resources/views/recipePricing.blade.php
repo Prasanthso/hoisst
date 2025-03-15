@@ -60,7 +60,7 @@
                             @php
                             $total = $report->RM_Cost + $report->PM_Cost;
                             $cost = $total + $report->OH_Cost + $report->MOH_Cost;
-                            $sellingRate = $report->S_MRP * 0.75;
+                            $sellingRate = ($report->S_MRP * 100)/(100 + $report->discount);
                             $beforeTax = ($sellingRate * 100) / (100 + $report->tax);
                             $margin = $beforeTax - $cost;
                             $marginPercentage = ($beforeTax > 0) ? ($margin / $beforeTax) * 100 : 0;
@@ -79,12 +79,13 @@
                                 <td>{{ number_format($report->OH_Cost + $report->MOH_Cost, 2) }}</td>
                                 <td class="cost">{{ number_format($cost, 2) }}</td>
                                 <td class="selling-rate">{{ number_format($sellingRate, 2) }}</td>
-                                <td>18</td>
+                                <td class="tax-value">{{ $report->tax }}</td>
                                 <td class="before-tax">{{ number_format($beforeTax, 2) }}</td>
                                 <td class="margin">{{ number_format($beforeTax - $cost, 2) }}</td>
                                 <td class="margin-perc">
                                     {{ $beforeTax > 0 ? number_format((($beforeTax -$cost) / $beforeTax) * 100, 2) . '%' : '0%' }}
                                 </td>
+                                <td class="d-none discount-value">{{ $report->discount }}</td>
                                 @endforeach
 
                                 <!-- Add more rows as needed -->
@@ -124,6 +125,52 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
+        // Edit MRP Logic
+        $(document).on('click', '.editable-mrp', function(e) {
+            e.stopPropagation();
+            $('.mrp-text').removeClass('d-none');
+            $('.mrp-input').addClass('d-none');
+
+            const cell = $(this);
+            cell.find('.mrp-text').addClass('d-none');
+            cell.find('.mrp-input').removeClass('d-none').focus();
+        });
+
+        // Calculation Logic - Trigger Only on 'Enter' Key Press
+        $(document).on('keypress', '.mrp-input', function(e) {
+            if (e.which === 13) { // Enter key
+                const inputField = $(this);
+                const newValue = parseFloat(inputField.val().trim()) || 0;
+
+                if (newValue > 0) {
+                    inputField.addClass('d-none');
+                    inputField.siblings('.mrp-text').text(newValue).removeClass('d-none');
+
+                    const row = inputField.closest('tr');
+                    const cost = parseFloat(row.find('.cost').text().trim()) || 0;
+
+                    // Extract discount and tax values
+                    const discount = parseFloat(row.find('.discount-value').text().trim()) || 0;
+                    const tax = parseFloat(row.find('.tax-value').text().trim()) || 0;
+
+                    // Updated Calculation Logic
+                    const sellingRate = parseFloat((newValue * 100) / (100 + discount)).toFixed(2);
+                    const beforeTax = parseFloat((sellingRate * 100) / (100 + tax)).toFixed(2);
+                    const margin = parseFloat((beforeTax - cost).toFixed(2));
+                    const marginPercentage = beforeTax > 0 ? ((margin / beforeTax) * 100).toFixed(2) : '0.00';
+
+                    row.find('.selling-rate').text(sellingRate);
+                    row.find('.before-tax').text(beforeTax);
+                    row.find('.margin').text(margin);
+                    row.find('.margin-perc').text(marginPercentage + '%');
+                }
+            }
+        });
+
+        // Prevent bubbling inside input
+        $(document).on('click', '.mrp-input', function(e) {
+            e.stopPropagation();
+        });
 
         // PDF Export Function
         document.getElementById('exportPdfBtn').addEventListener('click', function() {
@@ -134,7 +181,7 @@
 
             const table = document.getElementById('reportTable');
             if (!table) {
-                console.error('Table with ID "exportRm" not found.');
+                console.error('Table with ID "reportTable" not found.');
                 return;
             }
 
@@ -154,7 +201,7 @@
                     }
 
                     cells.forEach((cell, index) => {
-                        if (index !== 0) { // Skip checkboxes column
+                        if (index !== 0) {
                             rowData.push(cell.innerText.trim());
                         }
                     });
@@ -163,10 +210,9 @@
                 }
             });
 
-            // Add Table to PDF
             doc.autoTable({
-                head: [tableData[0]], // Header row
-                body: tableData.slice(1), // Table content
+                head: [tableData[0]],
+                body: tableData.slice(1),
                 startY: 20,
                 theme: 'striped',
             });
@@ -174,32 +220,31 @@
             doc.save('margin_calculation.pdf');
         });
 
+        // Excel Export Function
         document.getElementById('exportBtn').addEventListener('click', function() {
-            const table = document.getElementById('reportTable'); // Ensure this ID exists in your table
+            const table = document.getElementById('reportTable');
             if (!table) {
-                console.error('Table with ID "exportRm" not found.');
+                console.error('Table with ID "reportTable" not found.');
                 return;
             }
-            console.log('Table with ID "exportRm" not found.');
 
-            const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
+            const rows = Array.from(table.querySelectorAll('tr'));
             const visibleData = [];
-            let serialNumber = 1; // Initialize serial number
+            let serialNumber = 1;
 
-            // Iterate through each row
             rows.forEach((row, rowIndex) => {
-                if (row.style.display !== 'none') { // Only include visible rows
+                if (row.style.display !== 'none') {
                     const cells = Array.from(row.children);
                     const rowData = [];
 
                     if (rowIndex > 0) {
-                        rowData.push(serialNumber++); // Auto-increment serial number
+                        rowData.push(serialNumber++);
                     } else {
-                        rowData.push("S.NO"); // Add "S.NO" to the header row
+                        rowData.push("S.NO");
                     }
 
                     cells.forEach((cell, index) => {
-                        if (index !== 0) { // Skip checkboxes column
+                        if (index !== 0) {
                             rowData.push(cell.innerText.trim());
                         }
                     });
@@ -208,77 +253,11 @@
                 }
             });
 
-            // Convert data to workbook
             const ws = XLSX.utils.aoa_to_sheet(visibleData);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Recipe Pricing');
 
-            // Export as an Excel file
             XLSX.writeFile(wb, 'margin_calculation.xlsx');
-        });
-
-
-        // When clicking the MRP cell
-        $(document).on("click", ".editable-mrp", function(e) {
-            e.stopPropagation(); // Prevents closing immediately when clicking inside
-
-            $(".mrp-text").removeClass("d-none"); // Reset all first
-            $(".mrp-input").addClass("d-none");
-
-            var cell = $(this);
-            cell.find(".mrp-text").addClass("d-none"); // Hide text
-            cell.find(".mrp-input").removeClass("d-none").focus(); // Show input & focus
-        });
-
-        // When clicking outside, switch back and update Selling Rate, Before Tax, Margin & Margin %
-        $(document).on("click", function() {
-            $(".mrp-input").each(function() {
-                var inputField = $(this);
-                var newValue = parseFloat(inputField.val().trim()); // Get new MRP value
-
-                if (!isNaN(newValue) && newValue > 0) {
-                    inputField.addClass("d-none"); // Hide input
-                    inputField.siblings(".mrp-text").text(newValue).removeClass("d-none"); // Update text
-
-                    var row = inputField.closest("tr"); // Get the row
-                    var sellingRateCell = row.find(".selling-rate"); // Get Selling Rate cell
-                    var beforeTaxCell = row.find(".before-tax"); // Get Before Tax cell
-                    var costCell = row.find(".cost"); // Get Cost cell
-                    var marginCell = row.find(".margin"); // Get Margin cell
-                    var marginPercCell = row.find(".margin-perc"); // Get Margin % cell
-
-                    // Calculate Selling Rate (MRP * 0.75)
-                    var sellingRate = (newValue * 0.75).toFixed(2);
-                    sellingRateCell.text(sellingRate); // Update Selling Rate
-
-                    // Calculate Before Tax (Selling Rate * 100 / 118)
-                    var beforeTax = (sellingRate * 100 / 118).toFixed(2);
-                    beforeTaxCell.text(beforeTax); // Update Before Tax
-
-                    // Get Cost value
-                    var cost = parseFloat(costCell.text().trim()) || 0;
-
-                    // Calculate Margin (Before Tax - Cost)
-                    var margin = (beforeTax - cost).toFixed(2);
-                    marginCell.text(margin); // Update Margin
-
-                    // Calculate Margin % (Margin / Before Tax * 100)
-                    var marginPerc = beforeTax > 0 ? ((margin / beforeTax) * 100).toFixed(2) : "0.00";
-                    marginPercCell.text(marginPerc + "%"); // Update Margin %
-                }
-            });
-        });
-
-        // Prevent event bubbling when clicking inside the input
-        $(document).on("click", ".mrp-input", function(e) {
-            e.stopPropagation();
-        });
-
-        // When pressing Enter, switch back and update Selling Rate, Before Tax, Margin & Margin %
-        $(document).on("keypress", ".mrp-input", function(e) {
-            if (e.which === 13) { // Enter key
-                $(this).blur();
-            }
         });
     });
 </script>

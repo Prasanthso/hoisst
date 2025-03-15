@@ -42,6 +42,7 @@ class RecipePricingController extends Controller
     pm.price AS P_MRP,
     pm.tax AS tax,
     oc.suggested_mrp AS S_MRP,
+    oc.discount AS discount,
 
     -- Get Raw Material IDs
     rm_total.RM_IDs,
