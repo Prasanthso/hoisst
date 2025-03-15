@@ -6,7 +6,7 @@
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
         <h1>OverAll Costing</h1>
         <div class="d-flex align-items-center">
-            <button class="btn btn-sm me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;"  id="editRecipeBtn" data-id="">
+            <button class="btn btn-sm me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;" id="editRecipeBtn" data-id="">
                 <i class="fas fa-edit" style="color: black;"></i>
             </button>
             <button class="btn btn-sm" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;" id="deleteRecipebtn" data-id="">
@@ -22,18 +22,18 @@
     <section class="section dashboard">
         <div class="container mt-5">
             <div class="mb-4">
-            @if(session('success'))
-            <div id="success-message" class="alert alert-success">{{ session('success') }}</div>
-            @endif
+                @if(session('success'))
+                <div id="success-message" class="alert alert-success">{{ session('success') }}</div>
+                @endif
             </div>
             <div class="mb-4">
                 <label for="recipeSelect" id="recipeSelectLabel" class="form-label">Select Recipe</label>
                 <div class="col-8">
                     <select id="recipeSelect" class="form-select select2" aria-labelledby="recipeSelectLabel">
-                    <option selected disabled>Choose...</option>
-                    @foreach($costings as $recipe)
-                    <option value="{{ $recipe->id }}">{{ $recipe->product_name }}</option>
-                    @endforeach
+                        <option selected disabled>Choose...</option>
+                        @foreach($costings as $recipe)
+                        <option value="{{ $recipe->id }}">{{ $recipe->product_name }}</option>
+                        @endforeach
                     </select>
                     @error('productId')
                     <span class="text-danger">{{ $message }}</span>
@@ -50,6 +50,7 @@
                             <th>Margin</th>
                             {{-- <th>Suggeted Price</th> --}}
                             <th>Suggeted MRP</th>
+                            {{-- <th>product</th> --}}
                         </tr>
                     </thead>
                     <tbody>
@@ -89,17 +90,17 @@
         $('#recipeSelect').select2({
             theme: 'bootstrap-5',
             placeholder: "Type or select a recipe...",
-          });
+        });
 
-        $('#recipeSelect').on('change', function () {
-        const selectedValue = $(this).val();
-        console.log("Selected Overall-costing ID:", selectedValue);
-        tableBody.style.display = "table-row-group";
-        if (selectedValue) {
-            recipedata(selectedValue);
-        } else {
-            console.log("No Overall-costing recipe selected.");
-        }
+        $('#recipeSelect').on('change', function() {
+            const selectedValue = $(this).val();
+            console.log("Selected Overall-costing ID:", selectedValue);
+            tableBody.style.display = "table-row-group";
+            if (selectedValue) {
+                recipedata(selectedValue);
+            } else {
+                console.log("No Overall-costing recipe selected.");
+            }
         });
 
         /* if edit icon clicked */
@@ -131,76 +132,100 @@
 
             if (recipeId) {
                 fetch(`/deleteoverallcosting`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": token
-                    },
-                    body: JSON.stringify({ ids: [recipeId] }) // Send as an array
-                })
-                .then(response => response.json().then(data => ({ status: response.status, body: data }))) // Capture status + body
-                .then(result => {
-                    console.log("Server Response:", result); // Debugging
-                    if (result.status === 200 && result.body.success) {
-                        alert("Selected recipe's overall costing deleted successfully!");
-                        location.reload();
-                    } else {
-                        alert("Failed to delete recipe. Server message: " + result.body.message);
-                    }
-                })
-                .catch(error => {
-                    console.error("Error deleting recipe's overall costing:", error);
-                    alert("An error occurred. Please try again.");
-                });
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": token
+                        },
+                        body: JSON.stringify({
+                            ids: [recipeId]
+                        }) // Send as an array
+                    })
+                    .then(response => response.json().then(data => ({
+                        status: response.status,
+                        body: data
+                    }))) // Capture status + body
+                    .then(result => {
+                        console.log("Server Response:", result); // Debugging
+                        if (result.status === 200 && result.body.success) {
+                            alert("Selected recipe's overall costing deleted successfully!");
+                            location.reload();
+                        } else {
+                            alert("Failed to delete recipe. Server message: " + result.body.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error deleting recipe's overall costing:", error);
+                        alert("An error occurred. Please try again.");
+                    });
             } else {
                 alert("Please select a recipe to delete.");
             }
         });
 
-        setTimeout(function () {
-        const successMessage = document.getElementById('success-message');
-        if (successMessage) {
-            successMessage.style.display = 'none';
-        }
-    }, 5000);
+        setTimeout(function() {
+            const successMessage = document.getElementById('success-message');
+            if (successMessage) {
+                successMessage.style.display = 'none';
+            }
+        }, 5000);
 
-        async function recipedata(recipeId)
-        {
+        async function recipedata(recipeId) {
             if (recipeId) {
-            try {
+                try {
 
-                editCostingBtn.setAttribute('data-id', recipeId);
-                deleteCostingBtn.setAttribute('data-id', recipeId);
+                    editCostingBtn.setAttribute('data-id', recipeId);
+                    deleteCostingBtn.setAttribute('data-id', recipeId);
 
-                const response = await fetch(`/showoverallcosting/${recipeId}`);
-                if (!response.ok) throw new Error('Recipe not found');
-                const recipe = await response.json();
-                console.log(recipe);
-                // const table = document.getElementById("recipeTable");
-                // const tableBody = table.querySelector("tbody");
-                tableBody.innerHTML = "";   // Clear table before adding new data
+                    const response = await fetch(`/showoverallcosting/${recipeId}`);
+                    if (!response.ok) throw new Error('Recipe not found');
+                    const recipe = await response.json();
+                    console.log(recipe);
+                    // const table = document.getElementById("recipeTable");
+                    // const tableBody = table.querySelector("tbody");
+                    tableBody.innerHTML = ""; // Clear table before adding new data
 
-                if (recipe.data && recipe.data.length > 0) {
-                    recipe.data.forEach((item) => {
+                    if (recipe.data && recipe.data.costing.length > 0) {
+                        const costing = recipe.data.costing[0]; // Get the first item in costing array
+
+                        const totalCost = parseFloat(recipe.data.totalCost) || 0;
+
+                        // Convert margin, tax, and discount to numbers
+                        const margin = parseFloat(costing.margin) || 0;
+                        const tax = parseFloat(costing.tax) || 0;
+                        const discount = parseFloat(costing.discount) || 0;
+
+                        // Calculate values
+                        const cost_margin = totalCost * (margin / 100);
+                        const cost_with_margin = totalCost + cost_margin; // Adding margin to total cost
+
+                        const cost_tax = cost_with_margin * (tax / 100); // Applying tax after margin
+                        const cost_with_tax = cost_with_margin + cost_tax; // Adding tax to total cost
+
+                        const cost_disc = cost_with_tax * (discount / 100); // Applying discount after tax
+                        const suggestedMrp = (cost_with_tax + cost_disc).toFixed(2);
                         const row = `<tr>
-                            <td><a href="/editoverallcosting/${item.id}" style="color: black;font-size:16px;text-decoration: none;">${item.product_name || '-'}</a></td>
-                            <td>${item.rm_cost_unit || '-'}</td>
-                            <td>${item.total_cost || '-'}</td>
-                            <td>${item.margin || '-'}</td>
+                        <td><a href="/editoverallcosting/${costing.id}" style="color: black;font-size:16px;text-decoration: none;">
+                            ${costing.product_name ?? '-'}
+                        </a></td>
+                        <td>${recipe.data.rmCost ?? '-'}</td>  <!-- Access rmCost directly from recipe.data -->
+                        <td>${recipe.data.totalCost ?? '-'}</td>  <!-- Access totalCost directly from recipe.data -->
+                        <td>${costing.margin ?? '-'}</td>
+                        <td>${suggestedMrp ?? '-'}</td>
+                    </tr>`;
 
-                            <td>${item.suggested_mrp || '-'}</td>
-                        </tr>`;
                         tableBody.innerHTML += row;
+                    } else {
+                        tableBody.innerHTML = "<tr><td colspan='6'>No data available</td></tr>";
+                    }
 
-                    });
-                } else {
-                    tableBody.innerHTML = "<tr><td colspan='6'>No data available</td></tr>";
+                    table.style.display = "table";
+                    // window.location.href = `/editoverallcosting/${recipeId}`;
+
+                } catch (error) {
+                    alert(error);
                 }
-                table.style.display = "table";
-                // window.location.href = `/editoverallcosting/${recipeId}`;
-
-            }catch (error) {alert(error);}
-        }
+            }
         }
     });
 </script>
