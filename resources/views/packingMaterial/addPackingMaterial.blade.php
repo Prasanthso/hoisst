@@ -47,7 +47,8 @@
                                 </div> -->
                                 <div class="col-12">
                                     <label for="hsnCode" class="form-label">HSN Code</label>
-                                    <input type="text" class="form-control" id="hsnCode" name="hsnCode" value="{{ old('hsnCode') }}">
+                                    <input type="text" class="form-control" id="hsnCode" name="hsnCode" value="{{ old('hsnCode') }}"
+                                    maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)">
                                 </div>
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Unit</label>
@@ -87,11 +88,11 @@
                                 </div>
                                 <div class="col-12 mb-2">
                                     <label for="inputPrice" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ old('price') }}">
+                                    <input type="text" class="form-control" id="inputPrice" name="price" value="{{ old('price') }}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
                                 </div>
                                 <div class="col-12 mb-2">
-                                    <label for="inputTax" class="form-label">Tax</label>
-                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ old('tax') }}">
+                                    <label for="inputTax" class="form-label">Tax(%)</label>
+                                    <input type="text" class="form-control" id="inputTax" name="tax" value="{{ old('tax') }}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
                                 </div>
                                 <div class="row">
                                     <label for="inputNanme4" class="form-label mb-2">Pricing update frequency</label>
@@ -106,12 +107,14 @@
                                     {{-- <div class="col-md-1">
                                 </div> --}}
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ old('price_update_frequency') }}">
+                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ old('price_update_frequency') }}"
+                                        oninput="this.value = this.value.replace(/\D/g, '');">
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="price_threshold" class="form-label">Price threshold</label>
-                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ old('price_threshold') }}">
+                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ old('price_threshold') }}"
+                                    oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="btnsubmit">
@@ -187,6 +190,10 @@
                 showError(hsncode, "HSN Code is required.");
                 isValid = false;
             }
+            else if (!/^\d{1,8}$/.test(hsncode.value)) {
+                showError(hsncode, "HSN Code must be numeric and up to 8 digits.");
+                isValid = false;
+            }
             if (uom.value === "UoM") {
                 showError(uom, "Please select a valid Unit of Measure.");
                 isValid = false;
@@ -224,9 +231,22 @@
                 event.preventDefault();
             }
         });
+        // document.querySelectorAll("input, select").forEach(input => {
+        //     input.addEventListener("input", () => clearError(input));
+        //     input.addEventListener("change", () => clearError(input));
+        // });
         document.querySelectorAll("input, select").forEach(input => {
-            input.addEventListener("input", () => clearError(input));
-            input.addEventListener("change", () => clearError(input));
+            let hasTyped = false; // Track if the user has typed
+
+            input.addEventListener("input", () => { hasTyped = true; clearError(input)});
+            input.addEventListener("change", () => { hasTyped = true; clearError(input)});
+            input.addEventListener("blur", () => {
+                clearError(input);
+                    if (input.value.trim() === "") {
+                        hasTyped = false;
+                        showError(input, "This field is required!");
+                    }
+                });
         });
 
         // Special handling for select2 dropdowns

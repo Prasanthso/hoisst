@@ -48,7 +48,7 @@
                             <th>Rm Cost</th>
                             <th>Totalcost</th>
                             <th>Margin</th>
-                            <th>Suggeted Price</th>
+                            {{-- <th>Suggeted Price</th> --}}
                             <th>Suggeted MRP</th>
                         </tr>
                     </thead>
@@ -187,7 +187,7 @@
                             <td>${item.rm_cost_unit || '-'}</td>
                             <td>${item.total_cost || '-'}</td>
                             <td>${item.margin || '-'}</td>
-                            <td>${item.sugg_rate || '-'}</td>
+
                             <td>${item.suggested_mrp || '-'}</td>
                         </tr>`;
                         tableBody.innerHTML += row;
