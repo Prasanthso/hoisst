@@ -32,6 +32,14 @@
                         <h5 class="card-title">Categories</h5>
                         <div class="row mb-3">
                             <div class="col-sm-12">
+                                <div class="me-2 align-items-center d-flex mb-2">
+                                    <div class="input-group" style="width: 250px;">
+                                        <select class="form-select me-2" id="searchtype" style="width: 30px;">
+                                            <option value="category">Category</option>
+                                            <option value="items">Items</option>
+                                        </select>
+                                    </div>
+                                </div>
                                 <div>
                                     <input
                                         type="text"
@@ -757,6 +765,31 @@
     });
 
     function filterCategories() {
+        // Get the search input value
+        const searchValue = document.getElementById('categorySearch').value.toLowerCase();
+        const keywords = searchValue.split(',').map(keyword => keyword.trim()).filter(keyword => keyword);
+        // Get all category items
+        const categoryItems = document.querySelectorAll('.category-item');
+
+        // If the search box is empty, show all categories
+        if (keywords.length === 0) {
+            categoryItems.forEach((item) => {
+                item.style.display = ''; // Show all items
+            });
+            return;
+        }
+        // Loop through category items and filter them
+        categoryItems.forEach((item) => {
+            const label = item.querySelector('.form-check-label').textContent.toLowerCase();
+
+            // Check if any of the keywords match the label
+            const isVisible = keywords.some(keyword => label.includes(keyword));
+
+            // Show or hide the category item based on the match
+            item.style.display = isVisible ? '' : 'none';
+        });
+    }
+    function filterItems() {
         // Get the search input value
         const searchValue = document.getElementById('categorySearch').value.toLowerCase();
         const keywords = searchValue.split(',').map(keyword => keyword.trim()).filter(keyword => keyword);
