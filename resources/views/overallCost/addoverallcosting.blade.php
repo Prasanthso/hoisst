@@ -138,7 +138,7 @@
             </div>
         </div>
          <!-- Modal Structure -->
-         <div class="modal fade" id="markupModal" tabindex="-1" aria-labelledby="markupModalLabel" aria-hidden="true">
+         <div class="modal fade" id="markupModal" data-target="#myModal" tabindex="-1" aria-labelledby="markupModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -152,6 +152,10 @@
                         </form>
                         <p>Markup is the percentage added to the cost price to determine the selling price.</p>
                         <p><strong>Markup %:</strong> <span id="markupResult">-</span></p>
+                    </div>
+                    <div class="modal-footer">
+                        <!--<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>-->
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="applyMarkupBtn">Apply</button>
                     </div>
                 </div>
             </div>
@@ -173,19 +177,33 @@
 
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <!--Template Main JS File-->
 <script src="{{ asset('js/main.js') }}"></script>
 <script>
      function calculateMarkup() {
-        let margin = parseFloat(document.getElementById('marginInput').value);
+        let marginValue = document.getElementById('marginInput');
+        let margin =parseFloat(marginValue.value);
         if (!isNaN(margin) && margin < 100) {
             let markup = (margin * 100) / (100 - margin);
-            document.getElementById('markupResult').textContent = markup.toFixed(2) + "%";
+            document.getElementById('markupResult').textContent = markup.toFixed(2);
+
         } else {
             document.getElementById('markupResult').textContent = "-";
         }
     }
+
      document.addEventListener("DOMContentLoaded", () => {
+
+        document.getElementById('applyMarkupBtn').addEventListener('click', function () {
+        let markupValue = document.getElementById('markupResult').textContent.trim();
+        if (markupValue && markupValue !== '-') {
+            document.getElementById('inputMargin').value = markupValue; // Assign value
+            calculate();
+        }
+        else{ document.getElementById('inputMargin').value = 0;}
+    });
+
         const recipeSelect = document.getElementById('recipeSelect');
         const RmCostA = document.getElementById('inputRmcost');
         const PmCostB = document.getElementById('inputPmcost');
@@ -383,9 +401,19 @@
         console.log(`Margin updated: ${permargin}%`);
         calculate();
     });
+    permarginInput.addEventListener('input', () => {
+     let permargin = parseFloat(permarginInput.value) || 0; // Update margin percentage
+        console.log(`Margin updated: ${permargin}%`);
+        calculate();
+    });
 
      // **Call updateCalculations when tax input changes**
      Discount.addEventListener('change', () => {
+       let perdiscount = parseFloat(Discount.value) || 0; // Update margin percentage
+        console.log(`Discount updated: ${perdiscount}%`);
+        calculate();
+    });
+    Discount.addEventListener('input', () => {
        let perdiscount = parseFloat(Discount.value) || 0; // Update margin percentage
         console.log(`Discount updated: ${perdiscount}%`);
         calculate();
