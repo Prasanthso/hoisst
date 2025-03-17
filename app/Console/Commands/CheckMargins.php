@@ -25,6 +25,7 @@ class CheckMargins extends Command
     pm.tax AS tax,
     pm.margin AS margin,
     oc.suggested_mrp AS S_MRP,
+    oc.discount AS discount,
 
     -- Get Raw Material IDs
     rm_total.RM_IDs,
@@ -114,9 +115,10 @@ ORDER BY
             $rm_perc = $report->RM_Cost * 100 / $report->S_MRP;
             $pm_perc = $report->PM_Cost * 100 / $report->S_MRP;
             $total = $report->RM_Cost + $report->PM_Cost;
-            $sellingRate = $report->S_MRP * 0.75;
+            $cost = $total + $report->OH_Cost + $report->MOH_Cost;
+            $sellingRate = ($report->S_MRP * 100) / (100 + $report->discount);
             $beforeTax = ($sellingRate * 100) / (100 + $report->tax);
-            $MARGINAMOUNT = $beforeTax - ($total + $report->OH_Cost + $report->MOH_Cost);
+            $MARGINAMOUNT = $beforeTax - $cost;
             $marginPerc = ($MARGINAMOUNT / $beforeTax) * 100;
 
             Log::info("Checking margin for rm+pm=$total,beforeTax= $beforeTax,marginamount=$MARGINAMOUNT,oh=$report->OH_Cost, moh=$report->MOH_Cost, s.mrp =$report->S_MRP, marginPerc=$marginPerc, {$report->Product_Name}: Margin Percentage = $marginPerc, Threshold = {$report->margin}");
