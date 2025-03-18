@@ -18,8 +18,51 @@ class RawMaterialController extends Controller
         // Fetch all category items
         $categoryitems = CategoryItems::rmCategoryItem();
         $selectedCategoryIds = $request->input('category_ids', []);
+        $searchValue = $request->input('rmText','');
 
         if ($request->ajax()) {
+            if(!empty($searchValue))
+            {
+                $rawMaterials = DB::table('raw_materials as rm')
+                ->leftJoin('categoryitems as c1', 'rm.category_id1', '=', 'c1.id')
+                ->leftJoin('categoryitems as c2', 'rm.category_id2', '=', 'c2.id')
+                ->leftJoin('categoryitems as c3', 'rm.category_id3', '=', 'c3.id')
+                ->leftJoin('categoryitems as c4', 'rm.category_id4', '=', 'c4.id')
+                ->leftJoin('categoryitems as c5', 'rm.category_id5', '=', 'c5.id')
+                ->leftJoin('categoryitems as c6', 'rm.category_id6', '=', 'c6.id')
+                ->leftJoin('categoryitems as c7', 'rm.category_id7', '=', 'c7.id')
+                ->leftJoin('categoryitems as c8', 'rm.category_id8', '=', 'c8.id')
+                ->leftJoin('categoryitems as c9', 'rm.category_id9', '=', 'c9.id')
+                ->leftJoin('categoryitems as c10', 'rm.category_id10', '=', 'c10.id')
+                ->select(
+                    'rm.id',
+                    'rm.name',
+                    'rm.rmcode',
+                    'rm.price',
+                    'rm.uom',
+                    'c1.itemname as category_name1',
+                    'c2.itemname as category_name2',
+                    'c3.itemname as category_name3',
+                    'c4.itemname as category_name4',
+                    'c5.itemname as category_name5',
+                    'c6.itemname as category_name6',
+                    'c7.itemname as category_name7',
+                    'c8.itemname as category_name8',
+                    'c9.itemname as category_name9',
+                    'c10.itemname as category_name10'
+                )
+                    ->where('rm.status', '=', 'active')
+                    ->Where('rm.name', 'LIKE', "{$searchValue}%")
+                    // ->orderBy('rm.name', 'asc') // Filter by active status
+                    ->get();
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => count($rawMaterials) > 0 ? 'rawMaterials found' : 'No rawMaterials found',
+                    'rawMaterials' => $rawMaterials
+                ]);
+            }
+        else{
             $selectedCategoryIds = explode(',', $selectedCategoryIds);
             // If no categories are selected, return all raw materials with status 'active'
             if (empty($selectedCategoryIds)) {
@@ -28,7 +71,8 @@ class RawMaterialController extends Controller
                     'message' => 'No category IDs provided',
                     'rawMaterials' => []
                 ]);
-            } else {
+            }
+            else {
                 // Fetch raw materials filtered by the selected category IDs and status 'active'
                 $rawMaterials = DB::table('raw_materials as rm')
                 ->leftJoin('categoryitems as c1', 'rm.category_id1', '=', 'c1.id')
@@ -71,17 +115,19 @@ class RawMaterialController extends Controller
                             ->orWhereIn('c9.id', $selectedCategoryIds)
                             ->orWhereIn('c10.id', $selectedCategoryIds);
                     })
-                    ->where('rm.status', '=', 'active')
+                    // ->where('rm.status', '=', 'active')
                     ->orderBy('rm.name', 'asc') // Filter by active status
                     ->get();
                     // ->paginate(10);
-            }
-            // Return filtered raw materials as JSON response
+                     // Return filtered raw materials as JSON response
             return response()->json([
                 'status' => 'success',
                 'message' => count($rawMaterials) > 0 ? 'rawMaterials found' : 'No rawMaterials found',
                 'rawMaterials' => $rawMaterials
             ]);
+            }
+        }
+
         }
 
         // Default view, return all raw materials with status 'active' and category items
