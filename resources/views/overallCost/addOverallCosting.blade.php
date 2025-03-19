@@ -93,7 +93,7 @@
                                     <div class="col">
                                         <div class="col-12">
                                             <div class="d-flex justify-content-between align-items-center">
-                                                <label for="inputMargin" class="form-label">Margin</label>
+                                                <label for="inputMargin" class="form-label">Margin(%)</label>
                                                 <label class="form-label"> <a href="#" data-bs-toggle="modal" data-bs-target="#markupModal">Markup</a></label>
                                             </div>
                                             <input type="text" class="form-control mb-2" id="inputMargin" name="inputMargin">
@@ -103,11 +103,11 @@
                                             <input type="text" class="form-control mb-2" id="inputMarginAmt" name="inputMarginAmt" readonly>
                                         </div>
                                         <div class="col-12">
-                                            <label for="inputTax" class="form-label">Tax</label>
+                                            <label for="inputTax" class="form-label">Tax(%)</label>
                                             <input type="text" class="form-control mb-2" id="inputTax" name="inputTax" readonly>
                                         </div>
                                         <div class="col-12">
-                                            <label for="inputDiscount" class="form-label">Discount</label>
+                                            <label for="inputDiscount" class="form-label">Discount(%)</label>
                                             <input type="text" class="form-control" id="inputDiscount" name="inputDiscount">
                                             <div id="DiscountAmt" class="mb-2" style="color:blue;"></div>
                                         </div>
@@ -153,6 +153,11 @@
                         <p>Markup is the percentage added to the cost price to determine the selling price.</p>
                         <p><strong>Markup %:</strong> <span id="markupResult">-</span></p>
                     </div>
+                    <div class="modal-footer">
+                        <!--<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>-->
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="applyMarkupBtn">Apply</button>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -180,12 +185,21 @@
         let margin = parseFloat(document.getElementById('marginInput').value);
         if (!isNaN(margin) && margin < 100) {
             let markup = (margin * 100) / (100 - margin);
-            document.getElementById('markupResult').textContent = markup.toFixed(2) + "%";
+            document.getElementById('markupResult').textContent = markup.toFixed(2);
         } else {
             document.getElementById('markupResult').textContent = "-";
         }
     }
     document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById('applyMarkupBtn').addEventListener('click', function () {
+        let markupValue = document.getElementById('markupResult').textContent.trim();
+        if (markupValue && markupValue !== '-') {
+            document.getElementById('inputMargin').value = markupValue; // Assign value
+            calculate();
+        }
+        else{ document.getElementById('inputMargin').value = 0;}
+    });
+
         const recipeSelect = document.getElementById('recipeSelect');
         const RmCostA = document.getElementById('inputRmcost');
         const PmCostB = document.getElementById('inputPmcost');
@@ -383,9 +397,19 @@
             console.log(`Margin updated: ${permargin}%`);
             calculate();
         });
+        permarginInput.addEventListener('input', () => {
+            let permargin = parseFloat(permarginInput.value) || 0; // Update margin percentage
+            console.log(`Margin updated: ${permargin}%`);
+            calculate();
+        });
 
         // **Call updateCalculations when tax input changes**
         Discount.addEventListener('change', () => {
+            let perdiscount = parseFloat(Discount.value) || 0; // Update margin percentage
+            console.log(`Discount updated: ${perdiscount}%`);
+            calculate();
+        });
+        Discount.addEventListener('input', () => {
             let perdiscount = parseFloat(Discount.value) || 0; // Update margin percentage
             console.log(`Discount updated: ${perdiscount}%`);
             calculate();

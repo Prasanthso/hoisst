@@ -19,11 +19,51 @@ class ProductController extends Controller
 
         $categoryitems = CategoryItems::pdCategoryItem();
         $selectedCategoryIds = $request->input('category_ids', []);
-        // dd($selectedCategoryIds);
-        // If it's an AJAX request for filtered products
-        if ($request->ajax()) {
-            // Get selected category IDs from the request
+        $searchValue = $request->input('pdText','');
 
+        if ($request->ajax()) {
+            if(!empty($searchValue))
+            {
+
+            $product = DB::table('product_master as pd')
+            ->leftJoin('categoryitems as c1', 'pd.category_id1', '=', 'c1.id')
+            ->leftJoin('categoryitems as c2', 'pd.category_id2', '=', 'c2.id')
+            ->leftJoin('categoryitems as c3', 'pd.category_id3', '=', 'c3.id')
+            ->leftJoin('categoryitems as c4', 'pd.category_id4', '=', 'c4.id')
+            ->leftJoin('categoryitems as c5', 'pd.category_id5', '=', 'c5.id')
+            ->leftJoin('categoryitems as c6', 'pd.category_id6', '=', 'c6.id')
+            ->leftJoin('categoryitems as c7', 'pd.category_id7', '=', 'c7.id')
+            ->leftJoin('categoryitems as c8', 'pd.category_id8', '=', 'c8.id')
+            ->leftJoin('categoryitems as c9', 'pd.category_id9', '=', 'c9.id')
+            ->leftJoin('categoryitems as c10', 'pd.category_id10', '=', 'c10.id')
+            ->select(
+                'pd.id',
+                'pd.name',
+                'pd.pdcode',
+                'pd.price',
+                'pd.uom',
+                'c1.itemname as category_name1',
+                'c2.itemname as category_name2',
+                'c3.itemname as category_name3',
+                'c4.itemname as category_name4',
+                'c5.itemname as category_name5',
+                'c6.itemname as category_name6',
+                'c7.itemname as category_name7',
+                'c8.itemname as category_name8',
+                'c9.itemname as category_name9',
+                'c10.itemname as category_name10'
+            )
+            ->where('pd.status', '=', 'active') // Filter by active status
+            ->where('pd.name', 'LIKE', "{$searchValue}%")
+            ->get();
+             // Return filtered raw materials as JSON response
+             return response()->json([
+                'status' => 'success',
+                'message' => count($product) > 0 ? 'Products found' : 'No products found',
+                'product' => $product
+            ]);
+            }
+            else{
             $selectedCategoryIds = explode(',', $selectedCategoryIds);
             $selectedCategoryIds = array_filter($selectedCategoryIds, fn($id) => is_numeric($id) && $id > 0);
 
@@ -80,13 +120,13 @@ class ProductController extends Controller
                 ->where('pd.status', '=', 'active') // Filter by active status
                 ->orderBy('pd.name', 'asc')
                 ->get();
-
             // Return filtered raw materials as JSON response
             return response()->json([
                 'status' => 'success',
                 'message' => count($product) > 0 ? 'Products found' : 'No products found',
                 'product' => $product
             ]);
+        }
         }
 
         // Default view, return all raw materials and category items

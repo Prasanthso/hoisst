@@ -47,7 +47,7 @@
                             <th>Product Name</th>
                             <th>Rm Cost</th>
                             <th>Totalcost</th>
-                            <th>Margin</th>
+                            <th>Margin(%)</th>
                             {{-- <th>Suggeted Price</th> --}}
                             <th>Suggeted MRP</th>
                             {{-- <th>product</th> --}}

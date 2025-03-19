@@ -32,13 +32,22 @@
                         <h5 class="card-title">Categories</h5>
                         <div class="row mb-3">
                             <div class="col-sm-12">
+                                <div class="me-2 align-items-center d-flex mb-2">
+                                    <div class="input-group" style="width: 400px;">
+                                        <select class="form-select me-2" id="searchtype" style="width: 40px;">
+                                            <option value="items">Material Name</option>
+                                            <option value="category">Category</option>
+                                        </select>
+                                    </div>
+                                </div>
                                 <div>
                                     <input
                                         type="text"
                                         id="categorySearch"
                                         class="form-control mb-3"
-                                        placeholder="Search categories..."
-                                        onkeyup="filterCategories()" />
+                                        placeholder="Search..."
+                                        {{-- onkeyup="filterCategories()" --}}
+                                        />
                                 </div>
 
                                 @foreach($categoryitems as $category)
@@ -97,7 +106,7 @@
                                     <input type="checkbox" class="form-check-input row-checkbox">
                                 </td>
                                 <td>{{ ($rawMaterials->currentPage() - 1) * $rawMaterials->perPage() + $loop->iteration }}.</td> <!-- Auto-increment S.NO -->
-                                <td class="left-align"><a href="{{ route('rawMaterial.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none; text-align:left;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
+                                <td class="left-align rmname"><a href="{{ route('rawMaterial.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none; text-align:left;">{{ $material->name }}</a></td> <!-- Raw Material Name -->
                                 <td>{{ $material->rmcode }}</td> <!-- RM Code -->
                                 <td>
                                     {{ $material->category_name1 ?? '' }}
@@ -747,6 +756,17 @@
             });
         }
 
+        document.getElementById('categorySearch').addEventListener('keyup', function () {
+            const searchType = document.getElementById('searchtype').value;
+
+            if (searchType === 'category') {
+                filterCategories();
+            } else if (searchType === 'items') {
+                filterItems();
+            }
+        });
+
+
         setTimeout(function() {
             const successMessage = document.getElementById('success-message');
             if (successMessage) {
@@ -781,4 +801,72 @@
             item.style.display = isVisible ? '' : 'none';
         });
     }
+
+    function filterItems() {
+        let searchText = document.getElementById('categorySearch').value.toLowerCase().trim();
+        let table = document.getElementById('rawMaterialTable');
+        let rows = table.getElementsByTagName('tr');
+
+            if (searchText.length > 0) {
+                    const queryParams = new URLSearchParams({
+                        rmText: searchText,
+                    });
+                    console.log(queryParams.toString());
+                    // Construct the URL dynamically based on selected categories
+                    const url = `/rawmaterial?${queryParams.toString()}`;
+
+                    // Fetch updated data from server
+                    fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Clear existing table content
+                            rawMaterialTable.innerHTML = '';
+                            console.log('Fetched Data:', data.rawMaterials);
+                            // Populate the table with new data
+                            data.rawMaterials.forEach((item, index) => {
+                                rawMaterialTable.innerHTML += `
+                        <tr data-id="${item.id}">
+                            <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
+                            <td>${index + 1}.</td>
+                            <td class="left-align"><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                            <td>${item.rmcode}</td>
+                             <td>
+                                ${item.category_name1 ?? ''}
+                                ${item.category_name2 ? ', ' + item.category_name2 : ''}
+                                ${item.category_name3 ? ', ' + item.category_name3 : ''}
+                                ${item.category_name4 ? ', ' + item.category_name4 : ''}
+                                ${item.category_name5 ? ', ' + item.category_name5 : ''}
+                                ${item.category_name6 ? ', ' + item.category_name6 : ''}
+                                ${item.category_name7 ? ', ' + item.category_name7 : ''}
+                                ${item.category_name8 ? ', ' + item.category_name8 : ''}
+                                ${item.category_name9 ? ', ' + item.category_name9 : ''}
+                                ${item.category_name10 ? ', ' + item.category_name10 : ''}
+                            </td> <!-- Categories -->
+                            <td>
+                                <span class="price-text">${item.price}</span>
+                                <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
+                            </td>
+                            <td>${item.uom}</td>
+                        </tr>
+                    `;
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while fetching rawMaterials(s).');
+                        });
+                } else {
+                    location.reload();
+                }
+            }
 </script>

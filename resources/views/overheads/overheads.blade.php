@@ -21,7 +21,7 @@
     <section class="section dashboard">
         <div class="row">
             @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
+            <div  id="success-message" class="alert alert-success">{{ session('success') }}</div>
             @endif
             <!-- Left side columns -->
             <div class="col-lg-2 px-2 mt-5">
@@ -31,13 +31,22 @@
                         <h5 class="card-title">Categories</h5>
                         <div class="row mb-3">
                             <div class="col-sm-12">
+                                <div class="me-2 align-items-center d-flex mb-2">
+                                    <div class="input-group" style="width: 250px;">
+                                        <select class="form-select me-2" id="searchtype" style="width: 30px;">
+                                            <option value="items">Overhead</option>
+                                            <option value="category">Category</option>
+                                        </select>
+                                    </div>
+                                </div>
                                 <div>
                                     <input
                                         type="text"
                                         id="categorySearch"
                                         class="form-control mb-3"
-                                        placeholder="Search categories..."
-                                        onkeyup="filterCategories()" />
+                                        placeholder="Search ..."
+                                        {{-- onkeyup="filterCategories()" --}}
+                                        />
                                 </div>
                                 @foreach($categoryitems as $category)
                                 <div class="form-check category-item">
@@ -739,6 +748,22 @@
             });
         }
 
+        document.getElementById('categorySearch').addEventListener('keyup', function () {
+            const searchType = document.getElementById('searchtype').value;
+
+            if (searchType === 'category') {
+                filterCategories();
+            } else if (searchType === 'items') {
+                filterItems();
+            }
+        });
+
+        setTimeout(function() {
+            const successMessage = document.getElementById('success-message');
+            if (successMessage) {
+                successMessage.style.display = 'none';
+            }
+        }, 3000);
 
     });
 
@@ -766,5 +791,74 @@
             // Show or hide the category item based on the match
             item.style.display = isVisible ? '' : 'none';
         });
+    }
+    function filterItems()
+    {
+        let searchText = document.getElementById('categorySearch').value.toLowerCase().trim();
+        let ohtable = document.getElementById('overheadsTable');
+        let rows = ohtable.getElementsByTagName('tr');
+
+            if (searchText.length > 0) {
+                    const queryParams = new URLSearchParams({
+                        ohText: searchText,
+                    });
+                    console.log(queryParams.toString());
+                    // Construct the URL dynamically based on selected categories
+                    const url = `/overheads?${queryParams.toString()}`;
+
+                    // Fetch updated data from server
+                    fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Clear existing table content
+                            overheadsTable.innerHTML = '';
+                            console.log('Fetched Data:', data.overheads);
+                            // Populate the table with new data
+                            data.overheads.forEach((item, index) => {
+                                overheadsTable.innerHTML += `
+                        <tr data-id="${item.id}">
+                            <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
+                            <td>${index + 1}.</td>
+                            <td class="left-align"><a href="/editoverheads/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                            <td>${item.ohcode}</td>
+                             <td>
+                                ${item.category_name1 ?? ''}
+                                ${item.category_name2 ? ', ' + item.category_name2 : ''}
+                                ${item.category_name3 ? ', ' + item.category_name3 : ''}
+                                ${item.category_name4 ? ', ' + item.category_name4 : ''}
+                                ${item.category_name5 ? ', ' + item.category_name5 : ''}
+                                ${item.category_name6 ? ', ' + item.category_name6 : ''}
+                                ${item.category_name7 ? ', ' + item.category_name7 : ''}
+                                ${item.category_name8 ? ', ' + item.category_name8 : ''}
+                                ${item.category_name9 ? ', ' + item.category_name9 : ''}
+                                ${item.category_name10 ? ', ' + item.category_name10 : ''}
+                            </td> <!-- Categories -->
+                            <td>
+                                <span class="price-text">${item.price}</span>
+                                <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
+                            </td>
+                            <td>${item.uom}</td>
+                        </tr>
+                    `;
+                            });
+
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while fetching overheads.');
+                        });
+                } else {
+                    location.reload();
+                }
     }
 </script>
