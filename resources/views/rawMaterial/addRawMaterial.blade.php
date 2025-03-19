@@ -161,7 +161,10 @@
             theme: 'bootstrap-5',
             placeholder: 'Select UoM',
         });
-
+        $('#itemType').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select itemtype',
+        });
     });
 
 
