@@ -807,7 +807,7 @@
         let table = document.getElementById('rawMaterialTable');
         let rows = table.getElementsByTagName('tr');
 
-    if (searchText.length > 0) {
+            if (searchText.length > 0) {
                     const queryParams = new URLSearchParams({
                         rmText: searchText,
                     });
@@ -868,5 +868,5 @@
                 } else {
                     location.reload();
                 }
-    }
+            }
 </script>

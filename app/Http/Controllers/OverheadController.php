@@ -54,18 +54,6 @@ class OverheadController extends Controller
                     'c9.itemname as category_name9',
                     'c10.itemname as category_name10'
                 )
-                    ->where(function ($query) use ($selectedCategoryIds) {
-                        $query->whereIn('c1.id', $selectedCategoryIds)
-                            ->orWhereIn('c2.id', $selectedCategoryIds)
-                            ->orWhereIn('c3.id', $selectedCategoryIds)
-                            ->orWhereIn('c4.id', $selectedCategoryIds)
-                            ->orWhereIn('c5.id', $selectedCategoryIds)
-                            ->orWhereIn('c6.id', $selectedCategoryIds)
-                            ->orWhereIn('c7.id', $selectedCategoryIds)
-                            ->orWhereIn('c8.id', $selectedCategoryIds)
-                            ->orWhereIn('c9.id', $selectedCategoryIds)
-                            ->orWhereIn('c10.id', $selectedCategoryIds);
-                    })
                     ->where('oh.status', '=', 'active') // Filter by active status
                     ->Where('oh.name', 'LIKE', "{$searchValue}%")
                     // ->orderBy('oh.name', 'asc')
@@ -77,7 +65,7 @@ class OverheadController extends Controller
                     'overheads' => $overheads
                 ]);
             }
-            else{
+        else{
             $selectedCategoryIds = explode(',', $selectedCategoryIds);
             $selectedCategoryIds = array_filter($selectedCategoryIds, fn($id) => is_numeric($id) && $id > 0);
 
