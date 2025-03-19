@@ -34,7 +34,7 @@
                                 <div class="me-2 align-items-center d-flex mb-2">
                                     <div class="input-group" style="width: 250px;">
                                         <select class="form-select me-2" id="searchtype" style="width: 30px;">
-                                            <option value="items">Material</option>
+                                            <option value="items">Material Name</option>
                                             <option value="category">Category</option>
                                         </select>
                                     </div>

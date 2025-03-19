@@ -22,8 +22,12 @@ class CategoryItemController extends Controller
     {
         $categories = DB::table('categories')->get();
         $categoryIds = $request->input('category_ids');
-
-        if (!empty($categoryIds)) {
+        $searchValue = $request->input('categoryItem','');
+        if(!empty($searchValue))
+        {
+            $categoriesitems = CategoryItems::where('status','active')->where('itemname', 'LIKE',"{$searchValue}%")->get();
+        }
+        else if (!empty($categoryIds)) {
             // Convert comma-separated string to an array
             $categoryIds = explode(',', $categoryIds);
 

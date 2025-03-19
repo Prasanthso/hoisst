@@ -31,13 +31,22 @@
                         <h5 class="card-title">Categories</h5>
                         <div class="row mb-3">
                             <div class="col-sm-12">
+                                <div class="me-2 align-items-center d-flex mb-2">
+                                    <div class="input-group" style="width: 400px;">
+                                        <select class="form-select me-2" id="searchtype" style="width: 40px;">
+                                            <option value="items">Name</option>
+                                            <option value="category">Category</option>
+                                        </select>
+                                    </div>
+                                </div>
                                 <div>
                                     <input
                                         type="text"
                                         id="categorySearch"
                                         class="form-control mb-3"
-                                        placeholder="Search categories..."
-                                        onkeyup="filterCategories()" />
+                                        placeholder="Search ..."
+                                        {{-- onkeyup="filterCategories()" --}}
+                                        />
                                 </div>
                                 @foreach($categories as $category)
                                 <div class="form-check category-item">
@@ -447,6 +456,15 @@
         //     // console.log("Selected categories: ", selectedCategories);
         // };
 
+        document.getElementById('categorySearch').addEventListener('keyup', function () {
+            const searchType = document.getElementById('searchtype').value;
+
+            if (searchType === 'category') {
+                filterCategories();
+            } else if (searchType === 'items') {
+                filterItems();
+            }
+        });
         setTimeout(function() {
             const successMessage = document.getElementById('success-message');
             if (successMessage) {
@@ -480,6 +498,64 @@
             item.style.display = isVisible ? '' : 'none';
         });
     }
+    function filterItems() {
+        let searchText = document.getElementById('categorySearch').value.toLowerCase().trim();
+        let table = document.getElementById('catagoriesTable');
+        let rows = table.getElementsByTagName('tr');
+
+            if (searchText.length > 0) {
+                    const queryParams = new URLSearchParams({
+                        categoryItem: searchText,
+                    });
+                    console.log(queryParams.toString());
+                    // Construct the URL dynamically based on selected categories
+                   // Construct the URL dynamically based on selected categories
+                   const url = `/showcategoryitem?${queryParams.toString()}`;
+
+                    // Fetch updated data from server
+                    fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Clear existing table content
+                            catagoriesTable.innerHTML = '';
+                            console.log('Fetched Data:', data);
+                            // Populate the table with new data
+                            data.categoriesitems.forEach((item, index) => {
+
+                                catagoriesTable.innerHTML += `
+                        <tr data-id="${item.id}">
+                            <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
+                            <td>${index + 1}.</td>
+                            <td class="left-align"><a href="/editcategoryitem/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
+                            <td>${item.description}</td>
+                            <td>${item.created_user}</td>
+                        </tr>
+                    `;
+                            });
+
+                            // // Re-attach event listeners for dynamically added checkboxes
+                            // document.querySelectorAll('.category-checkbox').forEach(checkbox => {
+                            //     checkbox.addEventListener('change', updateSelectedCategories);
+                            // });
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while fetching category items.');
+                        });
+                    } else {
+                    location.reload();
+                    }
+            }
 </script>
 
 <!-- Vendor JS Files -->

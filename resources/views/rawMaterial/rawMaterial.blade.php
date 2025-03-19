@@ -33,9 +33,9 @@
                         <div class="row mb-3">
                             <div class="col-sm-12">
                                 <div class="me-2 align-items-center d-flex mb-2">
-                                    <div class="input-group" style="width: 250px;">
-                                        <select class="form-select me-2" id="searchtype" style="width: 30px;">
-                                            <option value="items">Rm Name</option>
+                                    <div class="input-group" style="width: 400px;">
+                                        <select class="form-select me-2" id="searchtype" style="width: 40px;">
+                                            <option value="items">Material Name</option>
                                             <option value="category">Category</option>
                                         </select>
                                     </div>
