@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('check:margins')->everyMinute(); // Adjust timing as needed
+        $schedule->command('check:margins')->everyFiveMinutes(); // Adjust timing as needed
     }
 
     /**
