@@ -10,6 +10,11 @@
             <a href="{{ 'addrawmaterial' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
                 <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
             </a>
+            <form action="{{ route('rawMaterial.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="file" name="excel_file" required>
+                <button type="submit">Import</button>
+            </form>
             <button id="exportBtn" class="btn btn-success">
                 <i class="fas fa-file-excel"></i> Export to Excel
             </button>

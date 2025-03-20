@@ -20,6 +20,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\OverAllCostingController;
 use App\Models\Overhead;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -71,6 +72,8 @@ Route::post('/update-material-price/{id}', [RawMaterialController::class, 'updat
 
 Route::post('/update-raw-material-prices', [RawMaterialController::class, 'updatePrices'])->name('rawMaterial.updatePrices');
 Route::get('/raw-material/price-details/{id}', [RawMaterialController::class, 'getRmPriceHistory'])->name('rawMaterial.priceHistory');
+
+Route::post('/rawMaterial-import', [RawMaterialController::class, 'importExcel'])->name('rawMaterial.import');
 
 Route::get('/packingmaterial', [PackingMaterialController::class, 'index'])->name('packingMaterials.index');
 Route::get('/addpackingmaterial', [PackingMaterialController::class, 'create'])->name('packingmaterial.create');

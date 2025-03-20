@@ -7,6 +7,7 @@ use App\Models\RawMaterial;
 use App\Models\UniqueCode;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class RawMaterialController extends Controller
 {
@@ -499,5 +500,96 @@ class RawMaterialController extends Controller
             ]);
         }
     }
+        // import excel data to db
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048'
+        ]);
+
+        $file = $request->file('excel_file');
+
+        // Load spreadsheet
+        $spreadsheet = IOFactory::load($file->getPathname());
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray();
+
+        // Loop through rows and insert into database
+        foreach ($rows as $index => $row) {
+            if ($index == 0) continue; // Skip the header row
+            $rmCode = UniqueCode::generateRmCode();
+            RawMaterial::create([
+                'name' => $row[0] ?? null,
+                'rmcode' => $rmCode ?? null,
+                'uom' => $row[1] ?? null,
+                'hsncode' => $row[2] ?? null,
+                'itemweight' => $row[3] ?? null,
+                'category_id1' => $row[4] ?? null,
+                'category_id2' => $row[5] ?? null,
+                'category_id3' => $row[6] ?? null,
+                'category_id4' => $row[7] ?? null,
+                'category_id5' => $row[8] ?? null,
+                'category_id6' => $row[9] ?? null,
+                'category_id7' => $row[10] ?? null,
+                'category_id8' => $row[11] ?? null,
+                'category_id9' => $row[12] ?? null,
+                'category_id10' => $row[13] ?? null,
+                'price' => $row[14],
+                'tax' => $row[15],
+                'update_frequency' => $row[16],
+                'price_update_frequency' => $row[17],
+                'price_threshold' => $row[18],
+                'itemType_id' => $row[19],
+            ]);
+        }
+
+        return back()->with('success', 'Excel file imported successfully!');
+    }
+
+
+/*
+    public function importCSV(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,txt'
+        ]);
+
+        $file = fopen($request->file('file')->getPathname(), "r");
+
+        // Skip the first row (header)
+        fgetcsv($file);
+
+        while (($row = fgetcsv($file, 1000, ",")) !== FALSE) {
+            $rmCode = UniqueCode::generateRmCode();
+            RawMaterial::create([
+                'name' => $row[0] ?? null,
+                'rmcode' => $rmCode ?? null,
+                'uom' => $row[1] ?? null,
+                'hsncode' => $row[2] ?? null,
+                'itemweight' => $row[3] ?? null,
+                'category_id1' => $row[4] ?? null,
+                'category_id2' => $row[5] ?? null,
+                'category_id3' => $row[6] ?? null,
+                'category_id4' => $row[7] ?? null,
+                'category_id5' => $row[8] ?? null,
+                'category_id6' => $row[9] ?? null,
+                'category_id7' => $row[10] ?? null,
+                'category_id8' => $row[11] ?? null,
+                'category_id9' => $row[12] ?? null,
+                'category_id10' => $row[13] ?? null,
+                'price' => $row[14],
+                'tax' => $row[15],
+                'update_frequency' => $row[16],
+                'price_update_frequency' => $row[17],
+                'price_threshold' => $row[18],
+                'itemType_id' => $row[19],
+            ]);
+        }
+
+        fclose($file);
+
+        return back()->with('success', 'CSV data imported successfully!');
+    }
+*/
 
 }
