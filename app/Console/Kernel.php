@@ -10,9 +10,9 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      */
-    protected function schedule(Schedule $schedule): void
+    protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('check:margins')->everyFiveMinutes(); // Adjust timing as needed
     }
 
     /**

@@ -171,3 +171,4 @@ Route::get('/showoverallcosting/{id}', [OverAllCostingController::class, 'show']
 Route::get('/get-abc-cost', [OverAllCostingController::class, 'getABCcost']);
 
 Route::get('/report', [ReportController::class, 'index'])->name('report.view');
+Route::get('/check-margins', [ReportController::class, 'checkMargins']);
