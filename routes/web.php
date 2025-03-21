@@ -86,6 +86,7 @@ Route::post('/confirmPackingmaterial', [PackingMaterialController::class, 'delet
 Route::post('/update-packing-material-prices', [PackingMaterialController::class, 'updatePrices'])->name('packingMaterial.updatePrices');
 Route::get('/packing-material/price-details/{id}', [PackingMaterialController::class, 'getPmPriceHistory'])->name('packingMaterial.priceHistory');
 
+Route::post('/packingMaterial-import', [PackingMaterialController::class, 'importExcel'])->name('packingMaterial.import');
 
 Route::get('/overheads', [OverheadController::class, 'index'])->name('overheads.index');
 Route::get('/addoverheads', [OverheadController::class, 'create'])->name('overheads.create');
@@ -98,6 +99,7 @@ Route::post('/confirmoverheads', [OverheadController::class, 'deleteConfirmation
 Route::post('/update-overheads-prices', [OverheadController::class, 'updatePrices'])->name('overheads.updatePrices');
 Route::get('/overheads/price-details/{id}', [OverheadController::class, 'getOhPriceHistory'])->name('overheads.priceHistory');
 
+Route::post('/overheads-import', [OverheadController::class, 'importExcel'])->name('overheads.import');
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/addproduct', [ProductController::class, 'create'])->name('products.create');

@@ -526,7 +526,8 @@ class RawMaterialController extends Controller
                     ? DB::table('categoryitems')
                         ->where('categoryId', 1)
                         ->where('status', 'active')
-                        ->where('itemname', $row[$i + 3])
+                        // ->where('itemname', $row[$i + 3])
+                        ->whereRaw("LOWER(TRIM(itemname)) = LOWER(TRIM(?))", [trim(strtolower($row[$i + 3]))])
                         ->value('id')
                     : null;
             }

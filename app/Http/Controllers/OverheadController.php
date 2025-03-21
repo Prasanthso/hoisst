@@ -8,6 +8,7 @@ use App\Models\Overhead;
 use App\Models\UniqueCode;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class OverheadController extends Controller
 {
@@ -483,4 +484,65 @@ class OverheadController extends Controller
             return response()->json(['success' => false, 'message' => 'Error updating overheads: ' . $e->getMessage()]);
         }
     }
+
+      // import excel data to db
+      public function importExcel(Request $request)
+      {
+          $request->validate([
+              'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048'
+          ]);
+
+          $file = $request->file('excel_file');
+
+          // Load spreadsheet
+          $spreadsheet = IOFactory::load($file->getPathname());
+          $sheet = $spreadsheet->getActiveSheet();
+          $rows = $sheet->toArray();
+
+          // Loop through rows and insert into database
+          foreach ($rows as $index => $row) {
+              if ($index == 0) continue; // Skip the header row
+              $ohCode = UniqueCode::generateOhCode();
+
+              $categoryIds = [];
+
+              for ($i = 1; $i <= 10; $i++) {
+                  $categoryIds["id$i"] = !empty($row[$i + 2]) // Adjusting index to match $row[3] for category_id1
+                      ? DB::table('categoryitems')
+                          ->where('categoryId', 3) // here, 3 is overheads id
+                          ->where('status', 'active')
+                        //   ->whereRaw("TRIM(itemname) = ?", [trim($row[$i + 2])])
+                          ->whereRaw("LOWER(TRIM(itemname)) = LOWER(TRIM(?))", [trim(strtolower($row[$i + 2]))])
+                          ->value('id')
+                      : null;
+              }
+              $itemtype_id = DB::table('item_type')->where('itemtypename',$row[17])->where('status', 'active')->value('id');
+
+              Overhead::create([
+                  'name' => $row[0] ?? null,
+                  'ohcode' => $ohCode ?? null,
+                  'uom' => $row[1] ?? null,
+                //   'hsnCode' => $row[2] ?? null,
+                  'itemweight' => $row[2] ?? null,
+                  'category_id1' => $categoryIds['id1'] ?? null,
+                  'category_id2' => $categoryIds['id2'] ?? null,
+                  'category_id3' => $categoryIds['id3'] ?? null,
+                  'category_id4' => $categoryIds['id4'] ?? null,
+                  'category_id5' => $categoryIds['id5'] ?? null,
+                  'category_id6' => $categoryIds['id6'] ?? null,
+                  'category_id7' => $categoryIds['id7'] ?? null,
+                  'category_id8' => $categoryIds['id8'] ?? null,
+                  'category_id9' => $categoryIds['id9'] ?? null,
+                  'category_id10' => $categoryIds['id10'] ?? null,
+                  'price' => $row[13],
+                //   'tax' => $row[14],
+                  'update_frequency' => $row[14],
+                  'price_update_frequency' => $row[15],
+                  'price_threshold' => $row[16],
+                  'itemType_id' => $itemtype_id,
+              ]);
+          }
+
+          return back()->with('success', 'Excel file imported successfully!');
+      }
 }
