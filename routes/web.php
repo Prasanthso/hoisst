@@ -31,6 +31,7 @@ use App\Models\Overhead;
 |
 */
 
+Route::resource('permissions', App\Http\Controllers\PermissionController::class);
 Route::get('/', function () {
     return view('landingPage');
 })->name('landing');
