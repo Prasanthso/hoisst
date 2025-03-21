@@ -518,28 +518,42 @@ class RawMaterialController extends Controller
         foreach ($rows as $index => $row) {
             if ($index == 0) continue; // Skip the header row
             $rmCode = UniqueCode::generateRmCode();
+
+            $categoryIds = [];
+
+            for ($i = 1; $i <= 10; $i++) {
+                $categoryIds["id$i"] = !empty($row[$i + 3]) // Adjusting index to match $row[4] for category_id1
+                    ? DB::table('categoryitems')
+                        ->where('categoryId', 1)
+                        ->where('status', 'active')
+                        ->where('itemname', $row[$i + 3])
+                        ->value('id')
+                    : null;
+            }
+            $itemtype_id = DB::table('item_type')->where('itemtypename',$row[19])->where('status', 'active')->value('id');
+
             RawMaterial::create([
                 'name' => $row[0] ?? null,
                 'rmcode' => $rmCode ?? null,
                 'uom' => $row[1] ?? null,
                 'hsncode' => $row[2] ?? null,
                 'itemweight' => $row[3] ?? null,
-                'category_id1' => $row[4] ?? null,
-                'category_id2' => $row[5] ?? null,
-                'category_id3' => $row[6] ?? null,
-                'category_id4' => $row[7] ?? null,
-                'category_id5' => $row[8] ?? null,
-                'category_id6' => $row[9] ?? null,
-                'category_id7' => $row[10] ?? null,
-                'category_id8' => $row[11] ?? null,
-                'category_id9' => $row[12] ?? null,
-                'category_id10' => $row[13] ?? null,
+                'category_id1' => $categoryIds['id1'] ?? null,
+                'category_id2' => $categoryIds['id2'] ?? null,
+                'category_id3' => $categoryIds['id3'] ?? null,
+                'category_id4' => $categoryIds['id4'] ?? null,
+                'category_id5' => $categoryIds['id5'] ?? null,
+                'category_id6' => $categoryIds['id6'] ?? null,
+                'category_id7' => $categoryIds['id7'] ?? null,
+                'category_id8' => $categoryIds['id8'] ?? null,
+                'category_id9' => $categoryIds['id9'] ?? null,
+                'category_id10' => $categoryIds['id10'] ?? null,
                 'price' => $row[14],
                 'tax' => $row[15],
                 'update_frequency' => $row[16],
                 'price_update_frequency' => $row[17],
                 'price_threshold' => $row[18],
-                'itemType_id' => $row[19],
+                'itemType_id' => $itemtype_id,
             ]);
         }
 
