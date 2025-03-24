@@ -512,7 +512,7 @@ class OverheadController extends Controller
                           ->where('categoryId', 3) // here, 3 is overheads id
                           ->where('status', 'active')
                         //   ->whereRaw("TRIM(itemname) = ?", [trim($row[$i + 2])])
-                          ->whereRaw("LOWER(TRIM(itemname)) = LOWER(TRIM(?))", [trim(strtolower($row[$i + 2]))])
+                        ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 2]))])
                           ->value('id')
                       : null;
               }

@@ -522,7 +522,7 @@ class PackingMaterialController extends Controller
                             ->where('categoryId', 2)
                             ->where('status', 'active')
                             // ->where('itemname', $row[$i + 3])
-                            ->whereRaw("LOWER(TRIM(itemname)) = LOWER(TRIM(?))", [trim(strtolower($row[$i + 3]))])
+                            ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 3]))])
                             ->value('id')
                         : null;
                 }

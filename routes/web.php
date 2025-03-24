@@ -111,7 +111,7 @@ Route::post('/confirmproducts', [ProductController::class, 'deleteConfirmation']
 
 Route::post('/update-products-prices', [ProductController::class, 'updatePrices'])->name('products.updatePrices');
 Route::get('/products/price-details/{id}', [ProductController::class, 'getPdPriceHistory'])->name('products.priceHistory');
-Route::post('/products-import', [OverheadController::class, 'importExcel'])->name('products.import');
+Route::post('/products-import', [ProductController::class, 'importExcel'])->name('products.import');
 // Route::get('/receipe-details-description', function () {
 //     return view('receipeDetails_Description');
 // })->name('receipedd');

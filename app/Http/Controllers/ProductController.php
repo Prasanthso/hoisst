@@ -537,21 +537,21 @@ class ProductController extends Controller
                 for ($i = 1; $i <= 10; $i++) {
                     $categoryIds["id$i"] = !empty($row[$i + 3]) // Adjusting index to match $row[4] for category_id1
                         ? DB::table('categoryitems')
-                            ->where('categoryId', 1)
+                            ->where('categoryId', 4)
                             ->where('status', 'active')
                             // ->where('itemname', $row[$i + 3])
-                            ->whereRaw("LOWER(TRIM(itemname)) = LOWER(TRIM(?))", [trim(strtolower($row[$i + 3]))])
+                            ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 3]))])
                             ->value('id')
                         : null;
                 }
-                $itemtype_id = DB::table('item_type')->where('itemtypename',$row[19])->where('status', 'active')->value('id');
+                $itemtype_id = DB::table('item_type')->where('itemtypename',$row[21])->where('status', 'active')->value('id');
 
                 Product::create([
                     'name' => $row[0] ?? null,
                     'pdcode' => $pdCode ?? null,
                     'uom' => $row[1] ?? null,
-                    'hsncode' => $row[2] ?? null,
-                    'itemweight' => $row[3] ?? null,
+                    'hsnCode' => $row[2] ?? null,
+                    'itemWeight' => $row[3] ?? null,
                     'category_id1' => $categoryIds['id1'] ?? null,
                     'category_id2' => $categoryIds['id2'] ?? null,
                     'category_id3' => $categoryIds['id3'] ?? null,
