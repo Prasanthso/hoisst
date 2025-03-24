@@ -19,7 +19,7 @@ use App\Http\Controllers\OhForRecipeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\OverAllCostingController;
 use App\Models\Overhead;
-
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,6 +60,7 @@ Route::put('/editcategoryitem/{id}', [CategoryItemController::class, 'update'])-
 Route::post('/deletecategory', [CategoryItemController::class, 'delete'])->name('categoryitem.delete');
 Route::post('/confirmcategory', [CategoryItemController::class, 'deleteConfirmation'])->name('categoryitem.confirm');
 
+// rawmaterials route
 Route::get('/rawmaterial', [RawMaterialController::class, 'index'])->name('rawMaterials.index');
 Route::get('/addrawmaterial', [RawMaterialController::class, 'create'])->name('rawmaterial.create');
 Route::post('/saverawmaterial', [RawMaterialController::class, 'store'])->name('rawmaterials.store');
@@ -74,7 +75,11 @@ Route::post('/update-raw-material-prices', [RawMaterialController::class, 'updat
 Route::get('/raw-material/price-details/{id}', [RawMaterialController::class, 'getRmPriceHistory'])->name('rawMaterial.priceHistory');
 
 Route::post('/rawMaterial-import', [RawMaterialController::class, 'importExcel'])->name('rawMaterial.import');
+Route::get('/rawMaterial-excel', function () {
+    return Storage::download('public/excel_file/rawmaterials_.xlsx');
+});
 
+// packing materials route
 Route::get('/packingmaterial', [PackingMaterialController::class, 'index'])->name('packingMaterials.index');
 Route::get('/addpackingmaterial', [PackingMaterialController::class, 'create'])->name('packingmaterial.create');
 Route::post('/savepackingmaterial', [PackingMaterialController::class, 'store'])->name('packingmaterials.store');
@@ -85,9 +90,12 @@ Route::post('/confirmPackingmaterial', [PackingMaterialController::class, 'delet
 
 Route::post('/update-packing-material-prices', [PackingMaterialController::class, 'updatePrices'])->name('packingMaterial.updatePrices');
 Route::get('/packing-material/price-details/{id}', [PackingMaterialController::class, 'getPmPriceHistory'])->name('packingMaterial.priceHistory');
-
 Route::post('/packingMaterial-import', [PackingMaterialController::class, 'importExcel'])->name('packingMaterial.import');
+Route::get('/packingMaterial-excel', function () {
+    return Storage::download('public/excel_file/packingmaterials_.xlsx');
+});
 
+// Overheads route
 Route::get('/overheads', [OverheadController::class, 'index'])->name('overheads.index');
 Route::get('/addoverheads', [OverheadController::class, 'create'])->name('overheads.create');
 Route::post('/saveoverheads', [OverheadController::class, 'store'])->name('overheads.store');
@@ -101,6 +109,11 @@ Route::get('/overheads/price-details/{id}', [OverheadController::class, 'getOhPr
 
 Route::post('/overheads-import', [OverheadController::class, 'importExcel'])->name('overheads.import');
 
+Route::get('/overheads-excel', function () {
+    return Storage::download('public/excel_file/overheads_.xlsx');
+});
+
+// products route
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/addproduct', [ProductController::class, 'create'])->name('products.create');
 Route::post('/saveproduct', [ProductController::class, 'store'])->name('products.store');
@@ -112,6 +125,13 @@ Route::post('/confirmproducts', [ProductController::class, 'deleteConfirmation']
 Route::post('/update-products-prices', [ProductController::class, 'updatePrices'])->name('products.updatePrices');
 Route::get('/products/price-details/{id}', [ProductController::class, 'getPdPriceHistory'])->name('products.priceHistory');
 Route::post('/products-import', [ProductController::class, 'importExcel'])->name('products.import');
+
+Route::get('/products-excel', function () {
+    return Storage::download('public/excel_file/products_.xlsx');
+});
+
+// recipe details-decsription route
+
 // Route::get('/receipe-details-description', function () {
 //     return view('receipeDetails_Description');
 // })->name('receipedd');
@@ -127,12 +147,12 @@ Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('sa
 Route::get('/recipes/{id}', [RecipeController::class, 'show'])->name('recipe.show');
 Route::get('/recipes/{id}', [RecipeController::class, 'fetchRecipeDetails'])->name('recipe.fetchDetails');
 
-
+// pricing route
 Route::get('/pricing', [RecipePricingController::class, 'index'])->name('receipepricing.index');
-Route::get('/addreceipedetails', [RecipeController::class, 'create'])->name('addreceipedetails.create');
-Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('savereceipedetails.store');
-// Route::get('/recipe/{id}', [RecipeController::class, 'show'])->name('recipe.show');
-Route::get('/recipes/{id}', [RecipeController::class, 'fetchRecipeDetails'])->name('recipe.fetchDetails');
+// Route::get('/addreceipedetails', [RecipeController::class, 'create'])->name('addreceipedetails.create');
+// Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('savereceipedetails.store');
+// // Route::get('/recipe/{id}', [RecipeController::class, 'show'])->name('recipe.show');
+// Route::get('/recipes/{id}', [RecipeController::class, 'fetchRecipeDetails'])->name('recipe.fetchDetails');
 
 // Route::post('/rm-for-recipe', [RmForRecipeController::class, 'rmstore'])->name('rm.for.recipe');
 // Route::post('/rm-for-recipe', [RmForRecipeController::class, 'store']);

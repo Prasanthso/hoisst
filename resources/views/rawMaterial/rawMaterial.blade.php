@@ -10,8 +10,9 @@
             <a href="{{ 'addrawmaterial' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
                 <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
             </a>
-            <i class="bi bi-file-earmark-excel"></i> Download Excel
-
+            <a href="{{ url('/rawMaterial-excel') }}" download class="btn"  data-bs-toggle="tooltip" title="Download rawMaterial excel File">
+                <i class="bi bi-download fs-4"></i>
+            </a>
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#importModal">
                 Import
             </button>
