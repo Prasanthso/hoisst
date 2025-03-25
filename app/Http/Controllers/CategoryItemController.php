@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\CategoryItems;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class CategoryItemController extends Controller
 {
@@ -301,4 +302,46 @@ class CategoryItemController extends Controller
             return response()->json(['success' => false, 'message' => 'Error updating Category-item: ' . $e->getMessage()]);
         }
     }
+
+
+      // import excel data to db
+    public function importExcel(Request $request)
+    {
+          $request->validate([
+              'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048'
+          ]);
+
+          $file = $request->file('excel_file');
+
+          // Load spreadsheet
+          $spreadsheet = IOFactory::load($file->getPathname());
+          $sheet = $spreadsheet->getActiveSheet();
+          $rows = $sheet->toArray();
+
+          // Loop through rows and insert into database
+          foreach ($rows as $index => $row) {
+              if ($index == 0) continue; // Skip the header row
+
+            //   $categoryIds = [];
+
+            //   for ($i = 1; $i <= 10; $i++) {
+                  $categoryId = !empty($row[1]) // Adjusting index to match $row[3] for category_id1
+                      ? DB::table('categories')
+                        ->whereRaw("REPLACE(LOWER(TRIM(categoryname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[1]))])
+                          ->value('id')
+                      : null;
+            //   }
+            //   $itemtype_id = DB::table('item_type')->where('itemtypename',$row[17])->where('status', 'active')->value('id');
+
+            CategoryItems::create([
+                  'itemname' => $row[2] ?? null,
+                  'categoryId' => $categoryId ?? null,
+                  'description' => $row[3] ?? '',
+                  'status' => 'active',
+              ]);
+          }
+
+          return back()->with('success', 'Excel file imported successfully!');
+    }
+
 }

@@ -507,23 +507,23 @@ class OverheadController extends Controller
               $categoryIds = [];
 
               for ($i = 1; $i <= 10; $i++) {
-                  $categoryIds["id$i"] = !empty($row[$i + 2]) // Adjusting index to match $row[3] for category_id1
+                  $categoryIds["id$i"] = !empty($row[$i + 3]) // Adjusting index to match $row[3] for category_id1
                       ? DB::table('categoryitems')
                           ->where('categoryId', 3) // here, 3 is overheads id
                           ->where('status', 'active')
                         //   ->whereRaw("TRIM(itemname) = ?", [trim($row[$i + 2])])
-                        ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 2]))])
+                        ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 3]))])
                           ->value('id')
                       : null;
               }
-              $itemtype_id = DB::table('item_type')->where('itemtypename',$row[17])->where('status', 'active')->value('id');
+              $itemtype_id = DB::table('item_type')->where('itemtypename',$row[18])->where('status', 'active')->value('id');
 
               Overhead::create([
-                  'name' => $row[0] ?? null,
+                  'name' => $row[1] ?? null,
                   'ohcode' => $ohCode ?? null,
-                  'uom' => $row[1] ?? null,
+                  'uom' => $row[2] ?? null,
                 //   'hsnCode' => $row[2] ?? null,
-                  'itemweight' => $row[2] ?? null,
+                  'itemweight' => $row[3] ?? null,
                   'category_id1' => $categoryIds['id1'] ?? null,
                   'category_id2' => $categoryIds['id2'] ?? null,
                   'category_id3' => $categoryIds['id3'] ?? null,
@@ -534,11 +534,11 @@ class OverheadController extends Controller
                   'category_id8' => $categoryIds['id8'] ?? null,
                   'category_id9' => $categoryIds['id9'] ?? null,
                   'category_id10' => $categoryIds['id10'] ?? null,
-                  'price' => $row[13],
-                //   'tax' => $row[14],
-                  'update_frequency' => $row[14],
-                  'price_update_frequency' => $row[15],
-                  'price_threshold' => $row[16],
+                  'price' => $row[14],
+                //   'tax' => $row[15],
+                  'update_frequency' => $row[15],
+                  'price_update_frequency' => $row[16],
+                  'price_threshold' => $row[17],
                   'itemType_id' => $itemtype_id,
               ]);
           }

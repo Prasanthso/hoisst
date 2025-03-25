@@ -60,6 +60,11 @@ Route::put('/editcategoryitem/{id}', [CategoryItemController::class, 'update'])-
 Route::post('/deletecategory', [CategoryItemController::class, 'delete'])->name('categoryitem.delete');
 Route::post('/confirmcategory', [CategoryItemController::class, 'deleteConfirmation'])->name('categoryitem.confirm');
 
+Route::post('/categoryitem-import', [CategoryItemController::class, 'importExcel'])->name('categoryitem.import');
+Route::get('/categoryitem-excel', function () {
+    return Storage::download('public/excel_file/categoryitems_.xlsx');
+});
+
 // rawmaterials route
 Route::get('/rawmaterial', [RawMaterialController::class, 'index'])->name('rawMaterials.index');
 Route::get('/addrawmaterial', [RawMaterialController::class, 'create'])->name('rawmaterial.create');
