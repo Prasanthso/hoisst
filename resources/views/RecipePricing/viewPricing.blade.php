@@ -46,6 +46,14 @@
             </div>
 
             @if(isset($pricingData) && $pricingData->isNotEmpty())
+            @php
+            $rpoutput = $pricingData->first()->rp_output ?? 'N/A';
+            $rpuom = $pricingData->first()->rp_uom ?? 'N/A';
+            @endphp
+            <div class="d-flex align-items-center">
+                <strong>Output :</strong> <span class="ms-2">{{ $rpoutput }}</span>
+                <strong class="ms-4">UoM :</strong> <span class="ms-2">{{ $rpuom }}</span>
+             </div>
             <div class="row mb-4">
                 <!-- Raw Materials Table -->
                 <div class="table-responsive">
