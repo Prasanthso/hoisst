@@ -22,7 +22,7 @@
 
     <section class="section dashboard">
         <div class="container mt-5">
-            <div class="mb-4">
+            <div class="mb-2">
                 <label for="productSelect" class="form-label">Select Recipe</label>
                 <div class="row align-items-center">
                     <div class="col-8">
@@ -50,7 +50,7 @@
             $rpoutput = $pricingData->first()->rp_output ?? 'N/A';
             $rpuom = $pricingData->first()->rp_uom ?? 'N/A';
             @endphp
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center mb-2">
                 <strong>Output :</strong> <span class="ms-2">{{ $rpoutput }}</span>
                 <strong class="ms-4">UoM :</strong> <span class="ms-2">{{ $rpuom }}</span>
              </div>
