@@ -213,7 +213,7 @@ ORDER BY
                     'oh_for_recipe.id as ohid',
                     'moh_for_recipe.id as mohid',
                     'recipe_master.Output as rp_output',
-                    // 'recipe_master.uom as rp_uom',
+                    'recipe_master.uom as rp_uom',
                 )
                 ->distinct()
                 ->get();
