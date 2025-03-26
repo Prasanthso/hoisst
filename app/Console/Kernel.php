@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('check:margins')->everyFiveMinutes(); // Adjust timing as needed
+        $schedule->command('check:rm-price-updates')->everyFiveMinutes();
     }
 
     /**
