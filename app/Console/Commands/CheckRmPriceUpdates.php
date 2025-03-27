@@ -20,9 +20,9 @@ class CheckRmPriceUpdates extends Command
     {
         Log::info("Running check:rm-price-updates command...");
 
-        // Get all raw materials
         $rawMaterials = RawMaterial::all();
         $now = Carbon::now();
+        $materialsToNotify = [];
 
         if ($rawMaterials->isEmpty()) {
             Log::warning("No raw materials found.");
@@ -37,22 +37,18 @@ class CheckRmPriceUpdates extends Command
                 ->orderBy('created_at', 'desc')
                 ->first();
 
-            // Determine last update date
             $lastUpdateDate = $lastUpdate ? Carbon::parse($lastUpdate->created_at) : Carbon::parse($material->created_at);
             $updateFrequency = strtolower($material->update_frequency);
             $priceUpdateFrequency = (int) $material->price_update_frequency;
             $shouldNotify = false;
 
-            // Clone $now to prevent modification issues
             $checkDate = clone $now;
 
-            // Validate update frequency
             if (!in_array($updateFrequency, ['days', 'weeks', 'monthly', 'yearly'])) {
                 Log::warning("Invalid update_frequency for {$material->name}: {$updateFrequency}");
                 continue;
             }
 
-            // Check price update frequency
             switch ($updateFrequency) {
                 case 'days':
                     $shouldNotify = $lastUpdateDate->lt($checkDate->subDays($priceUpdateFrequency));
@@ -70,29 +66,34 @@ class CheckRmPriceUpdates extends Command
 
             if ($shouldNotify) {
                 Log::info("Price update alert needed for: {$material->name}");
-
-                // Get all users (modify if you need specific users)
-                $users = User::all();
-
-                if ($users->isEmpty()) {
-                    Log::warning("No users found to notify.");
-                    continue;
-                }
-
-                foreach ($users as $user) {
-                    Log::info("Sending email to: {$user->email}");
-
-                    // Sending email
-                    try {
-                        Mail::to($user->email)->send(new RmPriceUpdateMail($material, $material->price));
-                        Log::info("Email successfully sent to {$user->email}");
-                    } catch (\Exception $e) {
-                        Log::error("Failed to send email to {$user->email}: " . $e->getMessage());
-                    }
-                }
-            } else {
-                Log::info("No email needed for: {$material->name}");
+                $materialsToNotify[] = [
+                    'name' => $material->name,
+                    'id' => $material->id,
+                    'rmcode' => $material->rmcode,
+                ];
             }
+        }
+
+        if (!empty($materialsToNotify)) {
+            $users = User::all();
+
+            if ($users->isEmpty()) {
+                Log::warning("No users found to notify.");
+                return;
+            }
+
+            foreach ($users as $user) {
+                Log::info("Sending single email to: {$user->email}");
+
+                try {
+                    Mail::to($user->email)->send(new RmPriceUpdateMail($materialsToNotify));
+                    Log::info("Email successfully sent to {$user->email}");
+                } catch (\Exception $e) {
+                    Log::error("Failed to send email to {$user->email}: " . $e->getMessage());
+                }
+            }
+        } else {
+            Log::info("No price update alerts needed.");
         }
 
         $this->info('Price update frequency alerts checked successfully.');
