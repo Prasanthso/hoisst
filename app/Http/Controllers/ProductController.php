@@ -378,6 +378,16 @@ class ProductController extends Controller
 
         $categoryIds = $request->category_ids;
 
+        if ($product->price != $request->price) {
+            DB::table('pd_price_histories')->insert([
+                'product_id' => $product->id,
+                'old_price' => $product->price, // Correct way to get the old price
+                'new_price' => $request->price,
+                'updated_by' => 1, // Ensure user is authenticated
+                'updated_at' => now(),
+            ]);
+        }
+
         try {
             // Update the raw material record
             $product->update([
