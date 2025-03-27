@@ -32,7 +32,7 @@ class RmPriceUpdateNotification extends Notification
         return (new MailMessage)
                     ->subject('Price Update Frequency Alert: ' . $this->rawMaterial->name)
                     ->line('The price of ' . $this->rawMaterial->name . ' has been updated to ' . $this->newPrice)
-                    ->action('View Material', url('/raw-materials/' . $this->rawMaterial->id))
+                    ->action('View Material', url('/editpackingmaterials/' . $this->rawMaterial->id))
                     ->line('Please review the updated price.');
     }
 }
