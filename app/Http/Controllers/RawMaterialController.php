@@ -383,6 +383,16 @@ class RawMaterialController extends Controller
                 // }
             }
 
+            if ($rawMaterial->price != $request->price) {
+                DB::table('rm_price_histories')->insert([
+                    'raw_material_id' => $rawMaterial->id,
+                    'old_price' => $rawMaterial->price, // Correct way to get the old price
+                    'new_price' => $request->price,
+                    'updated_by' => 1, // Ensure user is authenticated
+                    'updated_at' => now(),
+                ]);
+            }
+
             // Update the raw material record
             $rawMaterial->update([
                 'name' => $request->name,
@@ -406,6 +416,7 @@ class RawMaterialController extends Controller
                     'itemType_id' => $request->itemType_id,
                     'tax' => $request->tax,
             ]);
+
         } catch (\Exception $e) {
             // Handle the error gracefully (e.g., log it and show an error message)
             // \Log::error('Error updating raw material: ' . $e->getMessage());

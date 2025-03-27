@@ -370,6 +370,16 @@ class OverheadController extends Controller
 
         $categoryIds = $request->category_ids;
 
+        if ($overheads->price != $request->price) {
+            DB::table('oh_price_histories')->insert([
+                'overheads_id' => $overheads->id,
+                'old_price' => $overheads->price, // Correct way to get the old price
+                'new_price' => $request->price,
+                'updated_by' => 1, // Ensure user is authenticated
+                'updated_at' => now(),
+            ]);
+        }
+
         try {
             // Update the raw material record
             $overheads->update([
