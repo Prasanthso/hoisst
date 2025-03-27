@@ -8,6 +8,7 @@ use App\Models\PackingMaterial;
 use App\Models\UniqueCode;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class PackingMaterialController extends Controller
 {
@@ -372,6 +373,15 @@ class PackingMaterialController extends Controller
 
         $categoryIds = $request->category_ids;
 
+        if ($packingMaterial->price != $request->price) {
+            DB::table('pm_price_histories')->insert([
+                'packing_material_id' => $packingMaterial->id,
+                'old_price' => $packingMaterial->price, // Correct way to get the old price
+                'new_price' => $request->price,
+                'updated_by' => 1, // Ensure user is authenticated
+                'updated_at' => now(),
+            ]);
+        }
         try {
             // Update the packing material record
             $packingMaterial->update([
@@ -493,4 +503,65 @@ class PackingMaterialController extends Controller
         //     return response()->json(['success' => false, 'message' => 'Error updating raw materials: ' . $e->getMessage()]);
         // }
     }
+
+        // import excel data to db
+        public function importExcel(Request $request)
+        {
+            $request->validate([
+                'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048'
+            ]);
+
+            $file = $request->file('excel_file');
+
+            // Load spreadsheet
+            $spreadsheet = IOFactory::load($file->getPathname());
+            $sheet = $spreadsheet->getActiveSheet();
+            $rows = $sheet->toArray();
+
+            // Loop through rows and insert into database
+            foreach ($rows as $index => $row) {
+                if ($index == 0) continue; // Skip the header row
+                $pmCode = UniqueCode::generatePmCode();
+
+                $categoryIds = [];
+
+                for ($i = 1; $i <= 10; $i++) {
+                    $categoryIds["id$i"] = !empty($row[$i + 4]) // Adjusting index to match $row[4] for category_id1
+                        ? DB::table('categoryitems')
+                            ->where('categoryId', 2)
+                            ->where('status', 'active')
+                            // ->where('itemname', $row[$i + 3])
+                            ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 4]))])
+                            ->value('id')
+                        : null;
+                }
+                $itemtype_id = DB::table('item_type')->where('itemtypename',$row[20])->where('status', 'active')->value('id');
+
+                PackingMaterial::create([
+                    'name' => $row[1] ?? null,
+                    'pmcode' => $pmCode ?? null,
+                    'uom' => $row[2] ?? null,
+                    'hsnCode' => $row[3] ?? null,
+                    'itemWeight' => $row[4] ?? null,
+                    'category_id1' => $categoryIds['id1'] ?? null,
+                    'category_id2' => $categoryIds['id2'] ?? null,
+                    'category_id3' => $categoryIds['id3'] ?? null,
+                    'category_id4' => $categoryIds['id4'] ?? null,
+                    'category_id5' => $categoryIds['id5'] ?? null,
+                    'category_id6' => $categoryIds['id6'] ?? null,
+                    'category_id7' => $categoryIds['id7'] ?? null,
+                    'category_id8' => $categoryIds['id8'] ?? null,
+                    'category_id9' => $categoryIds['id9'] ?? null,
+                    'category_id10' => $categoryIds['id10'] ?? null,
+                    'price' => $row[15],
+                    'tax' => $row[16],
+                    'update_frequency' => $row[17],
+                    'price_update_frequency' => $row[18],
+                    'price_threshold' => $row[19],
+                    'itemType_id' => $itemtype_id,
+                ]);
+            }
+
+            return back()->with('success', 'Excel file imported successfully!');
+        }
 }

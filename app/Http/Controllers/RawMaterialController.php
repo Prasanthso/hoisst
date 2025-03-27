@@ -7,6 +7,7 @@ use App\Models\RawMaterial;
 use App\Models\UniqueCode;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class RawMaterialController extends Controller
 {
@@ -382,6 +383,16 @@ class RawMaterialController extends Controller
                 // }
             }
 
+            if ($rawMaterial->price != $request->price) {
+                DB::table('rm_price_histories')->insert([
+                    'raw_material_id' => $rawMaterial->id,
+                    'old_price' => $rawMaterial->price, // Correct way to get the old price
+                    'new_price' => $request->price,
+                    'updated_by' => 1, // Ensure user is authenticated
+                    'updated_at' => now(),
+                ]);
+            }
+
             // Update the raw material record
             $rawMaterial->update([
                 'name' => $request->name,
@@ -405,6 +416,7 @@ class RawMaterialController extends Controller
                     'itemType_id' => $request->itemType_id,
                     'tax' => $request->tax,
             ]);
+
         } catch (\Exception $e) {
             // Handle the error gracefully (e.g., log it and show an error message)
             // \Log::error('Error updating raw material: ' . $e->getMessage());
@@ -499,5 +511,111 @@ class RawMaterialController extends Controller
             ]);
         }
     }
+        // import excel data to db
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048'
+        ]);
+
+        $file = $request->file('excel_file');
+
+        // Load spreadsheet
+        $spreadsheet = IOFactory::load($file->getPathname());
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray();
+
+        // Loop through rows and insert into database
+        foreach ($rows as $index => $row) {
+            if ($index == 0) continue; // Skip the header row
+            $rmCode = UniqueCode::generateRmCode();
+
+            $categoryIds = [];
+
+            for ($i = 1; $i <= 10; $i++) {
+                $categoryIds["id$i"] = !empty($row[$i + 4]) // Adjusting index to match $row[4] for category_id1
+                    ? DB::table('categoryitems')
+                        ->where('categoryId', 1)
+                        ->where('status', 'active')
+                        // ->where('itemname', $row[$i + 3])
+                        ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 4]))])
+                        ->value('id')
+                    : null;
+            }
+            $itemtype_id = DB::table('item_type')->where('itemtypename',$row[20])->where('status', 'active')->value('id');
+
+            RawMaterial::create([
+                'name' => $row[1] ?? null,
+                'rmcode' => $rmCode ?? null,
+                'uom' => $row[2] ?? null,
+                'hsncode' => $row[3] ?? null,
+                'itemweight' => $row[4] ?? null,
+                'category_id1' => $categoryIds['id1'] ?? null,
+                'category_id2' => $categoryIds['id2'] ?? null,
+                'category_id3' => $categoryIds['id3'] ?? null,
+                'category_id4' => $categoryIds['id4'] ?? null,
+                'category_id5' => $categoryIds['id5'] ?? null,
+                'category_id6' => $categoryIds['id6'] ?? null,
+                'category_id7' => $categoryIds['id7'] ?? null,
+                'category_id8' => $categoryIds['id8'] ?? null,
+                'category_id9' => $categoryIds['id9'] ?? null,
+                'category_id10' => $categoryIds['id10'] ?? null,
+                'price' => $row[15],
+                'tax' => $row[16],
+                'update_frequency' => $row[17],
+                'price_update_frequency' => $row[18],
+                'price_threshold' => $row[19],
+                'itemType_id' => $itemtype_id,
+            ]);
+        }
+
+        return back()->with('success', 'Excel file imported successfully!');
+    }
+
+
+/*
+    public function importCSV(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,txt'
+        ]);
+
+        $file = fopen($request->file('file')->getPathname(), "r");
+
+        // Skip the first row (header)
+        fgetcsv($file);
+
+        while (($row = fgetcsv($file, 1000, ",")) !== FALSE) {
+            $rmCode = UniqueCode::generateRmCode();
+            RawMaterial::create([
+                'name' => $row[0] ?? null,
+                'rmcode' => $rmCode ?? null,
+                'uom' => $row[1] ?? null,
+                'hsncode' => $row[2] ?? null,
+                'itemweight' => $row[3] ?? null,
+                'category_id1' => $row[4] ?? null,
+                'category_id2' => $row[5] ?? null,
+                'category_id3' => $row[6] ?? null,
+                'category_id4' => $row[7] ?? null,
+                'category_id5' => $row[8] ?? null,
+                'category_id6' => $row[9] ?? null,
+                'category_id7' => $row[10] ?? null,
+                'category_id8' => $row[11] ?? null,
+                'category_id9' => $row[12] ?? null,
+                'category_id10' => $row[13] ?? null,
+                'price' => $row[14],
+                'tax' => $row[15],
+                'update_frequency' => $row[16],
+                'price_update_frequency' => $row[17],
+                'price_threshold' => $row[18],
+                'itemType_id' => $row[19],
+            ]);
+        }
+
+        fclose($file);
+
+        return back()->with('success', 'CSV data imported successfully!');
+    }
+*/
 
 }
