@@ -20,7 +20,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\OverAllCostingController;
 use App\Models\Overhead;
 use Illuminate\Support\Facades\Storage;
-
+use App\Http\Controllers\WhatsAppController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -201,3 +201,7 @@ Route::get('/showoverallcosting/{id}', [OverAllCostingController::class, 'show']
 Route::get('/get-abc-cost', [OverAllCostingController::class, 'getABCcost']);
 
 Route::get('/report', [ReportController::class, 'index'])->name('report.view');
+
+// for is whatsapp
+Route::get('whatsapp', [WhatsAppController::class, 'index'])->name('whatsapp');
+Route::post('whatsapp', [WhatsAppController::class, 'store'])->name('whatsapp.post');
