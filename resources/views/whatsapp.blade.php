@@ -37,7 +37,7 @@
                                 name="phone"
                                 id="inputName"
                                 class="form-control @error('phone') is-invalid @enderror"
-                                placeholder="Phone Number" required>
+                                placeholder="+919876543210" required>
 
                             @error('phone')
                                 <span class="text-danger">{{ $message }}</span>
