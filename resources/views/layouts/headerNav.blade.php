@@ -279,7 +279,7 @@
                     <span>Recipe Pricing</span>
                 </a>
             </li>
-            
+
             <li class="nav-item">
                 <a class="nav-link" href="/report" style="background-color: rgb(186, 234, 249); font-size:17px;">
                     {{-- <i class="bi bi-grid"></i> --}}
@@ -287,6 +287,22 @@
                     <span>Report</span>
                 </a>
             </li>
+
+            <!-- <li class="nav-item">
+                <a class="nav-link" href="/permission" style="background-color: rgb(186, 234, 249); font-size:17px;">
+                    {{-- <i class="bi bi-grid"></i> --}}
+                    <img src="/assets/img/dashboard_pic.svg" alt="dashboard Icon" style="width: 1.2em; height: auto; margin-right: 4px;">
+                    <span>Permission</span>
+                </a>
+            </li> -->
+
+            <!-- <li class="nav-item">
+                <a class="nav-link" href="/role" style="background-color: rgb(186, 234, 249); font-size:17px;">
+                    {{-- <i class="bi bi-grid"></i> --}}
+                    <img src="/assets/img/dashboard_pic.svg" alt="dashboard Icon" style="width: 1.2em; height: auto; margin-right: 4px;">
+                    <span>Role</span>
+                </a>
+            </li> -->
         </ul>
     </aside>
 
