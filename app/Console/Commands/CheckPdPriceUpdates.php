@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Mail\PdPriceUpdateMail;
 use App\Models\Product;
-use App\Models\RawMaterial;
 use App\Models\User;
 use Carbon\Carbon;
 
@@ -21,61 +20,70 @@ class CheckPdPriceUpdates extends Command
     {
         Log::info("Running check:pd-price-updates command...");
 
-        $product = Product::where('status', 'active')->get();
+        $products = Product::where('status', 'active')->get();
         $now = Carbon::now();
-        $materialsToNotify = [];
+        $productsToNotify = [];
 
-        if ($product->isEmpty()) {
-            Log::warning("No raw materials found.");
+        if ($products->isEmpty()) {
+            Log::warning("No active products found.");
             return;
         }
 
-        foreach ($product as $material) {
-            Log::info("Checking product: {$material->name}, ID: {$material->id}");
+        foreach ($products as $product) {
+            Log::info("Checking product: {$product->name}, ID: {$product->id}");
 
+            // Get the last price update date
             $lastUpdate = DB::table('pd_price_histories')
-                ->where('product_id', $material->id)
+                ->where('product_id', $product->id)
                 ->orderBy('created_at', 'desc')
                 ->first();
 
-            $lastUpdateDate = $lastUpdate ? Carbon::parse($lastUpdate->created_at) : Carbon::parse($material->created_at);
-            $updateFrequency = strtolower($material->update_frequency);
-            $priceUpdateFrequency = (int) $material->price_update_frequency;
+            $lastUpdateDate = $lastUpdate ? Carbon::parse($lastUpdate->created_at) : Carbon::parse($product->created_at);
+            $updateFrequency = strtolower(trim($product->update_frequency));
+            $priceUpdateFrequency = (int) $product->price_update_frequency;
             $shouldNotify = false;
 
-            $checkDate = clone $now;
-
             if (!in_array($updateFrequency, ['days', 'weeks', 'monthly', 'yearly'])) {
-                Log::warning("Invalid update_frequency for {$material->name}: {$updateFrequency}");
+                Log::warning("Invalid update_frequency for {$product->name}: {$updateFrequency}");
                 continue;
             }
 
+            // Clone $now before modifying it to avoid issues
+            $checkDate = (clone $now);
+
             switch ($updateFrequency) {
                 case 'days':
-                    $shouldNotify = $lastUpdateDate->lt($checkDate->subDays($priceUpdateFrequency));
+                    $checkDate = $checkDate->subDays($priceUpdateFrequency);
                     break;
                 case 'weeks':
-                    $shouldNotify = $lastUpdateDate->lt($checkDate->subWeeks($priceUpdateFrequency));
+                    $checkDate = $checkDate->subWeeks($priceUpdateFrequency);
                     break;
                 case 'monthly':
-                    $shouldNotify = $lastUpdateDate->lt($checkDate->subMonths($priceUpdateFrequency));
+                    $checkDate = $checkDate->subMonths($priceUpdateFrequency);
                     break;
                 case 'yearly':
-                    $shouldNotify = $lastUpdateDate->lt($checkDate->subYears($priceUpdateFrequency));
+                    $checkDate = $checkDate->subYears($priceUpdateFrequency);
                     break;
             }
 
-            if ($shouldNotify) {
-                Log::info("Price update alert needed for: {$material->name}");
-                $materialsToNotify[] = [
-                    'name' => $material->name,
-                    'id' => $material->id,
-                    'pdcode' => $material->pdcode,
+            // Debugging logs
+            Log::info("Product: {$product->name}, ID: {$product->id}");
+            Log::info(" - Last update: {$lastUpdateDate->toDateTimeString()}");
+            Log::info(" - Expected update interval: {$updateFrequency} {$priceUpdateFrequency}");
+            Log::info(" - Threshold date for notification: {$checkDate->toDateTimeString()}");
+            Log::info(" - Should notify? " . ($lastUpdateDate->lt($checkDate) ? 'Yes' : 'No'));
+
+            if ($lastUpdateDate->lt($checkDate)) {
+                Log::info("Price update alert needed for: {$product->name}");
+                $productsToNotify[] = [
+                    'name' => $product->name,
+                    'id' => $product->id,
+                    'pdcode' => $product->pdcode,
                 ];
             }
         }
 
-        if (!empty($materialsToNotify)) {
+        if (!empty($productsToNotify)) {
             $users = User::all();
 
             if ($users->isEmpty()) {
@@ -84,10 +92,10 @@ class CheckPdPriceUpdates extends Command
             }
 
             foreach ($users as $user) {
-                Log::info("Sending single email to: {$user->email}");
+                Log::info("Sending email to: {$user->email}");
 
                 try {
-                    Mail::to($user->email)->send(new PdPriceUpdateMail($materialsToNotify));
+                    Mail::to($user->email)->send(new PdPriceUpdateMail($productsToNotify));
                     Log::info("Email successfully sent to {$user->email}");
                 } catch (\Exception $e) {
                     Log::error("Failed to send email to {$user->email}: " . $e->getMessage());
@@ -97,6 +105,6 @@ class CheckPdPriceUpdates extends Command
             Log::info("No price update alerts needed.");
         }
 
-        $this->info('Price update frequency alerts checked successfully.');
+        $this->info('Product price update frequency alerts checked successfully.');
     }
 }

@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('check:margins')->dailyAt('09:00');// Adjust timing as needed
+        $schedule->command('check:margins')->everyThreeHours();// Adjust timing as needed
         $schedule->command('check:rm-price-updates')->hourly();
         $schedule->command('check:pm-price-updates')->everyFiveMinutes();
         $schedule->command('check:pd-price-updates')->everyFiveMinutes();

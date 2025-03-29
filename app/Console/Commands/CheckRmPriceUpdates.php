@@ -25,46 +25,55 @@ class CheckRmPriceUpdates extends Command
         $materialsToNotify = [];
 
         if ($rawMaterials->isEmpty()) {
-            Log::warning("No raw materials found.");
+            Log::warning("No active raw materials found.");
             return;
         }
 
         foreach ($rawMaterials as $material) {
             Log::info("Checking raw material: {$material->name}, ID: {$material->id}");
 
+            // Get the last price update date
             $lastUpdate = DB::table('rm_price_histories')
                 ->where('raw_material_id', $material->id)
                 ->orderBy('created_at', 'desc')
                 ->first();
 
             $lastUpdateDate = $lastUpdate ? Carbon::parse($lastUpdate->created_at) : Carbon::parse($material->created_at);
-            $updateFrequency = strtolower($material->update_frequency);
+            $updateFrequency = strtolower(trim($material->update_frequency));
             $priceUpdateFrequency = (int) $material->price_update_frequency;
             $shouldNotify = false;
-
-            $checkDate = clone $now;
 
             if (!in_array($updateFrequency, ['days', 'weeks', 'monthly', 'yearly'])) {
                 Log::warning("Invalid update_frequency for {$material->name}: {$updateFrequency}");
                 continue;
             }
 
+            // Clone $now before modifying it to avoid issues
+            $checkDate = (clone $now);
+
             switch ($updateFrequency) {
                 case 'days':
-                    $shouldNotify = $lastUpdateDate->lt($checkDate->subDays($priceUpdateFrequency));
+                    $checkDate = $checkDate->subDays($priceUpdateFrequency);
                     break;
                 case 'weeks':
-                    $shouldNotify = $lastUpdateDate->lt($checkDate->subWeeks($priceUpdateFrequency));
+                    $checkDate = $checkDate->subWeeks($priceUpdateFrequency);
                     break;
                 case 'monthly':
-                    $shouldNotify = $lastUpdateDate->lt($checkDate->subMonths($priceUpdateFrequency));
+                    $checkDate = $checkDate->subMonths($priceUpdateFrequency);
                     break;
                 case 'yearly':
-                    $shouldNotify = $lastUpdateDate->lt($checkDate->subYears($priceUpdateFrequency));
+                    $checkDate = $checkDate->subYears($priceUpdateFrequency);
                     break;
             }
 
-            if ($shouldNotify) {
+            // Debugging logs
+            Log::info("Raw Material: {$material->name}, ID: {$material->id}");
+            Log::info(" - Last update: {$lastUpdateDate->toDateTimeString()}");
+            Log::info(" - Expected update interval: {$updateFrequency} {$priceUpdateFrequency}");
+            Log::info(" - Threshold date for notification: {$checkDate->toDateTimeString()}");
+            Log::info(" - Should notify? " . ($lastUpdateDate->lt($checkDate) ? 'Yes' : 'No'));
+
+            if ($lastUpdateDate->lt($checkDate)) {
                 Log::info("Price update alert needed for: {$material->name}");
                 $materialsToNotify[] = [
                     'name' => $material->name,
@@ -83,7 +92,7 @@ class CheckRmPriceUpdates extends Command
             }
 
             foreach ($users as $user) {
-                Log::info("Sending single email to: {$user->email}");
+                Log::info("Sending email to: {$user->email}");
 
                 try {
                     Mail::to($user->email)->send(new RmPriceUpdateMail($materialsToNotify));
@@ -96,6 +105,6 @@ class CheckRmPriceUpdates extends Command
             Log::info("No price update alerts needed.");
         }
 
-        $this->info('Price update frequency alerts checked successfully.');
+        $this->info('Raw material price update frequency alerts checked successfully.');
     }
 }
