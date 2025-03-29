@@ -14,9 +14,8 @@
                     <h2> Twilio Authentication</h2>
                   </div>
                   <div class="card-body">
-                    <form method="POST" action="{{ route('whatsapp.post') }}">
-
-                        {{ csrf_field() }}
+                    <form action="{{ route('update.keys') }}" method="POST">
+                        @csrf
 
                         @if ($message = Session::get('success'))
                             <div class="alert alert-success alert-block">
@@ -37,7 +36,8 @@
                                 name="sid"
                                 id="inputSid"
                                 class="form-control @error('sid') is-invalid @enderror"
-                                placeholder="Enter SID key" required>
+                                placeholder="Enter SID key"
+                                value="{{ old('sid', config('services.twilio.sid')) }}" required>
 
                             @error('sid')
                                 <span class="text-danger">{{ $message }}</span>
@@ -50,7 +50,8 @@
                                 name="authtoken"
                                 id="inputToken"
                                 class="form-control @error('message') is-invalid @enderror"
-                                placeholder="Enter token key" required></input>
+                                placeholder="Enter token key"
+                                value="{{ old('sid', config('services.twilio.token')) }}" required>
 
                             @error('authtoken')
                                 <span class="text-danger">{{ $message }}</span>
@@ -63,7 +64,8 @@
                                 name="twiliophone"
                                 id="inputtwiliophone"
                                 class="form-control @error('message') is-invalid @enderror"
-                                placeholder="Enter twilio phone" required></input>
+                                placeholder="Enter twilio phone"
+                                value="{{ old('sid', config('services.twilio.whatsappphone')) }}" required>
 
                             @error('twiliophone')
                                 <span class="text-danger">{{ $message }}</span>

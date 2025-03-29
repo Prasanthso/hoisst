@@ -8,7 +8,6 @@ use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RecipeController;
 
 use App\Http\Controllers\DashboardController;
-
 use App\Http\Controllers\PackingMaterialController;
 use App\Http\Controllers\OverheadController;
 use App\Http\Controllers\ProductController;
@@ -21,6 +20,8 @@ use App\Http\Controllers\OverAllCostingController;
 use App\Models\Overhead;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\WhatsAppController;
+use App\Http\Controllers\TwilioController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -203,7 +204,8 @@ Route::get('/get-abc-cost', [OverAllCostingController::class, 'getABCcost']);
 Route::get('/report', [ReportController::class, 'index'])->name('report.view');
 
 // for is whatsapp
-Route::get('whastappapikeys', [WhatsAppController::class, 'twilioaccount'])->name('twilio.keys');
+Route::get('/whatsapp', [WhatsAppController::class, 'index'])->name('whatsapp');
+Route::post('/whatsapp', [WhatsAppController::class, 'store'])->name('whatsapp.post');
 
-Route::get('whatsapp', [WhatsAppController::class, 'index'])->name('whatsapp');
-Route::post('whatsapp', [WhatsAppController::class, 'store'])->name('whatsapp.post');
+Route::get('whastappapikeys', [TwilioController::class, 'twilioaccount'])->name('twilio.keys');
+Route::post('/update-keys', [TwilioController::class, 'updateSid'])->name('update.keys');
