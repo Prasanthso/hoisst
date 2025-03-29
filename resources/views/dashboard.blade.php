@@ -253,7 +253,15 @@
             </div>
                 <!-- End Right side columns -->
     </section>
-    <button class="whatsapp-btn" onclick="window.location.href='{{ route('whatsapp') }}'">whatsapp</button>
+    <section class="section dashboard">
+        <div class="container mt-4">
+            <h5>Do you want to integrate WhatsApp API?</h5>
+            <button class="btn btn-success me-2" onclick="window.location.href='{{ route('twilio.keys') }}'">Yes</button>
+            <button class="btn btn-danger" onclick="alert('WhatsApp API not selected')">No</button>
+        </div>
+
+    </section>
+    {{-- <button class="btn btn-outline-primary whatsapp-btn" onclick="window.location.href='{{ route('whatsapp') }}'">whatsapp</button> --}}
 
 </main><!-- End #main -->
 @endsection

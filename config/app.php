@@ -185,4 +185,10 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+
+    /* for whatsapp api integration */
+
+    // 'sid' => env('TWILIO_SID',$twilioSid),
+    // 'token' => env('TWILIO_AUTH_TOKEN',$twilioSid),
+    // 'whatsappphone' => env('TWILIO_WHATSAPP_NUMBER',$twilioSid),
 ];

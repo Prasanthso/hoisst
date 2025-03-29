@@ -279,7 +279,7 @@
                     <span>Recipe Pricing</span>
                 </a>
             </li>
-            
+
             <li class="nav-item">
                 <a class="nav-link" href="/report" style="background-color: rgb(186, 234, 249); font-size:17px;">
                     {{-- <i class="bi bi-grid"></i> --}}
@@ -287,6 +287,7 @@
                     <span>Report</span>
                 </a>
             </li>
+
         </ul>
     </aside>
 

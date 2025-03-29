@@ -203,5 +203,7 @@ Route::get('/get-abc-cost', [OverAllCostingController::class, 'getABCcost']);
 Route::get('/report', [ReportController::class, 'index'])->name('report.view');
 
 // for is whatsapp
+Route::get('whastappapikeys', [WhatsAppController::class, 'twilioaccount'])->name('twilio.keys');
+
 Route::get('whatsapp', [WhatsAppController::class, 'index'])->name('whatsapp');
 Route::post('whatsapp', [WhatsAppController::class, 'store'])->name('whatsapp.post');
