@@ -39,5 +39,5 @@ class WhatsAppController extends Controller
         }
     }
 
-   
+
 }

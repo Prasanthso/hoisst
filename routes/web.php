@@ -208,4 +208,4 @@ Route::get('/whatsapp', [WhatsAppController::class, 'index'])->name('whatsapp');
 Route::post('/whatsapp', [WhatsAppController::class, 'store'])->name('whatsapp.post');
 
 Route::get('whastappapikeys', [TwilioController::class, 'twilioaccount'])->name('twilio.keys');
-Route::post('/update-keys', [TwilioController::class, 'updateSid'])->name('update.keys');
+Route::post('/update-keys', [TwilioController::class, 'updateTwilio'])->name('update.keys');

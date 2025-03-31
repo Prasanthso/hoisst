@@ -18,7 +18,7 @@
                         @csrf
 
                         @if ($message = Session::get('success'))
-                            <div class="alert alert-success alert-block">
+                            <div id="success-message" class="alert alert-success alert-block">
                                 <strong>{{ $message }}</strong>
                             </div>
                         @endif
@@ -47,13 +47,13 @@
                         <div class="mb-3">
                             <label class="form-label" for="inputToken">Auth Token:</label>
                             <input
-                                name="authtoken"
+                                name="token"
                                 id="inputToken"
                                 class="form-control @error('message') is-invalid @enderror"
                                 placeholder="Enter token key"
-                                value="{{ old('sid', config('services.twilio.token')) }}" required>
+                                value="{{ old('token', config('services.twilio.token')) }}" required>
 
-                            @error('authtoken')
+                            @error('token')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
@@ -61,19 +61,19 @@
                         <div class="mb-3">
                             <label class="form-label" for="inputtwiliophone">My Twilio Phone Number:</label>
                             <input
-                                name="twiliophone"
+                                name="whatsappphone"
                                 id="inputtwiliophone"
                                 class="form-control @error('message') is-invalid @enderror"
-                                placeholder="Enter twilio phone"
-                                value="{{ old('sid', config('services.twilio.whatsappphone')) }}" required>
+                                placeholder="+919876543210"
+                                value="{{ old('whatsappphone', config('services.twilio.whatsappphone')) }}" required>
 
-                            @error('twiliophone')
+                            @error('whatsappphone')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
 
                         <div class="mb-3">
-                            <button class="btn btn-success btn-submit"  id="sendBtn">Store</button>
+                            <button class="btn btn-success btn-submit"  id="sendBtn">Save</button>
                         </div>
                     </form>
                   </div>
@@ -86,4 +86,14 @@
 
 </main><!-- End #main -->
 @endsection
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
 
+        setTimeout(function() {
+            const successMessage = document.getElementById('success-message');
+            if (successMessage) {
+                successMessage.style.display = 'none';
+            }
+        }, 2000);
+    });
+</script>
