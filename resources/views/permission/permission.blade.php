@@ -42,18 +42,20 @@
                                 <th scope="col" style="color:white;">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="rawMaterialTable">
-                            <tr>
-                                <td>1</td>
-                                <td>Create RM</td>
+                        <tbody id="permissionTable">
+                            @foreach ($permissions as $index => $material)
+                            <tr data-id="{{ $material->id }}">
+                                <td>{{ $index+1 }}.</td> <!-- Auto-increment S.NO -->
+                                <td>{{ $material->name }}</td>
                                 <td><button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                                         <i class="fas fa-edit" style="color: black;"></i>
                                     </button>
                                     <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                                         <i class="fas fa-trash" style="color: red;"></i>
                                     </button>
-                                </td> <!-- UoM -->
+                                </td>
                             </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

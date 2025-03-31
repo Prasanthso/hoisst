@@ -36,7 +36,7 @@
                 @endif --}}
                 <div class="card-body">
                     <!-- Vertical Form -->
-                    <form method="POST" action="{{ route('Permission.store') }}" class="row g-3 mt-2">
+                    <form method="POST" action="{{ route('permission.store') }}" class="row g-3 mt-2">
                         @csrf
                         <div class="col-12">
                             <label for="name" class="form-label">Permission Name</label>

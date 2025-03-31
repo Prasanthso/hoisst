@@ -205,9 +205,9 @@ Route::get('/get-abc-cost', [OverAllCostingController::class, 'getABCcost']);
 Route::get('/report', [ReportController::class, 'index'])->name('report.view');
 Route::get('/check-margins', [ReportController::class, 'checkMargins']);
 
-Route::get('/permission', [PermissionController::class, 'index'])->name('Permission.index');
+Route::get('/permission', [PermissionController::class, 'index'])->name('permission.index');
 Route::get('/addpermission', [PermissionController::class, 'create'])->name('Permission.create');
-Route::post('/savepermission', [PermissionController::class, 'store'])->name('Permission.store');
+Route::post('/permission/store', [PermissionController::class, 'store'])->name('permission.store');
 Route::get('/editpermission/{id}', [PermissionController::class, 'edit'])->name('Permission.edit');
 Route::put('/editpermission/{id}', [PermissionController::class, 'update'])->name('Permission.update');
 Route::post('/deletepermission', [PermissionController::class, 'delete'])->name('Permission.delete');
