@@ -531,7 +531,7 @@ class RawMaterialController extends Controller
 
         // ✅ Define Expected Headers
         $expectedHeaders = [
-            'name', 'uom', 'hsncode', 'itemweight', 'category_id1', 'category_id2',
+           'SNo', 'name', 'uom', 'hsncode', 'itemweight', 'category_id1', 'category_id2',
             'category_id3', 'category_id4', 'category_id5', 'category_id6', 'category_id7',
             'category_id8', 'category_id9', 'category_id10', 'price', 'tax',
             'update_frequency', 'price_update_frequency', 'price_threshold', 'itemType'
@@ -540,9 +540,16 @@ class RawMaterialController extends Controller
         // ✅ Get Headers from First Row
         $fileHeaders = array_map('trim', $rows[0]); // Trim spaces from headers
 
-        // ✅ Check if headers match exactly
-        if ($fileHeaders !== $expectedHeaders) {
-            return back()->with('error', 'Invalid file format. Please upload a file with the correct headers.');
+        // ✅ Check missing headers
+        $missingHeaders = array_diff($expectedHeaders, $fileHeaders);
+        $extraHeaders = array_diff($fileHeaders, $expectedHeaders);
+
+        if (!empty($missingHeaders)) {
+            return back()->with('error', 'Missing headers: ' . implode(', ', $missingHeaders));
+        }
+
+        if (!empty($extraHeaders)) {
+            return back()->with('error', 'Extra headers found: ' . implode(', ', $extraHeaders));
         }
 
         // Loop through rows and insert into database

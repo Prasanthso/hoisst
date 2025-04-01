@@ -30,6 +30,9 @@
             @if(session('success'))
             <div id="success-message" class="alert alert-success">{{ session('success') }}</div>
             @endif
+            @if(session('error'))
+            <div id="error-message" class="alert alert-danger">{{ session('error') }}</div>
+            @endif
             <!-- Left side columns -->
             <div class="col-lg-2 px-2 mt-5">
                 <!-- Categories Section -->
@@ -800,8 +803,10 @@
 
         setTimeout(function() {
             const successMessage = document.getElementById('success-message');
-            if (successMessage) {
+            const errorMessage = document.getElementById('error-message');
+            if (successMessage || errorMessage) {
                 successMessage.style.display = 'none';
+                errorMessage.style.display = 'none';
             }
         }, 3000);
 
