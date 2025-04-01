@@ -525,6 +525,26 @@ class RawMaterialController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
         $rows = $sheet->toArray();
 
+        if (empty($rows) || count($rows) < 2) {
+            return back()->with('error', 'The uploaded file is empty or does not have enough data.');
+        }
+
+        // ✅ Define Expected Headers
+        $expectedHeaders = [
+            'name', 'uom', 'hsncode', 'itemweight', 'category_id1', 'category_id2',
+            'category_id3', 'category_id4', 'category_id5', 'category_id6', 'category_id7',
+            'category_id8', 'category_id9', 'category_id10', 'price', 'tax',
+            'update_frequency', 'price_update_frequency', 'price_threshold', 'itemType'
+        ];
+
+        // ✅ Get Headers from First Row
+        $fileHeaders = array_map('trim', $rows[0]); // Trim spaces from headers
+
+        // ✅ Check if headers match exactly
+        if ($fileHeaders !== $expectedHeaders) {
+            return back()->with('error', 'Invalid file format. Please upload a file with the correct headers.');
+        }
+
         // Loop through rows and insert into database
         foreach ($rows as $index => $row) {
             if ($index == 0) continue; // Skip the header row

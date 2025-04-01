@@ -32,13 +32,16 @@
                         <div class="mb-3">
                             <label class="form-label" for="inputSid">Account SID:</label>
                             <input
-                                type="text"
+                                type="password"
                                 name="sid"
                                 id="inputSid"
                                 class="form-control @error('sid') is-invalid @enderror"
                                 placeholder="Enter SID key"
                                 value="{{ old('sid', config('services.twilio.sid')) }}" required>
 
+                                {{-- <span class="input-group-text" onclick="toggleSidVisibility()" style="cursor: pointer; padding: 0.375rem 0.75rem;">
+                                    <i id="toggleIcon" class="bi bi-eye"></i>
+                                </span> --}}
                             @error('sid')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -47,12 +50,15 @@
                         <div class="mb-3">
                             <label class="form-label" for="inputToken">Auth Token:</label>
                             <input
+                              type="password"
                                 name="token"
                                 id="inputToken"
                                 class="form-control @error('message') is-invalid @enderror"
                                 placeholder="Enter token key"
                                 value="{{ old('token', config('services.twilio.token')) }}" required>
-
+                                {{-- <span class="input-group-text" onclick="toggleSidVisibility()" style="cursor: pointer;">
+                                    <i id="toggleIcon" class="bi bi-eye"></i>
+                                </span> --}}
                             @error('token')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -61,12 +67,16 @@
                         <div class="mb-3">
                             <label class="form-label" for="inputtwiliophone">My Twilio Phone Number:</label>
                             <input
+                                type="password"
                                 name="whatsappphone"
                                 id="inputtwiliophone"
                                 class="form-control @error('message') is-invalid @enderror"
                                 placeholder="+919876543210"
                                 value="{{ old('whatsappphone', config('services.twilio.whatsappphone')) }}" required>
 
+                                {{-- <span class="input-group-text" onclick="toggleSidVisibility()" style="cursor: pointer;">
+                                    <i id="toggleIcon" class="bi bi-eye"></i>
+                                </span> --}}
                             @error('whatsappphone')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -86,6 +96,8 @@
 
 </main><!-- End #main -->
 @endsection
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 <script>
     document.addEventListener("DOMContentLoaded", function() {
 
@@ -96,4 +108,16 @@
             }
         }, 2000);
     });
+    function toggleSidVisibility() {
+    let input = document.getElementById("inputSid");
+    let button = event.target;
+
+    if (input.type === "password") {
+        input.type = "text";
+        button.innerText = "🙈 Hide";
+    } else {
+        input.type = "password";
+        button.innerText = "👁 Show";
+    }
+}
 </script>
