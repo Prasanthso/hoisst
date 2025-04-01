@@ -373,6 +373,15 @@ class PackingMaterialController extends Controller
 
         $categoryIds = $request->category_ids;
 
+        if ($packingMaterial->price != $request->price) {
+            DB::table('pm_price_histories')->insert([
+                'packing_material_id' => $packingMaterial->id,
+                'old_price' => $packingMaterial->price, // Correct way to get the old price
+                'new_price' => $request->price,
+                'updated_by' => 1, // Ensure user is authenticated
+                'updated_at' => now(),
+            ]);
+        }
         try {
             // Update the packing material record
             $packingMaterial->update([

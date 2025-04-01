@@ -17,6 +17,7 @@ use App\Http\Controllers\PmForRecipeController;
 use App\Http\Controllers\OhForRecipeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\OverAllCostingController;
+use App\Http\Controllers\PermissionController;
 use App\Models\Overhead;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\WhatsAppController;
@@ -33,6 +34,7 @@ use App\Http\Controllers\TwilioController;
 |
 */
 
+Route::resource('permission', App\Http\Controllers\PermissionController::class);
 Route::get('/', function () {
     return view('landingPage');
 })->name('landing');
@@ -209,3 +211,13 @@ Route::post('/whatsapp', [WhatsAppController::class, 'store'])->name('whatsapp.p
 
 Route::get('whastappapikeys', [TwilioController::class, 'twilioaccount'])->name('twilio.keys');
 Route::post('/update-keys', [TwilioController::class, 'updateTwilio'])->name('update.keys');
+
+Route::get('/check-margins', [ReportController::class, 'checkMargins']);
+
+Route::get('/permission', [PermissionController::class, 'index'])->name('permission.index');
+Route::get('/addpermission', [PermissionController::class, 'create'])->name('Permission.create');
+Route::post('/permission/store', [PermissionController::class, 'store'])->name('permission.store');
+Route::get('/editpermission/{id}', [PermissionController::class, 'edit'])->name('Permission.edit');
+Route::put('/editpermission/{id}', [PermissionController::class, 'update'])->name('Permission.update');
+Route::post('/deletepermission', [PermissionController::class, 'delete'])->name('Permission.delete');
+
