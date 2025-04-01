@@ -17,7 +17,7 @@
     <section class="section dashboard">
 
 
-            </div><!-- End Left side columns -->
+            <!-- End Left side columns -->
             <!-- Right side columns -->
     <!-- First Row of Boxes -->
     <div class="row d-flex flex-wrap justify-content-between" style="margin: 0 -10px;">
@@ -229,36 +229,39 @@
             </div>
          </div>
     </div>
-</div>
 
 
-  <!-- Box 11 -->
-  <div class="col-xxl-2 col-md-4" style="margin: 10px;">
-            <div class="card info-card revenue-card" style="background-color: rgb(180,249,242); border-radius: 20px; padding: 15px 0 15px 0;">
-                <div class="card-body">
-                    <div class="d-flex flex-column align-items-start">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;background-color:rgb(59,218,202); width: 40px; height: 40px; border-radius: 60%;">
-                            <!--<i class="bi bi-currency-dollar"></i>-->
-                            <img src="/assets/img/package.png" alt="Pdc Icon" style="width: 0.7em; height: auto; margin-right:10px;">
-                        </div>
-                        <div class="ps-3" style="margin-bottom: 10px;">
-                            <h6>{{ $totalPm }}</h6>
-                        </div>
-                        <div class="ps-3">
-                            <span class="text-muted small pt-2 ps-1"><b>Products with high & low margins</b></span>
+
+            <!-- Box 11 -->
+            <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+                <div class="card info-card revenue-card" style="background-color: rgb(180,249,242); border-radius: 20px; padding: 15px 0 15px 0;">
+                    <div class="card-body">
+                        <div class="d-flex flex-column align-items-start">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;background-color:rgb(59,218,202); width: 40px; height: 40px; border-radius: 60%;">
+                                <!--<i class="bi bi-currency-dollar"></i>-->
+                                <img src="/assets/img/package.png" alt="Pdc Icon" style="width: 0.7em; height: auto; margin-right:10px;">
+                            </div>
+                            <div class="ps-3" style="margin-bottom: 10px;">
+                                <h6>{{ $totalPm }}</h6>
+                            </div>
+                            <div class="ps-3">
+                                <span class="text-muted small pt-2 ps-1"><b>Products with high & low margins</b></span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
-
-
                 <!-- End Right side columns -->
-        </div>
     </section>
+    <section class="section dashboard">
+        <div class="container mt-4">
+            <h5>Do you want to integrate WhatsApp API?</h5>
+            <button class="btn btn-success me-2" onclick="window.location.href='{{ route('twilio.keys') }}'">Yes</button>
+            <button class="btn btn-danger" onclick="alert('WhatsApp API not selected')">No</button>
+        </div>
+
+    </section>
+    {{-- <button class="btn btn-outline-primary whatsapp-btn" onclick="window.location.href='{{ route('whatsapp') }}'">whatsapp</button> --}}
 
 </main><!-- End #main -->
 @endsection
