@@ -800,15 +800,16 @@
             }
         });
 
-
         setTimeout(function() {
             const successMessage = document.getElementById('success-message');
             const errorMessage = document.getElementById('error-message');
-            if (successMessage || errorMessage) {
+            if (successMessage) {
                 successMessage.style.display = 'none';
+            }
+            else if(errorMessage){
                 errorMessage.style.display = 'none';
             }
-        }, 3000);
+        }, 2000);
 
     });
 
