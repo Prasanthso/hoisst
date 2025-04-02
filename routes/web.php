@@ -220,4 +220,3 @@ Route::post('/permission/store', [PermissionController::class, 'store'])->name('
 Route::get('/editpermission/{id}', [PermissionController::class, 'edit'])->name('Permission.edit');
 Route::put('/editpermission/{id}', [PermissionController::class, 'update'])->name('Permission.update');
 Route::post('/deletepermission', [PermissionController::class, 'delete'])->name('Permission.delete');
-

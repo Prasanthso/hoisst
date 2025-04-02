@@ -525,6 +525,38 @@ class RawMaterialController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
         $rows = $sheet->toArray();
 
+        if (empty($rows) || count($rows) < 2) {
+            return back()->with('error', 'The uploaded file is empty or does not have enough data.');
+        }
+
+        // ✅ Define Expected Headers
+        $expectedHeaders = [
+           'sno', 'name', 'uom', 'hsncode', 'itemweight', 'category_id1', 'category_id2',
+            'category_id3', 'category_id4', 'category_id5', 'category_id6', 'category_id7',
+            'category_id8', 'category_id9', 'category_id10', 'price', 'tax',
+            'update_frequency', 'price_update_frequency', 'price_threshold', 'itemType'
+        ];
+
+        // ✅ Get Headers from First Row
+        $fileHeaders = array_map('trim', $rows[0]); // Trim spaces from headers
+
+        // ✅ Check missing headers
+        $missingHeaders = array_diff($expectedHeaders, $fileHeaders);
+        $extraHeaders = array_diff($fileHeaders, $expectedHeaders);
+
+        if (!empty($missingHeaders)) {
+            return back()->with('error', 'Missing headers or Matching headers: ' . implode(', ', $missingHeaders));
+        }
+
+        if (!empty($extraHeaders)) {
+            return back()->with('error', 'Extra headers found: ' . implode(', ', $extraHeaders));
+        }
+
+        // ✅ Check if headers match exactly (Order & Case-Sensitive Check)
+        if ($fileHeaders !== $expectedHeaders) {
+            return back()->with('error',' Invalid column order! Please ensure the headers are exactly: ' . implode(', ', $expectedHeaders));
+        }
+
         // Loop through rows and insert into database
         foreach ($rows as $index => $row) {
             if ($index == 0) continue; // Skip the header row
