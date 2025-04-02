@@ -19,6 +19,7 @@ use App\Http\Controllers\OhForRecipeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\OverAllCostingController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\RoleController;
 use App\Models\Overhead;
 use Illuminate\Support\Facades\Storage;
 
@@ -211,3 +212,12 @@ Route::post('/permission/store', [PermissionController::class, 'store'])->name('
 Route::get('/editpermission/{id}', [PermissionController::class, 'edit'])->name('Permission.edit');
 Route::put('/editpermission/{id}', [PermissionController::class, 'update'])->name('Permission.update');
 Route::post('/deletepermission', [PermissionController::class, 'delete'])->name('Permission.delete');
+
+Route::get('/role', [RoleController::class, 'index'])->name('role.index');
+Route::get('/addrole', [RoleController::class, 'create'])->name('role.create');
+Route::post('/role/store', [RoleController::class, 'store'])->name('role.store');
+Route::get('/editrole/{id}', [RoleController::class, 'edit'])->name('role.edit');
+Route::put('/editrole/{id}', [RoleController::class, 'update'])->name('role.update');
+Route::post('/deleterole', [RoleController::class, 'delete'])->name('role.delete');
+
+Route::get('/addrolepermission/{id}', [RoleController::class, 'addPermissionToRole'])->name('addrolepermission.create');
