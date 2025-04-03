@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Mail\LowMarginAlert;
 use App\Models\Report;
+use App\Models\User;
+use App\Http\Controllers\WhatsAppController;
 
 class CheckMargins extends Command
 {
@@ -133,7 +135,7 @@ ORDER BY
             // Send WhatsApp message if enabled
             foreach ($whatsappEnabledUsers as $user) {
                 $message = "⚠️ Low Margin Alert ⚠️\nProduct: {$report->Product_Name}\nMargin: " . round($marginPerc, 2) . "%\nThreshold: {$report->margin}%";
-                $whatsappController->sendMessage("whatsapp:{$user->phone}", $message,'whatsapp');
+                $whatsappController->sendMessage($user->whatsapp_number, $message,'whatsapp');
             }
         }
 

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Twilio\Rest\Client;
 use Exception;
@@ -45,7 +45,7 @@ class WhatsAppController extends Controller
             $client = new Client(env('TWILIO_SID'), env('TWILIO_AUTH_TOKEN'));
             $client->messages->create("whatsapp:" . $to, [
                 'from' => env('TWILIO_WHATSAPP_NUMBER'),
-                'body' => $message
+                'body' => $message,
             ]);
             // Log::info("WhatsApp message sent to: " . $to);
         } catch (\Exception $e) {
