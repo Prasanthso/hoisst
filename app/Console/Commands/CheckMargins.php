@@ -18,9 +18,9 @@ class CheckMargins extends Command
     public function handle()
     {
         $reports = DB::select("
-            SELECT 
-    pm.id AS SNO, 
-    pm.name AS Product_Name, 
+            SELECT
+    pm.id AS SNO,
+    pm.name AS Product_Name,
     pm.price AS P_MRP,
     pm.tax AS tax,
     pm.margin AS margin,
@@ -44,7 +44,7 @@ class CheckMargins extends Command
 
     -- Packing Material Cost (Divided by Output)
     COALESCE(pm_total.PM_Cost, 0) / COALESCE(rmst.Output, 1) AS PM_Cost,
-    
+
     -- Overhead Cost (Divided by Output)
     COALESCE(oh_total.Overhead_Cost, 0) / COALESCE(rmst.Output, 1) AS OH_Cost,
 
@@ -52,16 +52,16 @@ class CheckMargins extends Command
     COALESCE(moh_total.MOH_Cost, 0) / COALESCE(rmst.Output, 1) AS MOH_Cost,
 
     -- Output
-    rmst.Output 
+    rmst.Output
 
-FROM 
-    product_master pm 
-JOIN 
-    recipe_master rmst ON pm.id = rmst.product_id 
+FROM
+    product_master pm
+JOIN
+    recipe_master rmst ON pm.id = rmst.product_id
 
 -- Aggregate Raw Material Cost Separately
 LEFT JOIN (
-    SELECT 
+    SELECT
         rfr.product_id,
         GROUP_CONCAT(DISTINCT rfr.raw_material_id ORDER BY rfr.raw_material_id ASC SEPARATOR ', ') AS RM_IDs,
         GROUP_CONCAT(DISTINCT rm.name ORDER BY rm.name ASC SEPARATOR ', ') AS RM_Names,
@@ -73,7 +73,7 @@ LEFT JOIN (
 
 -- Aggregate Packing Material Cost Separately
 LEFT JOIN (
-    SELECT 
+    SELECT
         pfr.product_id,
         GROUP_CONCAT(DISTINCT pfr.packing_material_id ORDER BY pfr.packing_material_id ASC SEPARATOR ', ') AS PM_IDs,
         GROUP_CONCAT(DISTINCT pkm.name ORDER BY pkm.name ASC SEPARATOR ', ') AS PM_Names,
@@ -85,8 +85,8 @@ LEFT JOIN (
 
 -- Aggregate Overhead Cost Separately
 LEFT JOIN (
-    SELECT 
-        ofr.product_id, 
+    SELECT
+        ofr.product_id,
         SUM(COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0)) AS Overhead_Cost
     FROM oh_for_recipe ofr
     JOIN overheads oh ON ofr.overheads_id = oh.id
@@ -95,21 +95,23 @@ LEFT JOIN (
 
 -- Aggregate Manufacturing Overhead Cost Separately
 LEFT JOIN (
-    SELECT 
-        product_id, 
+    SELECT
+        product_id,
         SUM(COALESCE(price, 0)) AS MOH_Cost
     FROM moh_for_recipe
     GROUP BY product_id
 ) AS moh_total ON pm.id = moh_total.product_id
 
-LEFT JOIN 
+LEFT JOIN
     overall_costing oc ON pm.id = oc.productId AND oc.status = 'active'
-WHERE 
+WHERE
     rmst.status = 'active' AND oc.suggested_mrp IS NOT NULL
-ORDER BY 
+ORDER BY
     pm.name ASC;
         ");
 
+        $whatsappController = new WhatsAppController();
+        $whatsappEnabledUsers = User::where('whatsapp_enabled', 1)->get();
 
         foreach ($reports as $report) {
             $rm_perc = $report->RM_Cost * 100 / $report->S_MRP;
@@ -126,6 +128,12 @@ ORDER BY
             if ($marginPerc < $report->margin) {
                 Log::info("Sending email for product: {$report->Product_Name}");
                 Mail::to('praswanth124@gmail.com')->send(new LowMarginAlert($report->Product_Name, $marginPerc));
+            }
+
+            // Send WhatsApp message if enabled
+            foreach ($whatsappEnabledUsers as $user) {
+                $message = "⚠️ Low Margin Alert ⚠️\nProduct: {$report->Product_Name}\nMargin: " . round($marginPerc, 2) . "%\nThreshold: {$report->margin}%";
+                $whatsappController->sendMessage("whatsapp:{$user->phone}", $message,'whatsapp');
             }
         }
 

@@ -39,5 +39,19 @@ class WhatsAppController extends Controller
         }
     }
 
+    public function sendMessage($to, $message, $type = 'whatsapp')
+    {
+        try {
+            $client = new Client(env('TWILIO_SID'), env('TWILIO_AUTH_TOKEN'));
+            $client->messages->create("whatsapp:" . $to, [
+                'from' => env('TWILIO_WHATSAPP_NUMBER'),
+                'body' => $message
+            ]);
+            // Log::info("WhatsApp message sent to: " . $to);
+        } catch (\Exception $e) {
+            Log::error("Error sending WhatsApp message: " . $e->getMessage());
+        }
+    }
+
 
 }
