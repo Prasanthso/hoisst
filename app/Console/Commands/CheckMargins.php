@@ -134,7 +134,7 @@ ORDER BY
 
             // Send WhatsApp message if enabled
             foreach ($whatsappEnabledUsers as $user) {
-                $message = "⚠️ Low Margin Alert ⚠️\nProduct: {$report->Product_Name}\nMargin: " . round($marginPerc, 2) . "%\nThreshold: {$report->margin}%";
+                $message = "Margin Alert\nProduct: {$report->Product_Name}\nMargin: " . round($marginPerc, 2) . "%\nThreshold: {$report->margin}%";
                 $whatsappController->sendMessage($user->whatsapp_number, $message,'whatsapp');
             }
         }

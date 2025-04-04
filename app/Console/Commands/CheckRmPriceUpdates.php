@@ -109,9 +109,9 @@ class CheckRmPriceUpdates extends Command
                     Log::info("Sending WhatsApp message to: {$user->whatsapp_number}");
 
                     try {
-                        $message = "*Price Update Alert*\n\n";
+                        $message = "Price Alert\n";
                         foreach ($materialsToNotify as $material) {
-                            $message .= "*Material:* {$material['name']} (Code: {$material['rmcode']})\n";
+                            $message .= "Material: {$material['name']} (Code: {$material['rmcode']})\n";
                         }
                         $message .= "\nPlease update the prices accordingly.";
 
