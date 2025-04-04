@@ -194,7 +194,8 @@
                         <thead class="custom-header">
                             <tr>
                                 <th style="color:white;">Effective From</th>
-                                <th style="color:white;">Price</th>
+                                <th style="color:white;">Old Price</th>
+                                <th style="color:white;">New Price</th>
                                 <th style="color:white;">Updated By</th>
                             </tr>
                         </thead>
@@ -560,6 +561,7 @@
                             modalTableBody.innerHTML += `
                                     <tr>
                                         <td>${detail.updated_at}</td>
+                                        <td>${detail.old_price}</td>
                                         <td>${detail.new_price}</td>
                                         <td>${detail.updated_by}</td>
                                     </tr>
