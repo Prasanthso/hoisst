@@ -38,6 +38,21 @@
                     <!-- Vertical Form -->
                     <form method="POST" action="{{ route('permission.store') }}" class="row g-3 mt-2">
                         @csrf
+                        <div class="col-md-12">
+                            <label for="inputState" class="form-label">Choose Menu</label>
+                            <select id="inputState" name="menuCategoryId" class="form-select select2">
+                                <option selected disabled>Choose...</option>
+                                @foreach($permission_menu as $category)
+                                <option value="{{ $category->id }}"
+                                    {{ old('categoryId') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->menuName }}
+                                </option>
+                                @endforeach
+                            </select>
+                            @error('categoryId')
+                            <span id="category-error" class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
                         <div class="col-12">
                             <label for="name" class="form-label">Permission Name</label>
                             <input type="text" class="form-control" id="name" name="name">

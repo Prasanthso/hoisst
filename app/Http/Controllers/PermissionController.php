@@ -24,7 +24,8 @@ class PermissionController extends Controller
      */
     public function create()
     {
-        return view('permission.addPermission');
+        $permission_menu = DB::table('permission_menu')->where('status', 'active')->get();
+        return view('permission.addPermission', compact('permission_menu'));
     }
 
     /**
@@ -35,6 +36,7 @@ class PermissionController extends Controller
         try {
             // Validate input
             $validated = $request->validate([
+                'menuCategoryId' => 'required|integer',
                 'name' => 'required|string|max:255|unique:permissions,name',
             ]);
 
@@ -43,6 +45,7 @@ class PermissionController extends Controller
 
             // Create new permission
             $permission = Permission::create([
+                'menuCategoryId' => $request->menuCategoryId,
                 'name' => $request->name,
                 'guard_name' => 'web',
             ]);

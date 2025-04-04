@@ -221,3 +221,4 @@ Route::put('/editrole/{id}', [RoleController::class, 'update'])->name('role.upda
 Route::post('/deleterole', [RoleController::class, 'delete'])->name('role.delete');
 
 Route::get('/addrolepermission/{id}', [RoleController::class, 'addPermissionToRole'])->name('addrolepermission.create');
+Route::post('/fetch-category-permissions', [RoleController::class, 'fetchCategoryPermissions'])->name('fetch.category.permissions');

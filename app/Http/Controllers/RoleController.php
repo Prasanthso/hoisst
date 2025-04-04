@@ -75,9 +75,10 @@ class RoleController extends Controller
         $role = DB::table('roles')->where('id', $id)->first();
         $permission_category = DB::table('permission_category')->where('status', 'active')->get();
         $permission_menu = DB::table('permission_menu')->where('status', 'active')->get();
-        return view('role.addRolePermission', compact('permission_category', 'permission_menu', 'role'));
+        $permissions = DB::table('permissions')->where('status', 'active')->get();
+        return view('role.addRolePermission', compact('permission_category', 'role', 'permission_menu', 'permissions'));
     }
-
+    
     /**
      * Show the form for editing the specified resource.
      */
