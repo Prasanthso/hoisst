@@ -10,6 +10,7 @@ use App\Mail\PmPriceUpdateMail;
 use App\Models\PackingMaterial;
 use App\Models\User;
 use Carbon\Carbon;
+use App\Http\Controllers\WhatsAppController;
 
 class CheckPmPriceUpdates extends Command
 {
@@ -91,6 +92,8 @@ class CheckPmPriceUpdates extends Command
                 return;
             }
 
+            $whatsappController = new WhatsAppController();
+
             foreach ($users as $user) {
                 Log::info("Sending email to: {$user->email}");
 
@@ -99,6 +102,24 @@ class CheckPmPriceUpdates extends Command
                     Log::info("Email successfully sent to {$user->email}");
                 } catch (\Exception $e) {
                     Log::error("Failed to send email to {$user->email}: " . $e->getMessage());
+                }
+            }
+
+             // Check if user has WhatsApp notifications enabled
+             if ($user->whatsapp_enabled && $user->whatsapp_number) {
+                Log::info("Sending WhatsApp message to: {$user->whatsapp_number}");
+
+                try {
+                    $message = "Price Alert\n";
+                    foreach ($materialsToNotify as $material) {
+                        $message .= "Material: {$material['name']} (Code: {$material['pmcode']})\n";
+                    }
+                    $message .= "\nPlease update the prices accordingly.";
+
+                    $whatsappController->sendMessage($user->whatsapp_number, $message, 'whatsapp');
+                    Log::info("WhatsApp message sent successfully to {$user->whatsapp_number}");
+                } catch (\Exception $e) {
+                    Log::error("Failed to send WhatsApp message to {$user->whatsapp_number}: " . $e->getMessage());
                 }
             }
         } else {

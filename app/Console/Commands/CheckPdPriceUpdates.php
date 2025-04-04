@@ -10,6 +10,7 @@ use App\Mail\PdPriceUpdateMail;
 use App\Models\Product;
 use App\Models\User;
 use Carbon\Carbon;
+use App\Http\Controllers\WhatsAppController;
 
 class CheckPdPriceUpdates extends Command
 {
@@ -90,6 +91,7 @@ class CheckPdPriceUpdates extends Command
                 Log::warning("No users found to notify.");
                 return;
             }
+            $whatsappController = new WhatsAppController();
 
             foreach ($users as $user) {
                 Log::info("Sending email to: {$user->email}");
@@ -101,6 +103,25 @@ class CheckPdPriceUpdates extends Command
                     Log::error("Failed to send email to {$user->email}: " . $e->getMessage());
                 }
             }
+
+              // Check if user has WhatsApp notifications enabled
+              if ($user->whatsapp_enabled && $user->whatsapp_number) {
+                Log::info("Sending WhatsApp message to: {$user->whatsapp_number}");
+
+                try {
+                    $message = "Price Alert\n";
+                    foreach ($materialsToNotify as $material) {
+                        $message .= "Material: {$material['name']} (Code: {$material['pdcode']})\n";
+                    }
+                    $message .= "\nPlease update the prices accordingly.";
+
+                    $whatsappController->sendMessage($user->whatsapp_number, $message, 'whatsapp');
+                    Log::info("WhatsApp message sent successfully to {$user->whatsapp_number}");
+                } catch (\Exception $e) {
+                    Log::error("Failed to send WhatsApp message to {$user->whatsapp_number}: " . $e->getMessage());
+                }
+            }
+
         } else {
             Log::info("No price update alerts needed.");
         }

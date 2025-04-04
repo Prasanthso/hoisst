@@ -208,7 +208,7 @@ Route::get('/report', [ReportController::class, 'index'])->name('report.view');
 // for is whatsapp
 Route::get('/whatsapp', [WhatsAppController::class, 'index'])->name('whatsapp');
 Route::post('/whatsapp', [WhatsAppController::class, 'store'])->name('whatsapp.post');
-
+// Route::post('/whatsapp', [WhatsAppController::class, 'sendMessage'])->name('whatsapp.send');
 Route::get('whastappapikeys', [TwilioController::class, 'twilioaccount'])->name('twilio.keys');
 Route::post('/update-keys', [TwilioController::class, 'updateTwilio'])->name('update.keys');
 

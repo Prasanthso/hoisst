@@ -180,9 +180,9 @@
                                     <td>{{ $report->tax }}</td>
                                     <td>{{ number_format($beforeTax, 2) }}</td>
                                     <td>{{ number_format($MARGINAMOUNT, 2) }}</td>
-                                    <td style="background-color: 
-                                            {{ ($marginPerc < $report->margin) ? '#ffb3b3' : 
-                                                (($marginPerc > $report->margin) ? '#b3ffcc' : '#fff79a') 
+                                    <td style="background-color:
+                                            {{ ($marginPerc < $report->margin) ? '#ffb3b3' :
+                                                (($marginPerc > $report->margin) ? '#b3ffcc' : '#fff79a')
                                                 }}">
                                         {{ number_format($marginPerc, 2) }}
                                     </td>
