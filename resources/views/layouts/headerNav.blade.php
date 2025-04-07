@@ -219,6 +219,16 @@
                     class="nav-content collapse {{ Request::is('rawmaterial') ||  Request::routeIs('rawMaterial.edit') || Request::is('showcategoryitem') || Request::is('addcategory') || Request::routeIs('categoryitem.edit') || Request::is('addrawmaterial') || Request::routeIs('packingMaterial.edit') || Request::is('packingmaterial') || Request::is('addpackingmaterial') || Request::is('overheads') ||  Request::is('addoverheads') ||  Request::routeIs('overheads.edit') || Request::is('products') || Request::routeIs('products.edit') || Request::is('addproduct')   ? 'show' : '' }}"
                     data-bs-parent="#sidebar-nav">
                     <li>
+                        <a href="/showcategoryitem" class="{{ Request::is('showcategoryitem') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none">
+                            <span>Category</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/products" class="{{ Request::is('products') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                            <span>Products</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="/rawmaterial" class="{{ Request::is('rawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Raw Materials</span>
                         </a>
@@ -233,16 +243,16 @@
                             <span>Overheads</span>
                         </a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="/products" class="{{ Request::is('products') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Products</span>
                         </a>
-                    </li>
-                    <li>
+                    </li> --}}
+                    {{-- <li>
                         <a href="/showcategoryitem" class="{{ Request::is('showcategoryitem') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none">
                             <span>Category</span>
                         </a>
-                    </li>
+                    </li> --}}
                 </ul>
             </li><!-- End Masters Nav -->
 
