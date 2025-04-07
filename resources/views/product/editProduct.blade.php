@@ -181,7 +181,15 @@
         $('#itemType').select2({
             theme: 'bootstrap-5',
             placeholder: 'Select itemtype',
-        });
+        }).on('change', function () {
+    const itemTypeValue = $(this).val(); // get selected value
+    const purcCost = document.querySelector("#inputPurCost");
+    let isValid = true;
+    if (itemTypeValue !== "2") {
+        clearError(purcCost); // hide error for non-Trading
+    }
+
+});
 
         // Toggle edit mode
         $('#editButton').on('click', function() {
@@ -256,7 +264,7 @@
                 showError(itemtype, "Item Type is required.");
                 isValid = false;
             }
-            if (itemtype.selectedOptions?.value === "Trading") {
+            if (itemtype.value === "2") {
                 if (purcCost.value.trim() === "" || isNaN(purcCost.value)) {
                     showError(purcCost, "Valid purcCost is required.");
                     isValid = false;
@@ -296,16 +304,18 @@
             input.addEventListener("change", () => { hasTyped = true; clearError(input)});
             input.addEventListener("blur", () => {
                 clearError(input);
-                const itemTypeValue =  document.querySelector("#itemtype")?.value;
-                const isPurcCost = input.id === "inputPurCost";
-                if (isPurcCost) {
-                    if (itemTypeValue === "2") {
-                        if (input.value.trim() === "") {
-                            showError(input, "This field is required!");
-                        }
-                    }
-                    return; // important to skip general required validation
-                }
+                // const itemTypeValue =  document.querySelector("#itemtype")?.value;
+                // const isPurcCost = input.id === "inputPurCost";
+                // if (isPurcCost) {
+                //     if (itemTypeValue === "2") {
+                //         if (input.value.trim() === "") {
+                //             hasTyped = false;
+                //             showError(input, "This field is required!");
+                //             isValid = false;
+                //         }
+                //     }
+                //     return; // important to skip general required validation
+                // }
                     if(input.value.trim() === "") {
                         hasTyped = false;
                         showError(input, "This field is required!");
