@@ -304,7 +304,6 @@
                             showError(input, "This field is required!");
                         }
                     }
-                    else{ clearError(inputPurCost);}
                     return; // important to skip general required validation
                 }
                     if(input.value.trim() === "") {
