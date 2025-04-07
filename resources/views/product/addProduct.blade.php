@@ -207,7 +207,14 @@
         if (itemweight.value.trim() === "") { showError(itemweight, "Net Weight is required."); isValid = false; }
         if (categorySelect.selectedOptions.length === 0) { showError(categorySelect, "Please select at least one category."); isValid = false; }
         if (itemtype.selectedOptions.length === 0) { showError(itemtype, "Item Type is required."); isValid = false; }
-        if (purcCost.value.trim() === "" || isNaN(purcCost.value)) { showError(purcCost, "Valid purcCost is required."); isValid = false; }
+        // if ((itemtype.selectedOptions?.value === "Trading" && purcCost.value.trim() === "") || isNaN(purcCost.value)) { showError(purcCost, "Valid purcCost is required."); isValid = false; }
+        if (itemtype.selectedOptions?.value === "Trading") {
+            if (purcCost.value.trim() === "" || isNaN(purcCost.value)) {
+                showError(purcCost, "Valid purcCost is required.");
+                isValid = false;
+            }
+        }
+
         if (mrp.value.trim() === "" || isNaN(mrp.value)) { showError(mrp, "Valid MRP is required."); isValid = false; }
         if (price.value.trim() === "" || isNaN(price.value)) { showError(price, "Valid Price is required."); isValid = false; }
         if (tax.value.trim() === "" || isNaN(tax.value)) { showError(tax, "Valid Tax value is required."); isValid = false; }
@@ -217,7 +224,9 @@
         if (!isValid) {
             event.preventDefault();
         }
+
     });
+
 
     document.querySelectorAll("input, select").forEach(input => {
             let hasTyped = false; // Track if the user has typed
@@ -226,7 +235,19 @@
             input.addEventListener("change", () => { hasTyped = true; clearError(input)});
             input.addEventListener("blur", () => {
                 clearError(input);
-                    if (input.value.trim() === "") {
+                const itemTypeValue =  document.querySelector("#itemtype")?.value;
+                const isPurcCost = input.id === "inputPurCost";
+                if (isPurcCost) {
+                    if (itemTypeValue === "2") {
+                        if (input.value.trim() === "") {
+                            showError(input, "This field is required!");
+                        }
+                    }
+                    else{ clearError(inputPurCost);}
+                    return; // important to skip general required validation
+                }
+
+                if (input.value.trim() === "") {
                         hasTyped = false;
                         showError(input, "This field is required!");
                     }
