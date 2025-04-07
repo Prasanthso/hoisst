@@ -184,11 +184,10 @@
         }).on('change', function () {
     const itemTypeValue = $(this).val(); // get selected value
     const purcCost = document.querySelector("#inputPurCost");
-    let isValid = true;
+
     if (itemTypeValue !== "2") {
         clearError(purcCost); // hide error for non-Trading
     }
-
 });
 
         // Toggle edit mode

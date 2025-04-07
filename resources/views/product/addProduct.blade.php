@@ -159,6 +159,7 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
+        // let hasTyped = false;
         $('#categorySelect').select2({
             theme: 'bootstrap-5',
             placeholder: 'Choose Categories',
@@ -171,11 +172,13 @@
         $('#itemType').select2({
             theme: 'bootstrap-5',
             placeholder: 'Select itemtype',
-          }).on('change', function () {
+          })
+          .on('change', function () {
     const itemTypeValue = $(this).val(); // get selected value
     const purcCost = document.querySelector("#inputPurCost");
 
     if (itemTypeValue !== "2") {
+        // hasTyped = true;
         clearError(purcCost); // hide error for non-Trading
     }
     // else {
@@ -185,7 +188,6 @@
     //     }
     // }
 });
-
     });
     document.addEventListener("DOMContentLoaded", function() {
        const btnsave = document.getElementById('btnsubmit');
@@ -220,7 +222,7 @@
         if (uom.value === "UoM") { showError(uom, "Please select a valid Unit of Measure."); isValid = false; }
         if (itemweight.value.trim() === "") { showError(itemweight, "Net Weight is required."); isValid = false; }
         if (categorySelect.selectedOptions.length === 0) { showError(categorySelect, "Please select at least one category."); isValid = false; }
-        if (itemtype.selectedOptions.length === 0) { showError(itemtype, "Item Type is required."); isValid = false; }
+        if (itemtype.value.trim() === "") { showError(itemtype, "Item Type is required."); isValid = false; }
         // if ((itemtype.selectedOptions?.value === "Trading" && purcCost.value.trim() === "") || isNaN(purcCost.value)) { showError(purcCost, "Valid purcCost is required."); isValid = false; }
         if (itemtype.value === "2") {
             if (purcCost.value.trim() === "" || isNaN(purcCost.value)) {
@@ -255,7 +257,7 @@
                 });
         });
     // Special handling for select2 dropdowns
-    $('#inputState, #categorySelect','#itemType').on("select2:select", function () {
+    $('#inputState, #categorySelect').on("select2:select", function () {
         clearError(this); // Pass the select element to clearError function
     });
 });
