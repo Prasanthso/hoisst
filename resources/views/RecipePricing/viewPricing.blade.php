@@ -216,8 +216,8 @@
                                 <th>Quantity</th>
                                 <th>OH Code</th>
                                 <th>UoM</th>
-                                <th>Price</th>
-                                <th>Amount</th>
+                                <th>Percentage(%)</th>
+                                <th>Price/Amount</th>
                             </tr>
                         </thead>
                         <tbody id="overheadsTable">
@@ -236,7 +236,7 @@
                                 <td> - </td>
                                 <td> - </td>
                                 <td> - </td>
-                                <td>{{ $data->moh_price }}</td>
+                                <td>{{ $data->moh_percentage }}</td>
                                 <td>{{ $amount }}</td>
                             </tr>
                             @endif
