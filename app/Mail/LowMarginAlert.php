@@ -8,24 +8,16 @@ use Illuminate\Queue\SerializesModels;
 
 class LowMarginAlert extends Mailable
 {
-    use Queueable, SerializesModels;
+    public $products;
 
-    public $productName;
-    public $marginPercentage;
-
-    public function __construct($productName, $marginPercentage)
+    public function __construct(array $products)
     {
-        $this->productName = $productName;
-        $this->marginPercentage = $marginPercentage;
+        $this->products = $products;
     }
 
     public function build()
     {
-        return $this->subject("Low Margin Alert for {$this->productName}")
-            ->view('emails.low_margin_alert')
-            ->with([
-                'productName' => $this->productName,
-                'marginPercentage' => $this->marginPercentage,
-            ]);
+        return $this->subject('Low Margin Alert')
+            ->view('emails.low_margin_alert');
     }
 }

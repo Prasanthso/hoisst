@@ -115,6 +115,8 @@ ORDER BY
         $whatsappController = new WhatsAppController();
         $whatsappEnabledUsers = User::where('whatsapp_enabled', 1)->get();
 
+        $lowMarginProducts = [];
+
         foreach ($reports as $report) {
             $rm_perc = $report->RM_Cost * 100 / $report->S_MRP;
             $pm_perc = $report->PM_Cost * 100 / $report->S_MRP;
@@ -125,17 +127,40 @@ ORDER BY
             $MARGINAMOUNT = $beforeTax - $cost;
             $marginPerc = ($MARGINAMOUNT / $beforeTax) * 100;
 
-            Log::info("Checking margin for rm+pm=$total,beforeTax= $beforeTax,marginamount=$MARGINAMOUNT,oh=$report->OH_Cost, moh=$report->MOH_Cost, s.mrp =$report->S_MRP, marginPerc=$marginPerc, {$report->Product_Name}: Margin Percentage = $marginPerc, Threshold = {$report->margin}");
-
             if ($marginPerc < $report->margin) {
-                Log::info("Sending email for product: {$report->Product_Name}");
-                Mail::to('praswanth124@gmail.com')->send(new LowMarginAlert($report->Product_Name, $marginPerc));
+                $lowMarginProducts[] = [
+                    'name' => $report->Product_Name,
+                    'margin' => round($marginPerc, 2),
+                    'threshold' => $report->margin,
+                ];
             }
+        }
 
-            // Send WhatsApp message if enabled
-            foreach ($whatsappEnabledUsers as $user) {
-                $message = "Margin Alert\nProduct: {$report->Product_Name}\nMargin: " . round($marginPerc, 2) . "%\nThreshold: {$report->margin}%";
-                $whatsappController->sendMessage($user->whatsapp_number, $message,'whatsapp');
+        if (!empty($lowMarginProducts)) {
+            $users = User::all();
+
+            foreach ($users as $user) {
+                try {
+                    Mail::to($user->email)->send(new LowMarginAlert($lowMarginProducts));
+                    Log::info("Low margin email sent to {$user->email}");
+                } catch (\Exception $e) {
+                    Log::error("Error sending low margin email to {$user->email}: " . $e->getMessage());
+                }
+
+                if ($user->whatsapp_enabled && $user->whatsapp_number) {
+                    $message = "⚠️ Low Margin Alert:\n";
+                    foreach ($lowMarginProducts as $p) {
+                        $message .= "{$p['name']}: Margin {$p['margin']}% (Threshold: {$p['threshold']}%)\n";
+                    }
+                    $message .= "\nPlease review product pricing.";
+
+                    try {
+                        $whatsappController->sendMessage($user->whatsapp_number, $message, 'whatsapp');
+                        Log::info("WhatsApp message sent to {$user->whatsapp_number}");
+                    } catch (\Exception $e) {
+                        Log::error("Error sending WhatsApp to {$user->whatsapp_number}: " . $e->getMessage());
+                    }
+                }
             }
         }
 

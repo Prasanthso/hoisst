@@ -1,13 +1,11 @@
-<!DOCTYPE html>
-<html>
+<h2>Low Margin Alert</h2>
 
-<head>
-    <title>Low Margin Alert</title>
-</head>
+<p>The following products are below their preferred margin:</p>
 
-<body>
-    <h1>Low Margin Alert</h1>
-    <p>The margin for <strong>{{ $productName }}</strong> has dropped to <strong>{{ $marginPercentage }}%</strong>.</p>
-</body>
+<ul>
+    @foreach ($products as $product)
+    <li><strong>{{ $product['name'] }}</strong>: Margin {{ $product['margin'] }}% (Preferred margin: {{ $product['threshold'] }}%)</li>
+    @endforeach
+</ul>
 
-</html>
+<p>Please take necessary action.</p>
