@@ -209,7 +209,7 @@
                             ${costing.product_name ?? '-'}
                         </a></td>
                         <td>${recipe.data.rmCost ?? '-'}</td>  <!-- Access rmCost directly from recipe.data -->
-                        <td>${recipe.data.totalCost ?? '-'}</td>  <!-- Access totalCost directly from recipe.data -->
+                        <td>${recipe.data.totalCost.toFixed(2) ?? '-'}</td>  <!-- Access totalCost directly from recipe.data -->
                         <td>${costing.margin ?? '-'}</td>
                         <td>${suggestedMrp ?? '-'}</td>
                     </tr>`;
