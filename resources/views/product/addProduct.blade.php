@@ -250,6 +250,18 @@
             input.addEventListener("change", () => { hasTyped = true; clearError(input)});
             input.addEventListener("blur", () => {
                 clearError(input);
+                const itemTypeValue =  document.querySelector("#itemtype")?.value;
+                const isPurcCost = input.id === "inputPurCost";
+                if (isPurcCost) {
+                    if (itemTypeValue === "2") {
+                        if (input.value.trim() === "") {
+                            hasTyped = false;
+                            showError(input, "This field is required!");
+                            isValid = false;
+                        }
+                    }
+                    return; // important to skip general required validation
+                }
                 if (input.value.trim() === "") {
                         hasTyped = false;
                         showError(input, "This field is required!");

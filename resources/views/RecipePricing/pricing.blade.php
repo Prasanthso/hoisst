@@ -305,8 +305,8 @@
                                 <th>Quantity</th>
                                 <th>OH Code</th>
                                 <th>UoM</th>
-                                <th>Price</th>
-                                <th>Amount</th>
+                                <th id="ohHeaderPrice">Price</th>
+                                <th id="ohHeaderAmount">Amount</th>
                             </tr>
                         </thead>
                         <tbody id="overheadsTable">
@@ -435,12 +435,18 @@
 
         // Function to toggle visibility based on checkbox selection
         function toggleForms() {
+            const priceheader = document.getElementById('ohHeaderPrice');
+            const amountheader = document.getElementById('ohHeaderAmount');
             if (fromMastersCheckbox.checked) {
                 masterEntryDiv.style.display = "flex";
                 manualEntryDiv.style.display = "none";
+                priceheader.innerText = "Price";
+                amountheader.innerText = "Amount";
             } else if (enterManuallyCheckbox.checked) {
                 masterEntryDiv.style.display = "none";
                 manualEntryDiv.style.display = "block";
+                priceheader.innerText = "Percentage(%)";
+                amountheader.innerText = "Price/Amount";
             } else {
                 masterEntryDiv.style.display = "none";
                 manualEntryDiv.style.display = "none";
@@ -1101,7 +1107,7 @@
                     <td>-</td>
                     <td>-</td>
                     <td>-</td>
-                    <td>${manualOhPriceValue.toFixed(2)}</td>
+                    <td>${manualOhPercValue.toFixed(2)}</td>
                     <td>${manualOhPriceValue.toFixed(2)}</td>
                     <td>
                         <span class="delete-icon" style="cursor: pointer; color: red;" title="Remove Row" data-id="${insertedId}">&#x1F5D1;</span>
