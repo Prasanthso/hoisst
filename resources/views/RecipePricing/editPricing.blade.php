@@ -494,8 +494,8 @@
                                 <th>Quantity</th>
                                 <th>OH Code</th>
                                 <th>UoM</th>
-                                <th>Price</th>
-                                <th>Amount</th>
+                                <th>Percentage(%)</th>
+                                <th>Price/Amount</th>
                             </tr>
                         </thead>
                         <tbody id="manualEntryTable">
@@ -514,7 +514,7 @@
                                 <td> - </td>
                                 <td> - </td>
                                 <td> - </td>
-                                <td id="mohprice-{{ $data->mohid }}">{{ $data->moh_price }}</td>
+                                <td id="mohprice-{{ $data->mohid }}">{{ $data->moh_percentage }}</td>
                                 <td id="mohamount-{{ $data->mohid }}">{{ $amount }}</td>
                                 <td>
                                     <span class="delete-icon" id="mohdelete-{{ $data->mohid }}" style="cursor: pointer; color: red;" title="Remove Row" data-id="{{ $data->mohid }}">&#x1F5D1;</span>
@@ -864,7 +864,7 @@
                 if (data.success) {
                     alert("Quantity updated successfully.");
                     // Update the text to show the new quantity
-                    document.getElementById('quantity-text-' + rid).textContent = quantity.toFixed(2);
+                    document.getElementById('quantity-text-' + rid).textContent = quantity;
                     document.getElementById('rmamount-' + rid).textContent = parseFloat(rmnewAmt).toFixed(2);
                     window.location.reload();
                 } else {
@@ -1852,7 +1852,7 @@
                     <td>-</td>
                     <td>-</td>
                     <td>-</td>
-                    <td>${manualOhPriceValue.toFixed(2)}</td>
+                    <td>${manualOhPercValue}</td>
                     <td>${manualOhPriceValue.toFixed(2)}</td>
                     <td>
                         <span class="delete-icon" style="cursor: pointer; color: red;" title="Remove Row" data-id="${insertedId}">&#x1F5D1;</span>
