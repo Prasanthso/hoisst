@@ -303,8 +303,7 @@ class CategoryItemController extends Controller
         }
     }
 
-
-      // import excel data to db
+    // import excel data to db
     public function importExcel(Request $request)
     {
           $request->validate([
@@ -318,10 +317,34 @@ class CategoryItemController extends Controller
           $sheet = $spreadsheet->getActiveSheet();
           $rows = $sheet->toArray();
 
+          // ✅ Define Expected Headers
+          $expectedHeaders = [
+            'SNo', 'categories', 'categoryname', 'description'];
+
+         // ✅ Get Headers from First Row
+         $fileHeaders = array_map('trim', $rows[0]); // Trim spaces from headers
+
+         // ✅ Check missing headers
+         $missingHeaders = array_diff($expectedHeaders, $fileHeaders);
+         $extraHeaders = array_diff($fileHeaders, $expectedHeaders);
+
+         if (!empty($missingHeaders)) {
+             return back()->with('error', 'Missing headers: ' . implode(', ', $missingHeaders));
+         }
+
+         if (!empty($extraHeaders)) {
+             return back()->with('error', 'Extra headers found: ' . implode(', ', $extraHeaders));
+         }
+          // ✅ Check if headers match exactly (Order & Case-Sensitive Check)
+        if ($fileHeaders !== $expectedHeaders) {
+            return back()->with('error',' Invalid column order! Please ensure the headers are exactly: ' . implode(', ', $expectedHeaders));
+        }
+
+          $duplicateNames = [];
+          $importedCount = 0;
           // Loop through rows and insert into database
           foreach ($rows as $index => $row) {
               if ($index == 0) continue; // Skip the header row
-
             //   $categoryIds = [];
 
             //   for ($i = 1; $i <= 10; $i++) {
@@ -331,6 +354,19 @@ class CategoryItemController extends Controller
                           ->value('id')
                       : null;
             //   }
+            $normalizedName = str_replace(' ', '', strtolower(trim($row[2])));
+
+                $existingCategory = CategoryItems::whereRaw("
+                    REPLACE(LOWER(TRIM(itemname)), ' ', '') = ?
+                ", [$normalizedName])
+                ->where('categoryId', $categoryId)
+                ->first();
+
+                if ($existingCategory) {
+                $duplicateNames[] = $row[2];
+                continue; // Skip duplicate row
+                }
+
             //   $itemtype_id = DB::table('item_type')->where('itemtypename',$row[17])->where('status', 'active')->value('id');
 
             CategoryItems::create([
@@ -339,9 +375,18 @@ class CategoryItemController extends Controller
                   'description' => $row[3] ?? '',
                   'status' => 'active',
               ]);
+              $importedCount++;
           }
+        if ($importedCount === 0 && !empty($duplicateNames)) {
+            return back()->with('error', 'All rows are duplicates. Skipped: ' . implode(', ', $duplicateNames));
+        }
 
-          return back()->with('success', 'Excel file imported successfully!');
+        $message = $importedCount . ' row(s) imported successfully.';
+        if (!empty($duplicateNames)) {
+            $message .= ' Skipped duplicates: ' . implode(', ', $duplicateNames);
+        }
+          return back()->with('success',  $message);
+        //   return back()->with('success', 'Excel file imported successfully!');
     }
 
 }

@@ -509,7 +509,6 @@ class OverheadController extends Controller
           $sheet = $spreadsheet->getActiveSheet();
           $rows = $sheet->toArray();
 
-
             // ✅ Define Expected Headers
             $expectedHeaders = [
                 'sno', 'name', 'uom', 'itemweight', 'category_id1', 'category_id2',
@@ -538,9 +537,24 @@ class OverheadController extends Controller
                 return back()->with('error',' Invalid column order! Please ensure the headers are exactly: ' . implode(', ', $expectedHeaders));
             }
 
+            $duplicateNames = [];
+            $importedCount = 0;
           // Loop through rows and insert into database
           foreach ($rows as $index => $row) {
               if ($index == 0) continue; // Skip the header row
+
+              $normalizedName = str_replace(' ', '', strtolower(trim($row[1])));
+
+              $existingOverhead = Overhead::whereRaw("
+                      REPLACE(LOWER(TRIM(name)), ' ', '') = ?
+                  ", [$normalizedName])
+                ->first();
+
+            if ($existingOverhead) {
+                $duplicateNames[] = $row[1];
+                continue; // Skip duplicate row
+            }
+
               $ohCode = UniqueCode::generateOhCode();
 
               $categoryIds = [];
@@ -580,8 +594,18 @@ class OverheadController extends Controller
                   'price_threshold' => $row[17],
                   'itemType_id' => $itemtype_id,
               ]);
+              $importedCount++;
           }
 
-          return back()->with('success', 'Excel file imported successfully!');
+            if ($importedCount === 0 && !empty($duplicateNames)) {
+                return back()->with('error', 'All rows are duplicates. Skipped: ' . implode(', ', $duplicateNames));
+            }
+
+            $message = $importedCount . ' row(s) imported successfully.';
+            if (!empty($duplicateNames)) {
+                $message .= ' Skipped duplicates: ' . implode(', ', $duplicateNames);
+            }
+          return back()->with('success',  $message);
+        //   return back()->with('success', 'Excel file imported successfully!');
       }
 }

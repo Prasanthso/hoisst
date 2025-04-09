@@ -209,7 +209,7 @@ class ProductController extends Controller
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
             'hsnCode' => 'required|string',
-            'itemType_id' => 'integer|exists:item_type,id',
+            // 'itemType_id' => 'integer|exists:item_type,id',
             'itemWeight' => 'required|string',
             'tax' => 'required|string',
         ]);
@@ -235,8 +235,8 @@ class ProductController extends Controller
                 'category_id8' => $categoryIds[7] ?? null,
                 'category_id9' => $categoryIds[8] ?? null,
                 'category_id10' => $categoryIds[9] ?? null,
-                'itemType_id' => $request->itemType_id,
-                'purcCost' => $request->purcCost,
+                'itemType_id' => $request->itemType_id ?? null,
+                'purcCost' => $request->purcCost ?? null,
                 'margin' => $request->margin,
                 'price' => $request->price,
                 'tax' => $request->tax,
@@ -371,7 +371,7 @@ class ProductController extends Controller
             'price_update_frequency' => 'required|string',
             'price_threshold' => 'required|string',
             'hsnCode' => 'required|string',
-            'itemType_id' => 'integer|exists:item_type,id',
+            // 'itemType_id' => 'integer|exists:item_type,id',
             'itemWeight' => 'required|string',
             'tax' => 'required|string',
         ]);
@@ -405,8 +405,8 @@ class ProductController extends Controller
                 'category_id8' => $categoryIds[7] ?? null,
                 'category_id9' => $categoryIds[8] ?? null,
                 'category_id10' => $categoryIds[9] ?? null,
-                'itemType_id' => $request->itemType_id,
-                'purcCost' => $request->purcCost,
+                'itemType_id' => $request->itemType_id ?? null,
+                'purcCost' => $request->purcCost ?? null,
                 'margin' => $request->margin,
                 'price' => $request->price,
                 'tax' => $request->tax,
@@ -417,7 +417,7 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             // Handle the error gracefully (e.g., log it and show an error message)
             // \Log::error('Error updating raw material: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'There was an issue updating the l.');
+            return redirect()->back()->with('error', 'There was an issue updating the.');
         }
         // Return a success message and redirect back
         return redirect()->route('products.index')->with('success', 'Product updated successfully.');
@@ -564,9 +564,31 @@ class ProductController extends Controller
                 return back()->with('error',' Invalid column order! Please ensure the headers are exactly: ' . implode(', ', $expectedHeaders));
             }
 
+            $duplicateNames = [];
+            $importedCount = 0;
             // Loop through rows and insert into database
             foreach ($rows as $index => $row) {
                 if ($index == 0) continue; // Skip the header row
+
+                $normalizedName = str_replace(' ', '', strtolower(trim($row[1])));
+                // check for duplicates based on 'name' and 'hsnCode'
+                $existingProduct = Product::whereRaw("
+                    REPLACE(LOWER(TRIM(name)), ' ', '') = ?
+                ", [$normalizedName])
+                ->where('hsnCode', $row[3])
+                ->first();
+
+                // $existingProduct = Product::whereRaw("
+                //     REPLACE(LOWER(TRIM(name)), ' ', '') = ?
+                // ", [str_replace(' ', '', strtolower(trim($row[1])))])
+                // ->where('hsnCode', $row[3])
+                // ->first();
+
+                if ($existingProduct) {
+                    $duplicateNames[] = $row[1];
+                    continue; // Skip duplicate row
+                }
+
                 $pdCode = UniqueCode::generatePdCode();
 
                 $categoryIds = [];
@@ -608,9 +630,18 @@ class ProductController extends Controller
                     'price_threshold' => $row[21],
                     'itemType_id' => $itemtype_id,
                 ]);
+                $importedCount++;
             }
 
-            return back()->with('success', 'Excel file imported successfully!');
+            if ($importedCount === 0 && !empty($duplicateNames)) {
+                return back()->with('error', 'All rows are duplicates. Skipped: ' . implode(', ', $duplicateNames));
+            }
+
+            $message = $importedCount . ' row(s) imported successfully.';
+            if (!empty($duplicateNames)) {
+                $message .= ' Skipped duplicates: ' . implode(', ', $duplicateNames);
+            }
+            return back()->with('success',  $message);
         }
 
 }
