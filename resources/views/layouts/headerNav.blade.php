@@ -69,8 +69,8 @@
     <header id="header" class="header fixed-top d-flex align-items-center">
 
         <div class="d-flex align-items-center justify-content-between">
-            <a href="#" class="logo d-flex align-items-center" style="text-decoration: none;">
-                <img src="/assets/img/logo.jpeg" alt="Recipe Management System Logo" style="height: 100%; width:70%;">
+            <a href="#" class="d-flex align-items-center" style="text-decoration: none;">
+                <img src="/assets/img/RMSLogo.png" alt="Recipe Management System Logo">
             </a>
             <!-- <i class="bi bi-list toggle-sidebar-btn"></i> -->
         </div>
@@ -202,7 +202,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="/dashboard" style="background-color: rgb(186, 234, 249); font-size:17px;">
                     {{-- <i class="bi bi-grid"></i> --}}
-                    <img src="/assets/img/Dashboard.svg" alt="dashboard Icon" style="width: 1.2em; height: auto; margin-right: 4px;">
+                    <img src="/assets/img/Dashboard.svg" alt="dashboard Icon" style="width: 1.1em; height: auto; margin-right: 6px;">
                     <span>Dashboard</span>
                 </a>
             </li><!-- End Dashboard Nav -->
@@ -258,7 +258,7 @@
             <li class="nav-item">
                 <a class="nav-link {{ Request::is('receipedetails') ||  Request::is('addreceipedetails') ||  Request::is('pricing-records') ? '' : 'collapsed'}} " data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); font-size:17px;text-decoration: none;">
                     {{-- <i class="bi bi-journal-text"></i> --}}
-                    <img src="/assets/img/receipe_pic.svg" alt="receipe Icon" style="width: 1em; height: auto; margin-right:10px;">
+                    <img src="/assets/img/Recipe.svg" alt="receipe Icon" style="width: 1em; height: auto; margin-right:10px;">
                     <span>Recipe</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="forms-nav" class="nav-content collapse {{ Request::is('receipedetails') ||  Request::is('addreceipedetails') || Request::routeIs('editrecipedetails.edit') || Request::is('pricing-records') ||  Request::is('pricing') || Request::routeIs('receipepricing.edit') || Request::is('overallcosting') || Request::is('addoverallcosting') || Request::routeIs('overallcosting.edit') ? 'show' :'' }}"
@@ -284,7 +284,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="/recipepricing" style="background-color: rgb(186, 234, 249); font-size:17px;">
                     {{-- <i class="bi bi-grid"></i> --}}
-                    <img src="/assets/img/dashboard_pic.svg" alt="dashboard Icon" style="width: 1.2em; height: auto; margin-right: 4px;">
+                    <img src="/assets/img/Recipepricing.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 8px;">
                     <span>Recipe Pricing</span>
                 </a>
             </li>
@@ -292,7 +292,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="/report" style="background-color: rgb(186, 234, 249); font-size:17px;">
                     {{-- <i class="bi bi-grid"></i> --}}
-                    <img src="/assets/img/Report.svg" alt="dashboard Icon" style="width: 1.1em; height: auto; margin-right: 4px;">
+                    <img src="/assets/img/Report.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 9px;">
                     <span>Report</span>
                 </a>
             </li>

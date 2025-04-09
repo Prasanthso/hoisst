@@ -28,13 +28,13 @@ return new class extends Migration
             $table->integer('category_id8')->nullable();
             $table->integer('category_id9')->nullable();
             $table->integer('category_id10')->nullable();
-            $table->string('itemType_id');
-            $table->string('purcCost');
+            $table->string('itemType_id')->nullable();
+            $table->string('purcCost')->nullable();
             $table->string('margin');
             $table->string('price');
             $table->string('tax');
             $table->string('update_frequency');
-            $table->string('cost')->nullable();
+            // $table->string('cost')->nullable();
             $table->enum('recipe_created_status', ['yes', 'no'])->default('no');
             $table->string('price_update_frequency');
             $table->string('price_threshold');

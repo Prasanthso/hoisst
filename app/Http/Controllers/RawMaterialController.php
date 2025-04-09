@@ -556,10 +556,29 @@ class RawMaterialController extends Controller
         if ($fileHeaders !== $expectedHeaders) {
             return back()->with('error',' Invalid column order! Please ensure the headers are exactly: ' . implode(', ', $expectedHeaders));
         }
-
+        $duplicateNames = [];
+        $importedCount = 0;
         // Loop through rows and insert into database
         foreach ($rows as $index => $row) {
             if ($index == 0) continue; // Skip the header row
+
+            $normalizedName = str_replace(' ', '', strtolower(trim($row[1])));
+            // check for duplicates based on 'name' and 'hsnCode'
+            $existingRawmaterial = RawMaterial::whereRaw("
+                REPLACE(LOWER(TRIM(name)), ' ', '') = ?
+            ", [$normalizedName])
+            ->where('hsncode', $row[3])
+            ->first();
+        // $existingRawmaterial = RawMaterial::whereRaw("
+        //     REPLACE(LOWER(TRIM(name)), ' ', '') = ?
+        // ", [str_replace(' ', '', strtolower(trim($row[1])))])
+        // ->where('hsncode', $row[3])
+        // ->first();
+
+         if ($existingRawmaterial) {
+             $duplicateNames[] = $row[1];
+             continue; // Skip duplicate row
+         }
             $rmCode = UniqueCode::generateRmCode();
 
             $categoryIds = [];
@@ -599,9 +618,18 @@ class RawMaterialController extends Controller
                 'price_threshold' => $row[19],
                 'itemType_id' => $itemtype_id,
             ]);
+            $importedCount++;
+        }
+        if ($importedCount === 0 && !empty($duplicateNames)) {
+            return back()->with('error', 'All rows are duplicates. Skipped: ' . implode(', ', $duplicateNames));
         }
 
-        return back()->with('success', 'Excel file imported successfully!');
+        $message = $importedCount . ' row(s) imported successfully.';
+        if (!empty($duplicateNames)) {
+            $message .= ' Skipped duplicates: ' . implode(', ', $duplicateNames);
+        }
+        return back()->with('success',  $message);
+        // return back()->with('success', 'Excel file imported successfully!');
     }
 
 
