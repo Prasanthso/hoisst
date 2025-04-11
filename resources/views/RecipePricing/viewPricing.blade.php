@@ -97,7 +97,7 @@
                         </tbody>
                     </table>
                     <div class="text-end" style="background-color: #eaf8ff; width:90%;">
-                        <strong>RM Cost (A) : </strong> <span id="totalRmCost">{{ $rmTotal }}</span>
+                        <strong>RM Cost (A) : </strong> <span id="totalRmCost">{{ $rmTotal }} </span>
                     </div>
                 </div>
             </div>
@@ -320,7 +320,7 @@
         document.querySelector('.edit-table-btn')?.addEventListener('click', function() {
             const productId = document.getElementById('productSelect').value;
 
-            if (productId) {
+            if (productId && productId !== 'Choose...') {
                 // Redirect to the edit route with the selected product ID
                 window.location.href = `/edit-pricing/${productId}`;
             } else {
