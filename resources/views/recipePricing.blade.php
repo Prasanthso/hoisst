@@ -38,7 +38,7 @@
                                 <th scope="col" style="color:white;">S.NO</th>
                                 <th scope="col" style="color:white;">Product_Name</th>
                                 <th scope="col" style="color:white;">P MRP</th>
-                                <th scope="col" style="color:white;">S MRP</th>
+                                <th scope="col" style="color:white;width: 250px;">S MRP</th>
                                 <th scope="col" style="color:white;">RM Cost</th>
                                 <!-- <th scope="col" style="color:white;">RM %</th> -->
                                 <th scope="col" style="color:white;">Packing Cost</th>
@@ -70,8 +70,12 @@
                                 <td>{{ $report->Product_Name }}</td>
                                 <td>{{ $report->P_MRP }}</td>
                                 <td class="editable-mrp position-relative">
-                                    <span class="mrp-text">{{ $report->S_MRP }}</span>
+                                    <i class="fas fa-pencil-alt edit-icon ms-2" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
+                                    <span class="mrp-text">{{ $report->S_MRP }}
+                                    </span>
                                     <input type="text" class="form-control mrp-input d-none" value="{{ $report->S_MRP }}">
+                                     <!-- Pencil Icon for Edit -->
+
                                 </td>
                                 <td>{{ number_format($report->RM_Cost, 2) }}</td>
                                 <td>{{ number_format($report->PM_Cost, 2) }}</td>

@@ -72,7 +72,7 @@
                             </select>
                         </div>
 
-                        <div class="col-12">
+                        {{-- <div class="col-12">
                             <label for="itemType" class="form-label">Item Type</label>
                             <select id="itemType" class="form-select" name="itemType_id">
                                 @foreach($itemtype as $types)
@@ -83,7 +83,7 @@
                                 @endforeach
                             </select>
                             {{-- <!-- <input type="text" class="form-control" id="itemtype" name="itemtype" value="{{ old('itemtype') }}"> --> --}}
-                        </div>
+                        {{-- </div>  --}}
 
                         <div class="col-12">
                             <label for="inputPrice" class="form-label">Price</label>
@@ -160,10 +160,10 @@
             theme: 'bootstrap-5',
             placeholder: 'Select UoM',
         });
-        $('#itemType').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Select itemtype',
-        });
+        // $('#itemType').select2({
+        //     theme: 'bootstrap-5',
+        //     placeholder: 'Select itemtype',
+        // });
     });
     document.addEventListener("DOMContentLoaded", function() {
         const btnsave = document.getElementById('btnsubmit');
@@ -177,7 +177,7 @@
             let uom = document.getElementById("inputState");
             let itemweight = document.getElementById("inputItemWeight");
             let categorySelect = document.getElementById("categorySelect");
-            let itemtype = document.getElementById("itemType");
+            // let itemtype = document.getElementById("itemType");
             let price = document.getElementById("inputPrice");
             // let tax = document.getElementById("inputTax");
             let priceUpdateFreq = document.getElementById("price_update_frequency");
@@ -204,10 +204,10 @@
                 showError(categorySelect, "Please select at least one category.");
                 isValid = false;
             }
-            if (itemtype.value.trim() === "") {
-                showError(itemtype, "Item Type is required.");
-                isValid = false;
-            }
+            // if (itemtype.value.trim() === "") {
+            //     showError(itemtype, "Item Type is required.");
+            //     isValid = false;
+            // }
             if (price.value.trim() === "" || isNaN(price.value)) {
                 showError(price, "Valid Price is required.");
                 isValid = false;

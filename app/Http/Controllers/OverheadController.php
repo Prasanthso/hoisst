@@ -208,7 +208,7 @@ class OverheadController extends Controller
             'price_threshold' => 'required|string',
             // 'hsncode' => 'required|string',
             'itemweight' => 'required|string',
-            'itemType_id' => 'integer|exists:item_type,id',
+            // 'itemType_id' => 'integer|exists:item_type,id',
             // 'tax' => 'required|string',
         ]);
 
@@ -237,7 +237,7 @@ class OverheadController extends Controller
                 'price_threshold' => $request->price_threshold,
                 // 'hsncode' => $request->hsncode,
                 'itemweight' => $request->itemweight,
-                'itemType_id' => $request->itemType_id,
+                // 'itemType_id' => $request->itemType_id,
                 // 'tax' => $request->tax,
             ]);
         } catch (\Exception $e) {
@@ -364,7 +364,7 @@ class OverheadController extends Controller
             'price_threshold' => 'required|string',
             // 'hsncode' => 'required|string',
             'itemweight' => 'required|string',
-                'itemType_id' => 'integer|exists:item_type,id',
+                // 'itemType_id' => 'integer|exists:item_type,id',
                 // 'tax' => 'required|string',
             ]);
 
@@ -401,7 +401,7 @@ class OverheadController extends Controller
                 'price_threshold' => $request->price_threshold,
                 // 'hsncode' => $request->hsncode,
                 'itemweight' => $request->itemweight,
-                'itemType_id' => $request->itemType_id,
+                // 'itemType_id' => $request->itemType_id,
                     // 'tax' => $request->tax,
                 ]);
         } catch (\Exception $e) {
@@ -514,7 +514,7 @@ class OverheadController extends Controller
                 'sno', 'name', 'uom', 'itemweight', 'category_id1', 'category_id2',
                  'category_id3', 'category_id4', 'category_id5', 'category_id6', 'category_id7',
                  'category_id8', 'category_id9', 'category_id10', 'price',
-                 'update_frequency', 'price_update_frequency', 'price_threshold', 'itemType'
+                 'update_frequency', 'price_update_frequency', 'price_threshold' // 'itemType'
              ];
 
              // ✅ Get Headers from First Row
@@ -569,7 +569,7 @@ class OverheadController extends Controller
                           ->value('id')
                       : null;
               }
-              $itemtype_id = DB::table('item_type')->where('itemtypename',$row[18])->where('status', 'active')->value('id');
+            //   $itemtype_id = DB::table('item_type')->where('itemtypename',$row[18])->where('status', 'active')->value('id');
 
               Overhead::create([
                   'name' => $row[1] ?? null,
@@ -592,7 +592,7 @@ class OverheadController extends Controller
                   'update_frequency' => $row[15],
                   'price_update_frequency' => $row[16],
                   'price_threshold' => $row[17],
-                  'itemType_id' => $itemtype_id,
+                //   'itemType_id' => $itemtype_id,
               ]);
               $importedCount++;
           }

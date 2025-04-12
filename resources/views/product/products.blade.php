@@ -129,8 +129,9 @@
                                      {{ $material->category_name10 ? ', ' . $material->category_name10 : '' }}
                                  </td>
                                  <td>
-                                     <span class="price-text">{{ $material->price }}</span>
+                                     <span class="price-text">{{ $material->price }}
                                      <input type="text" class="form-control price-input d-none" style="width: 80px;" value="{{ $material->price }}">
+                                     <i class="fas fa-eye ms-2" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i></span>
                                  </td>
                                  <td>{{ $material->uom }}</td> <!-- UoM -->
                              </tr>
