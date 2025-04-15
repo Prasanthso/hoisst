@@ -67,15 +67,15 @@
                             @endphp
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td class="prod-edit d-flex justify-content-between align-items-center">
+                                <td>
                                     <span>{{ $report->Product_Name }}</span>
-                                    <i class="fas fa-pencil-alt edit-icon ms-2 mt-2"
-                                       style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                                 </td>
                                 <td>{{ $report->P_MRP }}</td>
-                                <td class="editable-mrp position-relative w-100">
+                                <td class="editable-mrp position-relative d-flex justify-content-between align-items-center">
                                     <span class="mrp-text">{{ $report->S_MRP }}
                                     </span>
+                                    <i class="fas fa-pencil-alt edit-icon ms-2 mt-2"
+                                    style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                                     <input type="text" class="form-control mrp-input d-none" value="{{ $report->S_MRP }}">
 
                                 </td>
@@ -141,6 +141,7 @@
             const cell = $(this);
             cell.find('.mrp-text').addClass('d-none');
             cell.find('.mrp-input').removeClass('d-none').focus();
+
             cell.find('.edit-icon').addClass('d-none');
 
         });
@@ -196,7 +197,15 @@
         // Prevent bubbling inside input
         $(document).on('click', '.mrp-input', function(e) {
             e.stopPropagation();
+
         });
+
+    // When focusing on .mrp-input → ensure other elements are hidden
+    $(document).on('focus', '.mrp-input', function(e) {
+        const cell = $(this).closest('.editable-mrp');
+        cell.find('.mrp-text').addClass('d-none');
+        cell.find('.edit-icon').addClass('d-none');
+    });
 
         // PDF Export Function
         document.getElementById('exportPdfBtn').addEventListener('click', function() {
