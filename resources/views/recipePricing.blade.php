@@ -67,14 +67,16 @@
                             @endphp
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td>{{ $report->Product_Name }}</td>
+                                <td class="prod-edit d-flex justify-content-between align-items-center">
+                                    <span>{{ $report->Product_Name }}</span>
+                                    <i class="fas fa-pencil-alt edit-icon ms-2 mt-2"
+                                       style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
+                                </td>
                                 <td>{{ $report->P_MRP }}</td>
-                                <td class="editable-mrp position-relative">
-                                    <i class="fas fa-pencil-alt edit-icon ms-2" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
+                                <td class="editable-mrp position-relative w-100">
                                     <span class="mrp-text">{{ $report->S_MRP }}
                                     </span>
                                     <input type="text" class="form-control mrp-input d-none" value="{{ $report->S_MRP }}">
-                                     <!-- Pencil Icon for Edit -->
 
                                 </td>
                                 <td>{{ number_format($report->RM_Cost, 2) }}</td>
@@ -134,16 +136,34 @@
             e.stopPropagation();
             $('.mrp-text').removeClass('d-none');
             $('.mrp-input').addClass('d-none');
+            $('.edit-icon').removeClass('d-none');
 
             const cell = $(this);
             cell.find('.mrp-text').addClass('d-none');
             cell.find('.mrp-input').removeClass('d-none').focus();
+            cell.find('.edit-icon').addClass('d-none');
+
         });
+
+        $(document).on('click', '.edit-icon', function(e) {
+            e.stopPropagation();
+
+        // Find the closest row and specific cell
+        const row = $(this).closest('tr');  // Assuming row is the closest <tr> element
+        const cell = row.find('.editable-mrp');
+
+        // Toggle visibility in the clicked cell
+        cell.find('.mrp-text').addClass('d-none');
+        cell.find('.mrp-input').removeClass('d-none').focus();
+
+        $(this).addClass('d-none');
+    });
 
         // Calculation Logic - Trigger Only on 'Enter' Key Press
         $(document).on('keypress', '.mrp-input', function(e) {
             if (e.which === 13) { // Enter key
                 const inputField = $(this);
+
                 const newValue = parseFloat(inputField.val().trim()) || 0;
 
                 if (newValue > 0) {
@@ -151,6 +171,7 @@
                     inputField.siblings('.mrp-text').text(newValue).removeClass('d-none');
 
                     const row = inputField.closest('tr');
+                    row.find('.edit-icon').removeClass('d-none');
                     const cost = parseFloat(row.find('.cost').text().trim()) || 0;
 
                     // Extract discount and tax values
@@ -167,6 +188,7 @@
                     row.find('.before-tax').text(beforeTax);
                     row.find('.margin').text(margin);
                     row.find('.margin-perc').text(marginPercentage + '%');
+
                 }
             }
         });
