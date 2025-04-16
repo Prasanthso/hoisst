@@ -68,7 +68,7 @@
 
                             // Apply discount
                             $discount_amount = ($cost_with_tax * $report->discount) / 100;
-                            $S_MRP = $cost_with_tax - $discount_amount;
+                            $S_MRP = $cost_with_tax + $discount_amount;
 
                             $sellingRate = ($S_MRP * 100)/(100 + $report->discount);
                             $beforeTax = ($sellingRate * 100) / (100 + $report->tax);
