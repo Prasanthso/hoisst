@@ -38,7 +38,7 @@
                                 <th scope="col" style="color:white;">S.NO</th>
                                 <th scope="col" style="color:white;">Product_Name</th>
                                 <th scope="col" style="color:white;">P MRP</th>
-                                <th scope="col" style="color:white;">S MRP</th>
+                                <th scope="col" style="color:white;width: 250px;">S MRP</th>
                                 <th scope="col" style="color:white;">RM Cost</th>
                                 <!-- <th scope="col" style="color:white;">RM %</th> -->
                                 <th scope="col" style="color:white;">Packing Cost</th>
@@ -67,11 +67,17 @@
                             @endphp
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td>{{ $report->Product_Name }}</td>
+                                <td>
+                                    <span>{{ $report->Product_Name }}</span>
+                                </td>
                                 <td>{{ $report->P_MRP }}</td>
-                                <td class="editable-mrp position-relative">
-                                    <span class="mrp-text">{{ $report->S_MRP }}</span>
+                                <td class="editable-mrp position-relative d-flex justify-content-between align-items-center">
+                                    <span class="mrp-text">{{ $report->S_MRP }}
+                                    </span>
+                                    <i class="fas fa-pencil-alt edit-icon ms-2 mt-2"
+                                    style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                                     <input type="text" class="form-control mrp-input d-none" value="{{ $report->S_MRP }}">
+
                                 </td>
                                 <td>{{ number_format($report->RM_Cost, 2) }}</td>
                                 <td>{{ number_format($report->PM_Cost, 2) }}</td>
@@ -130,16 +136,35 @@
             e.stopPropagation();
             $('.mrp-text').removeClass('d-none');
             $('.mrp-input').addClass('d-none');
+            $('.edit-icon').removeClass('d-none');
 
             const cell = $(this);
             cell.find('.mrp-text').addClass('d-none');
             cell.find('.mrp-input').removeClass('d-none').focus();
+
+            cell.find('.edit-icon').addClass('d-none');
+
         });
+
+        $(document).on('click', '.edit-icon', function(e) {
+            e.stopPropagation();
+
+        // Find the closest row and specific cell
+        const row = $(this).closest('tr');  // Assuming row is the closest <tr> element
+        const cell = row.find('.editable-mrp');
+
+        // Toggle visibility in the clicked cell
+        cell.find('.mrp-text').addClass('d-none');
+        cell.find('.mrp-input').removeClass('d-none').focus();
+
+        $(this).addClass('d-none');
+    });
 
         // Calculation Logic - Trigger Only on 'Enter' Key Press
         $(document).on('keypress', '.mrp-input', function(e) {
             if (e.which === 13) { // Enter key
                 const inputField = $(this);
+
                 const newValue = parseFloat(inputField.val().trim()) || 0;
 
                 if (newValue > 0) {
@@ -147,6 +172,7 @@
                     inputField.siblings('.mrp-text').text(newValue).removeClass('d-none');
 
                     const row = inputField.closest('tr');
+                    row.find('.edit-icon').removeClass('d-none');
                     const cost = parseFloat(row.find('.cost').text().trim()) || 0;
 
                     // Extract discount and tax values
@@ -163,6 +189,7 @@
                     row.find('.before-tax').text(beforeTax);
                     row.find('.margin').text(margin);
                     row.find('.margin-perc').text(marginPercentage + '%');
+
                 }
             }
         });
@@ -170,7 +197,15 @@
         // Prevent bubbling inside input
         $(document).on('click', '.mrp-input', function(e) {
             e.stopPropagation();
+
         });
+
+    // When focusing on .mrp-input → ensure other elements are hidden
+    $(document).on('focus', '.mrp-input', function(e) {
+        const cell = $(this).closest('.editable-mrp');
+        cell.find('.mrp-text').addClass('d-none');
+        cell.find('.edit-icon').addClass('d-none');
+    });
 
         // PDF Export Function
         document.getElementById('exportPdfBtn').addEventListener('click', function() {

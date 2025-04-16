@@ -16,7 +16,6 @@
 
     <section class="section dashboard">
 
-
             <!-- End Left side columns -->
             <!-- Right side columns -->
     <!-- First Row of Boxes -->
@@ -231,7 +230,6 @@
     </div>
 
 
-
             <!-- Box 11 -->
             <div class="col-xxl-2 col-md-4" style="margin: 10px;">
                 <div class="card info-card revenue-card" style="background-color: rgb(180,249,242); border-radius: 20px; padding: 15px 0 15px 0;">
@@ -247,10 +245,13 @@
                             <div class="ps-3">
                                 <span class="text-muted small pt-2 ps-1"><b>Products with high & low margins</b></span>
                             </div>
+
                         </div>
                     </div>
                 </div>
+
             </div>
+
                 <!-- End Right side columns -->
     </section>
     <section class="section dashboard">
@@ -266,11 +267,239 @@
             <button class="btn btn-danger" onclick="alert('WhatsApp mgs is not sent')">No</button>
         </div> --}}
 
-    </section>
+
     {{-- <button class="btn btn-outline-primary whatsapp-btn" onclick="window.location.href='{{ route('whatsapp') }}'">whatsapp</button> --}}
 
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<section class="section dashboard">
+    <div class="row">
+        <div class="row">
+            <!-- Line Chart Column -->
+            <div class="col-md-12">
+                <div class="card p-3" style="border-radius: 15px; height: 400px;">
+                    <h5>Product Margin & Cost Chart</h5>
+                    <canvas id="marginLineChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        <!-- Bar Chart Column -->
+        <div class="col-md-6">
+            <div class="card p-3" style="padding: 20px; border-radius: 15px; height: 450px;">
+                <h5>Product Margin</h5>
+                <canvas id="marginChart" height="300"></canvas> <!-- Increased height -->
+            </div>
+        </div>
+
+        <!-- Pie Chart Column -->
+        <div class="col-md-6">
+            <div class="card p-3 d-flex justify-content-center align-items-center" style="height: 450px; border-radius: 15px;">
+                <h5>Trading Product Cost </h5>
+                <canvas id="marginPieChart" width="100" height="150"></canvas>
+            </div>
+        </div>
+    </div>
+
+</section>
+{{--
+<section class="section dashboard">
+    <!-- Dot (Scatter) Chart -->
+    <div class="card" style="padding: 20px; border-radius: 15px;">
+        <h5 class="card-title">Product Margin Scatter Plot</h5>
+        <canvas id="marginDotChart" height="80"></canvas>
+    </div>
+
+</section> --}}
+{{--
+<section class="section dashboard">
+    <div class="card p-3 d-flex justify-content-center align-items-center" style="height: 400px;">
+    <h5>Product Margin</h5>
+    <canvas id="marginPieChart"  width="150" height="100"></canvas>
+</div>
+</section> --}}
 </main><!-- End #main -->
+
 @endsection
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('marginChart').getContext('2d');
+        const labels = {!! json_encode(collect($graphproducts)->pluck('name')) !!};
+        const data = {!! json_encode(collect($graphproducts)->pluck('margin')) !!};
+        const purcCostData = {!! json_encode(collect($graphproducts)->pluck('purcCost')) !!};
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Product Margin',
+                    data: data,
+                    backgroundColor: data.map(value => value < 25 ? '#f87171' : '#4ade80'), // red or green
+                    borderWidth: 1
+                },
+                // {
+                //     label: 'Purchase cost',
+                //     data: purcCostData,
+                //     backgroundColor: data.map(value => value < 100 ? '#f87171' : '#4ade80'), // red or green
+                //     borderWidth: 1
+                // },
+            ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        // dotchart();
+        piechart();
+        graphchart();
+    });
+
+    function dotchart()
+    {
+        const dotctx = document.getElementById('marginDotChart').getContext('2d');
+
+        const rawData = {!! json_encode($graphproducts) !!};
+
+        const scatterData = rawData.map(item => ({
+            x: item.purcCost,
+            y: item.margin,
+        }));
+
+        new Chart(dotctx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Margin vs purcCost',
+                    data: scatterData,
+                    backgroundColor: '#60a5fa',
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Purchase Cost'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Margin'
+                        },
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+
+    }
+    function piechart()
+    {
+        const ctx = document.getElementById('marginPieChart').getContext('2d');
+
+        const labels = {!! json_encode(collect($graphproducts)->pluck('name')) !!};
+        const data = {!! json_encode(collect($graphproducts)->pluck('purcCost')) !!};
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Product Cost',
+                    data: data,
+                    backgroundColor: labels.map(() => getRandomColor())
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+
+        // Helper function to generate random colors
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+    }
+    function graphchart()
+    {
+        const labels = {!! json_encode(collect($graphproducts)->pluck('name')) !!};
+        const data = {!! json_encode(collect($graphproducts)->pluck('margin')) !!};
+        const purcCostData = {!! json_encode(collect($graphproducts)->pluck('purcCost')) !!};
+        // Color logic: pink if < 25, green if ≥ 25
+        const pointColors = data.map(value => value < 25 ? '#f472b6' : '#4ade80');
+
+        new Chart(document.getElementById('marginLineChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Product Margin',
+                    data: data,
+                    fill: false,
+                    borderColor: '#4ade80', // line color (you can set to '#999' if you want neutral)
+                    pointBackgroundColor: pointColors, // dynamic dot colors
+                    pointBorderColor: pointColors,
+                    tension: 0.3
+                },
+                {
+                        label: 'Purchase Cost',
+                        data: purcCostData,
+                        fill: false,
+                        borderColor: '#3b82f6', // blue line
+                        pointBackgroundColor: '#f87171',
+                        pointBorderColor: '#3b82f6',
+                        tension: 0.3
+                    }
+            ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Margin'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Product Name'
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+
 
 <!-- Vendor JS Files -->
 <script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>

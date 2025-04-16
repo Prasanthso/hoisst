@@ -129,9 +129,10 @@
                                     {{ $material->category_name9 ? ', ' . $material->category_name9 : '' }}
                                     {{ $material->category_name10 ? ', ' . $material->category_name10 : '' }}
                                 </td>
-                                <td>
+                                <td class="d-flex justify-content-between align-items-center">
                                     <span class="price-text">{{ $material->price }}</span>
                                     <input type="text" class="form-control price-input d-none" style="width: 80px;" value="{{ $material->price }}">
+                                    <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                                 </td>
                                 <td>{{ $material->uom }}</td> <!-- UoM -->
                             </tr>
@@ -673,6 +674,16 @@
                 showPriceModal(materialId);
             });
         });
+
+        // Select all elements with the class 'eye-icon' within the table
+        table.querySelectorAll(".eye-icon").forEach((iconElement) => {
+                    const row = iconElement.closest("tr");
+                    const materialId = row.getAttribute("data-id");
+
+                    iconElement.addEventListener("click", () => {
+                        showPriceModal(materialId);
+                    });
+                });
 
         // Listen for change events on category checkboxes
         categoryCheckboxes.forEach(checkbox => {
