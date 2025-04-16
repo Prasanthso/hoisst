@@ -591,18 +591,78 @@ class ProductController extends Controller
 
                 $pdCode = UniqueCode::generatePdCode();
 
-                $categoryIds = [];
+                $prod_categoryId = DB::table('categories')
+                ->whereRaw("REPLACE(LOWER(TRIM(categoryname)), ' ', '') = ?", ['products']) // removes all spaces
+                ->value('id');
 
+                $categoryIds = [];
                 for ($i = 1; $i <= 10; $i++) {
-                    $categoryIds["id$i"] = !empty($row[$i + 4]) // Adjusting index to match $row[4] for category_id1
-                        ? DB::table('categoryitems')
-                            ->where('categoryId', 4)
+                    $itemNameRaw = $row[$i + 4] ?? null;
+
+                    $name = trim($row[1] ?? '');
+                    $uom = trim($row[2] ?? '');
+                    $hsncode = trim($row[3] ?? '');
+                    $itemwgt = trim($row[4] ?? '');
+                    $price = trim($row[15] ?? '');
+                    $ptax = trim($row[16] ?? '');
+                    $frequency = trim($row[17] ?? '');
+                    $priceupdatefrequency = trim($row[18] ?? '');
+                    $thershold = trim($row[19] ?? '');
+                    $itemType = trim($row[20] ?? '');
+
+                    if (!empty($itemNameRaw)) {
+                        $itemName = trim(strtolower($itemNameRaw));
+
+                        // Try to find the ID with the normalized comparison
+                        $itemId = DB::table('categoryitems')
+                            ->where('categoryId', $prod_categoryId)
                             ->where('status', 'active')
-                            // ->where('itemname', $row[$i + 3])
-                            ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 4]))])
-                            ->value('id')
-                        : null;
+                            ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [$itemName])
+                            ->value('id');
+
+                        // If not found, insert a new record
+                        if (!$itemId) {
+                            $itemId = DB::table('categoryitems')->insertGetId([
+                                'categoryId' => $prod_categoryId,
+                                'itemname' => $itemNameRaw, // use original casing and spacing
+                                'description' => 'none',
+                                'status' => 'active',       // assuming default status is 'active'
+                                'created_at' => now(),      // optional timestamps
+                                'updated_at' => now()
+                            ]);
+                        }
+
+                        $categoryIds["id$i"] = $itemId;
+                    } else {
+                        $categoryIds["id$i"] = null;
+                    }
                 }
+            if (
+                empty($name) ||
+                empty($uom) ||
+                empty($hsncode) ||
+                empty($itemwgt) ||
+                empty($price) ||
+                empty($ptax) ||
+                empty($frequency) ||
+                empty($priceupdatefrequency) ||
+                empty($thershold) ||
+                empty($itemType) ||
+                empty($categoryIds['id1']) // category_id1 must not be null
+            ) {
+                $skippedRows[] = "Row ".($index + 1)." skipped: missing required fields (name/uom/hsncode/itemwgt/price/tax/updatefrequency/priceupdatefrequency/threshold/itemType/category_id1).";
+                continue;
+            }
+                // for ($i = 1; $i <= 10; $i++) {
+                //     $categoryIds["id$i"] = !empty($row[$i + 4]) // Adjusting index to match $row[4] for category_id1
+                //         ? DB::table('categoryitems')
+                //             ->where('categoryId', 4)
+                //             ->where('status', 'active')
+                //             // ->where('itemname', $row[$i + 3])
+                //             ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 4]))])
+                //             ->value('id')
+                //         : null;
+                // }
                 $itemtype_id = DB::table('item_type')->where('itemtypename',$row[22])->where('status', 'active')->value('id');
 
                 Product::create([
@@ -611,7 +671,7 @@ class ProductController extends Controller
                     'uom' => $row[2] ?? null,
                     'hsnCode' => $row[3] ?? null,
                     'itemWeight' => $row[4] ?? null,
-                    'category_id1' => $categoryIds['id1'] ?? null,
+                    'category_id1' => $categoryIds['id1'] ,
                     'category_id2' => $categoryIds['id2'] ?? null,
                     'category_id3' => $categoryIds['id3'] ?? null,
                     'category_id4' => $categoryIds['id4'] ?? null,
@@ -640,6 +700,9 @@ class ProductController extends Controller
             $message = $importedCount . ' row(s) imported successfully.';
             if (!empty($duplicateNames)) {
                 $message .= ' Skipped duplicates: ' . implode(', ', $duplicateNames);
+            }
+            if (!empty($skippedRows)) {
+                $message .= ' Skipped rows: ' . implode(' | ', $skippedRows);
             }
             return back()->with('success',  $message);
         }

@@ -812,7 +812,7 @@
             else if(errorMessage){
                 errorMessage.style.display = 'none';
             }
-        }, 2000);
+        }, 3000);
 
     });
 
