@@ -156,7 +156,17 @@
                                 $total = $report->RM_Cost + $report->PM_Cost;
                                 $total_perc = ($total * 100) / $report->S_MRP;
                                 $cost = $total + $report->OH_Cost + $report->MOH_Cost;
-                                $sellingRate = ($report->S_MRP * 100)/(100 + $report->discount);
+                                $cost_with_margin = $cost + $report->margin_amt;
+
+                                // Apply tax
+                                $tax_amount = ($cost_with_margin * $report->tax) / 100;
+                                $cost_with_tax = $cost_with_margin + $tax_amount;
+
+                                // Apply discount
+                                $discount_amount = ($cost_with_tax * $report->discount) / 100;
+                                $S_MRP = $cost_with_tax - $discount_amount;
+
+                                $sellingRate = ($S_MRP * 100)/(100 + $report->discount);
                                 $beforeTax = ($sellingRate * 100) / (100 + $report->tax);
                                 $OH_PERC = ($report->OH_Cost + $report->MOH_Cost/$total) * 100;
                                 $MARGINAMOUNT = $beforeTax-$cost;
@@ -166,7 +176,7 @@
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $report->Product_Name }}</td>
                                     <!-- <td>{{ $report->S_MRP }}</td> -->
-                                    <td>{{ $report->S_MRP  }}</td>
+                                    <td>{{ number_format($S_MRP, 2)  }}</td>
                                     <td>{{ number_format($report->RM_Cost, 2) }}</td>
                                     <td>{{ number_format($rm_perc, 2) }}</td>
                                     <td>{{ number_format($report->PM_Cost, 2) }}</td>
