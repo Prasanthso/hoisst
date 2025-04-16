@@ -34,7 +34,7 @@ class DashboardController extends Controller
             return [
                 'name' => $product->name,
                 'margin' => (float) $product->margin ?? 0, // make sure it's numeric
-                'purcCost' =>  $product->price - $product->purcCost ?? 0,
+                'purcCost' =>  (float)$product->price - (float)($product->purcCost ?? 0),
             ];
         });
 

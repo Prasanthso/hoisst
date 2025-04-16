@@ -272,7 +272,8 @@
 
 </section>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <section class="section dashboard">
     <div class="row">
         <div class="row">
@@ -301,7 +302,8 @@
         </div>
     </div>
 
-</section>
+</section> --}}
+
 {{--
 <section class="section dashboard">
     <!-- Dot (Scatter) Chart -->
