@@ -130,7 +130,7 @@
                                     <th scope="col" style="color:white;">S.NO</th>
                                     <th scope="col" style="color:white;">Product_Name</th>
                                     <!-- <th scope="col" style="color:white;">P.MRP</th> -->
-                                    <th scope="col" style="color:white;">P.MRP</th>
+                                    <th scope="col" style="color:white;">Present MRP</th>
                                     <th scope="col" style="color:white;">RM Cost</th>
                                     <th scope="col" style="color:white;">RM %</th>
                                     <th scope="col" style="color:white;">Packing Cost</th>
