@@ -118,11 +118,11 @@ ORDER BY
         $lowMarginProducts = [];
 
         foreach ($reports as $report) {
-            $rm_perc = $report->RM_Cost * 100 / $report->S_MRP;
-            $pm_perc = $report->PM_Cost * 100 / $report->S_MRP;
+            $rm_perc = $report->RM_Cost * 100 / $report->P_MRP;
+            $pm_perc = $report->PM_Cost * 100 / $report->P_MRP;
             $total = $report->RM_Cost + $report->PM_Cost;
             $cost = $total + $report->OH_Cost + $report->MOH_Cost;
-            $sellingRate = ($report->S_MRP * 100) / (100 + $report->discount);
+            $sellingRate = ($report->P_MRP * 100) / (100 + $report->discount);
             $beforeTax = ($sellingRate * 100) / (100 + $report->tax);
             $MARGINAMOUNT = $beforeTax - $cost;
             $marginPerc = ($MARGINAMOUNT / $beforeTax) * 100;
