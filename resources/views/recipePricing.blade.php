@@ -37,8 +37,9 @@
                             <tr>
                                 <th scope="col" style="color:white;">S.NO</th>
                                 <th scope="col" style="color:white;">Product_Name</th>
-                                <th scope="col" style="color:white;">P MRP</th>
-                                <th scope="col" style="color:white;width: 250px;">S MRP</th>
+                                <th scope="col" style="color:white;">Present MRP</th>
+                                <th scope="col" style="color:white;width: 250px;">Suggeted MRP
+                                </th>
                                 <th scope="col" style="color:white;">RM Cost</th>
                                 <!-- <th scope="col" style="color:white;">RM %</th> -->
                                 <th scope="col" style="color:white;">Packing Cost</th>
@@ -87,7 +88,6 @@
                                     <i class="fas fa-pencil-alt edit-icon ms-2 mt-2"
                                         style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                                     <input type="text" class="form-control mrp-input d-none" value="{{ number_format($S_MRP, 2) }}">
-
                                 </td>
                                 <td>{{ number_format($report->RM_Cost, 2) }}</td>
                                 <td>{{ number_format($report->PM_Cost, 2) }}</td>

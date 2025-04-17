@@ -130,7 +130,7 @@
                                     <th scope="col" style="color:white;">S.NO</th>
                                     <th scope="col" style="color:white;">Product_Name</th>
                                     <!-- <th scope="col" style="color:white;">P.MRP</th> -->
-                                    <th scope="col" style="color:white;">S.MRP</th>
+                                    <th scope="col" style="color:white;">Present MRP</th>
                                     <th scope="col" style="color:white;">RM Cost</th>
                                     <th scope="col" style="color:white;">RM %</th>
                                     <th scope="col" style="color:white;">Packing Cost</th>
@@ -150,23 +150,14 @@
                             <tbody id="ReportTable">
                                 @foreach ($reports as $index => $report)
                                 @php
-                                $rm_perc = $report->RM_Cost * 100 / $report->S_MRP;
-                                $pm_perc = $report->PM_Cost * 100 / $report->S_MRP;
+                                $rm_perc = $report->RM_Cost * 100 / $report->P_MRP;
+                                $pm_perc = $report->PM_Cost * 100 / $report->P_MRP;
                                 $oh_perc = ($report->RM_Cost + $report->PM_Cost) * $report->PM_Cost / 100;
                                 $total = $report->RM_Cost + $report->PM_Cost;
-                                $total_perc = ($total * 100) / $report->S_MRP;
+                                $total_perc = ($total * 100) / $report->P_MRP;
                                 $cost = $total + $report->OH_Cost + $report->MOH_Cost;
-                                $cost_with_margin = $cost + $report->margin_amt;
 
-                                // Apply tax
-                                $tax_amount = ($cost_with_margin * $report->tax) / 100;
-                                $cost_with_tax = $cost_with_margin + $tax_amount;
-
-                                // Apply discount
-                                $discount_amount = ($cost_with_tax * $report->discount) / 100;
-                                $S_MRP = $cost_with_tax + $discount_amount;
-
-                                $sellingRate = ($S_MRP * 100)/(100 + $report->discount);
+                                $sellingRate = ($report->P_MRP * 100)/(100 + $report->discount);
                                 $beforeTax = ($sellingRate * 100) / (100 + $report->tax);
                                 $OH_PERC = ($report->OH_Cost + $report->MOH_Cost/$total) * 100;
                                 $MARGINAMOUNT = $beforeTax-$cost;
@@ -175,8 +166,8 @@
                                 <tr data-rm="{{ strtolower($report->RM_Names) }}" data-pm="{{ strtolower($report->PM_Names) }}">
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $report->Product_Name }}</td>
-                                    <!-- <td>{{ $report->S_MRP }}</td> -->
-                                    <td>{{ number_format($S_MRP, 2)  }}</td>
+                                    <!-- <td>{{ $report->P_MRP }}</td> -->
+                                    <td>{{ number_format($report->P_MRP, 2)  }}</td>
                                     <td>{{ number_format($report->RM_Cost, 2) }}</td>
                                     <td>{{ number_format($rm_perc, 2) }}</td>
                                     <td>{{ number_format($report->PM_Cost, 2) }}</td>
