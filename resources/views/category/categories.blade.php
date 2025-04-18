@@ -9,10 +9,10 @@
             <a href="{{ 'addcategory' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
                 <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
             </a>
-            <a href="{{ url('/categoryitem-excel') }}" download class="btn"  data-bs-toggle="tooltip" title="Download category excel File">
+            <a href="{{ url('/categoryitem-excel') }}" download class="btn" data-bs-toggle="tooltip" title="Download category excel File">
                 <i class="bi bi-download fs-4"></i>
             </a>
-             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#importModal">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#importModal">
                 Import
             </button>
             <button id="exportBtn" class="btn btn-success">
@@ -51,8 +51,7 @@
                                         id="categorySearch"
                                         class="form-control mb-3"
                                         placeholder="Search ..."
-                                        {{-- onkeyup="filterCategories()" --}}
-                                        />
+                                        {{-- onkeyup="filterCategories()" --}} />
                                 </div>
                                 @foreach($categories as $category)
                                 <div class="form-check category-item">
@@ -97,10 +96,9 @@
                                     <input type="checkbox" id="select-all" class="form-check-input">
                                 </th>
                                 <th scope="col" style="color:white;">S.NO</th>
+                                <th scope="col" style="color:white;">Category</th>
                                 <th scope="col" style="color:white;">Category Items</th>
                                 <th scope="col" style="color:white;">Description</th>
-                                <th scope="col" style="color:white;">Created User</th>
-
                             </tr>
                         </thead>
                         <tbody id="catagoriesTable">
@@ -110,9 +108,10 @@
                                     <input type="checkbox" class="form-check-input row-checkbox">
                                 </td>
                                 <td>{{ ($categoriesitems->currentPage() - 1) * $categoriesitems->perPage() + $loop->iteration }}.</td> <!-- Auto-increment S.NO -->
-                                <td class="left-align"><a href="{{ route('categoryitem.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->itemname }}</a></td>
+                                <td>{{ $material->categoryname }}</td>
+                                <td><a href="{{ route('categoryitem.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->itemname }}</a></td>
                                 <td>{{ $material->description }}</td>
-                                <td>{{ $material->created_user }}</td>
+
                             </tr>
                             @endforeach
                         </tbody>
@@ -136,30 +135,30 @@
         </div>
     </section>
 
-        <!-- Modal -->
-        <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="importModalLabel">Import for categoryitem</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="{{ route('categoryitem.import') }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-                            <div class="mb-3">
-                                <label for="excelFile" class="form-label">Select Excel File</label>
-                                <input type="file" name="excel_file" id="excelFile" class="form-control" required>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-success">Import</button>
-                            </div>
-                        </form>
-                    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importModalLabel">Import for categoryitem</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('categoryitem.import') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="excelFile" class="form-label">Select Excel File</label>
+                            <input type="file" name="excel_file" id="excelFile" class="form-control" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-success">Import</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
 </main><!-- End #main -->
 @endsection
 
@@ -423,36 +422,36 @@
                     console.log(data);
                     if (data.success) {
                         if (data.confirm) {
-                        // If confirmation is required, show a confirmation dialog
-                        if (confirm("Do you want to delete this item of category-item . Do you want to proceed?")) {
-                            fetch('/confirmcategory', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    "X-CSRF-TOKEN": token
-                                },
-                                body: JSON.stringify({ ids: selectedIds }) // Send the selected IDs again
-                            })
-                            .then(response => response.json())
-                            .then(confirmData  => {
-                                if (confirmData.success) {
-                                    selectedRows.forEach(checkbox => {
-                                        const row = checkbox.closest("tr");
-                                        row.remove();
+                            // If confirmation is required, show a confirmation dialog
+                            if (confirm("Do you want to delete this item of category-item . Do you want to proceed?")) {
+                                fetch('/confirmcategory', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            "X-CSRF-TOKEN": token
+                                        },
+                                        body: JSON.stringify({
+                                            ids: selectedIds
+                                        }) // Send the selected IDs again
+                                    })
+                                    .then(response => response.json())
+                                    .then(confirmData => {
+                                        if (confirmData.success) {
+                                            selectedRows.forEach(checkbox => {
+                                                const row = checkbox.closest("tr");
+                                                row.remove();
+                                            });
+                                            updateSerialNumbers();
+                                            alert("Selected row(s) deleted successfully!");
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error("Error confirming deletion:", error);
+                                        alert("An error occurred. Please try again.");
                                     });
-                                    updateSerialNumbers();
-                                    alert("Selected row(s) deleted successfully!");
-                                }
-                            })
-                            .catch(error => {
-                                console.error("Error confirming deletion:", error);
-                                alert("An error occurred. Please try again.");
-                            });
+                            }
                         }
-                    }
-                }
-                else
-                    {
+                    } else {
                         alert("No category item can be deleted. They might be in use.");
                     }
                 })
@@ -486,7 +485,7 @@
         //     // console.log("Selected categories: ", selectedCategories);
         // };
 
-        document.getElementById('categorySearch').addEventListener('keyup', function () {
+        document.getElementById('categorySearch').addEventListener('keyup', function() {
             const searchType = document.getElementById('searchtype').value;
 
             if (searchType === 'category') {
@@ -528,41 +527,42 @@
             item.style.display = isVisible ? '' : 'none';
         });
     }
+
     function filterItems() {
         let searchText = document.getElementById('categorySearch').value.toLowerCase().trim();
         let table = document.getElementById('catagoriesTable');
         let rows = table.getElementsByTagName('tr');
 
-            if (searchText.length > 0) {
-                    const queryParams = new URLSearchParams({
-                        categoryItem: searchText,
-                    });
-                    console.log(queryParams.toString());
-                    // Construct the URL dynamically based on selected categories
-                   // Construct the URL dynamically based on selected categories
-                   const url = `/showcategoryitem?${queryParams.toString()}`;
+        if (searchText.length > 0) {
+            const queryParams = new URLSearchParams({
+                categoryItem: searchText,
+            });
+            console.log(queryParams.toString());
+            // Construct the URL dynamically based on selected categories
+            // Construct the URL dynamically based on selected categories
+            const url = `/showcategoryitem?${queryParams.toString()}`;
 
-                    // Fetch updated data from server
-                    fetch(url, {
-                            method: 'GET',
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest'
-                            },
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            // Clear existing table content
-                            catagoriesTable.innerHTML = '';
-                            console.log('Fetched Data:', data);
-                            // Populate the table with new data
-                            data.categoriesitems.forEach((item, index) => {
+            // Fetch updated data from server
+            fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Clear existing table content
+                    catagoriesTable.innerHTML = '';
+                    console.log('Fetched Data:', data);
+                    // Populate the table with new data
+                    data.categoriesitems.forEach((item, index) => {
 
-                                catagoriesTable.innerHTML += `
+                        catagoriesTable.innerHTML += `
                         <tr data-id="${item.id}">
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${index + 1}.</td>
@@ -571,21 +571,21 @@
                             <td>${item.created_user}</td>
                         </tr>
                     `;
-                            });
+                    });
 
-                            // // Re-attach event listeners for dynamically added checkboxes
-                            // document.querySelectorAll('.category-checkbox').forEach(checkbox => {
-                            //     checkbox.addEventListener('change', updateSelectedCategories);
-                            // });
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('An error occurred while fetching category items.');
-                        });
-                    } else {
-                    location.reload();
-                    }
-            }
+                    // // Re-attach event listeners for dynamically added checkboxes
+                    // document.querySelectorAll('.category-checkbox').forEach(checkbox => {
+                    //     checkbox.addEventListener('change', updateSelectedCategories);
+                    // });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while fetching category items.');
+                });
+        } else {
+            location.reload();
+        }
+    }
 </script>
 
 <!-- Vendor JS Files -->

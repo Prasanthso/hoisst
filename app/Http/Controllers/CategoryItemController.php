@@ -23,22 +23,25 @@ class CategoryItemController extends Controller
     {
         $categories = DB::table('categories')->get();
         $categoryIds = $request->input('category_ids');
-        $searchValue = $request->input('categoryItem','');
-        if(!empty($searchValue))
-        {
-            $categoriesitems = CategoryItems::where('status','active')->where('itemname', 'LIKE',"{$searchValue}%")->get();
-        }
-        else if (!empty($categoryIds)) {
-            // Convert comma-separated string to an array
-            $categoryIds = explode(',', $categoryIds);
+        $searchValue = $request->input('categoryItem', '');
 
-            // Fetch items matching the category IDs
-            $categoriesitems = CategoryItems::whereIn('categoryId', $categoryIds)
-            ->orderBy('itemname', 'asc')
-            ->get();
+        $query = DB::table('categoryitems')
+            ->join('categories', 'categoryitems.categoryId', '=', 'categories.id')
+            ->select('categoryitems.*', 'categories.categoryname');
+
+        if (!empty($searchValue)) {
+            $query->where('categoryitems.status', 'active')
+                ->where('categoryitems.itemname', 'LIKE', "{$searchValue}%");
+            $categoriesitems = $query->get();
+        } elseif (!empty($categoryIds)) {
+            $categoryIds = explode(',', $categoryIds);
+            $query->whereIn('categoryitems.categoryId', $categoryIds);
+            $categoriesitems = $query->orderBy('categoryitems.itemname', 'asc')->get();
         } else {
-            // Fetch all items when no categories are selected
-            $categoriesitems = CategoryItems::where('status','active')->orderBy('itemname', 'asc')->paginate(10);
+            $categoriesitems = $query
+                ->where('categoryitems.status', 'active')
+                ->orderBy('categoryitems.itemname', 'asc')
+                ->paginate(10);
         }
 
         if ($request->ajax()) {
