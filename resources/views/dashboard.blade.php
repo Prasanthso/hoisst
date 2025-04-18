@@ -267,13 +267,116 @@
             <button class="btn btn-danger" onclick="alert('WhatsApp mgs is not sent')">No</button>
         </div> --}}
 
-
     {{-- <button class="btn btn-outline-primary whatsapp-btn" onclick="window.location.href='{{ route('whatsapp') }}'">whatsapp</button> --}}
 
 </section>
+<section class="section dashboard">
+    <!-- this is for sanpshot panel section -->
+    <div class="container-fluid">
+        <!-- First Row: Cost Trend + Chart -->
+        <div class="row mb-4">
+            <!-- Cost Trend -->
+            <div class="col-md-3">
+                {{-- <div class="snapshot-panel card bg-light p-3 h-60"> --}}
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">Cost Trend</div>
+                        <div class="card-body">
+                        <p>Current Month: ₹{{ number_format($costindicator['thisMonthCost'], 2) }}</p>
+                        <p>Last Month: ₹{{ number_format($costindicator['lastMonthCost'], 2) }}</p>
+                        <p>
+                            Change:
+                            <span class="{{ $costindicator['costTrendIndicator'] == 'increase' ? 'text-success fw-bold' : ($costindicator['costTrendIndicator'] == 'decrease' ? 'text-danger fw-bold' : '') }}">
+                                {{ number_format($costindicator['costChange'], 2) }}%
+                                @if($costindicator['costTrendIndicator'] == 'increase')
+                                    🔺
+                                @elseif($costindicator['costTrendIndicator'] == 'decrease')
+                                    🔻
+                                @else
+                                    ➖
+                                @endif
+                            </span>
+                        </p>
+                        </div>
+                    </div>
+                {{-- </div> --}}
+            </div>
 
-{{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <!-- Chart -->
+            <div class="col-md-9">
+                <div class="card  h-100">
+                    <div class="card-header bg-primary text-white">
+                        Trend Analytics - Modifications & Impact
+                    </div>
+                    <div class="card-body">
+                        <canvas id="trendChart" width="500" height="240"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Second Row: Alerts -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">Alerts & Red Flags</h5>
+                    </div>
+                    <div class="card-body">
+
+                          <!-- High Cost Ingredients Alerts -->
+                          @if(count($alerts['highCostAlerts']) > 0)
+                          <div class="alert alert-danger">
+                              <h4>🚨 High Cost Ingredients</h4>
+                              @foreach($alerts['highCostAlerts'] as $costalert)
+                                  <p><strong>{{ $costalert['item'] }}</strong> - {{ $costalert['description'] }}</p>
+                              @endforeach
+                          </div>
+                      @else
+                          <p>No high-cost ingredients alerts.</p>
+                      @endif
+
+                    <!-- Low Margin Products Alerts -->
+                    @if(count($alerts['lowMarginAlerts']) > 0)
+                        <div class="alert alert-warning">
+                            <h4>🚨 Low Margin Products</h4>
+                            @foreach($alerts['lowMarginAlerts'] as $lowalert)
+                                <p><strong>{{ $lowalert['item'] }}</strong> - {{ $lowalert['description'] }}</p>
+                            @endforeach
+                        </div>
+                    @else
+                        <p>No low margin product alerts.</p>
+                    @endif
+
+                    <!-- High Margin Products Alerts -->
+                    @if(count($alerts['highMarginAlerts']) > 0)
+                        <div class="alert alert-success">
+                            <h4>🚨 High Margin Products</h4>
+                            @foreach($alerts['highMarginAlerts'] as $highalert)
+                                <p><strong>{{ $highalert['item'] }}</strong> - {{ $highalert['description'] }}</p>
+                            @endforeach
+                        </div>
+                    @else
+                        <p>No high margin product alerts.</p>
+                    @endif
+                        {{-- @foreach($alerts as $alert)
+                            <div class="alert alert-{{ $alert['alert_type'] }} d-flex align-items-center justify-content-between mb-3" role="alert">
+                                <div>
+                                    <strong>{{ $alert['flag_type'] }}</strong><br>
+                                    {{ $alert['description'] }}
+                                </div>
+                                <i class="bi bi-exclamation-triangle-fill fs-4 ms-2"></i>
+                            </div>
+                        @endforeach --}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{{--
 <section class="section dashboard">
     <div class="row">
         <div class="row">
@@ -320,47 +423,105 @@
     <canvas id="marginPieChart"  width="150" height="100"></canvas>
 </div>
 </section> --}}
+
 </main><!-- End #main -->
 
-@endsection
+{{-- @endsection
+@php
+    $months = collect($modifications)->pluck('month')->map(fn($m) => \Carbon\Carbon::create()->month($m)->format('F'));
+    $modificationCounts = collect($modifications)->pluck('changes');
+    $modificationImpacts = collect($modifications)->pluck('impact');
+@endphp --}}
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const ctx = document.getElementById('marginChart').getContext('2d');
-        const labels = {!! json_encode(collect($graphproducts)->pluck('name')) !!};
-        const data = {!! json_encode(collect($graphproducts)->pluck('margin')) !!};
-        const purcCostData = {!! json_encode(collect($graphproducts)->pluck('purcCost')) !!};
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Product Margin',
-                    data: data,
-                    backgroundColor: data.map(value => value < 25 ? '#f87171' : '#4ade80'), // red or green
-                    borderWidth: 1
+
+        barchart();
+
+        // const ctx = document.getElementById('marginChart').getContext('2d');
+        // const labels = {!! json_encode(collect($graphproducts)->pluck('name')) !!};
+        // const data = {!! json_encode(collect($graphproducts)->pluck('margin')) !!};
+        // const purcCostData = {!! json_encode(collect($graphproducts)->pluck('purcCost')) !!};
+        // new Chart(ctx, {
+        //     type: 'bar',
+        //     data: {
+        //         labels: labels,
+        //         datasets: [{
+        //             label: 'Product Margin',
+        //             data: data,
+        //             backgroundColor: data.map(value => value < 25 ? '#f87171' : '#4ade80'), // red or green
+        //             borderWidth: 1
+        //         },
+        //         // {
+        //         //     label: 'Purchase cost',
+        //         //     data: purcCostData,
+        //         //     backgroundColor: data.map(value => value < 100 ? '#f87171' : '#4ade80'), // red or green
+        //         //     borderWidth: 1
+        //         // },
+        //     ]
+        //     },
+        //     options: {
+        //         responsive: true,
+        //         scales: {
+        //             y: {
+        //                 beginAtZero: true
+        //             }
+        //         }
+        //     }
+        // });
+
+        // dotchart();
+        // piechart();
+        // graphchart();
+    });
+
+
+    function barchart() {
+        const months = @json($months);
+    const products = @json($products);
+    const rawMaterials = @json($rawMaterials);
+    const quantities = @json($quantities);
+
+    const labels = months.map((month, i) => `${month} - ${products[i]} (${rawMaterials[i]})`);
+
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Top Raw Material Quantity',
+                data: quantities,
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Quantity'
+                    }
                 },
-                // {
-                //     label: 'Purchase cost',
-                //     data: purcCostData,
-                //     backgroundColor: data.map(value => value < 100 ? '#f87171' : '#4ade80'), // red or green
-                //     borderWidth: 1
-                // },
-            ]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Month - Product (Raw Material)'
                     }
                 }
             }
-        });
-        // dotchart();
-        piechart();
-        graphchart();
+        }
     });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        barchart();
+    });
+
 
     function dotchart()
     {

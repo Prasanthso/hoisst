@@ -214,6 +214,8 @@ Route::post('/update-keys', [TwilioController::class, 'updateTwilio'])->name('up
 
 Route::get('/check-margins', [ReportController::class, 'checkMargins']);
 
+Route::get('/trend-analytics', [DashboardController::class, 'getTrendAnalyticsData']);
+
 Route::get('/permission', [PermissionController::class, 'index'])->name('permission.index');
 Route::get('/addpermission', [PermissionController::class, 'create'])->name('Permission.create');
 Route::post('/permission/store', [PermissionController::class, 'store'])->name('permission.store');
