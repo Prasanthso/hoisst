@@ -9,12 +9,12 @@
              <a href="{{ 'addproduct' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
                  <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
              </a>
-            <a href="{{ url('/products-excel') }}" download class="btn"  data-bs-toggle="tooltip" title="Download products excel File">
-                <i class="bi bi-download fs-4"></i>
-            </a>
+             <a href="{{ url('/products-excel') }}" download class="btn" data-bs-toggle="tooltip" title="Download products excel File">
+                 <i class="bi bi-download fs-4"></i>
+             </a>
              <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#importModal">
-                Import
-            </button>
+                 Import
+             </button>
              <button id="exportBtn" class="btn btn-success">
                  <i class="fas fa-file-excel"></i> Export to Excel
              </button>
@@ -40,22 +40,21 @@
                          <h5 class="card-title">Categories</h5>
                          <div class="row mb-3">
                              <div class="col-sm-12">
-                                <div class="me-2 align-items-center d-flex mb-2">
-                                    <div class="input-group" style="width: 250px;">
-                                        <select class="form-select me-2" id="searchtype" style="width: 30px;">
-                                            <option value="items">Product</option>
-                                            <option value="category">Category</option>
-                                        </select>
-                                    </div>
-                                </div>
+                                 <div class="me-2 align-items-center d-flex mb-2">
+                                     <div class="input-group" style="width: 250px;">
+                                         <select class="form-select me-2" id="searchtype" style="width: 30px;">
+                                             <option value="items">Product</option>
+                                             <option value="category">Category</option>
+                                         </select>
+                                     </div>
+                                 </div>
                                  <div>
                                      <input
                                          type="text"
                                          id="categorySearch"
                                          class="form-control mb-3"
                                          placeholder="Search ..."
-                                         {{-- onkeyup="filterCategories()" --}}
-                                        />
+                                         {{-- onkeyup="filterCategories()" --}} />
                                  </div>
                                  @foreach($categoryitems as $category)
                                  <div class="form-check category-item">
@@ -132,7 +131,7 @@
                                      <span class="price-text">{{ $material->price }}</span>
                                      <input type="text" class="form-control price-input d-none" style="width: 80px;" value="{{ $material->price }}">
 
-                                    <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
+                                     <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                                  </td>
                                  <td>{{ $material->uom }}</td> <!-- UoM -->
                              </tr>
@@ -158,30 +157,30 @@
          </div>
      </section>
 
-  <!-- Modal -->
-  <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="importModalLabel">Import for Products</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="{{ route('products.import') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="excelFile" class="form-label">Select Excel File</label>
-                        <input type="file" name="excel_file" id="excelFile" class="form-control" required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-success">Import</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+     <!-- Modal -->
+     <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+         <div class="modal-dialog">
+             <div class="modal-content">
+                 <div class="modal-header">
+                     <h5 class="modal-title" id="importModalLabel">Import for Products</h5>
+                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                 </div>
+                 <div class="modal-body">
+                     <form action="{{ route('products.import') }}" method="POST" enctype="multipart/form-data">
+                         @csrf
+                         <div class="mb-3">
+                             <label for="excelFile" class="form-label">Select Excel File</label>
+                             <input type="file" name="excel_file" id="excelFile" class="form-control" required>
+                         </div>
+                         <div class="modal-footer">
+                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                             <button type="submit" class="btn btn-success">Import</button>
+                         </div>
+                     </form>
+                 </div>
+             </div>
+         </div>
+     </div>
 
      <!-- Modal -->
      <div class="modal fade" id="priceModal" tabindex="-1" aria-labelledby="priceModalLabel" aria-hidden="true">
@@ -234,96 +233,153 @@
          let isEditing = false; // Track if edit mode is active
 
          document.getElementById('exportBtn').addEventListener('click', function() {
-             const table = document.getElementById('exportRm'); // Ensure this ID exists in your table
-             if (!table) {
-                 console.error('Table with ID "exportRm" not found.');
-                 return;
-             }
-             console.log('Table with ID "exportRm" not found.');
+             const table = document.getElementById('productsTable');
+             const rows = table.querySelectorAll('tr');
+             let exportData = [];
+             const header = ["S. NO.", "Products", "PD Code", "Products Category", "Price(Rs)", "UoM"];
+             exportData.push(header);
 
-             const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
-             const visibleData = [];
-             let serialNumber = 1; // Initialize serial number
+             let visibleData = [];
 
-             // Iterate through each row
-             rows.forEach((row, rowIndex) => {
-                 if (row.style.display !== 'none') { // Only include visible rows
-                     const cells = Array.from(row.children);
-                     const rowData = [];
+             let serial = 1;
 
-                     if (rowIndex > 0) {
-                         rowData.push(serialNumber++); // Auto-increment serial number
-                     } else {
-                         rowData.push("S.NO"); // Add "S.NO" to the header row
+             rows.forEach(row => {
+                 const style = window.getComputedStyle(row);
+                 if (style.display !== 'none') {
+                     const cells = row.querySelectorAll('td');
+                     if (cells.length >= 6) {
+                         visibleData.push([
+                             serial++, // S.NO
+                             cells[2].innerText.trim(), // Name
+                             cells[3].innerText.trim(), // RM Code
+                             cells[4].innerText.trim(), // Categories (already joined in UI)
+                             cells[5].querySelector('.price-text')?.innerText.trim() ?? '', // Price
+                             cells[6].innerText.trim() // UoM
+                         ]);
                      }
-
-                     cells.forEach((cell, index) => {
-                         if (index !== 0) { // Skip checkboxes column
-                             rowData.push(cell.innerText.trim());
-                         }
-                     });
-
-                     visibleData.push(rowData);
                  }
              });
 
-             // Convert data to workbook
-             const ws = XLSX.utils.aoa_to_sheet(visibleData);
-             const wb = XLSX.utils.book_new();
-             XLSX.utils.book_append_sheet(wb, ws, 'Raw Material Report');
+             if (visibleData.length < 10) {
+                 // Export filtered data
+                 exportData = exportData.concat(visibleData);
+                 const ws = XLSX.utils.aoa_to_sheet(exportData);
+                 const wb = XLSX.utils.book_new();
+                 XLSX.utils.book_append_sheet(wb, ws, 'products');
+                 XLSX.writeFile(wb, 'products_filtered.xlsx');
+             } else {
+                 // Export all from backend
+                 fetch('/products/export-all')
+                     .then(response => response.json())
+                     .then(data => {
+                         data.forEach((item, index) => {
+                             exportData.push([
+                                 index + 1,
+                                 item.name,
+                                 item.rmcode,
+                                 item.categories, // Comes as comma-separated string
+                                 item.price,
+                                 item.uom
+                             ]);
+                         });
 
-             // Export as an Excel file
-             XLSX.writeFile(wb, 'product_list.xlsx');
+                         const ws = XLSX.utils.aoa_to_sheet(exportData);
+                         const wb = XLSX.utils.book_new();
+                         XLSX.utils.book_append_sheet(wb, ws, 'products');
+                         XLSX.writeFile(wb, 'products_all.xlsx');
+                     })
+                     .catch(error => {
+                         console.error('Export error:', error);
+                         alert('Failed to export all data.');
+                     });
+             }
          });
 
-         // PDF Export Function
          document.getElementById('exportPdfBtn').addEventListener('click', function() {
+             const table = document.getElementById('productsTable');
+             const rows = table.querySelectorAll('tr');
+
+             const summaryText = document.querySelector('.d-flex')?.innerText || '';
+             const totalMatch = summaryText.match(/of\s+(\d+)\s+entries/i);
+             const totalEntries = totalMatch ? parseInt(totalMatch[1]) : 0;
+
+             const header = ["S. No.", "products", "PD Code", "products Category", "Price(Rs)", "UoM"];
+             let visibleData = [];
+
+             // Get visible rows from DOM table
+             let count = 1;
+             rows.forEach(row => {
+                 const style = window.getComputedStyle(row);
+                 if (style.display !== 'none') {
+                     const cells = row.querySelectorAll('td');
+                     if (cells.length >= 6) {
+                         visibleData.push([
+                             count++, // S. No.
+                             cells[2]?.innerText.trim() || '',
+                             cells[3]?.innerText.trim() || '',
+                             cells[4]?.innerText.trim() || '',
+                             cells[5]?.querySelector('.price-text')?.innerText.trim() || '',
+                             cells[6]?.innerText.trim() || ''
+                         ]);
+                     }
+                 }
+             });
+
+             if (visibleData.length < 10) {
+                 console.log("Exporting visible data:", visibleData);
+                 generatePdf(header, visibleData, 'products_filtered.pdf');
+             } else {
+                 // Fetch all data from backend
+                 fetch('/products/export-all')
+                     .then(response => {
+                         if (!response.ok) throw new Error('Fetch failed');
+                         return response.json();
+                     })
+                     .then(data => {
+                         console.log("Fetched full data:", data);
+
+                         const allData = data.map((item, index) => [
+                             index + 1, // S. No.
+                             item.name || '',
+                             item.rmcode || '',
+                             item.categories || '', // ✅ Correct usage
+                             item.price || '',
+                             item.uom || ''
+                         ]);
+
+                         console.log("Final data to export:", allData);
+                         generatePdf(header, allData, 'products_all.pdf');
+                     })
+                     .catch(error => {
+                         console.error('PDF Export Error:', error);
+                         alert('Failed to export PDF.');
+                     });
+             }
+         });
+
+         function generatePdf(header, data, filename) {
              const {
                  jsPDF
              } = window.jspdf;
              const doc = new jsPDF();
 
-             const table = document.getElementById('exportRm');
-             if (!table) {
-                 console.error('Table with ID "exportRm" not found.');
-                 return;
-             }
-
-             const rows = Array.from(table.querySelectorAll('tr'));
-             const tableData = [];
-             let serialNumber = 1;
-
-             rows.forEach((row, rowIndex) => {
-                 if (row.style.display !== 'none') {
-                     const cells = Array.from(row.children);
-                     const rowData = [];
-
-                     if (rowIndex > 0) {
-                         rowData.push(serialNumber++);
-                     } else {
-                         rowData.push("S.NO");
-                     }
-
-                     cells.forEach((cell, index) => {
-                         if (index !== 0) { // Skip checkboxes column
-                             rowData.push(cell.innerText.trim());
-                         }
-                     });
-
-                     tableData.push(rowData);
+             doc.text("products Export", 14, 15);
+             doc.autoTable({
+                 head: [header],
+                 body: data,
+                 startY: 20,
+                 styles: {
+                     fontSize: 9,
+                     cellPadding: 3
+                 },
+                 headStyles: {
+                     fillColor: [100, 100, 255],
+                     textColor: 255
                  }
              });
 
-             // Add Table to PDF
-             doc.autoTable({
-                 head: [tableData[0]], // Header row
-                 body: tableData.slice(1), // Table content
-                 startY: 20,
-                 theme: 'striped',
-             });
-
-             doc.save('product_list.pdf');
-         });
+             doc.save(filename);
+         }
 
          // Function to get all row checkboxes dynamically
          const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
@@ -599,9 +655,9 @@
                  return;
              }
              const selectedIds = selectedRows.map(checkbox => checkbox.closest('tr').getAttribute('data-id'));
-            //  if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
-            //      return;
-            //  }
+             //  if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected row(s)?`)) {
+             //      return;
+             //  }
 
              fetch("{{ route('product.delete') }}", {
                      method: "POST",
@@ -620,41 +676,41 @@
                      return response.json();
                  })
                  .then(data => {
-                    if (data.success) {
-                        if (data.confirm) {
-                        // If confirmation is required, show a confirmation dialog
-                        if (confirm("Are you want to delete this item of products. Do you want to proceed?")) {
-                            fetch('/confirmproducts', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    "X-CSRF-TOKEN": token
-                                },
-                                body: JSON.stringify({ ids: selectedIds }) // Send the selected IDs again
-                            })
-                            .then(response => response.json())
-                            .then(confirmData  => {
-                                if (confirmData.success) {
-                                    selectedRows.forEach(checkbox => {
-                                        const row = checkbox.closest("tr");
-                                        row.remove();
-                                    });
-                                    updateSerialNumbers();
-                                    alert("Selected rows deleted successfully!");
-                                    window.location.reload();
-                                }
-                            })
-                            .catch(error => {
-                                console.error("Error confirming deletion:", error);
-                                alert("An error occurred. Please try again.");
-                            });
-                        }
-                    }
-                }
-                else
-                    {
-                        alert("No products item can be deleted. They might be in use.");
-                    }
+                     if (data.success) {
+                         if (data.confirm) {
+                             // If confirmation is required, show a confirmation dialog
+                             if (confirm("Are you want to delete this item of products. Do you want to proceed?")) {
+                                 fetch('/confirmproducts', {
+                                         method: 'POST',
+                                         headers: {
+                                             'Content-Type': 'application/json',
+                                             "X-CSRF-TOKEN": token
+                                         },
+                                         body: JSON.stringify({
+                                             ids: selectedIds
+                                         }) // Send the selected IDs again
+                                     })
+                                     .then(response => response.json())
+                                     .then(confirmData => {
+                                         if (confirmData.success) {
+                                             selectedRows.forEach(checkbox => {
+                                                 const row = checkbox.closest("tr");
+                                                 row.remove();
+                                             });
+                                             updateSerialNumbers();
+                                             alert("Selected rows deleted successfully!");
+                                             window.location.reload();
+                                         }
+                                     })
+                                     .catch(error => {
+                                         console.error("Error confirming deletion:", error);
+                                         alert("An error occurred. Please try again.");
+                                     });
+                             }
+                         }
+                     } else {
+                         alert("No products item can be deleted. They might be in use.");
+                     }
                  })
                  .catch(error => {
                      console.error("Error deleting rows:", error);
@@ -673,15 +729,15 @@
                  showPriceModal(materialId);
              });
          });
-        // Select all elements with the class 'eye-icon' within the table
-        table.querySelectorAll(".eye-icon").forEach((iconElement) => {
-            const row = iconElement.closest("tr");
-            const materialId = row.getAttribute("data-id");
+         // Select all elements with the class 'eye-icon' within the table
+         table.querySelectorAll(".eye-icon").forEach((iconElement) => {
+             const row = iconElement.closest("tr");
+             const materialId = row.getAttribute("data-id");
 
-            iconElement.addEventListener("click", () => {
-                showPriceModal(materialId);
-            });
-        });
+             iconElement.addEventListener("click", () => {
+                 showPriceModal(materialId);
+             });
+         });
          // Listen for change events on category checkboxes
          categoryCheckboxes.forEach(checkbox => {
              checkbox.addEventListener('change', () => {
@@ -716,7 +772,7 @@
                              console.log('Fetched Data:', data.product);
                              // Populate the table with new data
                              data.product.forEach((item, index) => {
-                                productsTable.innerHTML += `
+                                 productsTable.innerHTML += `
                         <tr data-id="${item.id}">
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${index + 1}.</td>
@@ -797,31 +853,30 @@
              visibleRows.forEach((row, index) => {
                  const snoCell = row.querySelector("td:nth-child(2)"); // Adjust the column index for S.NO
                  if (snoCell) {
-                     snoCell.textContent = ((currentPage - 1) * perPage + index + 1) + ".";  // `${index + 1}.`; // Update the serial number
+                     snoCell.textContent = ((currentPage - 1) * perPage + index + 1) + "."; // `${index + 1}.`; // Update the serial number
                  }
              });
          }
 
-         document.getElementById('categorySearch').addEventListener('keyup', function () {
-            const searchType = document.getElementById('searchtype').value;
+         document.getElementById('categorySearch').addEventListener('keyup', function() {
+             const searchType = document.getElementById('searchtype').value;
 
-            if (searchType === 'category') {
-                filterCategories();
-            } else if (searchType === 'items') {
-                filterItems();
-            }
-        });
+             if (searchType === 'category') {
+                 filterCategories();
+             } else if (searchType === 'items') {
+                 filterItems();
+             }
+         });
 
-        setTimeout(function() {
-            const successMessage = document.getElementById('success-message');
-            const errorMessage = document.getElementById('error-message');
-            if (successMessage) {
-                successMessage.style.display = 'none';
-            }
-            else if(errorMessage){
-                errorMessage.style.display = 'none';
-            }
-        }, 2000);
+         setTimeout(function() {
+             const successMessage = document.getElementById('success-message');
+             const errorMessage = document.getElementById('error-message');
+             if (successMessage) {
+                 successMessage.style.display = 'none';
+             } else if (errorMessage) {
+                 errorMessage.style.display = 'none';
+             }
+         }, 2000);
      });
 
      function filterCategories() {
@@ -851,38 +906,38 @@
      }
 
      function filterItems() {
-        let searchText = document.getElementById('categorySearch').value.toLowerCase().trim();
-        let table = document.getElementById('productsTable');
-        let rows = table.getElementsByTagName('tr');
+         let searchText = document.getElementById('categorySearch').value.toLowerCase().trim();
+         let table = document.getElementById('productsTable');
+         let rows = table.getElementsByTagName('tr');
 
-            if (searchText.length > 0) {
-                const queryParams = new URLSearchParams({
-                         pdText: searchText,
-                     });
-                     console.log(queryParams.toString());
-                     // Construct the URL dynamically based on selected categories
-                     const url = `/products?${queryParams.toString()}`;
+         if (searchText.length > 0) {
+             const queryParams = new URLSearchParams({
+                 pdText: searchText,
+             });
+             console.log(queryParams.toString());
+             // Construct the URL dynamically based on selected categories
+             const url = `/products?${queryParams.toString()}`;
 
-                     // Fetch updated data from server
-                     fetch(url, {
-                             method: 'GET',
-                             headers: {
-                                 'X-Requested-With': 'XMLHttpRequest'
-                             },
-                         })
-                         .then(response => {
-                             if (!response.ok) {
-                                 throw new Error('Network response was not ok');
-                             }
-                             return response.json();
-                         })
-                         .then(data => {
-                             // Clear existing table content
-                             productsTable.innerHTML = '';
-                             console.log('Fetched Data:', data.product);
-                             // Populate the table with new data
-                             data.product.forEach((item, index) => {
-                                productsTable.innerHTML += `
+             // Fetch updated data from server
+             fetch(url, {
+                     method: 'GET',
+                     headers: {
+                         'X-Requested-With': 'XMLHttpRequest'
+                     },
+                 })
+                 .then(response => {
+                     if (!response.ok) {
+                         throw new Error('Network response was not ok');
+                     }
+                     return response.json();
+                 })
+                 .then(data => {
+                     // Clear existing table content
+                     productsTable.innerHTML = '';
+                     console.log('Fetched Data:', data.product);
+                     // Populate the table with new data
+                     data.product.forEach((item, index) => {
+                         productsTable.innerHTML += `
                         <tr data-id="${item.id}">
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${index + 1}.</td>
@@ -907,15 +962,15 @@
                             <td>${item.uom}</td>
                         </tr>
                     `;
-                             });
+                     });
 
-                         })
-                         .catch(error => {
-                             console.error('Error:', error);
-                             alert('An error occurred while fetching product(s).');
-                         });
-                } else {
-                     location.reload();
-                }
-        }
+                 })
+                 .catch(error => {
+                     console.error('Error:', error);
+                     alert('An error occurred while fetching product(s).');
+                 });
+         } else {
+             location.reload();
+         }
+     }
  </script>
