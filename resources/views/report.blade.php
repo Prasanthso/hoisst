@@ -37,7 +37,7 @@
                 <div id="columnsContainer">
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="1" checked> S.NO</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="2" checked> Product Name</label>
-                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="3" checked> S.MRP</label>
+                    <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="3" checked> Present MRP</label>
                     <!-- <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="3" checked> P.MRP</label> -->
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="4" checked> RM Cost</label>
                     <label class="dropdown-item"><input type="checkbox" class="column-toggle" data-column="5" checked> RM %</label>

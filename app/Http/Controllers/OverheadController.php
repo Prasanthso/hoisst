@@ -608,4 +608,53 @@ class OverheadController extends Controller
           return back()->with('success',  $message);
         //   return back()->with('success', 'Excel file imported successfully!');
       }
+
+    public function exportAll()
+    {
+        $categories = \App\Models\CategoryItems::pluck('itemname', 'id');
+
+        $overheads = \App\Models\Overhead::select([
+            'id',
+            'name',
+            'ohcode',
+            'price',
+            'uom',
+            'category_id1',
+            'category_id2',
+            'category_id3',
+            'category_id4',
+            'category_id5',
+            'category_id6',
+            'category_id7',
+            'category_id8',
+            'category_id9',
+            'category_id10'
+        ])
+            ->where('status', 'active')  // Filter active records
+            ->orderBy('name', 'asc')     // Sort by name ASC
+            ->get();
+
+
+        $overheadsWithNames = $overheads->map(function ($item) use ($categories) {
+            $categoryNames = [];
+
+            for ($i = 1; $i <= 10; $i++) {
+                $field = 'category_id' . $i;
+                if (!empty($item->$field) && isset($categories[$item->$field])) {
+                    $categoryNames[] = $categories[$item->$field];
+                }
+            }
+
+            return [
+                'id' => $item->id,
+                'name' => $item->name,
+                'ohcode' => $item->ohcode,
+                'price' => $item->price,
+                'uom' => $item->uom,
+                'categories' => implode(', ', $categoryNames), // Comma-separated for easier frontend use
+            ];
+        });
+
+        return response()->json($overheadsWithNames);
+    }
 }
