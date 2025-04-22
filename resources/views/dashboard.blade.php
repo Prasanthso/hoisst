@@ -90,7 +90,7 @@
                                 <img src="/assets/img/package.png" alt="Pdc Icon" style="width: 0.7em; height: auto; margin-right:10px;">
                             </div>
                             <div class="ps-3" style="margin-bottom: 10px;">
-                                <h6>{{ $totalPm }}</h6>
+                                <h6>0</h6>
                             </div>
                             <div class="ps-1">
                                 <span class="text-muted small pt-2 ps-1"><b>Products margin (Low & High)</b></span>
@@ -128,7 +128,7 @@
             <div class="col-md-3">
                 {{-- <div class="snapshot-panel card bg-light p-3 h-60"> --}}
                     <div class="card">
-                        <div class="card-header bg-dark text-white">Cost Trend</div>
+                        <div class="card-header bg-primary text-white">Cost Trend</div>
                         <div class="card-body">
                         <p>Current Month: ₹{{ number_format($costindicator['thisMonthCost'], 2) }}</p>
                         <p>Last Month: ₹{{ number_format($costindicator['lastMonthCost'], 2) }}</p>
@@ -171,23 +171,27 @@
                         <h5 class="mb-0">Alerts & Red Flags</h5>
                     </div>
                     <div class="card-body">
-
+                        <form method="GET" action="{{ route('dashboard') }}" class="d-flex align-items-center">
+                            <label for="material_name" class="form-label mb-0 me-2">Rawmaterial name:</label>
+                            <input type="text" id="material_name" class="form-control me-2" name="material_name" placeholder="Enter raw material name" required>
+                            <button class="btn btn-primary" type="submit">Check</button>
+                        </form>
                           <!-- High Cost Ingredients Alerts -->
-                          @if(count($alerts['highCostAlerts']) > 0)
-                          <div class="alert alert-danger">
-                              <h4>🚨 High Cost Ingredients</h4>
-                              @foreach($alerts['highCostAlerts'] as $costalert)
-                                  <p><strong>{{ $costalert['item'] }}</strong> - {{ $costalert['description'] }}</p>
-                              @endforeach
-                          </div>
-                      @else
-                          <p>No high-cost ingredients alerts.</p>
-                      @endif
+                          @if(request()->has('material_name') && !empty($highcostingredients))
+                            <div class="alert alert-danger">
+                                <h5>🚨 High Cost Ingredient</h5>
+                                @foreach($highcostingredients as $alert)
+                                    <p><strong>{{ $alert['item'] }}</strong> - {{ $alert['description'] }}</p>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="alert alert-info">No high cost alert for this material.</div>
+                        @endif
 
                     <!-- Low Margin Products Alerts -->
                     @if(count($alerts['lowMarginAlerts']) > 0)
                         <div class="alert alert-warning">
-                            <h4>🚨 Low Margin Products</h4>
+                            <h5>🚨 Low Margin Products</h5>
                             @foreach($alerts['lowMarginAlerts'] as $lowalert)
                                 <p><strong>{{ $lowalert['item'] }}</strong> - {{ $lowalert['description'] }}</p>
                                 {{-- <p>{{ $lowalert['cost'] }}</p> --}}
@@ -200,7 +204,7 @@
                     <!-- High Margin Products Alerts -->
                     @if(count($alerts['highMarginAlerts']) > 0)
                         <div class="alert alert-success">
-                            <h4>🚨 High Margin Products</h4>
+                            <h5>🚨 High Margin Products</h5>
                             @foreach($alerts['highMarginAlerts'] as $highalert)
                                 <p><strong>{{ $highalert['item'] }}</strong> - {{ $highalert['description'] }}</p>
 
@@ -223,7 +227,7 @@
         <h5>Cost Insights</h5>
         <!-- Cost Trend Chart -->
         <div class="card mb-4">
-            <div class="card-header">Cost Trend (Last 6 Months)</div>
+            <div class="card-header bg-success text-white">Cost Trend (Last 6 Months)</div>
             <div class="card-body">
                 <canvas id="costTrendChart" height="h-100"></canvas>
             </div>

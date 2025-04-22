@@ -15,9 +15,8 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-
-    //
-    public function index()
+     //
+    public function index(Request $request)
     {
         // category ids
         $rmc = 1;
@@ -25,11 +24,11 @@ class DashboardController extends Controller
         $ohc = 3;
         $pdc = 4;
 
-        $totalRm = RawMaterial::where('status', 'active')->count();
-        $totalPm = PackingMaterial::where('status', 'active')->count();
-        $totalOh = Overhead::where('status', 'active')->count();
+        // $totalRm = RawMaterial::where('status', 'active')->count();
+        // $totalPm = PackingMaterial::where('status', 'active')->count();
+        // $totalOh = Overhead::where('status', 'active')->count();
         $totalPd = Product::where('status', 'active')->count();
-        $totalCitems = CategoryItems::where('status', 'active')->count();
+        // $totalCitems = CategoryItems::where('status', 'active')->count();
         $totalrecipes = Recipe::where('status', 'active')->count();
 
         $graphproducts = Product::all()->map(function ($product) {
@@ -42,16 +41,20 @@ class DashboardController extends Controller
             ];
         });
 
-        $totalRmC = CategoryItems::where('categoryId', $rmc)->where('status', 'active')->count();
-        $totalPmC = CategoryItems::where('categoryId', $pmc)->where('status', 'active')->count();
-        $totalOhC = CategoryItems::where('categoryId', $ohc)->where('status', 'active')->count();
+        // $totalRmC = CategoryItems::where('categoryId', $rmc)->where('status', 'active')->count();
+        // $totalPmC = CategoryItems::where('categoryId', $pmc)->where('status', 'active')->count();
+        // $totalOhC = CategoryItems::where('categoryId', $ohc)->where('status', 'active')->count();
         $totalPdC = CategoryItems::where('categoryId', $pdc)->where('status', 'active')->count();
 
+        $highcostingredients = [];
 
+        if ($request->has('material_name') && trim($request->input('material_name')) !== '') {
+            $highcostingredients = $this->highCostIngredients($request);
+        }
         $costindicator = $this->indicatorBadge();
         $modifications = $this->getTrendAnalyticsData();
         $alerts = $this->getAlertforFlags();
-       $trendData = $this->priceTrendChart();
+        $trendData = $this->priceTrendChart();
 
           // Unpack modifications arrays
             $months = $modifications['months'];
@@ -59,8 +62,8 @@ class DashboardController extends Controller
             $rawMaterials = $modifications['rawMaterials'];
             $quantities = $modifications['quantities'];
 
-        return view('dashboard', compact('totalRm', 'totalPm','totalOh','totalPd','totalCitems','totalrecipes','totalRmC','totalPmC','totalOhC','totalPdC','graphproducts',
-            'costindicator','months', 'products', 'rawMaterials', 'quantities','alerts','trendData'));
+        return view('dashboard', compact('totalPd','totalrecipes','totalPdC','graphproducts',
+            'costindicator','months', 'products', 'rawMaterials', 'quantities','alerts','trendData','highcostingredients'));
 
             // 'thisMonthCost', 'lastMonthCost', 'costChange', 'costTrendIndicator'));
     }
@@ -146,57 +149,6 @@ class DashboardController extends Controller
 
     public function getAlertforFlags()
     {
-        $highCostAlerts = [];
-        $lowMarginAlerts = [];
-        $highMarginAlerts = [];
-
-        $currentMonthStart = Carbon::now()->startOfMonth();
-        $currentMonthEnd = Carbon::now()->endOfMonth();
-        $lastMonthStart = Carbon::now()->subMonth()->startOfMonth();
-        $lastMonthEnd = Carbon::now()->subMonth()->endOfMonth();
-
-        // 🔴 RED FLAG 1: High Cost Ingredient
-        $materials = DB::table('raw_materials')
-            ->select('id', 'name')
-            ->distinct()
-            ->where('status', 'active')
-            ->get();
-
-        foreach ($materials as $item) {
-            $current = DB::table('raw_materials')
-                ->where('id', $item->id)
-                ->where('status', 'active')
-                ->whereBetween('created_at', [$currentMonthStart, $currentMonthEnd])
-                ->orderByDesc('created_at')
-                ->value('price');
-
-            $last = DB::table('raw_materials')
-                ->where('id', $item->id)
-                ->where('status', 'active')
-                ->whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
-                ->orderByDesc('created_at')
-                ->value('price');
-
-            $threshold = DB::table('raw_materials')
-                ->where('id', $item->id)
-                ->where('status', 'active')
-                ->orderByDesc('created_at')
-                ->value('price_threshold');
-
-            if ($current && $last) {
-                $diff = (($current - $last) / $last) * 100;
-                if ($current > $threshold && $diff >= 2) {
-                    $highCostAlerts[] = [
-                        'item' => $item->name,
-                        'flag_type' => 'Red Flag 1: High Cost Ingredient',
-                        'description' => "Cost ↑ by " . round($diff, 1) . "% (₹$last → ₹$current)",
-                        'alert_type' => 'danger',
-                        'increase_percent' => $diff
-                    ];
-                }
-            }
-        }
-
         $lowMarginAlerts = [];
         $highMarginAlerts = [];
         $allUnitCosts = [];
@@ -254,6 +206,7 @@ class DashboardController extends Controller
             $suggestedMrp = (float) $product->suggested_mrp;
             $targetMargin = (float) $product->margin;
 
+
             // Margin based on MRP
             $actualMargin = (($suggestedMrp - $unitCost) / $suggestedMrp) * 100;
 
@@ -269,7 +222,7 @@ class DashboardController extends Controller
                     'mrp' => $suggestedMrp,
                     'actual_margin' => round($actualMargin, 2),
                 ];
-            } elseif ($actualMargin > $targetMargin + 10) {
+            } elseif ($actualMargin > $targetMargin) {
                 $highMarginAlerts[] = [
                     'item' => $product->name,
                     'flag_type' => "🔴 RED FLAG 3: High Margin",
@@ -282,11 +235,44 @@ class DashboardController extends Controller
         }
 
         return [
-            'highCostAlerts' => $highCostAlerts,
+            // 'highCostAlerts' => $highCostAlerts,
             'lowMarginAlerts' => $lowMarginAlerts,
             'highMarginAlerts' => $highMarginAlerts,
             'unitCosts' => $allUnitCosts,
         ];
+    }
+
+    public function highCostIngredients(Request $request)
+    {
+        $inputName = strtolower(trim($request->input('material_name')));
+        $highCostAlerts = [];
+
+            $material = DB::table('raw_materials')
+            ->whereRaw('LOWER(name) = ?', [$inputName])
+            ->where('status', 'active')
+            ->first();
+
+        if ($material) {
+            $currentPrice = $material->price;
+            $threshold = $material->price_threshold;
+
+            if ($currentPrice > $threshold) {
+                $description = $currentPrice > $threshold
+                ? "Current cost ₹$currentPrice is above threshold ₹$threshold"
+                : "Current cost ₹$currentPrice is within safe range";
+
+            $highCostAlerts[] = [
+                'item' => $material->name,
+                'flag_type' => 'Red Flag 1: High Cost Ingredient',
+                'description' => $description,
+                'alert_type' => $currentPrice > $threshold ? 'danger' : 'success',
+                'increase_percent' => null
+            ];
+
+            }
+        }
+        return $highCostAlerts;
+
     }
 
     public function priceTrendChart()
@@ -305,19 +291,33 @@ class DashboardController extends Controller
         ->orderBy('month')
         ->get();
 
-            $topProfitable = DB::table('product_master')
-            ->select('name', 'price', 'margin')
-            ->orderByDesc('margin')
-            ->limit(10)
+            // $topProfitable = DB::table('product_master')
+            // ->select('name', 'price', 'margin')
+            // ->orderByDesc('margin')
+            // ->limit(10)
+            // ->get();
+            $topProfitable = Product::join('recipe_master', 'product_master.id', '=', 'recipe_master.product_id')
+            ->join('overall_costing', 'recipe_master.product_id', '=', 'overall_costing.productid')
+            ->where('product_master.status', 'active')
+            ->where('recipe_master.status', 'active')
+            ->where('overall_costing.status', 'active')
+            ->select('product_master.*', 'overall_costing.suggested_mrp')
+            ->distinct()
+            ->limit(10) // Added limit to fetch only top 10
             ->get();
+
+            // Filter products where price is less than suggested_mrp
+            $filteredProfitable = $topProfitable->filter(function ($product) {
+                return $product->price > $product->suggested_mrp;
+            });
 
             return [
                 'trendData' => $trendData,       // structured properly for Chart.js
-                'top_profitable' => $topProfitable  // for table
+                'top_profitable' => $filteredProfitable  // for table
             ];
 
     }
-
+/*
      public function costTrendLinegraph()
      {
         $trendData = DB::table('rm_price_histories as h')
@@ -361,5 +361,6 @@ class DashboardController extends Controller
             'top_profitable' => $topProfitable  // for table
         ];
      }
+     */
 
 }
