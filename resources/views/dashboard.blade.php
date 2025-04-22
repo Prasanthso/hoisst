@@ -275,13 +275,14 @@
         costtrendLineChart();
     });
 
-
+    // modifications & Impact
     function barchart() {
 
     const months = @json($months);
     const products = @json($products);
     const rawMaterials = @json($rawMaterials);
     const quantities = @json($quantities);
+    const impacts = @json($impacts);
 
     const labels = months.map((month, i) => `${month} - ${products[i]} (${rawMaterials[i]})`);
 
@@ -295,7 +296,8 @@
                 data: quantities,
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
+                borderWidth: 1,
+                marginData: impacts // Custom data for tooltips
             }]
         },
         options: {
@@ -314,10 +316,22 @@
                         text: 'Month - Product (Raw Material)'
                     }
                 }
+            }, // <- FIXED: added missing comma here
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const quantity = context.raw;
+                            const margin = context.dataset.marginData[context.dataIndex];
+                            return `Quantity: ${quantity}, Margin: ${margin.toFixed(2)}%`;
+                        }
+                    }
+                }
             }
         }
     });
     }
+
 
     function costtrendLineChart()
     {

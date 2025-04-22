@@ -61,9 +61,9 @@ class DashboardController extends Controller
             $products = $modifications['products'];
             $rawMaterials = $modifications['rawMaterials'];
             $quantities = $modifications['quantities'];
-
+            $impacts = $modifications['impacts'];
         return view('dashboard', compact('totalPd','totalrecipes','totalPdC','graphproducts',
-            'costindicator','months', 'products', 'rawMaterials', 'quantities','alerts','trendData','highcostingredients'));
+            'costindicator','months', 'products', 'rawMaterials', 'quantities','impacts','alerts','trendData','highcostingredients'));
 
             // 'thisMonthCost', 'lastMonthCost', 'costChange', 'costTrendIndicator'));
     }
@@ -138,12 +138,18 @@ class DashboardController extends Controller
             $products = $topModifications->pluck('product_name')->toArray();
             $rawMaterials = $topModifications->pluck('raw_material_name')->toArray();
             $quantities = $topModifications->pluck('total_quantity')->toArray();
+            $impacts = $topModifications->pluck('impact')->toArray();
 
+            // $labels = $topModifications->map(function ($item) {
+            //     return date("F", mktime(0, 0, 0, $item->month, 1)) . ' - ' . $item->product_name . ' (' . $item->raw_material_name . ')';
+            // })->toArray();
             return [
+                // 'labels' => $labels,
                 'months' => $months,
                 'products' => $products,
                 'rawMaterials' => $rawMaterials,
                 'quantities' => $quantities,
+                'impacts' => $impacts,
             ];
     }
 
