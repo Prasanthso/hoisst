@@ -581,11 +581,23 @@ class RawMaterialController extends Controller
          }
             $rmCode = UniqueCode::generateRmCode();
 
-            $rm_categoryId = DB::table('categories')
-            ->whereRaw("REPLACE(LOWER(TRIM(categoryname)), ' ', '') = ?", ['rawmaterials']) // removes all spaces
-            ->value('id');
+            // $rm_categoryId = DB::table('categories')
+            // ->whereRaw("REPLACE(LOWER(TRIM(categoryname)), ' ', '') = ?", ['rawmaterials']) // removes all spaces
+            // ->value('id');
 
             $categoryIds = [];
+            $name = trim($row[1] ?? '');
+            $uom = trim($row[2] ?? '');
+            $hsncode = trim($row[3] ?? '');
+            $itemwgt = trim($row[4] ?? '');
+            $price = trim($row[15] ?? '');
+            $ptax = trim($row[16] ?? '');
+            $frequency = trim($row[17] ?? '');
+            $priceupdatefrequency = trim($row[18] ?? '');
+            $thershold = trim($row[19] ?? '');
+            $itemType = trim($row[20] ?? '');
+            $categoryIds['id1'] = trim($row[5] ?? '');
+            /*
             for ($i = 1; $i <= 10; $i++) {
                 $itemNameRaw = $row[$i + 4] ?? null;
                 $name = trim($row[1] ?? '');
@@ -627,6 +639,7 @@ class RawMaterialController extends Controller
                     // return back()->with('error', 'category_Id1 is not null. you must fill it.');
                 }
             }
+*/
             if (
                 empty($name) ||
                 empty($uom) ||
@@ -643,16 +656,17 @@ class RawMaterialController extends Controller
                 $skippedRows[] = "Row ".($index + 1)." skipped: missing required fields (name/uom/hsncode/itemwgt/price/tax/updatefrequency/priceupdatefrequency/threshold/itemType/category_id1).";
                 continue;
             }
-            // for ($i = 1; $i <= 10; $i++) {
-            //     $categoryIds["id$i"] = !empty($row[$i + 4]) // Adjusting index to match $row[4] for category_id1
-            //         ? DB::table('categoryitems')
-            //             ->where('categoryId', 1)
-            //             ->where('status', 'active')
-            //             // ->where('itemname', $row[$i + 3])
-            //             ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 4]))])
-            //             ->value('id')
-            //         : null;
-            // }
+
+            for ($i = 1; $i <= 10; $i++) {
+                $categoryIds["id$i"] = !empty($row[$i + 4]) // Adjusting index to match $row[4] for category_id1
+                    ? DB::table('categoryitems')
+                        ->where('categoryId', 1)
+                        ->where('status', 'active')
+                        // ->where('itemname', $row[$i + 3])
+                        ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 4]))])
+                        ->value('id')
+                    : null;
+            }
             $itemtype_id = DB::table('item_type')->where('itemtypename',$row[20])->where('status', 'active')->value('id');
 
             RawMaterial::create([
