@@ -70,6 +70,9 @@ class RmForRecipeController extends Controller
                             'singleCost' => 0,
                             'status' => 'active',
                         ]);
+                        // Product::where('id', $request->product_id)
+                        // ->where('status', 'active')
+                        // ->update(['recipe_created_status' => 'yes']);
                 }
                 else if($isProduct == true)
                 {

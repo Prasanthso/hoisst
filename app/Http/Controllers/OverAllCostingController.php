@@ -273,7 +273,8 @@ class OverAllCostingController extends Controller
             ->join('product_master', 'overall_costing.productId', '=', 'product_master.id')
             ->select(
                 'overall_costing.*',
-                'product_master.name as product_name'
+                'product_master.name as product_name',
+                // 'product_master.margin as margin',
             )
             ->where('overall_costing.id', $id)
             ->where('overall_costing.status', 'active')
