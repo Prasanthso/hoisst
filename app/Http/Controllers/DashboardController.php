@@ -239,9 +239,11 @@ class DashboardController extends Controller
             'lowMarginAlerts' => $lowMarginAlerts,
             'highMarginAlerts' => $highMarginAlerts,
             'unitCosts' => $allUnitCosts,
+            'lowMarginCount' => count($lowMarginAlerts),
+            'highMarginCount' => count($highMarginAlerts),
         ];
     }
-
+    // for costIngredients
     public function highCostIngredients(Request $request)
     {
         $inputName = strtolower(trim($request->input('material_name')));
@@ -274,7 +276,7 @@ class DashboardController extends Controller
         return $highCostAlerts;
 
     }
-
+    // for cost-insights
     public function priceTrendChart()
     {
         $trendData = DB::table('rm_price_histories as h')

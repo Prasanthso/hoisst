@@ -90,7 +90,7 @@
                                 <img src="/assets/img/package.png" alt="Pdc Icon" style="width: 0.7em; height: auto; margin-right:10px;">
                             </div>
                             <div class="ps-3" style="margin-bottom: 10px;">
-                                <h6>0</h6>
+                                <h6>{{ ($alerts['lowMarginCount']) + ($alerts['highMarginCount']) }}</h6>
                             </div>
                             <div class="ps-1">
                                 <span class="text-muted small pt-2 ps-1"><b>Products margin (Low & High)</b></span>
