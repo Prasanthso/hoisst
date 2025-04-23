@@ -171,22 +171,24 @@
                         <h5 class="mb-0">Alerts & Red Flags</h5>
                     </div>
                     <div class="card-body">
-                        <form method="GET" action="{{ route('dashboard') }}" class="d-flex align-items-center">
+                        <form id="check-form" class="d-flex align-items-center">
                             <label for="material_name" class="form-label mb-0 me-2">Rawmaterial name:</label>
                             <input type="text" id="material_name" class="form-control me-2" name="material_name" placeholder="Enter raw material name" required>
                             <button class="btn btn-primary" type="submit">Check</button>
                         </form>
                           <!-- High Cost Ingredients Alerts -->
-                          @if(request()->has('material_name') && !empty($highcostingredients))
-                            <div class="alert alert-danger">
-                                <h5>🚨 High Cost Ingredient</h5>
-                                @foreach($highcostingredients as $alert)
-                                    <p><strong>{{ $alert['item'] }}</strong> - {{ $alert['description'] }}</p>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="alert alert-info">No high cost alert for this material.</div>
-                        @endif
+                        <div id="alert-container">
+                            @if(isset($highcostingredients) && !empty($highcostingredients))
+                                <div class="alert alert-danger">
+                                    <h5>🚨 High Cost Ingredient</h5>
+                                    @foreach($highcostingredients as $alert)
+                                        <p><strong>{{ $alert['item'] }}</strong> - {{ $alert['description'] }}</p>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="alert alert-info mt-2" id="result">No high cost alert for this material.</div>
+                            @endif
+                        </div>
 
                     <!-- Low Margin Products Alerts -->
                     @if(count($alerts['lowMarginAlerts']) > 0)
@@ -220,8 +222,8 @@
         </div>
     </div>
 
-</section>
-<section class="section dashboard">
+{{-- </section>
+<section class="section dashboard"> --}}
 
     <div class="container">
         <h5>Cost Insights</h5>
@@ -267,10 +269,40 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </main>  <!-- End #main -->
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+   $('#check-form').on('submit', function(e) {
+    e.preventDefault();
 
+    let materialName = $('#material_name').val();
+
+    $.ajax({
+        url: '{{ route("dashboard") }}',
+        type: 'GET',
+        data: { material_name: materialName },
+        success: function(response) {
+            // Update the content based on the response
+            if (response.highcostingredients.length > 0) {
+                let alertHtml = '<div class="alert alert-danger"><h5>🚨 High Cost Ingredient</h5>';
+                response.highcostingredients.forEach(function(alert) {
+                    alertHtml += `<p><strong>${alert.item}</strong> - ${alert.description}</p>`;
+                });
+                alertHtml += '</div>';
+                $('#alert-container').html(alertHtml);
+            } else {
+                $('#alert-container').html('<div class="alert alert-info mt-2" id="result">No high cost alert for this material.</div>');
+            }
+
+            // Handle other alerts (if needed)
+            // Example: Low Margin Alerts, High Margin Alerts, etc.
+        },
+        error: function() {
+            $('#alert-container').html('<div class="alert alert-danger">Something went wrong. Please try again.</div>');
+        }
+    });
+});
+
+    document.addEventListener('DOMContentLoaded', function () {
         barchart();
         costtrendLineChart();
     });

@@ -51,6 +51,7 @@ class DashboardController extends Controller
         if ($request->has('material_name') && trim($request->input('material_name')) !== '') {
             $highcostingredients = $this->highCostIngredients($request);
         }
+
         $costindicator = $this->indicatorBadge();
         $modifications = $this->getTrendAnalyticsData();
         $alerts = $this->getAlertforFlags();
@@ -62,6 +63,15 @@ class DashboardController extends Controller
             $rawMaterials = $modifications['rawMaterials'];
             $quantities = $modifications['quantities'];
             $impacts = $modifications['impacts'];
+
+            if ($request->ajax()) {
+                // Return the partial view if it's an AJAX request
+                return response()->json([
+                    'highcostingredients' => $highcostingredients,
+                    'alerts' => $alerts,
+                    'message' => empty($highcostingredients) ? 'No high cost alert for this material.' : null,
+                ]);
+            }
         return view('dashboard', compact('totalPd','totalrecipes','totalPdC','graphproducts',
             'costindicator','months', 'products', 'rawMaterials', 'quantities','impacts','alerts','trendData','highcostingredients'));
 
@@ -210,11 +220,13 @@ class DashboardController extends Controller
             // 🎯 Margin logic
             $price = (float) $product->price;
             $suggestedMrp = (float) $product->suggested_mrp;
+            $discount =  (float) $product->discount;
+            $recipe_tax = (float) $product->tax;
             $targetMargin = (float) $product->margin;
 
 
             // Margin based on MRP
-            $actualMargin = (($suggestedMrp - $unitCost) / $suggestedMrp) * 100;
+            $actualMargin = (($price - $suggestedMrp) / $suggestedMrp) * 100;
 
             $actualMarginFormatted = number_format($actualMargin, 2);
             $targetMarginFormatted = number_format($targetMargin, 2);
