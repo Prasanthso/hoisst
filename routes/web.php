@@ -18,6 +18,7 @@ use App\Http\Controllers\OhForRecipeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\OverAllCostingController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\ProfileController;
 use App\Models\Overhead;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\WhatsAppController;
@@ -38,6 +39,13 @@ Route::resource('permission', App\Http\Controllers\PermissionController::class);
 Route::get('/', function () {
     return view('landingPage');
 })->name('landing');
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
 // Login Routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login'); // Serves the login form
