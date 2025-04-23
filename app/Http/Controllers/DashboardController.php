@@ -220,13 +220,12 @@ class DashboardController extends Controller
             // 🎯 Margin logic
             $price = (float) $product->price;
             $suggestedMrp = (float) $product->suggested_mrp;
-            $discount =  (float) $product->discount;
-            $recipe_tax = (float) $product->tax;
+            // $discount =  (float) $product->discount;
+            $prod_tax = (float) $product->tax;
             $targetMargin = (float) $product->margin;
-
-
+            // $mrp = $unitCost*targetMargin
             // Margin based on MRP
-            $actualMargin = (($price - $suggestedMrp) / $suggestedMrp) * 100;
+            $actualMargin = (($price - $unitCost) / $unitCost) * 100;
 
             $actualMarginFormatted = number_format($actualMargin, 2);
             $targetMarginFormatted = number_format($targetMargin, 2);
@@ -244,7 +243,7 @@ class DashboardController extends Controller
                 $highMarginAlerts[] = [
                     'item' => $product->name,
                     'flag_type' => "🔴 RED FLAG 3: High Margin",
-                    'description' => "Actual Margin {$actualMarginFormatted}% exceeds expected {$targetMargin}% by more than 10%",
+                    'description' => "Profit margin is {$actualMarginFormatted}%, above the target of {$targetMargin}%",
                     'unit_cost' => round($unitCost, 2),
                     'mrp' => $suggestedMrp,
                     'actual_margin' => round($actualMargin, 2),

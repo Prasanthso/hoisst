@@ -19,66 +19,66 @@
 
         <!-- Box 4 -->
         <div class="row d-flex flex-wrap justify-content-between" style="margin: 0 -10px;">
-         <div class="col-xxl-2 col-md-2" style="margin: 10px;">
+        <div class="col-xxl-2 col-md-2" style="margin: 10px;">
             <a href="{{ route('products.index') }}" style="text-decoration: none; color: inherit;">
-            <div class="card info-card revenue-card" style="background-color: rgb(243,232,255); border-radius: 20px; padding: 15px 0 15px 0;">
-                <div class="card-body">
-                    <div class="d-flex flex-column align-items-start">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;background-color:rgb(191,131,255); width: 40px; height: 40px; border-radius: 60%;">
-                            {{-- <img src="/assets/img/PdIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;"> --}}
-                            <img src="/assets/img/package.png" alt="Pdc Icon" style="width: 0.7em; height: auto; margin-right:10px;">
-                        </div>
-                        <div class="ps-3" style="margin-bottom: 10px;">
-                            <h6>{{ $totalPd }}</h6>
-                        </div>
-                        <div class="ps-3">
-                            <span class="text-muted small pt-2 ps-1"><b>Products</b></span>
+                <div class="card info-card revenue-card" style="background-color: rgb(243,232,255); border-radius: 20px; padding: 15px 0 15px 0;">
+                    <div class="card-body">
+                        <div class="d-flex flex-column align-items-start">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;background-color:rgb(191,131,255); width: 40px; height: 40px; border-radius: 60%;">
+                                {{-- <img src="/assets/img/PdIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;"> --}}
+                                <img src="/assets/img/package.png" alt="Pdc Icon" style="width: 0.7em; height: auto; margin-right:10px;">
+                            </div>
+                            <div class="ps-3" style="margin-bottom: 10px;">
+                                <h6>{{ $totalPd }}</h6>
+                            </div>
+                            <div class="ps-3">
+                                <span class="text-muted small pt-2 ps-1"><b>Products</b></span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
             </a>
         </div>
          <!-- Box 5 -->
-         <div class="col-xxl-2 col-md-2" style="margin: 10px;">
+        <div class="col-xxl-2 col-md-2" style="margin: 10px;">
             <a href="{{ route('receipedetails.index') }}" style="text-decoration: none; color: inherit;">
-            <div class="card info-card revenue-card" style="background-color: rgb(214,236,236); border-radius: 20px; padding: 15px 0 15px 0;">
-                <div class="card-body">
-                    <div class="d-flex flex-column align-items-start">
-                        <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
-                            <img src="/assets/img/rIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;">
-                        </div>
-                        <div class="ps-3" style="margin-bottom: 10px;">
-                            <h6>{{ $totalrecipes }}</h6>
-                        </div>
-                        <div class="ps-3">
-                            <span class="text-muted small pt-2 ps-1"><b>Recipes</b></span>
+                <div class="card info-card revenue-card" style="background-color: rgb(214,236,236); border-radius: 20px; padding: 15px 0 15px 0;">
+                    <div class="card-body">
+                        <div class="d-flex flex-column align-items-start">
+                            <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
+                                <img src="/assets/img/rIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;">
+                            </div>
+                            <div class="ps-3" style="margin-bottom: 10px;">
+                                <h6>{{ $totalrecipes }}</h6>
+                            </div>
+                            <div class="ps-3">
+                                <span class="text-muted small pt-2 ps-1"><b>Recipes</b></span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
             </a>
         </div>
 
              <!-- Box 5 -->
-        <div class="col-xxl-2 col-md-2" style="margin: 10px;">
-            <div class="card info-card revenue-card" style="background-color: rgb(249,207,180); border-radius: 20px; padding: 15px 0 15px 0;">
-                <div class="card-body">
-                    <div class="d-flex flex-column align-items-start">
-                        <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 16px;">
-                            <!--<i class="bi bi-currency-dollar"></i>-->
-                            <img src="/assets/img/pmIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;">
-                        </div>
-                        <div class="ps-3" style="margin-bottom: 10px;">
-                            <h6>0</h6>
-                        </div>
-                        <div class="ps-3">
-                            <span class="text-muted small pt-2 ps-1"><b>Alert Messages</b></span>
+            <div class="col-xxl-2 col-md-2" style="margin: 10px;">
+                <div class="card info-card revenue-card" style="background-color: rgb(249,207,180); border-radius: 20px; padding: 15px 0 15px 0;">
+                    <div class="card-body">
+                        <div class="d-flex flex-column align-items-start">
+                            <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 16px;">
+                                <!--<i class="bi bi-currency-dollar"></i>-->
+                                <img src="/assets/img/pmIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;">
+                            </div>
+                            <div class="ps-3" style="margin-bottom: 10px;">
+                                <h6>0</h6>
+                            </div>
+                            <div class="ps-3">
+                                <span class="text-muted small pt-2 ps-1"><b>Alert Messages</b></span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-         </div>
 
             <!-- Box 11 -->
             <div class="col-xxl-2 col-md-4" style="margin: 10px;">
@@ -121,7 +121,7 @@
 </section>
 <section class="section dashboard">
     <!-- this is for sanpshot panel section -->
-    <div class="container-fluid">
+    <div class="container"> <!--container-fluid-->
         <!-- First Row: Cost Trend + Chart -->
         <div class="row mb-4">
             <!-- Cost Trend -->
@@ -149,7 +149,6 @@
                     </div>
                 {{-- </div> --}}
             </div>
-
             <!-- Chart -->
             <div class="col-md-9">
                 <div class="card  h-100">
@@ -266,9 +265,8 @@
     </div>
 
 </section>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </main>  <!-- End #main -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
    $('#check-form').on('submit', function(e) {
@@ -309,7 +307,6 @@
 
     // modifications & Impact
     function barchart() {
-
     const months = @json($months);
     const products = @json($products);
     const rawMaterials = @json($rawMaterials);
@@ -363,7 +360,6 @@
         }
     });
     }
-
 
     function costtrendLineChart()
     {
@@ -454,12 +450,11 @@
                 }
             }
         });
-
-        function randomColor() {
+    }
+    function randomColor() {
             const colors = ['#f44336', '#03a9f4', '#ffeb3b', '#4caf50', '#9c27b0'];
             return colors[Math.floor(Math.random() * colors.length)];
         }
-    }
 </script>
 
 
