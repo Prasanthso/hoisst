@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -90,6 +91,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Floating Images -->
     <img src="./uploads/cookie.png" alt="cookie" class="floating-img img2">
@@ -105,49 +107,50 @@
         </div>
         <div class="custom-container mx-auto text-left">
             <h2 class="text-center"><b>RMS LOGIN</b></h2>
-            
+
             <!-- Display Success Message -->
             @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
             @endif
 
             <!-- Display Error Message -->
             @if($errors->has('login_failed'))
-                <div class="alert alert-danger">
-                    {{ $errors->first('login_failed') }}
-                </div>
+            <div class="alert alert-danger">
+                {{ $errors->first('login_failed') }}
+            </div>
             @endif
 
             <form action="{{ route('login.verify') }}" method="POST">
-    @csrf
-    <div class="form-group">
-        <label for="username">UserName</label>
-        <input 
-            type="text" 
-            id="username" 
-            name="username" 
-            class="form-control custom-input" 
-            placeholder="rms2024@gmail.com" 
-            required>
-    </div>
-    <div class="form-group">
-        <label for="password">Password</label>
-        <input 
-            type="password" 
-            id="password" 
-            name="password" 
-            class="form-control custom-input" 
-            placeholder="Rms@1234" 
-            pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$" 
-            title="Password must be at least 8 characters long, include at least one letter, one number, and one special character like @, #, $, etc."
-            required>
-    </div>
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary custom-btn">Login</button>
-    </div>
-</form>
+                @csrf
+                <div class="form-group">
+                    <label for="username">Email</label>
+                    <input
+                        type="email"
+                        id="username"
+                        name="username"
+                        class="form-control custom-input"
+                        placeholder="rms2024@gmail.com"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="form-control custom-input"
+                        placeholder="Rms@1234"
+                        pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$"
+                        title="Password must be at least 8 characters long, include at least one letter, one number, and one special character like @, #, $, etc."
+                        required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary custom-btn">Login</button>
+                </div>
+            </form>
 
         </div>
     </div>
@@ -157,4 +160,5 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>

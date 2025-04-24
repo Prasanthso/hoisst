@@ -3,36 +3,51 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use Illuminate\View\View;
+use App\Models\User;
+
 
 class LoginController extends Controller
 {
     public function showLoginForm()
     {
-        return view('login'); // Ensure the file is in resources/views/login.blade.php
+        return view('login'); // blade file you posted
     }
 
     public function verifyLogin(Request $request)
     {
-        // Validate input
-        $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string',
-        ]);
+        $credentials = $request->only('username', 'password');
 
-        // Retrieve input
-        $username = $request->input('username');
-        $password = $request->input('password');
+        if (Auth::attempt(['email' => $credentials['username'], 'password' => $credentials['password']])) {
+            $request->session()->regenerate();
 
-        // Check credentials in the database
-        $user = DB::table('login')->where('username', $username)->first();
+            // ✅ Custom session data
+            $user = Auth::user();
+            session([
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'user_role' => $user->role ?? 'user', // If you have a role column
+                // Add more if needed
+            ]);
 
-        if ($user && $user->password === $password) {
-            // Login successful, set success message in session
-            return redirect()->route('dashboard')->with('success', 'Login successful!');
+            return redirect()->route('dashboard');
         }
 
-        // Login failed
-        return redirect()->back()->withErrors(['login_failed' => 'Invalid username or password.']);
+        return back()->withErrors(['login_failed' => 'Invalid credentials.'])->withInput();
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        // This clears *all* session data
+        $request->session()->invalidate();
+
+        // Regenerates CSRF token
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->with('success', 'Logged out successfully.');
     }
 }

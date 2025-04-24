@@ -35,11 +35,9 @@ use App\Http\Controllers\TwilioController;
 |
 */
 
-Route::resource('permission', App\Http\Controllers\PermissionController::class);
 Route::get('/', function () {
     return view('landingPage');
 })->name('landing');
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -47,21 +45,28 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Login Routes
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login'); // Serves the login form
-Route::post('/login', [LoginController::class, 'verifyLogin'])->name('login.verify'); // Verifies credentials
+Route::get('/test-session', function () {
+    // Store something in session
+    session(['test_key' => 'Session is working!']);
 
-// Route::get('/', function () {
-//     return view('category');
-// });
+    return 'Session value set.';
+});
 
-// Route::get('/rawmaterial', function () {
-//     return view('rawMaterial');
-// })->name('rawMaterial');
+Route::get('/check-session', function () {
+    // Retrieve the value
+    return session('test_key', 'Session not found.');
+});
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->name('dashboard');
+Route::get('/show-session', function () {
+    return session()->all(); // Dumps the entire session array
+});
+
+
+
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'verifyLogin'])->name('login.verify');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/addcategory', [CategoryItemController::class, 'create'])->name('category.create');
 Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('categoryitem.store');
