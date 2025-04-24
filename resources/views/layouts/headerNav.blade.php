@@ -177,16 +177,22 @@
                 </li><!-- End Notification Nav -->
 
                 <li>
-                    <a class="nav-link nav-icon" href="login.html" ">
+                    <a class="nav-link nav-icon" href="login.html">
                                 <i class=" bi bi-person"></i>
                     </a>
                 </li>
 
-                <li>
-                    <a class="nav-link nav-icon" href="{{ 'login' }}" style="color: red;">
-                        <i class="bi bi-box-arrow-right"></i>
-                    </a>
+                <!-- Same wrapper as other icons -->
+                <li class="nav-item pe-3">
+                    <form action="{{ route('logout') }}" method="POST" id="logout-form">
+                        @csrf
+                        <button type="submit" class="nav-link nav-icon btn p-0" style="color: red; background: none; border: none;">
+                            <i class="bi bi-box-arrow-right"></i>
+                        </button>
+                    </form>
                 </li>
+
+
 
             </ul><!-- End Profile Dropdown Items -->
 
@@ -244,60 +250,60 @@
                     </li>
                     {{-- <li>
                         <a href="/products" class="{{ Request::is('products') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
-                            <span>Products</span>
-                        </a>
-                    </li> --}}
-                    {{-- <li>
+                    <span>Products</span>
+                    </a>
+            </li> --}}
+            {{-- <li>
                         <a href="/showcategoryitem" class="{{ Request::is('showcategoryitem') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none">
-                            <span>Category</span>
-                        </a>
-                    </li> --}}
-                </ul>
-            </li><!-- End Masters Nav -->
+            <span>Category</span>
+            </a>
+            </li> --}}
+        </ul>
+        </li><!-- End Masters Nav -->
 
-            <li class="nav-item">
-                <a class="nav-link {{ Request::is('receipedetails') ||  Request::is('addreceipedetails') ||  Request::is('pricing-records') ? '' : 'collapsed'}} " data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); font-size:17px;text-decoration: none;">
-                    {{-- <i class="bi bi-journal-text"></i> --}}
-                    <img src="/assets/img/Recipe.svg" alt="receipe Icon" style="width: 1em; height: auto; margin-right:10px;">
-                    <span>Recipe</span><i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="forms-nav" class="nav-content collapse {{ Request::is('receipedetails') ||  Request::is('addreceipedetails') || Request::routeIs('editrecipedetails.edit') || Request::is('pricing-records') ||  Request::is('pricing') || Request::routeIs('receipepricing.edit') || Request::is('overallcosting') || Request::is('addoverallcosting') || Request::routeIs('overallcosting.edit') ? 'show' :'' }}"
-                    data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="/receipedetails" class="{{ Request::is('receipedetails') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
-                            <span>Details & Description</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/pricing-records" class="{{Request::is('pricing-records') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
-                            <span>Pricing</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/overallcosting" class="{{Request::is('overallcosting') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
-                            <span>Overall Costing</span>
-                        </a>
-                    </li>
-                </ul>
-            </li><!-- End Recipe Nav -->
+        <li class="nav-item">
+            <a class="nav-link {{ Request::is('receipedetails') ||  Request::is('addreceipedetails') ||  Request::is('pricing-records') ? '' : 'collapsed'}} " data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); font-size:17px;text-decoration: none;">
+                {{-- <i class="bi bi-journal-text"></i> --}}
+                <img src="/assets/img/Recipe.svg" alt="receipe Icon" style="width: 1em; height: auto; margin-right:10px;">
+                <span>Recipe</span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="forms-nav" class="nav-content collapse {{ Request::is('receipedetails') ||  Request::is('addreceipedetails') || Request::routeIs('editrecipedetails.edit') || Request::is('pricing-records') ||  Request::is('pricing') || Request::routeIs('receipepricing.edit') || Request::is('overallcosting') || Request::is('addoverallcosting') || Request::routeIs('overallcosting.edit') ? 'show' :'' }}"
+                data-bs-parent="#sidebar-nav">
+                <li>
+                    <a href="/receipedetails" class="{{ Request::is('receipedetails') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                        <span>Details & Description</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/pricing-records" class="{{Request::is('pricing-records') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                        <span>Pricing</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/overallcosting" class="{{Request::is('overallcosting') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                        <span>Overall Costing</span>
+                    </a>
+                </li>
+            </ul>
+        </li><!-- End Recipe Nav -->
 
-            <li class="nav-item">
-                <a class="nav-link" href="/recipepricing" style="background-color: rgb(186, 234, 249); font-size:17px;">
-                    {{-- <i class="bi bi-grid"></i> --}}
-                    <img src="/assets/img/Recipepricing.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 8px;">
-                    <span>Recipe Pricing</span>
-                </a>
-            </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/recipepricing" style="background-color: rgb(186, 234, 249); font-size:17px;">
+                {{-- <i class="bi bi-grid"></i> --}}
+                <img src="/assets/img/Recipepricing.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 8px;">
+                <span>Recipe Pricing</span>
+            </a>
+        </li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="/report" style="background-color: rgb(186, 234, 249); font-size:17px;">
-                    {{-- <i class="bi bi-grid"></i> --}}
-                    <img src="/assets/img/Report.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 9px;">
-                    <span>Report</span>
-                </a>
-            </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/report" style="background-color: rgb(186, 234, 249); font-size:17px;">
+                {{-- <i class="bi bi-grid"></i> --}}
+                <img src="/assets/img/Report.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 9px;">
+                <span>Report</span>
+            </a>
+        </li>
 
-            <!-- <li class="nav-item">
+        <!-- <li class="nav-item">
                 <a class="nav-link" href="/permission" style="background-color: rgb(186, 234, 249); font-size:17px;">
                     {{-- <i class="bi bi-grid"></i> --}}
                     <img src="/assets/img/dashboard_pic.svg" alt="dashboard Icon" style="width: 1.2em; height: auto; margin-right: 4px;">
