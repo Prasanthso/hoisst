@@ -173,7 +173,8 @@
                         <form id="check-form" class="d-flex align-items-center">
                             <label for="material_name" class="form-label mb-0 me-2">Rawmaterial name:</label>
                             <input type="text" id="material_name" class="form-control me-2" name="material_name" placeholder="Enter raw material name" required>
-                            <button class="btn btn-primary" type="submit">Check</button>
+                            <button class="btn btn-primary me-2" type="submit">Check</button>
+                            {{-- <button class="btn btn-primary" type="btnClear">Clear</button> --}}
                         </form>
                           <!-- High Cost Ingredients Alerts -->
                         <div id="alert-container">
@@ -269,36 +270,42 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-   $('#check-form').on('submit', function(e) {
-    e.preventDefault();
+        $('#check-form').on('submit', function(e) {
+            e.preventDefault();
 
-    let materialName = $('#material_name').val();
+            let materialName = $('#material_name').val();
 
-    $.ajax({
-        url: '{{ route("dashboard") }}',
-        type: 'GET',
-        data: { material_name: materialName },
-        success: function(response) {
-            // Update the content based on the response
-            if (response.highcostingredients.length > 0) {
-                let alertHtml = '<div class="alert alert-danger"><h5>🚨 High Cost Ingredient</h5>';
-                response.highcostingredients.forEach(function(alert) {
-                    alertHtml += `<p><strong>${alert.item}</strong> - ${alert.description}</p>`;
-                });
-                alertHtml += '</div>';
-                $('#alert-container').html(alertHtml);
-            } else {
-                $('#alert-container').html('<div class="alert alert-info mt-2" id="result">No high cost alert for this material.</div>');
-            }
+            $.ajax({
+                url: '{{ route("dashboard") }}',
+                type: 'GET',
+                data: { material_name: materialName },
+                success: function(response) {
+                    // Update the content based on the response
+                    if (response.highcostingredients.length > 0) {
+                        let alertHtml = '<div class="alert alert-danger"><h5>🚨 High Cost Ingredient</h5>';
+                        response.highcostingredients.forEach(function(alert) {
+                            alertHtml += `<p><strong>${alert.item}</strong> - ${alert.description}</p>`;
+                        });
+                        alertHtml += '</div>';
+                        $('#alert-container').html(alertHtml);
+                    } else {
+                        $('#alert-container').html('<div class="alert alert-info mt-2" id="result">No high cost alert for this material.</div>');
+                    }
 
-            // Handle other alerts (if needed)
-            // Example: Low Margin Alerts, High Margin Alerts, etc.
-        },
-        error: function() {
-            $('#alert-container').html('<div class="alert alert-danger">Something went wrong. Please try again.</div>');
-        }
-    });
-});
+                    // Handle other alerts (if needed)
+                    // Example: Low Margin Alerts, High Margin Alerts, etc.
+                },
+                error: function() {
+                    $('#alert-container').html('<div class="alert alert-danger">Something went wrong. Please try again.</div>');
+                }
+            });
+        });
+
+        $('#btnClear').on('click', function () {
+            $('#material_name').val('');              // Clear input
+            $('#alert-container').html('');           // Clear alert messages
+        });
+
 
     document.addEventListener('DOMContentLoaded', function () {
         barchart();

@@ -264,30 +264,34 @@ class DashboardController extends Controller
     public function highCostIngredients(Request $request)
     {
         $inputName = strtolower(trim($request->input('material_name')));
+        $materialNames = array_map('strtolower', array_map('trim', explode(',', $inputName)));
         $highCostAlerts = [];
 
+        foreach ($materialNames as $name) {
+            $name = trim($name);
             $material = DB::table('raw_materials')
-            ->whereRaw('LOWER(name) = ?', [$inputName])
-            ->where('status', 'active')
-            ->first();
+                ->whereRaw('LOWER(name) = ?', [$name])
+                ->where('status', 'active')
+                ->first();
 
-        if ($material) {
-            $currentPrice = $material->price;
-            $threshold = $material->price_threshold;
+            if ($material) {
+                $currentPrice = $material->price;
+                $threshold = $material->price_threshold;
 
-            if ($currentPrice > $threshold) {
-                $description = $currentPrice > $threshold
-                ? "Current cost ₹$currentPrice is above threshold ₹$threshold"
-                : "Current cost ₹$currentPrice is within safe range";
+                if ($currentPrice > $threshold) {
+                    $description = $currentPrice > $threshold
+                    ? "Current cost ₹$currentPrice is above threshold ₹$threshold"
+                    : "Current cost ₹$currentPrice is within safe range";
 
-            $highCostAlerts[] = [
-                'item' => $material->name,
-                'flag_type' => 'Red Flag 1: High Cost Ingredient',
-                'description' => $description,
-                'alert_type' => $currentPrice > $threshold ? 'danger' : 'success',
-                'increase_percent' => null
-            ];
+                $highCostAlerts[] = [
+                    'item' => $material->name,
+                    'flag_type' => 'Red Flag 1: High Cost Ingredient',
+                    'description' => $description,
+                    'alert_type' => $currentPrice > $threshold ? 'danger' : 'success',
+                    'increase_percent' => null
+                ];
 
+                }
             }
         }
         return $highCostAlerts;

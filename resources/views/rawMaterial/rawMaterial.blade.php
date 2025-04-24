@@ -141,17 +141,19 @@
                     </table>
                     <!-- Pagination Links -->
                     <div class="d-flex justify-content-between align-items-center">
-                        <div>
+                        <div id="showingEntries">
                             <!-- Content like "Showing 1 to 10 of 50 entries" -->
                             Showing {{ $rawMaterials->firstItem() }} to {{ $rawMaterials->lastItem() }} of {{ $rawMaterials->total() }} entries
                             <input type="hidden" id="currentPage" value="{{ $rawMaterials->currentPage() }}">
                             <input type="hidden" id="perPage" value="{{ $rawMaterials->perPage() }}">
                         </div>
-                        <div>
+                        <div  id="paginationWrapper">
+                            @if ($rawMaterials->total() > $rawMaterials->perPage())
+                                {{-- {{ $rawMaterials->links() }} --}}
+                                {{ $rawMaterials->links('pagination::bootstrap-5') }}
+                            @endif
                             <!-- Pagination Links -->
-                            {{ $rawMaterials->links('pagination::bootstrap-5') }}
                             {{-- {{ $rawMaterials->appends(['category_ids' => implode(',', request()->input('category_ids', []))])->links('pagination::bootstrap-5') }} --}}
-
                         </div>
                     </div>
                     <!-- End Bordered Table -->
@@ -714,37 +716,50 @@
                             return response.json();
                         })
                         .then(data => {
-                            // Clear existing table content
-                            rawMaterialTable.innerHTML = '';
-                            console.log('Fetched Data:', data.rawMaterials);
-                            // Populate the table with new data
-                            data.rawMaterials.forEach((item, index) => {
-                                rawMaterialTable.innerHTML += `
-                        <tr data-id="${item.id}">
-                            <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
-                            <td>${index + 1}.</td>
-                            <td class="left-align"><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
-                            <td>${item.rmcode}</td>
-                             <td>
-                                ${item.category_name1 ?? ''}
-                                ${item.category_name2 ? ', ' + item.category_name2 : ''}
-                                ${item.category_name3 ? ', ' + item.category_name3 : ''}
-                                ${item.category_name4 ? ', ' + item.category_name4 : ''}
-                                ${item.category_name5 ? ', ' + item.category_name5 : ''}
-                                ${item.category_name6 ? ', ' + item.category_name6 : ''}
-                                ${item.category_name7 ? ', ' + item.category_name7 : ''}
-                                ${item.category_name8 ? ', ' + item.category_name8 : ''}
-                                ${item.category_name9 ? ', ' + item.category_name9 : ''}
-                                ${item.category_name10 ? ', ' + item.category_name10 : ''}
-                            </td> <!-- Categories -->
-                            <td>
-                                <span class="price-text">${item.price}</span>
-                                <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
-                            </td>
-                            <td>${item.uom}</td>
-                        </tr>
-                    `;
-                            });
+                            filteredData = data.rawMaterials;
+                            currentPage = 1; // reset to page 1 on new filter
+                            renderTablePage(currentPage, filteredData);
+                            renderPagination(filteredData.length);
+                    //         const rawMaterials = data.rawMaterials;
+                    //         const maxPerPage = 10;
+                    //         const paginated = rawMaterials.slice(0, maxPerPage);
+                    //         // Clear existing table content
+                    //         rawMaterialTable.innerHTML = '';
+                    //         console.log('Fetched Data:', data.rawMaterials);
+
+                    //         // Populate the table with new data
+                    //         // data.rawMaterials.forEach((item, index) => {
+                    //     paginated.forEach((item, index) => {
+                    //             rawMaterialTable.innerHTML += `
+                    //     <tr data-id="${item.id}">
+                    //         <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
+                    //         <td>${index + 1}.</td>
+                    //         <td class="left-align"><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                    //         <td>${item.rmcode}</td>
+                    //          <td>
+                    //             ${item.category_name1 ?? ''}
+                    //             ${item.category_name2 ? ', ' + item.category_name2 : ''}
+                    //             ${item.category_name3 ? ', ' + item.category_name3 : ''}
+                    //             ${item.category_name4 ? ', ' + item.category_name4 : ''}
+                    //             ${item.category_name5 ? ', ' + item.category_name5 : ''}
+                    //             ${item.category_name6 ? ', ' + item.category_name6 : ''}
+                    //             ${item.category_name7 ? ', ' + item.category_name7 : ''}
+                    //             ${item.category_name8 ? ', ' + item.category_name8 : ''}
+                    //             ${item.category_name9 ? ', ' + item.category_name9 : ''}
+                    //             ${item.category_name10 ? ', ' + item.category_name10 : ''}
+                    //         </td> <!-- Categories -->
+                    //         <td>
+                    //             <span class="price-text">${item.price}</span>
+                    //             <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
+                    //         </td>
+                    //         <td>${item.uom}</td>
+                    //     </tr>
+                    // `;
+                    //         });
+                    //      // Hide pagination if 10 or fewer
+                    //     document.getElementById('paginationWrapper').style.display =
+                    //         rawMaterials.length <= 10 ? 'none' : '';
+
                         })
                         .catch(error => {
                             console.error('Error:', error);
@@ -755,6 +770,108 @@
                 }
             });
         });
+
+        let filteredData = []; // store the filtered data globally
+        let currentPage = 1;
+        const maxPerPage = 10;
+
+    function renderTablePage(page, data) {
+        const start = (page - 1) * maxPerPage;
+        const end = page * maxPerPage;
+        const sliced = data.slice(start, end);
+        const table = document.getElementById('rawMaterialTable');
+        table.innerHTML = '';
+
+        sliced.forEach((item, index) => {
+            const categories = [
+                item.category_name1, item.category_name2, item.category_name3,
+                item.category_name4, item.category_name5, item.category_name6,
+                item.category_name7, item.category_name8, item.category_name9,
+                item.category_name10
+            ].filter(Boolean).join(', ');
+
+            table.innerHTML += `
+                <tr data-id="${item.id}">
+                    <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
+                    <td>${start + index + 1}.</td>
+                    <td class="left-align"><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                    <td>${item.rmcode}</td>
+                    <td>${categories}</td>
+                    <td>
+                        <span class="price-text">${item.price}</span>
+                        <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
+                    </td>
+                    <td>${item.uom}</td>
+                </tr>
+            `;
+        });
+        const showingDiv = document.getElementById('showingEntries');
+         showingDiv.textContent = `Showing ${start + 1} to ${end} of ${data.length} entries`;
+    }
+
+    function renderPagination(totalItems) {
+        const totalPages = Math.ceil(totalItems / maxPerPage);
+        const wrapper = document.getElementById('paginationWrapper');
+        wrapper.innerHTML = '';
+    // Update showing entries text
+    // const start = (currentPage - 1) * maxPerPage + 1;
+    //     const end = Math.min(currentPage * maxPerPage, totalItems);
+    //     const showingDiv = document.getElementById('showingEntries');
+    //     showingDiv.textContent = `Showing ${start} to ${end} of ${totalItems} entries`;
+
+        if (totalPages <= 1) return;
+    // Previous Button
+    const prevBtn = document.createElement('button');
+        prevBtn.textContent = 'Previous';
+        prevBtn.className = 'btn btn-md border border-primary mx-2';
+        if (currentPage === 1) {
+            prevBtn.disabled = true;
+            prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            prevBtn.onclick = () => {
+                currentPage--;
+                renderTablePage(currentPage, filteredData);
+                renderPagination(totalItems);
+            };
+        }
+        wrapper.appendChild(prevBtn);
+        // Page Buttons
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            // btn.className = 'btn btn-md border border-primary text-primary bg-white mx-2';
+            // Default class
+        btn.className = 'btn btn-md border border-primary mx-1';
+        // Apply styles based on whether it's the current page
+        if (i === currentPage) {
+            btn.classList.add('bg-primary', 'text-white');
+        } else {
+            btn.classList.add('bg-white', 'text-primary');
+        }
+            btn.textContent = i;
+            btn.onclick = () => {
+                currentPage = i;
+
+                renderTablePage(currentPage, filteredData);
+                renderPagination(totalItems);
+            };
+            wrapper.appendChild(btn);
+        }
+        // Next Button
+        const nextBtn = document.createElement('button');
+        nextBtn.textContent = 'Next';
+        nextBtn.className = 'btn btn-md border border-primary mx-2';
+        if (currentPage === totalPages) {
+            nextBtn.disabled = true;
+            nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            nextBtn.onclick = () => {
+                currentPage++;
+                renderTablePage(currentPage, filteredData);
+                renderPagination(totalItems);
+            };
+        }
+        wrapper.appendChild(nextBtn);
+    }
 
         /* For filter Functions*/
         /*
@@ -849,6 +966,7 @@
 
             // Show or hide the category item based on the match
             item.style.display = isVisible ? '' : 'none';
+
         });
     }
 
@@ -910,6 +1028,24 @@
                         </tr>
                     `;
                             });
+
+                            const paginationWrapper = document.getElementById('paginationWrapper');
+                            if (data.rawMaterials.length <= 10) {
+                                paginationWrapper.style.display = 'none';
+
+                            } else {
+                                paginationWrapper.style.display = '';
+                            }
+                            const showingDiv = document.getElementById('showingEntries');
+                            const totalItems = data.rawMaterials.length;
+                            if (totalItems > 0) {
+                                const start = 1;
+                                const end = totalItems;
+                                showingDiv.textContent = `Showing ${start} to ${end} of ${totalItems} entries`;
+                            } else {
+                                showingDiv.textContent = 'No entries found';
+                            }
+
                         })
                         .catch(error => {
                             console.error('Error:', error);
