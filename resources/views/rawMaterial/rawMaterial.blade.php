@@ -147,7 +147,7 @@
                             <input type="hidden" id="currentPage" value="{{ $rawMaterials->currentPage() }}">
                             <input type="hidden" id="perPage" value="{{ $rawMaterials->perPage() }}">
                         </div>
-                        <div  id="paginationWrapper">
+                        <div id="paginationWrapper">
                             @if ($rawMaterials->total() > $rawMaterials->perPage())
                                 {{-- {{ $rawMaterials->links() }} --}}
                                 {{ $rawMaterials->links('pagination::bootstrap-5') }}
@@ -798,10 +798,11 @@
                     <td class="left-align"><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
                     <td>${item.rmcode}</td>
                     <td>${categories}</td>
-                    <td>
+                     <td class="d-flex justify-content-between align-items-center">
                         <span class="price-text">${item.price}</span>
                         <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
-                    </td>
+                        <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
+                     </td>
                     <td>${item.uom}</td>
                 </tr>
             `;
@@ -809,6 +810,24 @@
         const last = Math.min(currentPage * maxPerPage, data.length);
         const showingDiv = document.getElementById('showingEntries');
          showingDiv.textContent = `Showing ${start + 1} to ${last} of ${data.length} entries`;
+          // Attach click event listener to each price column
+          table.querySelectorAll(".price-text").forEach((priceElement) => {
+             const row = priceElement.closest("tr");
+             const materialId = row.getAttribute("data-id");
+
+             priceElement.addEventListener("click", () => {
+                 showPriceModal(materialId);
+             });
+         });
+        // Select all elements with the class 'eye-icon' within the table
+        table.querySelectorAll(".eye-icon").forEach((iconElement) => {
+            const row = iconElement.closest("tr");
+            const materialId = row.getAttribute("data-id");
+
+            iconElement.addEventListener("click", () => {
+                showPriceModal(materialId);
+            });
+        });
     }
 
     function renderPagination(totalItems) {
