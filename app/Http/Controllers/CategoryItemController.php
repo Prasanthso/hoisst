@@ -34,6 +34,7 @@ class CategoryItemController extends Controller
 
             // Fetch items matching the category IDs
             $categoriesitems = CategoryItems::whereIn('categoryId', $categoryIds)
+            ->where('status','active')
             ->orderBy('itemname', 'asc')
             ->get();
         } else {

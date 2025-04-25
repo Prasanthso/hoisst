@@ -894,7 +894,16 @@
                 filterItems();
             }
         });
+        document.getElementById('searchtype').addEventListener('change', function () {
+            const searchTypeselection = this.value;
+            const categoryItems = document.querySelectorAll(".category-item");
+            if (searchTypeselection === 'category') {
+                categoryItems.forEach(item => item.style.display = "block");
 
+            } else if (searchTypeselection === 'items') {
+                categoryItems.forEach(item => item.style.display = "none");
+            }
+        });
         setTimeout(function() {
             const successMessage = document.getElementById('success-message');
             const errorMessage = document.getElementById('error-message');
@@ -1007,7 +1016,21 @@
                     location.reload();
                 }
     }
+    default_searchType();
 });
+
+function default_searchType()
+{
+   const searchType = document.getElementById('searchtype').value;
+            const categoryItems = document.querySelectorAll(".category-item");
+            if (searchType === 'category') {
+                categoryItems.forEach(item => item.style.display = "block");
+
+            } else if (searchType === 'items') {
+
+                categoryItems.forEach(item => item.style.display = "none");
+            }
+}
 
  /*
         function filterOverheads() {

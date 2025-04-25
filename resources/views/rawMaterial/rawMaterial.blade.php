@@ -912,11 +912,24 @@
 
         document.getElementById('categorySearch').addEventListener('keyup', function () {
             const searchType = document.getElementById('searchtype').value;
-
+            // const categoryItems = document.querySelectorAll(".category-item");
             if (searchType === 'category') {
+                // categoryItems.forEach(item => item.style.display = "block");
                 filterCategories();
             } else if (searchType === 'items') {
+                // categoryItems.forEach(item => item.style.display = "none");
                 filterItems();
+            }
+        });
+
+        document.getElementById('searchtype').addEventListener('change', function () {
+            const searchTypeselection = this.value;
+            const categoryItems = document.querySelectorAll(".category-item");
+            if (searchTypeselection === 'category') {
+                categoryItems.forEach(item => item.style.display = "block");
+
+            } else if (searchTypeselection === 'items') {
+                categoryItems.forEach(item => item.style.display = "none");
             }
         });
 
@@ -1053,8 +1066,21 @@
                     location.reload();
                 }
             }
+default_searchType();
 });
 
+function default_searchType()
+{
+   const searchType = document.getElementById('searchtype').value;
+            const categoryItems = document.querySelectorAll(".category-item");
+            if (searchType === 'category') {
+                categoryItems.forEach(item => item.style.display = "block");
+
+            } else if (searchType === 'items') {
+
+                categoryItems.forEach(item => item.style.display = "none");
+            }
+}
  /* For filter Functions*/
         /*
         function filterRawMaterials() {
