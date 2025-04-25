@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Log;
 use App\Mail\PdPriceUpdateMail;
 use App\Models\Product;
 use App\Models\User;
+use App\Models\PdPriceUpdateAlert;
+
 use Carbon\Carbon;
 use App\Http\Controllers\WhatsAppController;
 
@@ -23,7 +25,7 @@ class CheckPdPriceUpdates extends Command
 
         $products = Product::where('status', 'active')->get();
         $now = Carbon::now();
-        $productsToNotify = [];
+        $materialsToNotify = [];
 
         if ($products->isEmpty()) {
             Log::warning("No active products found.");
@@ -94,6 +96,7 @@ class CheckPdPriceUpdates extends Command
             $whatsappController = new WhatsAppController();
 
             foreach ($users as $user) {
+                $channel = 'email';
                 Log::info("Sending email to: {$user->email}");
 
                 try {
@@ -102,26 +105,36 @@ class CheckPdPriceUpdates extends Command
                 } catch (\Exception $e) {
                     Log::error("Failed to send email to {$user->email}: " . $e->getMessage());
                 }
-            }
 
-              // Check if user has WhatsApp notifications enabled
-              if ($user->whatsapp_enabled && $user->whatsapp_number) {
-                Log::info("Sending WhatsApp message to: {$user->whatsapp_number}");
+                if ($user->whatsapp_enabled && $user->whatsapp_number) {
+                    $channel = 'both';
+                    Log::info("Sending WhatsApp message to: {$user->whatsapp_number}");
 
-                try {
-                    $message = "Price Alert\n";
-                    foreach ($materialsToNotify as $material) {
-                        $message .= "Material: {$material['name']} (Code: {$material['pdcode']})\n";
+                    try {
+                        $message = "Price Alert\n";
+                        foreach ($productsToNotify as $product) {
+                            $message .= "Product: {$product['name']} (Code: {$product['pdcode']})\n";
+                        }
+                        $message .= "\nPlease update the prices accordingly.";
+
+                        $whatsappController->sendMessage($user->whatsapp_number, $message, 'whatsapp');
+                        Log::info("WhatsApp message sent successfully to {$user->whatsapp_number}");
+                    } catch (\Exception $e) {
+                        Log::error("Failed to send WhatsApp message to {$user->whatsapp_number}: " . $e->getMessage());
+                        $channel = 'email'; // fallback
                     }
-                    $message .= "\nPlease update the prices accordingly.";
-
-                    $whatsappController->sendMessage($user->whatsapp_number, $message, 'whatsapp');
-                    Log::info("WhatsApp message sent successfully to {$user->whatsapp_number}");
-                } catch (\Exception $e) {
-                    Log::error("Failed to send WhatsApp message to {$user->whatsapp_number}: " . $e->getMessage());
                 }
-            }
 
+                // ✅ Save alert (always)
+                $pdIds = collect($productsToNotify)->pluck('id')->toArray();
+
+                PdPriceUpdateAlert::create([
+                    'user_id' => $user->id,
+                    'product_ids' => $pdIds,
+                    'alerted_at' => now(),
+                    'channel' => $channel,
+                ]);
+            }
         } else {
             Log::info("No price update alerts needed.");
         }

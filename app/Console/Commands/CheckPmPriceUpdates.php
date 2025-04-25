@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Mail\PmPriceUpdateMail;
 use App\Models\PackingMaterial;
+use App\Models\PmPriceUpdateAlert;
 use App\Models\User;
 use Carbon\Carbon;
 use App\Http\Controllers\WhatsAppController;
@@ -105,8 +106,10 @@ class CheckPmPriceUpdates extends Command
                 }
             }
 
+            $channel = 'email';
              // Check if user has WhatsApp notifications enabled
              if ($user->whatsapp_enabled && $user->whatsapp_number) {
+                $channel = 'both';
                 Log::info("Sending WhatsApp message to: {$user->whatsapp_number}");
 
                 try {
@@ -120,8 +123,18 @@ class CheckPmPriceUpdates extends Command
                     Log::info("WhatsApp message sent successfully to {$user->whatsapp_number}");
                 } catch (\Exception $e) {
                     Log::error("Failed to send WhatsApp message to {$user->whatsapp_number}: " . $e->getMessage());
+                    $channel = 'email';
                 }
             }
+
+            $pmIds = collect($materialsToNotify)->pluck('id')->toArray();
+
+            PmPriceUpdateAlert::create([
+                'user_id' => $user->id,
+                'packing_material_ids' => $pmIds,
+                'alerted_at' => now(),
+                'channel' => $channel,
+            ]);
         } else {
             Log::info("No price update alerts needed.");
         }

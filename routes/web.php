@@ -45,18 +45,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/test-session', function () {
-    // Store something in session
-    session(['test_key' => 'Session is working!']);
-
-    return 'Session value set.';
-});
-
-Route::get('/check-session', function () {
-    // Retrieve the value
-    return session('test_key', 'Session not found.');
-});
-
 Route::get('/show-session', function () {
     return session()->all(); // Dumps the entire session array
 });

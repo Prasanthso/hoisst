@@ -18,9 +18,19 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->tinyInteger('whatsapp_enabled')->default(0);
+
             $table->string('whatsapp_number')->nullable();
+            $table->tinyInteger('whatsapp_enabled')->default(0);
+            $table->string('mobile_number');
+            $table->text('user_address')->nullable();
+            $table->unsignedBigInteger('store_id');
+            $table->string('store_location')->nullable();
+            $table->string('user_image')->nullable();
+            $table->string('status')->default('active');
             $table->timestamps();
+
+            // Foreign key constraint if you have a stores table
+            $table->foreign('store_id')->references('id')->on('stores')->onDelete('cascade');
         });
     }
 
