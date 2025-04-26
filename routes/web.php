@@ -19,6 +19,8 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\OverAllCostingController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\NotificationController;
+
 use App\Models\Overhead;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\WhatsAppController;
@@ -225,3 +227,8 @@ Route::post('/permission/store', [PermissionController::class, 'store'])->name('
 Route::get('/editpermission/{id}', [PermissionController::class, 'edit'])->name('Permission.edit');
 Route::put('/editpermission/{id}', [PermissionController::class, 'update'])->name('Permission.update');
 Route::post('/deletepermission', [PermissionController::class, 'delete'])->name('Permission.delete');
+
+Route::get('/productNotification', [NotificationController::class, 'productAlertNotification'])->name('product.notification');
+Route::get('/rawmaterialNotification', [NotificationController::class, 'rawmaterialAlertNotification'])->name('rawmaterial.notification');
+Route::get('/packingmaterialNotification', [NotificationController::class, 'packingmaterialAlertNotification'])->name('packingmaterial.notification');
+Route::get('/lowmarginNotification', [NotificationController::class, 'lowMarginAlert'])->name('lowmargin.notification');

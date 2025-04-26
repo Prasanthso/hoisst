@@ -362,6 +362,7 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
 
+            $lowMarginProducts = collect($lowMarginProducts);
             $view->with('lowMarginProducts', $lowMarginProducts);
 
             $productPriceThresholdCollection = collect($productPriceThreshold);
