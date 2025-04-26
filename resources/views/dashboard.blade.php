@@ -208,7 +208,6 @@
                             <h5>🚨 High Margin Products</h5>
                             @foreach($alerts['highMarginAlerts'] as $highalert)
                                 <p><strong>{{ $highalert['item'] }}</strong> - {{ $highalert['description'] }}</p>
-
                             @endforeach
                         </div>
                     @else

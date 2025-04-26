@@ -1075,8 +1075,8 @@
         } else {
             location.reload();
         }
-        default_searchType();
     }
+    default_searchType();
 });
 
 function default_searchType()
