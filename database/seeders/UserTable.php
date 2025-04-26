@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Support\Facades\Hash;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Seeder;
 
@@ -12,8 +14,12 @@ class UserTable extends Seeder
      */
     public function run(): void
     {
-        DB::table('login')->insert([
-            ['username' => 'Rms', 'password' => 'Rms@1234'],
-        ]);
+        DB::table('users')->insert(
+            [
+                'name' => 'Admin',
+                'email' => 'admin@example.com',
+                'password' => Hash::make('Rms@1234'),
+            ],
+    );
     }
 }

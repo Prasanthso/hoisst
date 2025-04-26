@@ -18,6 +18,7 @@ use App\Http\Controllers\OhForRecipeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\OverAllCostingController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\ProfileController;
 use App\Models\Overhead;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\WhatsAppController;
@@ -34,26 +35,26 @@ use App\Http\Controllers\TwilioController;
 |
 */
 
-Route::resource('permission', App\Http\Controllers\PermissionController::class);
 Route::get('/', function () {
     return view('landingPage');
 })->name('landing');
 
-// Login Routes
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login'); // Serves the login form
-Route::post('/login', [LoginController::class, 'verifyLogin'])->name('login.verify'); // Verifies credentials
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
-// Route::get('/', function () {
-//     return view('category');
-// });
+Route::get('/show-session', function () {
+    return session()->all(); // Dumps the entire session array
+});
 
-// Route::get('/rawmaterial', function () {
-//     return view('rawMaterial');
-// })->name('rawMaterial');
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->name('dashboard');
+
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'verifyLogin'])->name('login.verify');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/addcategory', [CategoryItemController::class, 'create'])->name('category.create');
 Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('categoryitem.store');
@@ -76,6 +77,7 @@ Route::get('/editrawmaterial/{id}', [RawMaterialController::class, 'edit'])->nam
 Route::put('/editrawmaterial/{id}', [RawMaterialController::class, 'update'])->name('rawMaterial.edit');
 Route::post('/deleterawmaterial', [RawMaterialController::class, 'delete'])->name('rawMaterial.delete');
 Route::post('/confirmrawmaterial', [RawMaterialController::class, 'deleteConfirmation'])->name('rawMaterial.confirm');
+Route::get('/rawMaterials/export-all', [RawMaterialController::class, 'exportAll']);
 
 Route::post('/update-material-price/{id}', [RawMaterialController::class, 'updatePrice']);
 
@@ -95,6 +97,7 @@ Route::get('/editpackingmaterial/{id}', [PackingMaterialController::class, 'edit
 Route::put('/editpackingmaterial/{id}', [PackingMaterialController::class, 'update'])->name('packingMaterial.edit');
 Route::post('/deletepackingmaterial', [PackingMaterialController::class, 'delete'])->name('packingMaterial.delete');
 Route::post('/confirmPackingmaterial', [PackingMaterialController::class, 'deleteConfirmation'])->name('packingMaterial.confirm');
+Route::get('/packingMaterials/export-all', [PackingMaterialController::class, 'exportAll']);
 
 Route::post('/update-packing-material-prices', [PackingMaterialController::class, 'updatePrices'])->name('packingMaterial.updatePrices');
 Route::get('/packing-material/price-details/{id}', [PackingMaterialController::class, 'getPmPriceHistory'])->name('packingMaterial.priceHistory');
@@ -111,6 +114,7 @@ Route::get('/editoverheads/{id}', [OverheadController::class, 'edit'])->name('ov
 Route::put('/editoverheads/{id}', [OverheadController::class, 'update'])->name('overheads.edit');
 Route::post('/deleteoverheads', [OverheadController::class, 'delete'])->name('overheads.delete');
 Route::post('/confirmoverheads', [OverheadController::class, 'deleteConfirmation'])->name('overheads.confirm');
+Route::get('/overheads/export-all', [OverheadController::class, 'exportAll']);
 
 Route::post('/update-overheads-prices', [OverheadController::class, 'updatePrices'])->name('overheads.updatePrices');
 Route::get('/overheads/price-details/{id}', [OverheadController::class, 'getOhPriceHistory'])->name('overheads.priceHistory');
@@ -129,6 +133,7 @@ Route::get('/editproduct/{id}', [ProductController::class, 'edit'])->name('produ
 Route::put('/editproduct/{id}', [ProductController::class, 'update'])->name('products.edit');
 Route::post('/deleteproducts', [ProductController::class, 'delete'])->name('product.delete');
 Route::post('/confirmproducts', [ProductController::class, 'deleteConfirmation'])->name('product.confirm');
+Route::get('/products/export-all', [ProductController::class, 'exportAll']);
 
 Route::post('/update-products-prices', [ProductController::class, 'updatePrices'])->name('products.updatePrices');
 Route::get('/products/price-details/{id}', [ProductController::class, 'getPdPriceHistory'])->name('products.priceHistory');

@@ -7,8 +7,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
-use App\Mail\LowMarginAlert;
+use App\Mail\LowMarginAlert as LowMarginAlertMail;
 use App\Models\Report;
+use App\Models\LowMarginAlert;
 use App\Models\User;
 use App\Http\Controllers\WhatsAppController;
 
@@ -118,17 +119,18 @@ ORDER BY
         $lowMarginProducts = [];
 
         foreach ($reports as $report) {
-            $rm_perc = $report->RM_Cost * 100 / $report->S_MRP;
-            $pm_perc = $report->PM_Cost * 100 / $report->S_MRP;
+            $rm_perc = $report->RM_Cost * 100 / $report->P_MRP;
+            $pm_perc = $report->PM_Cost * 100 / $report->P_MRP;
             $total = $report->RM_Cost + $report->PM_Cost;
             $cost = $total + $report->OH_Cost + $report->MOH_Cost;
-            $sellingRate = ($report->S_MRP * 100) / (100 + $report->discount);
+            $sellingRate = ($report->P_MRP * 100) / (100 + $report->discount);
             $beforeTax = ($sellingRate * 100) / (100 + $report->tax);
             $MARGINAMOUNT = $beforeTax - $cost;
             $marginPerc = ($MARGINAMOUNT / $beforeTax) * 100;
 
             if ($marginPerc < $report->margin) {
                 $lowMarginProducts[] = [
+                    'id' => $report->SNO, // or use $report->id if your alias is different
                     'name' => $report->Product_Name,
                     'margin' => round($marginPerc, 2),
                     'threshold' => $report->margin,
@@ -140,27 +142,40 @@ ORDER BY
             $users = User::all();
 
             foreach ($users as $user) {
-                try {
-                    Mail::to($user->email)->send(new LowMarginAlert($lowMarginProducts));
-                    Log::info("Low margin email sent to {$user->email}");
-                } catch (\Exception $e) {
-                    Log::error("Error sending low margin email to {$user->email}: " . $e->getMessage());
-                }
-
-                if ($user->whatsapp_enabled && $user->whatsapp_number) {
-                    $message = "⚠️ Low Margin Alert:\n";
-                    foreach ($lowMarginProducts as $p) {
-                        $message .= "{$p['name']}: Margin {$p['margin']}% (Threshold: {$p['threshold']}%)\n";
-                    }
-                    $message .= "\nPlease review product pricing.";
-
+                foreach ($lowMarginProducts as $product) {
+                    // Email
                     try {
-                        $whatsappController->sendMessage($user->whatsapp_number, $message, 'whatsapp');
-                        Log::info("WhatsApp message sent to {$user->whatsapp_number}");
+                        Mail::to($user->email)->send(new LowMarginAlertMail([$product]));
+                        Log::info("Low margin email sent to {$user->email}");
                     } catch (\Exception $e) {
-                        Log::error("Error sending WhatsApp to {$user->whatsapp_number}: " . $e->getMessage());
+                        Log::error("Error sending email to {$user->email}: " . $e->getMessage());
                     }
+
+                    // WhatsApp
+                    $channel = 'email';
+                    if ($user->whatsapp_enabled && $user->whatsapp_number) {
+                        $msg = "⚠️ Low Margin Alert:\n{$product['name']}: Margin {$product['margin']}% (Threshold: {$product['threshold']}%)\n\nPlease review pricing.";
+                        try {
+                            $whatsappController->sendMessage($user->whatsapp_number, $msg, 'whatsapp');
+                            Log::info("WhatsApp message sent to {$user->whatsapp_number}");
+                            $channel = 'both';
+                        } catch (\Exception $e) {
+                            Log::error("Error sending WhatsApp to {$user->whatsapp_number}: " . $e->getMessage());
+                            $channel = 'email';
+                        }
+                    }
+
+                    // Save alert history
+                    LowMarginAlert::create([
+                        'product_id' => $product['id'],
+                        'user_id' => $user->id,
+                        'calculated_margin' => $product['margin'],
+                        'threshold_margin' => $product['threshold'],
+                        'alerted_at' => now(),
+                        'channel' => $channel,
+                    ]);
                 }
+            
             }
         }
 

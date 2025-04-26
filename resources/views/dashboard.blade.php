@@ -3,11 +3,11 @@
 @section('content') <!-- Defining the 'content' section -->
 <main id="main" class="main">
 
-<style>
-    body {
-        background-color: #ffffff !important;
-    }
-</style>
+    <style>
+        body {
+            background-color: #ffffff !important;
+        }
+    </style>
 
     <div class="pagetitle">
         <h1> DASHBOARD </h1>
@@ -96,7 +96,6 @@
                                 <span class="text-muted small pt-2 ps-1"><b>Products margin (Low & High)</b></span>
                             </div>
 
-                        </div>
                     </div>
                 </div>
             </div>
@@ -108,12 +107,12 @@
             <h5>Do you want to integrate WhatsApp API?</h5>
 
             <button class="btn btn-success me-2" onclick="window.location.href='{{ route('twilio.keys') }}'">Yes</button>
-            <button class="btn btn-danger" onclick="alert('Thanks for information.')">No</button>
+        <button class="btn btn-danger" onclick="alert('Thanks for information.')">No</button>
         </div> --}}
         {{-- <div class="container mt-4">
             <h5>Do you want to activate WhatsApp messages?</h5>
             <button class="btn btn-success me-2" onclick="window.location.href='{{ route('whatsapp') }}'">Yes</button>
-            <button class="btn btn-danger" onclick="alert('WhatsApp mgs is not sent')">No</button>
+        <button class="btn btn-danger" onclick="alert('WhatsApp mgs is not sent')">No</button>
         </div> --}}
 
     {{-- <button class="btn btn-outline-primary whatsapp-btn" onclick="window.location.href='{{ route('whatsapp') }}'">whatsapp</button> --}}
@@ -306,7 +305,6 @@
             $('#alert-container').html('');           // Clear alert messages
         });
 
-
     document.addEventListener('DOMContentLoaded', function () {
         barchart();
         costtrendLineChart();
@@ -414,6 +412,7 @@
                 tension: 0.3
             });
         });
+
 
         new Chart(document.getElementById('costTrendChart'), {
             type: 'line',

@@ -23,6 +23,7 @@ class ReportController extends Controller
     pm.margin AS margin,
     oc.suggested_mrp AS S_MRP,
     oc.discount AS discount,
+    oc.margin_amt As margin_amt,
 
     -- Get Raw Material IDs
     rm_total.RM_IDs,

@@ -9,7 +9,7 @@
             <a href="{{ 'addpackingmaterial' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
                 <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
             </a>
-            <a href="{{ url('/packingMaterial-excel') }}" download class="btn"  data-bs-toggle="tooltip" title="Download packingMaterial excel File">
+            <a href="{{ url('/packingMaterial-excel') }}" download class="btn" data-bs-toggle="tooltip" title="Download packingMaterial excel File">
                 <i class="bi bi-download fs-4"></i>
             </a>
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#importModal">
@@ -54,8 +54,7 @@
                                         id="categorySearch"
                                         class="form-control mb-3"
                                         placeholder="Search ..."
-                                        {{-- onkeyup="filterCategories()" --}}
-                                         />
+                                        {{-- onkeyup="filterCategories()" --}} />
                                 </div>
                                 @foreach($categoryitems as $category)
                                 <div class="form-check category-item">
@@ -161,7 +160,7 @@
         </div>
     </section>
 
-  <!-- Modal -->
+    <!-- Modal -->
     <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -237,96 +236,152 @@
         let isEditing = false; // Track if edit mode is active
 
         document.getElementById('exportBtn').addEventListener('click', function() {
-            const table = document.getElementById('exportRm'); // Ensure this ID exists in your table
-            if (!table) {
-                console.error('Table with ID "exportRm" not found.');
-                return;
-            }
-            console.log('Table with ID "exportRm" not found.');
+            const table = document.getElementById('packingMaterialTable');
+            const rows = table.querySelectorAll('tr');
+            let exportData = [];
+            const header = ["S. NO.", "Packing Materials", "PM Code", "Packing Materials Category", "Price(Rs)", "UoM"];
+            exportData.push(header);
 
-            const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
-            const visibleData = [];
-            let serialNumber = 1; // Initialize serial number
+            let visibleData = [];
 
-            // Iterate through each row
-            rows.forEach((row, rowIndex) => {
-                if (row.style.display !== 'none') { // Only include visible rows
-                    const cells = Array.from(row.children);
-                    const rowData = [];
+            let serial = 1;
 
-                    if (rowIndex > 0) {
-                        rowData.push(serialNumber++); // Auto-increment serial number
-                    } else {
-                        rowData.push("S.NO"); // Add "S.NO" to the header row
+            rows.forEach(row => {
+                const style = window.getComputedStyle(row);
+                if (style.display !== 'none') {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 6) {
+                        visibleData.push([
+                            serial++, // S.NO
+                            cells[2].innerText.trim(), // Name
+                            cells[3].innerText.trim(), // RM Code
+                            cells[4].innerText.trim(), // Categories (already joined in UI)
+                            cells[5].querySelector('.price-text')?.innerText.trim() ?? '', // Price
+                            cells[6].innerText.trim() // UoM
+                        ]);
                     }
-
-                    cells.forEach((cell, index) => {
-                        if (index !== 0) { // Skip checkboxes column
-                            rowData.push(cell.innerText.trim());
-                        }
-                    });
-
-                    visibleData.push(rowData);
                 }
             });
 
-            // Convert data to workbook
-            const ws = XLSX.utils.aoa_to_sheet(visibleData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Raw Material Report');
+            if (visibleData.length < 10) {
+                // Export filtered data
+                exportData = exportData.concat(visibleData);
+                const ws = XLSX.utils.aoa_to_sheet(exportData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'packingMaterials');
+                XLSX.writeFile(wb, 'packingMaterials_filtered.xlsx');
+            } else {
+                // Export all from backend
+                fetch('/packingMaterials/export-all')
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach((item, index) => {
+                            exportData.push([
+                                index + 1,
+                                item.name,
+                                item.pmcode,
+                                item.categories, // Comes as comma-separated string
+                                item.price,
+                                item.uom
+                            ]);
+                        });
 
-            // Export as an Excel file
-            XLSX.writeFile(wb, 'packing_material_list.xlsx');
+                        const ws = XLSX.utils.aoa_to_sheet(exportData);
+                        const wb = XLSX.utils.book_new();
+                        XLSX.utils.book_append_sheet(wb, ws, 'packingMaterials');
+                        XLSX.writeFile(wb, 'packingMaterials_all.xlsx');
+                    })
+                    .catch(error => {
+                        console.error('Export error:', error);
+                        alert('Failed to export all data.');
+                    });
+            }
         });
 
-        // PDF Export Function
         document.getElementById('exportPdfBtn').addEventListener('click', function() {
+            const table = document.getElementById('packingMaterialTable');
+            const rows = table.querySelectorAll('tr');
+
+            const summaryText = document.querySelector('.d-flex')?.innerText || '';
+            const totalMatch = summaryText.match(/of\s+(\d+)\s+entries/i);
+            const totalEntries = totalMatch ? parseInt(totalMatch[1]) : 0;
+
+            // Add S. No. to header
+            const header = ["S. No.", "Packing Materials", "PM Code", "Packing Materials Category", "Price(Rs)", "UoM"];
+            let visibleData = [];
+
+            // Get visible rows from DOM table
+            let count = 1;
+            rows.forEach(row => {
+                const style = window.getComputedStyle(row);
+                if (style.display !== 'none') {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 6) {
+                        visibleData.push([
+                            count++, // S. No.
+                            cells[2]?.innerText.trim() || '',
+                            cells[3]?.innerText.trim() || '',
+                            cells[4]?.innerText.trim() || '',
+                            cells[5]?.querySelector('.price-text')?.innerText.trim() || '',
+                            cells[6]?.innerText.trim() || ''
+                        ]);
+                    }
+                }
+            });
+
+            if (visibleData.length < 10) {
+                console.log("Exporting visible data:", visibleData);
+                generatePdf(header, visibleData, 'packingMaterials_filtered.pdf');
+            } else {
+                // Fetch all data from backend
+                fetch('/packingMaterials/export-all')
+                    .then(response => {
+                        if (!response.ok) throw new Error('Fetch failed');
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Fetched full data:", data);
+
+                        const allData = data.map((item, index) => [
+                            index + 1, // S. No.
+                            item.name || '',
+                            item.pmcode || '',
+                            item.categories || '',
+                            item.price || '',
+                            item.uom || ''
+                        ]);
+
+                        console.log("Final data to export:", allData);
+                        generatePdf(header, allData, 'packingMaterials_all.pdf');
+                    })
+                    .catch(error => {
+                        console.error('PDF Export Error:', error);
+                        alert('Failed to export PDF.');
+                    });
+            }
+        });
+
+        function generatePdf(header, data, filename) {
             const {
                 jsPDF
             } = window.jspdf;
             const doc = new jsPDF();
 
-            const table = document.getElementById('exportRm');
-            if (!table) {
-                console.error('Table with ID "exportRm" not found.');
-                return;
-            }
-
-            const rows = Array.from(table.querySelectorAll('tr'));
-            const tableData = [];
-            let serialNumber = 1;
-
-            rows.forEach((row, rowIndex) => {
-                if (row.style.display !== 'none') {
-                    const cells = Array.from(row.children);
-                    const rowData = [];
-
-                    if (rowIndex > 0) {
-                        rowData.push(serialNumber++);
-                    } else {
-                        rowData.push("S.NO");
-                    }
-
-                    cells.forEach((cell, index) => {
-                        if (index !== 0) { // Skip checkboxes column
-                            rowData.push(cell.innerText.trim());
-                        }
-                    });
-
-                    tableData.push(rowData);
+            doc.autoTable({
+                head: [header],
+                body: data,
+                startY: 20,
+                styles: {
+                    fontSize: 10
+                },
+                headStyles: {
+                    fillColor: [0, 123, 255]
                 }
             });
 
-            // Add Table to PDF
-            doc.autoTable({
-                head: [tableData[0]], // Header row
-                body: tableData.slice(1), // Table content
-                startY: 20,
-                theme: 'striped',
-            });
+            doc.save(filename);
+        }
 
-            doc.save('packing_material_list.pdf');
-        });
 
         // Function to get all row checkboxes dynamically
         const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
@@ -623,38 +678,38 @@
                 .then(data => {
                     if (data.success) {
                         if (data.confirm) {
-                        // If confirmation is required, show a confirmation dialog
-                        if (confirm("Are you want to delete this item of packing material. Do you want to proceed?")) {
-                            // Make a second request to actually delete (mark inactive)
-                            fetch('/confirmPackingmaterial', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    "X-CSRF-TOKEN": token
-                                },
-                                body: JSON.stringify({ ids: selectedIds }) // Send the selected IDs again
-                            })
-                            .then(response => response.json())
-                            .then(confirmData  => {
-                                if (confirmData.success) {
-                                    selectedRows.forEach(checkbox => {
-                                        const row = checkbox.closest("tr");
-                                        row.remove();
+                            // If confirmation is required, show a confirmation dialog
+                            if (confirm("Are you want to delete this item of packing material. Do you want to proceed?")) {
+                                // Make a second request to actually delete (mark inactive)
+                                fetch('/confirmPackingmaterial', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            "X-CSRF-TOKEN": token
+                                        },
+                                        body: JSON.stringify({
+                                            ids: selectedIds
+                                        }) // Send the selected IDs again
+                                    })
+                                    .then(response => response.json())
+                                    .then(confirmData => {
+                                        if (confirmData.success) {
+                                            selectedRows.forEach(checkbox => {
+                                                const row = checkbox.closest("tr");
+                                                row.remove();
+                                            });
+                                            updateSerialNumbers();
+                                            alert("Selected rows deleted successfully!");
+                                            window.location.reload();
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error("Error confirming deletion:", error);
+                                        alert("An error occurred. Please try again.");
                                     });
-                                    updateSerialNumbers();
-                                    alert("Selected rows deleted successfully!");
-                                    window.location.reload();
-                                }
-                            })
-                            .catch(error => {
-                                console.error("Error confirming deletion:", error);
-                                alert("An error occurred. Please try again.");
-                            });
+                            }
                         }
-                    }
-                }
-                else
-                    {
+                    } else {
                         alert("No packing materials item can be deleted. They might be in use.");
                     }
                 })
@@ -674,8 +729,8 @@
             });
         });
 
-         // Select all elements with the class 'eye-icon' within the table
-         table.querySelectorAll(".eye-icon").forEach((iconElement) => {
+        // Select all elements with the class 'eye-icon' within the table
+        table.querySelectorAll(".eye-icon").forEach((iconElement) => {
             const row = iconElement.closest("tr");
             const materialId = row.getAttribute("data-id");
 
@@ -887,12 +942,12 @@
             visibleRows.forEach((row, index) => {
                 const snoCell = row.querySelector("td:nth-child(2)"); // Adjust the column index for S.NO
                 if (snoCell) {
-                    snoCell.textContent =  ((currentPage - 1) * perPage + index + 1) + ".";  // `${index + 1}.`; // Update the serial number
+                    snoCell.textContent = ((currentPage - 1) * perPage + index + 1) + "."; // `${index + 1}.`; // Update the serial number
                 }
             });
         }
 
-        document.getElementById('categorySearch').addEventListener('keyup', function () {
+        document.getElementById('categorySearch').addEventListener('keyup', function() {
             const searchType = document.getElementById('searchtype').value;
             if (searchType === 'category') {
                 filterCategories();
@@ -916,8 +971,7 @@
             const errorMessage = document.getElementById('error-message');
             if (successMessage) {
                 successMessage.style.display = 'none';
-            }
-            else if(errorMessage){
+            } else if (errorMessage) {
                 errorMessage.style.display = 'none';
             }
         }, 3000);
@@ -954,14 +1008,13 @@
         let table = document.getElementById('packingMaterialTable');
         let rows = table.getElementsByTagName('tr');
 
-            if (searchText.length > 0) {
-                    const queryParams = new URLSearchParams({
-                        pmText: searchText,
-                    });
-                    console.log(queryParams.toString());
-                    // Construct the URL dynamically based on selected categories
-                    const url = `/packingmaterial?${queryParams.toString()}`;
-
+        if (searchText.length > 0) {
+            const queryParams = new URLSearchParams({
+                pmText: searchText,
+            });
+            console.log(queryParams.toString());
+            // Construct the URL dynamically based on selected categories
+            const url = `/packingmaterial?${queryParams.toString()}`;
                     // Fetch updated data from server
                     fetch(url, {
                             method: 'GET',
@@ -1013,14 +1066,13 @@
                     // `;
                     //         });
 
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('An error occurred while fetching packingMaterials.');
-                        });
-                } else {
-                    location.reload();
-                }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while fetching packingMaterials.');
+                });
+        } else {
+            location.reload();
         }
         default_searchType();
 });
