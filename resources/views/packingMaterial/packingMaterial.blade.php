@@ -852,6 +852,7 @@
         });
         const last = Math.min(currentPage * maxPerPage, data.length);
         const showingDiv = document.getElementById('showingEntries');
+
          showingDiv.textContent = `Showing ${start + 1} to ${last} of ${data.length} entries`;
          // Attach click event listener to each price column
          table.querySelectorAll(".price-text").forEach((priceElement) => {
@@ -1075,6 +1076,7 @@
             location.reload();
         }
         default_searchType();
+    }
 });
 
 function default_searchType()
@@ -1083,9 +1085,7 @@ function default_searchType()
             const categoryItems = document.querySelectorAll(".category-item");
             if (searchType === 'category') {
                 categoryItems.forEach(item => item.style.display = "block");
-
             } else if (searchType === 'items') {
-
                 categoryItems.forEach(item => item.style.display = "none");
             }
 }
