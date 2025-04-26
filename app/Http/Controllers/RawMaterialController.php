@@ -567,7 +567,7 @@ class RawMaterialController extends Controller
             $existingRawmaterial = RawMaterial::whereRaw("
                 REPLACE(LOWER(TRIM(name)), ' ', '') = ?
             ", [$normalizedName])
-            ->where('hsncode', $row[3])
+            // ->where('hsncode', $row[3])
             ->first();
         // $existingRawmaterial = RawMaterial::whereRaw("
         //     REPLACE(LOWER(TRIM(name)), ' ', '') = ?
@@ -597,6 +597,7 @@ class RawMaterialController extends Controller
             $thershold = trim($row[19] ?? '');
             $itemType = trim($row[20] ?? '');
             $categoryIds['id1'] = trim($row[5] ?? '');
+
             /*
             for ($i = 1; $i <= 10; $i++) {
                 $itemNameRaw = $row[$i + 4] ?? null;
@@ -643,7 +644,7 @@ class RawMaterialController extends Controller
             if (
                 empty($name) ||
                 empty($uom) ||
-                empty($hsncode) ||
+                (empty($hsncode) || strlen($hsncode) > 8) ||
                 empty($itemwgt) ||
                 empty($price) ||
                 empty($ptax) ||

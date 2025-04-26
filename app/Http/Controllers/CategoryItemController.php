@@ -347,7 +347,12 @@ class CategoryItemController extends Controller
           foreach ($rows as $index => $row) {
               if ($index == 0) continue; // Skip the header row
             //   $categoryIds = [];
+            $itemname = trim($row[2] ?? '');
 
+            if( empty($itemname)) {
+                $skippedRows[] = "Row ".($index + 1)." skipped: missing required field (itemname).";
+                continue;
+            }
             //   for ($i = 1; $i <= 10; $i++) {
                   $categoryId = !empty($row[1]) // Adjusting index to match $row[3] for category_id1
                       ? DB::table('categories')
@@ -385,6 +390,11 @@ class CategoryItemController extends Controller
         $message = $importedCount . ' row(s) imported successfully.';
         if (!empty($duplicateNames)) {
             $message .= ' Skipped duplicates: ' . implode(', ', $duplicateNames);
+        }
+        if (!empty($skippedRows)) {
+            // $message = $importedCount . ' row(s) not imported. Itemname is required';
+            $message = 'Skipped rows: ' . implode(' | ', $skippedRows);
+
         }
           return back()->with('success',  $message);
         //   return back()->with('success', 'Excel file imported successfully!');

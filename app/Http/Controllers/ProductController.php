@@ -575,7 +575,7 @@ class ProductController extends Controller
                 $existingProduct = Product::whereRaw("
                     REPLACE(LOWER(TRIM(name)), ' ', '') = ?
                 ", [$normalizedName])
-                ->where('hsnCode', $row[3])
+                // ->where('hsnCode', $row[3])
                 ->first();
 
                 // $existingProduct = Product::whereRaw("
@@ -654,7 +654,7 @@ class ProductController extends Controller
             if (
                 empty($name) ||
                 empty($uom) ||
-                empty($hsncode) ||
+                (empty($hsncode) || strlen($hsncode) > 8) ||
                 empty($itemwgt) ||
                 empty($price) ||
                 empty($ptax) ||

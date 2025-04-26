@@ -555,11 +555,10 @@ class PackingMaterialController extends Controller
                 if ($index == 0) continue; // Skip the header row
 
             $normalizedName = str_replace(' ', '', strtolower(trim($row[1])));
-
             $existingPacking = PackingMaterial::whereRaw("
                     REPLACE(LOWER(TRIM(name)), ' ', '') = ?
                 ", [$normalizedName])
-                ->where('hsnCode', $row[3])
+                // ->where('hsnCode', $row[3])
                 ->first();
 
              if ($existingPacking) {
@@ -631,7 +630,7 @@ class PackingMaterialController extends Controller
                 if (
                     empty($name) ||
                     empty($uom) ||
-                    empty($hsncode) ||
+                    (empty($hsncode) || strlen($hsncode) > 8) ||
                     empty($itemwgt) ||
                     empty($price) ||
                     empty($ptax) ||
