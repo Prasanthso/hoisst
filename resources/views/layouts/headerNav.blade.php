@@ -110,8 +110,40 @@
 
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
                     <li class="dropdown-header">
-                        You have 4 new notifications
+                        You have {{ count($lowMarginProducts) + count($productPriceThresholdCollection) }} new notifications
                         <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <!-- Low Margin Products -->
+                    @foreach($lowMarginProducts as $product)
+                    <li class="notification-item">
+                        <i class="bi bi-x-circle text-danger"></i>
+                        <div>
+                            <h4>Low Margin Alert</h4>
+                            <p>* {{ $product['name'] }}: Margin {{ $product['margin'] }}% (Threshold: {{ $product['threshold'] }}%)</p>
+                        </div>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    @endforeach
+
+                    <!-- Product Price Threshold Exceeded -->
+                    <!-- Price Threshold Exceeded -->
+
+                    <li class="notification-item">
+                        <i class="bi bi-exclamation-circle text-warning"></i>
+                        <div>
+                            <h4>Product Price Threshold Exceeded</h4>
+                            @foreach($productPriceThresholdCollection->slice(0, 2) as $product)
+                            <p>
+                                * {{ $product['name'] }} (Code: {{ $product['pdcode'] }}): Price {{ $product['price'] }} > Threshold {{ $product['threshold'] }}
+                            </p>
+                            @endforeach
+                        </div>
                     </li>
                     <li>
                         <hr class="dropdown-divider">
@@ -120,65 +152,91 @@
                     <li class="notification-item">
                         <i class="bi bi-exclamation-circle text-warning"></i>
                         <div>
-                            <h4>Lorem Ipsum</h4>
-                            <p>Quae dolorem earum veritatis oditseno</p>
-                            <p>30 min. ago</p>
+                            <h4>Product Price Update Alert</h4>
+                            @foreach($productPriceAlertCollection->slice(0, 2) as $productPriceAlert)
+                            <p>
+                                * {{ $productPriceAlert['name'] }} (Code: {{ $productPriceAlert['pdcode'] }})
+                            </p>
+                            @endforeach
                         </div>
                     </li>
-
                     <li>
                         <hr class="dropdown-divider">
                     </li>
 
                     <li class="notification-item">
-                        <i class="bi bi-x-circle text-danger"></i>
+                        <i class="bi bi-exclamation-circle text-warning"></i>
                         <div>
-                            <h4>Atque rerum nesciunt</h4>
-                            <p>Quae dolorem earum veritatis oditseno</p>
-                            <p>1 hr. ago</p>
+                            <h4>Raw Material Price Threshold Exceeded</h4>
+                            @foreach($rawMaterialsPriceThresholdCollection->slice(0, 2) as $rawMaterials)
+                            <p>
+                                * {{ $rawMaterials['name'] }} (Code: {{ $rawMaterials['rmcode'] }}): Price {{ $rawMaterials['price'] }} > Threshold {{ $rawMaterials['threshold'] }}
+                            </p>
+                            @endforeach
                         </div>
                     </li>
-
                     <li>
                         <hr class="dropdown-divider">
                     </li>
 
                     <li class="notification-item">
-                        <i class="bi bi-check-circle text-success"></i>
+                        <i class="bi bi-exclamation-circle text-warning"></i>
                         <div>
-                            <h4>Sit rerum fuga</h4>
-                            <p>Quae dolorem earum veritatis oditseno</p>
-                            <p>2 hrs. ago</p>
+                            <h4>Raw Material Price Update Alert</h4>
+                            @foreach($rawMaterialsPriceAlertCollection->slice(0, 2) as $rawMaterialsPriceAlert)
+                            <p>
+                                * {{ $rawMaterialsPriceAlert['name'] }} (Code: {{ $rawMaterialsPriceAlert['rmcode'] }})
+                            </p>
+                            @endforeach
                         </div>
                     </li>
-
                     <li>
                         <hr class="dropdown-divider">
                     </li>
 
                     <li class="notification-item">
-                        <i class="bi bi-info-circle text-primary"></i>
+                        <i class="bi bi-exclamation-circle text-warning"></i>
                         <div>
-                            <h4>Dicta reprehenderit</h4>
-                            <p>Quae dolorem earum veritatis oditseno</p>
-                            <p>4 hrs. ago</p>
+                            <h4>Packing Material Price Threshold Exceeded</h4>
+                            @foreach($packingMaterialsPriceThresholdCollection->slice(0, 2) as $packingMaterials)
+                            <p>
+                                * {{ $packingMaterials['name'] }} (Code: {{ $packingMaterials['pmcode'] }}): Price {{ $packingMaterials['price'] }} > Threshold {{ $packingMaterials['threshold'] }}
+                            </p>
+                            @endforeach
                         </div>
                     </li>
-
                     <li>
                         <hr class="dropdown-divider">
                     </li>
+
+                    <li class="notification-item">
+                        <i class="bi bi-exclamation-circle text-warning"></i>
+                        <div>
+                            <h4>Packing Material Price Update Alert</h4>
+                            @foreach($packingMaterialsPriceAlertCollection->slice(0, 2) as $packingMaterialsPriceAlert)
+                            <p>
+                                * {{ $packingMaterialsPriceAlert['name'] }} (Code: {{ $packingMaterialsPriceAlert['pmcode'] }})
+                            </p>
+                            @endforeach
+                        </div>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+
                     <li class="dropdown-footer">
                         <a href="#">Show all notifications</a>
                     </li>
+                </ul>
 
-                </ul><!-- End Notification Dropdown Items -->
+                <!-- End Notification Dropdown Items -->
 
                 </li><!-- End Notification Nav -->
 
                 <li>
                     <a class="nav-link nav-icon" href="login.html">
-                                <i class=" bi bi-person"></i>
+                        <i class=" bi bi-person"></i>
                     </a>
                 </li>
 
