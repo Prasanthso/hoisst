@@ -23,7 +23,7 @@
 </head>
 
 <body>
-    <h1>Price Update Alert</h1>
+    <h2>🚨 Price Update Alert</h2>
     <p>The following Product require a price update:</p>
 
     <table>

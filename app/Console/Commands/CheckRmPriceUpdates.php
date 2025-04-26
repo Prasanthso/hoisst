@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Mail\RmPriceUpdateMail;
 use App\Models\RawMaterial;
+use App\Models\RmPriceUpdateAlert;
+
 use App\Models\User;
 use Carbon\Carbon;
 use App\Http\Controllers\WhatsAppController;
@@ -104,10 +106,9 @@ class CheckRmPriceUpdates extends Command
                     Log::error("Failed to send email to {$user->email}: " . $e->getMessage());
                 }
 
-                // Check if user has WhatsApp notifications enabled
-                  if ($user->whatsapp_enabled && $user->whatsapp_number) {
-                    Log::info("Sending WhatsApp message to: {$user->whatsapp_number}");
-
+                $channel = 'email';
+                if ($user->whatsapp_enabled && $user->whatsapp_number) {
+                    $channel = 'both'; // updated below if error happens
                     try {
                         $message = "Price Alert\n";
                         foreach ($materialsToNotify as $material) {
@@ -119,8 +120,18 @@ class CheckRmPriceUpdates extends Command
                         Log::info("WhatsApp message sent successfully to {$user->whatsapp_number}");
                     } catch (\Exception $e) {
                         Log::error("Failed to send WhatsApp message to {$user->whatsapp_number}: " . $e->getMessage());
+                        $channel = 'email';
                     }
                 }
+
+                $rmIds = collect($materialsToNotify)->pluck('id')->toArray();
+
+                RmPriceUpdateAlert::create([
+                    'user_id' => $user->id,
+                    'raw_material_ids' => $rmIds,
+                    'alerted_at' => now(),
+                    'channel' => $channel,
+                ]);
             }
         } else {
             Log::info("No price update alerts needed.");
