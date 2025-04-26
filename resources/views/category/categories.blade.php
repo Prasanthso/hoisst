@@ -118,15 +118,16 @@
                     </table>
                     <!-- Pagination Links -->
                     <div class="d-flex justify-content-between align-items-center">
-                        <div>
+                        <div id="showingEntries">
                             <!-- Content like "Showing 1 to 10 of 50 entries" -->
                             Showing {{ $categoriesitems->firstItem() }} to {{ $categoriesitems->lastItem() }} of {{ $categoriesitems->total() }} entries
                         </div>
-                        <div class="pagination-container">
+                        <div class="pagination-container" id="paginationWrapper">
+                            @if ($categoriesitems->total() > $categoriesitems->perPage())
                             <!-- Pagination Links -->
                             {{ $categoriesitems->links('pagination::bootstrap-5') }}
                             {{-- {{ $rawMaterials->appends(['category_ids' => implode(',', request()->input('category_ids', []))])->links('pagination::bootstrap-5') }} --}}
-
+                            @endif
                         </div>
                     </div>
                     <!-- End Bordered Table -->
@@ -294,22 +295,28 @@
                             return response.json();
                         })
                         .then(data => {
-                            // Clear existing table content
-                            tableBody.innerHTML = '';
-                            console.log('Fetched Data:', data);
-                            // Populate the table with new data
-                            data.categoriesitems.forEach((item, index) => {
+                            filteredData = data.categoriesitems;
+                            console.log('Fetched Data:', data.categoriesitems);
+                            currentPage = 1; // reset to page 1 on new filter
+                            renderTablePage(currentPage, filteredData);
+                            renderPagination(filteredData.length);
 
-                                tableBody.innerHTML += `
-                        <tr data-id="${item.id}">
-                            <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
-                            <td>${index + 1}.</td>
-                            <td class="left-align"><a href="/editcategoryitem/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
-                            <td>${item.description}</td>
-                            <td>${item.created_user}</td>
-                        </tr>
-                    `;
-                            });
+                    //         // Clear existing table content
+                    //         tableBody.innerHTML = '';
+                    //         console.log('Fetched Data:', data);
+                    //         // Populate the table with new data
+                    //         data.categoriesitems.forEach((item, index) => {
+
+                    //             tableBody.innerHTML += `
+                    //     <tr data-id="${item.id}">
+                    //         <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
+                    //         <td>${index + 1}.</td>
+                    //         <td class="left-align"><a href="/editcategoryitem/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
+                    //         <td>${item.description}</td>
+                    //         <td>${item.created_user}</td>
+                    //     </tr>
+                    // `;
+                    //         });
 
                             // // Re-attach event listeners for dynamically added checkboxes
                             // document.querySelectorAll('.category-checkbox').forEach(checkbox => {
@@ -461,6 +468,91 @@
                 });
         };
 
+        let filteredData = []; // store the filtered data globally
+        let currentPage = 1;
+        const maxPerPage = 10;
+
+    function renderTablePage(page, data) {
+        const start = (page - 1) * maxPerPage;
+        const end = page * maxPerPage;
+        const sliced = data.slice(start, end);
+        const table = document.getElementById('catagoriesTable');
+        table.innerHTML = '';
+
+        sliced.forEach((item, index) => {
+            table.innerHTML += `
+                <tr data-id="${item.id}">
+                            <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
+                            <td>${start+index + 1}.</td>
+                            <td class="left-align"><a href="/editcategoryitem/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
+                            <td>${item.description}</td>
+                            <td>${item.created_user}</td>
+                    </tr>
+            `;
+        });
+        const last = Math.min(currentPage * maxPerPage, data.length);
+        const showingDiv = document.getElementById('showingEntries');
+         showingDiv.textContent = `Showing ${start + 1} to ${last} of ${data.length} entries`;
+    }
+
+    function renderPagination(totalItems) {
+        const totalPages = Math.ceil(totalItems / maxPerPage);
+        const wrapper = document.getElementById('paginationWrapper');
+        wrapper.innerHTML = '';
+           if (totalPages <= 1) return;
+    // Previous Button
+    const prevBtn = document.createElement('button');
+        prevBtn.textContent = 'Previous';
+        prevBtn.className = 'btn btn-md border border-primary mx-2';
+        if (currentPage === 1) {
+            prevBtn.disabled = true;
+            prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            prevBtn.onclick = () => {
+                currentPage--;
+                renderTablePage(currentPage, filteredData);
+                renderPagination(totalItems);
+            };
+        }
+        wrapper.appendChild(prevBtn);
+        // Page Buttons
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            // btn.className = 'btn btn-md border border-primary text-primary bg-white mx-2';
+            // Default class
+        btn.className = 'btn btn-md border border-primary mx-1';
+        // Apply styles based on whether it's the current page
+        if (i === currentPage) {
+            btn.classList.add('bg-primary', 'text-white');
+        } else {
+            btn.classList.add('bg-white', 'text-primary');
+        }
+            btn.textContent = i;
+            btn.onclick = () => {
+                currentPage = i;
+
+                renderTablePage(currentPage, filteredData);
+                renderPagination(totalItems);
+            };
+            wrapper.appendChild(btn);
+        }
+        // Next Button
+        const nextBtn = document.createElement('button');
+        nextBtn.textContent = 'Next';
+        nextBtn.className = 'btn btn-md border border-primary mx-2';
+        if (currentPage === totalPages) {
+            nextBtn.disabled = true;
+            nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            nextBtn.onclick = () => {
+                currentPage++;
+                renderTablePage(currentPage, filteredData);
+                renderPagination(totalItems);
+            };
+        }
+        wrapper.appendChild(nextBtn);
+    }
+
         function updateSerialNumbers() {
             // Get all visible rows
             const visibleRows = Array.from(document.querySelectorAll("#catagoriesTable tr"))
@@ -494,13 +586,23 @@
                 filterItems();
             }
         });
+        document.getElementById('searchtype').addEventListener('change', function () {
+            const searchTypeselection = this.value;
+            const categoryItems = document.querySelectorAll(".category-item");
+            if (searchTypeselection === 'category') {
+                categoryItems.forEach(item => item.style.display = "block");
+
+            } else if (searchTypeselection === 'items') {
+                categoryItems.forEach(item => item.style.display = "none");
+            }
+        });
         setTimeout(function() {
             const successMessage = document.getElementById('success-message');
             if (successMessage) {
                 successMessage.style.display = 'none';
             }
-        }, 3000);
-    });
+        }, 5000);
+    // });
 
     function filterCategories() {
         // Get the search input value
@@ -533,59 +635,81 @@
         let table = document.getElementById('catagoriesTable');
         let rows = table.getElementsByTagName('tr');
 
-        if (searchText.length > 0) {
-            const queryParams = new URLSearchParams({
-                categoryItem: searchText,
-            });
-            console.log(queryParams.toString());
-            // Construct the URL dynamically based on selected categories
-            // Construct the URL dynamically based on selected categories
-            const url = `/showcategoryitem?${queryParams.toString()}`;
-
-            // Fetch updated data from server
-            fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Clear existing table content
-                    catagoriesTable.innerHTML = '';
-                    console.log('Fetched Data:', data);
-                    // Populate the table with new data
-                    data.categoriesitems.forEach((item, index) => {
-
-                        catagoriesTable.innerHTML += `
-                        <tr data-id="${item.id}">
-                            <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
-                            <td>${index + 1}.</td>
-                            <td class="left-align"><a href="/editcategoryitem/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
-                            <td>${item.description}</td>
-                            <td>${item.created_user}</td>
-                        </tr>
-                    `;
+            if (searchText.length > 0) {
+                    const queryParams = new URLSearchParams({
+                        categoryItem: searchText,
                     });
+                    console.log(queryParams.toString());
+                    // Construct the URL dynamically based on selected categories
+                   // Construct the URL dynamically based on selected categories
+                   const url = `/showcategoryitem?${queryParams.toString()}`;
 
-                    // // Re-attach event listeners for dynamically added checkboxes
-                    // document.querySelectorAll('.category-checkbox').forEach(checkbox => {
-                    //     checkbox.addEventListener('change', updateSelectedCategories);
-                    // });
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while fetching category items.');
-                });
-        } else {
-            location.reload();
-        }
-    }
+                    // Fetch updated data from server
+                    fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            filteredData = data.categoriesitems;
+                            console.log('Fetched Data:', data.categoriesitems);
+                            currentPage = 1; // reset to page 1 on new filter
+                            renderTablePage(currentPage, filteredData);
+                            renderPagination(filteredData.length);
+
+                    //         // Clear existing table content
+                    //         catagoriesTable.innerHTML = '';
+                    //         console.log('Fetched Data:', data);
+                    //         // Populate the table with new data
+                    //         data.categoriesitems.forEach((item, index) => {
+
+                    //             catagoriesTable.innerHTML += `
+                    //     <tr data-id="${item.id}">
+                    //         <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
+                    //         <td>${index + 1}.</td>
+                    //         <td class="left-align"><a href="/editcategoryitem/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
+                    //         <td>${item.description}</td>
+                    //         <td>${item.created_user}</td>
+                    //     </tr>
+                    // `;
+                    //         });
+
+                            // // Re-attach event listeners for dynamically added checkboxes
+                            // document.querySelectorAll('.category-checkbox').forEach(checkbox => {
+                            //     checkbox.addEventListener('change', updateSelectedCategories);
+                            // });
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while fetching category items.');
+                        });
+                    } else {
+                    location.reload();
+                    }
+            }
+
+default_searchType();
+});
+
+function default_searchType()
+{
+   const searchType = document.getElementById('searchtype').value;
+            const categoryItems = document.querySelectorAll(".category-item");
+            if (searchType === 'category') {
+                categoryItems.forEach(item => item.style.display = "block");
+
+            } else if (searchType === 'items') {
+
+                categoryItems.forEach(item => item.style.display = "none");
+            }
+}
 </script>
 
 <!-- Vendor JS Files -->

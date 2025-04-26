@@ -556,9 +556,72 @@ class OverheadController extends Controller
             }
 
               $ohCode = UniqueCode::generateOhCode();
+            //   $oh_categoryId = DB::table('categories')
+            //   ->whereRaw("REPLACE(LOWER(TRIM(categoryname)), ' ', '') = ?", ['overheads']) // removes all spaces
+            //   ->value('id');
 
               $categoryIds = [];
+              $name = trim($row[1] ?? '');
+              $uom = trim($row[2] ?? '');
+              $itemwgt = trim($row[3] ?? '');
+              $price = trim($row[14] ?? '');
+              $frequency = trim($row[15] ?? '');
+              $priceupdatefrequency = trim($row[16] ?? '');
+              $thershold = trim($row[17] ?? '');
+              $categoryIds['id1'] = trim($row[4] ?? '');
+              /*
+              for ($i = 1; $i <= 10; $i++) {
+                $itemNameRaw = $row[$i + 3] ?? null;
 
+                $name = trim($row[1] ?? '');
+                $uom = trim($row[2] ?? '');
+                $itemwgt = trim($row[3] ?? '');
+                $price = trim($row[14] ?? '');
+                $frequency = trim($row[15] ?? '');
+                $priceupdatefrequency = trim($row[16] ?? '');
+                $thershold = trim($row[17] ?? '');
+
+                if (!empty($itemNameRaw)) {
+                    $itemName = trim(strtolower($itemNameRaw));
+
+                    // Try to find the ID with the normalized comparison
+                    $itemId = DB::table('categoryitems')
+                        ->where('categoryId', $oh_categoryId)
+                        ->where('status', 'active')
+                        ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [$itemName])
+                        ->value('id');
+
+                    // If not found, insert a new record
+                    if (!$itemId) {
+                        $itemId = DB::table('categoryitems')->insertGetId([
+                            'categoryId' => $oh_categoryId,
+                            'itemname' => $itemNameRaw, // use original casing and spacing
+                            'description' => 'none',
+                            'status' => 'active',       // assuming default status is 'active'
+                            'created_at' => now(),      // optional timestamps
+                            'updated_at' => now()
+                        ]);
+                    }
+
+                    $categoryIds["id$i"] = $itemId;
+                } else {
+                    $categoryIds["id$i"] = null;
+                }
+            }*/
+
+        if (
+            empty($name) ||
+            empty($uom) ||
+            empty($itemwgt) ||
+            empty($price) ||
+            empty($frequency) ||
+            empty($priceupdatefrequency) ||
+            empty($thershold) ||
+            empty($categoryIds['id1']) // category_id1 must not be null
+        ) {
+            $skippedRows[] = "Row ".($index + 1)." skipped: missing required fields (name/uom/hsncode/itemwgt/price/tax/updatefrequency/priceupdatefrequency/threshold/itemType/category_id1).";
+            continue;
+        }
               for ($i = 1; $i <= 10; $i++) {
                   $categoryIds["id$i"] = !empty($row[$i + 3]) // Adjusting index to match $row[3] for category_id1
                       ? DB::table('categoryitems')
@@ -605,6 +668,9 @@ class OverheadController extends Controller
             if (!empty($duplicateNames)) {
                 $message .= ' Skipped duplicates: ' . implode(', ', $duplicateNames);
             }
+            // if (!empty($skippedRows)) {
+            //     $message .= ' Skipped rows: ' . implode(' | ', $skippedRows);
+            // }
           return back()->with('success',  $message);
         //   return back()->with('success', 'Excel file imported successfully!');
       }

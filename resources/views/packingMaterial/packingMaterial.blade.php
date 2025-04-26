@@ -138,16 +138,21 @@
                     </table>
                     <!-- Pagination Links -->
                     <div class="d-flex justify-content-between align-items-center">
-                        <div>
+                        <div id="showingEntries">
                             <!-- Content like "Showing 1 to 10 of 50 entries" -->
                             Showing {{ $packingMaterials->firstItem() }} to {{ $packingMaterials->lastItem() }} of {{ $packingMaterials->total() }} entries
                             <input type="hidden" id="currentPage" value="{{ $packingMaterials->currentPage() }}">
                             <input type="hidden" id="perPage" value="{{ $packingMaterials->perPage() }}">
                         </div>
-                        <div>
+                        <div id="paginationWrapper">
+                            @if ($packingMaterials->total() > $packingMaterials->perPage())
+                                {{ $packingMaterials->links('pagination::bootstrap-5') }}
+                            @endif
+                        </div>
+                        {{-- <div>
                             <!-- Pagination Links -->
                             {{ $packingMaterials->links('pagination::bootstrap-5') }}
-                        </div>
+                        </div> --}}
                     </div>
                     <!-- End Bordered Table -->
                 </div>
@@ -762,37 +767,41 @@
                             return response.json();
                         })
                         .then(data => {
-                            // Clear existing table content
-                            packingMaterialTable.innerHTML = '';
-                            console.log('Fetched Data:', data.packingMaterials);
-                            // Populate the table with new data
-                            data.packingMaterials.forEach((item, index) => {
-                                packingMaterialTable.innerHTML += `
-                        <tr data-id="${item.id}">
-                            <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
-                            <td>${index + 1}.</td>
-                            <td class="left-align"><a href="/editpackingmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
-                            <td>${item.pmcode}</td>
-                             <td>
-                                ${item.category_name1 ?? ''}
-                                ${item.category_name2 ? ', ' + item.category_name2 : ''}
-                                ${item.category_name3 ? ', ' + item.category_name3 : ''}
-                                ${item.category_name4 ? ', ' + item.category_name4 : ''}
-                                ${item.category_name5 ? ', ' + item.category_name5 : ''}
-                                ${item.category_name6 ? ', ' + item.category_name6 : ''}
-                                ${item.category_name7 ? ', ' + item.category_name7 : ''}
-                                ${item.category_name8 ? ', ' + item.category_name8 : ''}
-                                ${item.category_name9 ? ', ' + item.category_name9 : ''}
-                                ${item.category_name10 ? ', ' + item.category_name10 : ''}
-                            </td> <!-- Categories -->
-                            <td>
-                                <span class="price-text">${item.price}</span>
-                                <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
-                            </td>
-                            <td>${item.uom}</td>
-                        </tr>
-                    `;
-                            });
+                            filteredData = data.packingMaterials;
+                            currentPage = 1; // reset to page 1 on new filter
+                            renderTablePage(currentPage, filteredData);
+                            renderPagination(filteredData.length);
+                    //         // Clear existing table content
+                    //         packingMaterialTable.innerHTML = '';
+                    //         console.log('Fetched Data:', data.packingMaterials);
+                    //         // Populate the table with new data
+                    //         data.packingMaterials.forEach((item, index) => {
+                    //             packingMaterialTable.innerHTML += `
+                    //     <tr data-id="${item.id}">
+                    //         <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
+                    //         <td>${index + 1}.</td>
+                    //         <td class="left-align"><a href="/editpackingmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                    //         <td>${item.pmcode}</td>
+                    //          <td>
+                    //             ${item.category_name1 ?? ''}
+                    //             ${item.category_name2 ? ', ' + item.category_name2 : ''}
+                    //             ${item.category_name3 ? ', ' + item.category_name3 : ''}
+                    //             ${item.category_name4 ? ', ' + item.category_name4 : ''}
+                    //             ${item.category_name5 ? ', ' + item.category_name5 : ''}
+                    //             ${item.category_name6 ? ', ' + item.category_name6 : ''}
+                    //             ${item.category_name7 ? ', ' + item.category_name7 : ''}
+                    //             ${item.category_name8 ? ', ' + item.category_name8 : ''}
+                    //             ${item.category_name9 ? ', ' + item.category_name9 : ''}
+                    //             ${item.category_name10 ? ', ' + item.category_name10 : ''}
+                    //         </td> <!-- Categories -->
+                    //         <td>
+                    //             <span class="price-text">${item.price}</span>
+                    //             <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
+                    //         </td>
+                    //         <td>${item.uom}</td>
+                    //     </tr>
+                    // `;
+                    //         });
 
                         })
                         .catch(error => {
@@ -806,35 +815,121 @@
 
         });
 
-        /*
-        function filterPackingMaterials() {
-            // Get all selected categories
-            const selectedCategories = Array.from(categoryCheckboxes)
-                .filter(checkbox => checkbox.checked)
-                .map(checkbox => checkbox.value.toLowerCase().trim());
+        let filteredData = []; // store the filtered data globally
+        let currentPage = 1;
+        const maxPerPage = 10;
 
-            rows.forEach(row => {
-                const categoryCells = row.querySelector('td:nth-child(5)').textContent.toLowerCase().split(', ');
-                let matches = false;
+    function renderTablePage(page, data) {
+        const start = (page - 1) * maxPerPage;
+        const end = page * maxPerPage;
+        const sliced = data.slice(start, end);
+        const table = document.getElementById('packingMaterialTable');
+        table.innerHTML = '';
 
-                // Check if any of the selected categories match the categories of the raw material row
-                selectedCategories.forEach(selectedCategory => {
-                    // Check if the selected category exists in the row's categories
-                    if (categoryCells.some(category => category.trim() === selectedCategory)) {
-                        matches = true;
-                    }
-                });
+        sliced.forEach((item, index) => {
+            const categories = [
+                item.category_name1, item.category_name2, item.category_name3,
+                item.category_name4, item.category_name5, item.category_name6,
+                item.category_name7, item.category_name8, item.category_name9,
+                item.category_name10
+            ].filter(Boolean).join(', ');
 
-                // Show or hide the row based on the match
-                if (selectedCategories.length === 0 || matches) {
-                    row.style.display = ''; // Show row
-                } else {
-                    row.style.display = 'none'; // Hide row
-                }
+            table.innerHTML += `
+                <tr data-id="${item.id}">
+                    <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
+                    <td>${start + index + 1}.</td>
+                    <td class="left-align"><a href="/editpackingmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                    <td>${item.pmcode}</td>
+                    <td>${categories}</td>
+                   <td class="d-flex justify-content-between align-items-center">
+                        <span class="price-text">${item.price}</span>
+                        <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
+                        <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
+                     </td>
+                    <td>${item.uom}</td>
+                </tr>
+            `;
+        });
+        const last = Math.min(currentPage * maxPerPage, data.length);
+        const showingDiv = document.getElementById('showingEntries');
+         showingDiv.textContent = `Showing ${start + 1} to ${last} of ${data.length} entries`;
+         // Attach click event listener to each price column
+         table.querySelectorAll(".price-text").forEach((priceElement) => {
+             const row = priceElement.closest("tr");
+             const materialId = row.getAttribute("data-id");
+
+             priceElement.addEventListener("click", () => {
+                 showPriceModal(materialId);
+             });
+         });
+        // Select all elements with the class 'eye-icon' within the table
+        table.querySelectorAll(".eye-icon").forEach((iconElement) => {
+            const row = iconElement.closest("tr");
+            const materialId = row.getAttribute("data-id");
+
+            iconElement.addEventListener("click", () => {
+                showPriceModal(materialId);
             });
-            updateSerialNumbers();
+        });
+    }
+
+    function renderPagination(totalItems) {
+        const totalPages = Math.ceil(totalItems / maxPerPage);
+        const wrapper = document.getElementById('paginationWrapper');
+        wrapper.innerHTML = '';
+           if (totalPages <= 1) return;
+    // Previous Button
+    const prevBtn = document.createElement('button');
+        prevBtn.textContent = 'Previous';
+        prevBtn.className = 'btn btn-md border border-primary mx-2';
+        if (currentPage === 1) {
+            prevBtn.disabled = true;
+            prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            prevBtn.onclick = () => {
+                currentPage--;
+                renderTablePage(currentPage, filteredData);
+                renderPagination(totalItems);
+            };
         }
-        */
+        wrapper.appendChild(prevBtn);
+        // Page Buttons
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            // btn.className = 'btn btn-md border border-primary text-primary bg-white mx-2';
+            // Default class
+        btn.className = 'btn btn-md border border-primary mx-1';
+        // Apply styles based on whether it's the current page
+        if (i === currentPage) {
+            btn.classList.add('bg-primary', 'text-white');
+        } else {
+            btn.classList.add('bg-white', 'text-primary');
+        }
+            btn.textContent = i;
+            btn.onclick = () => {
+                currentPage = i;
+
+                renderTablePage(currentPage, filteredData);
+                renderPagination(totalItems);
+            };
+            wrapper.appendChild(btn);
+        }
+        // Next Button
+        const nextBtn = document.createElement('button');
+        nextBtn.textContent = 'Next';
+        nextBtn.className = 'btn btn-md border border-primary mx-2';
+        if (currentPage === totalPages) {
+            nextBtn.disabled = true;
+            nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            nextBtn.onclick = () => {
+                currentPage++;
+                renderTablePage(currentPage, filteredData);
+                renderPagination(totalItems);
+            };
+        }
+        wrapper.appendChild(nextBtn);
+    }
 
         function updateSerialNumbers() {
             let currentPage = parseInt(document.querySelector("#currentPage").value) || 1; // Get current page number
@@ -860,6 +955,16 @@
                 filterItems();
             }
         });
+        document.getElementById('searchtype').addEventListener('change', function () {
+            const searchTypeselection = this.value;
+            const categoryItems = document.querySelectorAll(".category-item");
+            if (searchTypeselection === 'category') {
+                categoryItems.forEach(item => item.style.display = "block");
+
+            } else if (searchTypeselection === 'items') {
+                categoryItems.forEach(item => item.style.display = "none");
+            }
+        });
 
         setTimeout(function() {
             const successMessage = document.getElementById('success-message');
@@ -869,8 +974,8 @@
             } else if (errorMessage) {
                 errorMessage.style.display = 'none';
             }
-        }, 2000);
-    });
+        }, 3000);
+    // });
 
     function filterCategories() {
         // Get the search input value
@@ -910,52 +1015,56 @@
             console.log(queryParams.toString());
             // Construct the URL dynamically based on selected categories
             const url = `/packingmaterial?${queryParams.toString()}`;
-
-            // Fetch updated data from server
-            fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Clear existing table content
-                    packingMaterialTable.innerHTML = '';
-                    console.log('Fetched Data:', data.packingMaterials);
-                    // Populate the table with new data
-                    data.packingMaterials.forEach((item, index) => {
-                        packingMaterialTable.innerHTML += `
-                        <tr data-id="${item.id}">
-                            <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
-                            <td>${index + 1}.</td>
-                            <td class="left-align"><a href="/editpackingmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
-                            <td>${item.pmcode}</td>
-                             <td>
-                                ${item.category_name1 ?? ''}
-                                ${item.category_name2 ? ', ' + item.category_name2 : ''}
-                                ${item.category_name3 ? ', ' + item.category_name3 : ''}
-                                ${item.category_name4 ? ', ' + item.category_name4 : ''}
-                                ${item.category_name5 ? ', ' + item.category_name5 : ''}
-                                ${item.category_name6 ? ', ' + item.category_name6 : ''}
-                                ${item.category_name7 ? ', ' + item.category_name7 : ''}
-                                ${item.category_name8 ? ', ' + item.category_name8 : ''}
-                                ${item.category_name9 ? ', ' + item.category_name9 : ''}
-                                ${item.category_name10 ? ', ' + item.category_name10 : ''}
-                            </td> <!-- Categories -->
-                            <td>
-                                <span class="price-text">${item.price}</span>
-                                <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
-                            </td>
-                            <td>${item.uom}</td>
-                        </tr>
-                    `;
-                    });
+                    // Fetch updated data from server
+                    fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            filteredData = data.packingMaterials;
+                            console.log('Fetched Data:', data.packingMaterials);
+                            currentPage = 1; // reset to page 1 on new filter
+                            renderTablePage(currentPage, filteredData);
+                            renderPagination(filteredData.length);
+                    //         // Clear existing table content
+                    //         packingMaterialTable.innerHTML = '';
+                    //         console.log('Fetched Data:', data.packingMaterials);
+                    //         // Populate the table with new data
+                    //         data.packingMaterials.forEach((item, index) => {
+                    //             packingMaterialTable.innerHTML += `
+                    //     <tr data-id="${item.id}">
+                    //         <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
+                    //         <td>${index + 1}.</td>
+                    //         <td class="left-align"><a href="/editpackingmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                    //         <td>${item.pmcode}</td>
+                    //          <td>
+                    //             ${item.category_name1 ?? ''}
+                    //             ${item.category_name2 ? ', ' + item.category_name2 : ''}
+                    //             ${item.category_name3 ? ', ' + item.category_name3 : ''}
+                    //             ${item.category_name4 ? ', ' + item.category_name4 : ''}
+                    //             ${item.category_name5 ? ', ' + item.category_name5 : ''}
+                    //             ${item.category_name6 ? ', ' + item.category_name6 : ''}
+                    //             ${item.category_name7 ? ', ' + item.category_name7 : ''}
+                    //             ${item.category_name8 ? ', ' + item.category_name8 : ''}
+                    //             ${item.category_name9 ? ', ' + item.category_name9 : ''}
+                    //             ${item.category_name10 ? ', ' + item.category_name10 : ''}
+                    //         </td> <!-- Categories -->
+                    //         <td>
+                    //             <span class="price-text">${item.price}</span>
+                    //             <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
+                    //         </td>
+                    //         <td>${item.uom}</td>
+                    //     </tr>
+                    // `;
+                    //         });
 
                 })
                 .catch(error => {
@@ -965,5 +1074,50 @@
         } else {
             location.reload();
         }
-    }
+        default_searchType();
+});
+
+function default_searchType()
+{
+   const searchType = document.getElementById('searchtype').value;
+            const categoryItems = document.querySelectorAll(".category-item");
+            if (searchType === 'category') {
+                categoryItems.forEach(item => item.style.display = "block");
+
+            } else if (searchType === 'items') {
+
+                categoryItems.forEach(item => item.style.display = "none");
+            }
+}
+
+        /*
+        function filterPackingMaterials() {
+            // Get all selected categories
+            const selectedCategories = Array.from(categoryCheckboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value.toLowerCase().trim());
+
+            rows.forEach(row => {
+                const categoryCells = row.querySelector('td:nth-child(5)').textContent.toLowerCase().split(', ');
+                let matches = false;
+
+                // Check if any of the selected categories match the categories of the raw material row
+                selectedCategories.forEach(selectedCategory => {
+                    // Check if the selected category exists in the row's categories
+                    if (categoryCells.some(category => category.trim() === selectedCategory)) {
+                        matches = true;
+                    }
+                });
+
+                // Show or hide the row based on the match
+                if (selectedCategories.length === 0 || matches) {
+                    row.style.display = ''; // Show row
+                } else {
+                    row.style.display = 'none'; // Hide row
+                }
+            });
+            updateSerialNumbers();
+        }
+        */
+
 </script>

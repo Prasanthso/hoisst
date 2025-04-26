@@ -140,17 +140,19 @@
                     </table>
                     <!-- Pagination Links -->
                     <div class="d-flex justify-content-between align-items-center">
-                        <div>
+                        <div id="showingEntries">
                             <!-- Content like "Showing 1 to 10 of 50 entries" -->
                             Showing {{ $rawMaterials->firstItem() }} to {{ $rawMaterials->lastItem() }} of {{ $rawMaterials->total() }} entries
                             <input type="hidden" id="currentPage" value="{{ $rawMaterials->currentPage() }}">
                             <input type="hidden" id="perPage" value="{{ $rawMaterials->perPage() }}">
                         </div>
-                        <div>
+                        <div id="paginationWrapper">
+                            @if ($rawMaterials->total() > $rawMaterials->perPage())
+                                {{-- {{ $rawMaterials->links() }} --}}
+                                {{ $rawMaterials->links('pagination::bootstrap-5') }}
+                            @endif
                             <!-- Pagination Links -->
-                            {{ $rawMaterials->links('pagination::bootstrap-5') }}
                             {{-- {{ $rawMaterials->appends(['category_ids' => implode(',', request()->input('category_ids', []))])->links('pagination::bootstrap-5') }} --}}
-
                         </div>
                     </div>
                     <!-- End Bordered Table -->
@@ -774,37 +776,51 @@
                             return response.json();
                         })
                         .then(data => {
-                            // Clear existing table content
-                            rawMaterialTable.innerHTML = '';
-                            console.log('Fetched Data:', data.rawMaterials);
-                            // Populate the table with new data
-                            data.rawMaterials.forEach((item, index) => {
-                                rawMaterialTable.innerHTML += `
-                        <tr data-id="${item.id}">
-                            <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
-                            <td>${index + 1}.</td>
-                            <td class="left-align"><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
-                            <td>${item.rmcode}</td>
-                             <td>
-                                ${item.category_name1 ?? ''}
-                                ${item.category_name2 ? ', ' + item.category_name2 : ''}
-                                ${item.category_name3 ? ', ' + item.category_name3 : ''}
-                                ${item.category_name4 ? ', ' + item.category_name4 : ''}
-                                ${item.category_name5 ? ', ' + item.category_name5 : ''}
-                                ${item.category_name6 ? ', ' + item.category_name6 : ''}
-                                ${item.category_name7 ? ', ' + item.category_name7 : ''}
-                                ${item.category_name8 ? ', ' + item.category_name8 : ''}
-                                ${item.category_name9 ? ', ' + item.category_name9 : ''}
-                                ${item.category_name10 ? ', ' + item.category_name10 : ''}
-                            </td> <!-- Categories -->
-                            <td>
-                                <span class="price-text">${item.price}</span>
-                                <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
-                            </td>
-                            <td>${item.uom}</td>
-                        </tr>
-                    `;
-                            });
+                            filteredData = data.rawMaterials;
+                            currentPage = 1; // reset to page 1 on new filter
+                            renderTablePage(currentPage, filteredData);
+                            renderPagination(filteredData.length);
+
+                    //         const rawMaterials = data.rawMaterials;
+                    //         const maxPerPage = 10;
+                    //         const paginated = rawMaterials.slice(0, maxPerPage);
+                    //         // Clear existing table content
+                    //         rawMaterialTable.innerHTML = '';
+                    //         console.log('Fetched Data:', data.rawMaterials);
+
+                    //         // Populate the table with new data
+                    //         // data.rawMaterials.forEach((item, index) => {
+                    //     paginated.forEach((item, index) => {
+                    //             rawMaterialTable.innerHTML += `
+                    //     <tr data-id="${item.id}">
+                    //         <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
+                    //         <td>${index + 1}.</td>
+                    //         <td class="left-align"><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                    //         <td>${item.rmcode}</td>
+                    //          <td>
+                    //             ${item.category_name1 ?? ''}
+                    //             ${item.category_name2 ? ', ' + item.category_name2 : ''}
+                    //             ${item.category_name3 ? ', ' + item.category_name3 : ''}
+                    //             ${item.category_name4 ? ', ' + item.category_name4 : ''}
+                    //             ${item.category_name5 ? ', ' + item.category_name5 : ''}
+                    //             ${item.category_name6 ? ', ' + item.category_name6 : ''}
+                    //             ${item.category_name7 ? ', ' + item.category_name7 : ''}
+                    //             ${item.category_name8 ? ', ' + item.category_name8 : ''}
+                    //             ${item.category_name9 ? ', ' + item.category_name9 : ''}
+                    //             ${item.category_name10 ? ', ' + item.category_name10 : ''}
+                    //         </td> <!-- Categories -->
+                    //         <td>
+                    //             <span class="price-text">${item.price}</span>
+                    //             <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
+                    //         </td>
+                    //         <td>${item.uom}</td>
+                    //     </tr>
+                    // `;
+                    //         });
+                    //      // Hide pagination if 10 or fewer
+                    //     document.getElementById('paginationWrapper').style.display =
+                    //         rawMaterials.length <= 10 ? 'none' : '';
+
                         })
                         .catch(error => {
                             console.error('Error:', error);
@@ -816,7 +832,314 @@
             });
         });
 
-        /* For filter Functions*/
+        let filteredData = []; // store the filtered data globally
+        let currentPage = 1;
+        const maxPerPage = 10;
+
+    function renderTablePage(page, data) {
+        const start = (page - 1) * maxPerPage;
+        const end = page * maxPerPage;
+        const sliced = data.slice(start, end);
+        const table = document.getElementById('rawMaterialTable');
+        table.innerHTML = '';
+
+        sliced.forEach((item, index) => {
+            const categories = [
+                item.category_name1, item.category_name2, item.category_name3,
+                item.category_name4, item.category_name5, item.category_name6,
+                item.category_name7, item.category_name8, item.category_name9,
+                item.category_name10
+            ].filter(Boolean).join(', ');
+
+            table.innerHTML += `
+                <tr data-id="${item.id}">
+                    <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
+                    <td>${start + index + 1}.</td>
+                    <td class="left-align"><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                    <td>${item.rmcode}</td>
+                    <td>${categories}</td>
+                     <td class="d-flex justify-content-between align-items-center">
+                        <span class="price-text">${item.price}</span>
+                        <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
+                        <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
+                     </td>
+                    <td>${item.uom}</td>
+                </tr>
+            `;
+        });
+        const last = Math.min(currentPage * maxPerPage, data.length);
+        const showingDiv = document.getElementById('showingEntries');
+         showingDiv.textContent = `Showing ${start + 1} to ${last} of ${data.length} entries`;
+          // Attach click event listener to each price column
+          table.querySelectorAll(".price-text").forEach((priceElement) => {
+             const row = priceElement.closest("tr");
+             const materialId = row.getAttribute("data-id");
+
+             priceElement.addEventListener("click", () => {
+                 showPriceModal(materialId);
+             });
+         });
+        // Select all elements with the class 'eye-icon' within the table
+        table.querySelectorAll(".eye-icon").forEach((iconElement) => {
+            const row = iconElement.closest("tr");
+            const materialId = row.getAttribute("data-id");
+
+            iconElement.addEventListener("click", () => {
+                showPriceModal(materialId);
+            });
+        });
+    }
+
+    function renderPagination(totalItems) {
+        const totalPages = Math.ceil(totalItems / maxPerPage);
+        const wrapper = document.getElementById('paginationWrapper');
+        wrapper.innerHTML = '';
+    // Update showing entries text
+    // const start = (currentPage - 1) * maxPerPage + 1;
+    //     const end = Math.min(currentPage * maxPerPage, totalItems);
+    //     const showingDiv = document.getElementById('showingEntries');
+    //     showingDiv.textContent = `Showing ${start} to ${end} of ${totalItems} entries`;
+
+        if (totalPages <= 1) return;
+    // Previous Button
+    const prevBtn = document.createElement('button');
+        prevBtn.textContent = 'Previous';
+        prevBtn.className = 'btn btn-md border border-primary mx-2';
+        if (currentPage === 1) {
+            prevBtn.disabled = true;
+            prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            prevBtn.onclick = () => {
+                currentPage--;
+                renderTablePage(currentPage, filteredData);
+                renderPagination(totalItems);
+            };
+        }
+        wrapper.appendChild(prevBtn);
+        // Page Buttons
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            // btn.className = 'btn btn-md border border-primary text-primary bg-white mx-2';
+            // Default class
+        btn.className = 'btn btn-md border border-primary mx-1';
+        // Apply styles based on whether it's the current page
+        if (i === currentPage) {
+            btn.classList.add('bg-primary', 'text-white');
+        } else {
+            btn.classList.add('bg-white', 'text-primary');
+        }
+            btn.textContent = i;
+            btn.onclick = () => {
+                currentPage = i;
+
+                renderTablePage(currentPage, filteredData);
+                renderPagination(totalItems);
+            };
+            wrapper.appendChild(btn);
+        }
+        // Next Button
+        const nextBtn = document.createElement('button');
+        nextBtn.textContent = 'Next';
+        nextBtn.className = 'btn btn-md border border-primary mx-2';
+        if (currentPage === totalPages) {
+            nextBtn.disabled = true;
+            nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            nextBtn.onclick = () => {
+                currentPage++;
+                renderTablePage(currentPage, filteredData);
+                renderPagination(totalItems);
+            };
+        }
+        wrapper.appendChild(nextBtn);
+    }
+
+        function updateSerialNumbers() {
+            let currentPage = parseInt(document.querySelector("#currentPage").value) || 1; // Get current page number
+            let perPage = parseInt(document.querySelector("#perPage").value) || 10;
+            // Get all visible rows
+            const visibleRows = Array.from(document.querySelectorAll("#rawMaterialTable tr"))
+                .filter(row => row.style.display !== 'none');
+
+            // Update serial numbers for visible rows only
+            visibleRows.forEach((row, index) => {
+                const snoCell = row.querySelector("td:nth-child(2)"); // Adjust the column index for S.NO
+                if (snoCell) {
+                    snoCell.textContent = ((currentPage - 1) * perPage + index + 1) + "."; //`${index + 1}.`; // Update the serial number
+                }
+            });
+        }
+
+        document.getElementById('categorySearch').addEventListener('keyup', function() {
+            const searchType = document.getElementById('searchtype').value;
+            // const categoryItems = document.querySelectorAll(".category-item");
+            if (searchType === 'category') {
+                // categoryItems.forEach(item => item.style.display = "block");
+                filterCategories();
+            } else if (searchType === 'items') {
+                // categoryItems.forEach(item => item.style.display = "none");
+                filterItems();
+            }
+        });
+
+        document.getElementById('searchtype').addEventListener('change', function () {
+            const searchTypeselection = this.value;
+            const categoryItems = document.querySelectorAll(".category-item");
+            if (searchTypeselection === 'category') {
+                categoryItems.forEach(item => item.style.display = "block");
+
+            } else if (searchTypeselection === 'items') {
+                categoryItems.forEach(item => item.style.display = "none");
+            }
+        });
+
+        setTimeout(function() {
+            const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
+            if (successMessage) {
+                successMessage.style.display = 'none';
+            } else if (errorMessage) {
+                errorMessage.style.display = 'none';
+            }
+        }, 3000);
+
+    // });
+
+    function filterCategories() {
+        // Get the search input value
+        const searchValue = document.getElementById('categorySearch').value.toLowerCase();
+        const keywords = searchValue.split(',').map(keyword => keyword.trim()).filter(keyword => keyword);
+        // Get all category items
+        const categoryItems = document.querySelectorAll('.category-item');
+
+        // If the search box is empty, show all categories
+        if (keywords.length === 0) {
+            categoryItems.forEach((item) => {
+                item.style.display = ''; // Show all items
+            });
+            return;
+        }
+        // Loop through category items and filter them
+        categoryItems.forEach((item) => {
+            const label = item.querySelector('.form-check-label').textContent.toLowerCase();
+
+            // Check if any of the keywords match the label
+            const isVisible = keywords.some(keyword => label.includes(keyword));
+
+            // Show or hide the category item based on the match
+            item.style.display = isVisible ? '' : 'none';
+
+        });
+    }
+
+    function filterItems() {
+
+        let searchText = document.getElementById('categorySearch').value.toLowerCase().trim();
+        let table = document.getElementById('rawMaterialTable');
+        let rows = table.getElementsByTagName('tr');
+
+        if (searchText.length > 0) {
+            const queryParams = new URLSearchParams({
+                rmText: searchText,
+            });
+            console.log(queryParams.toString());
+            // Construct the URL dynamically based on selected categories
+            const url = `/rawmaterial?${queryParams.toString()}`;
+                    // Fetch updated data from server
+                    fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            filteredData = data.rawMaterials;
+                            console.log('Fetched Data:', data.rawMaterials);
+                            currentPage = 1; // reset to page 1 on new filter
+                            renderTablePage(currentPage, filteredData);
+                            renderPagination(filteredData.length);
+
+                    //         // Clear existing table content
+                    //         rawMaterialTable.innerHTML = '';
+                    //         console.log('Fetched Data:', data.rawMaterials);
+                    //         // Populate the table with new data
+                    //         data.rawMaterials.forEach((item, index) => {
+                    //             rawMaterialTable.innerHTML += `
+                    //     <tr data-id="${item.id}">
+                    //         <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
+                    //         <td>${index + 1}.</td>
+                    //         <td class="left-align"><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
+                    //         <td>${item.rmcode}</td>
+                    //          <td>
+                    //             ${item.category_name1 ?? ''}
+                    //             ${item.category_name2 ? ', ' + item.category_name2 : ''}
+                    //             ${item.category_name3 ? ', ' + item.category_name3 : ''}
+                    //             ${item.category_name4 ? ', ' + item.category_name4 : ''}
+                    //             ${item.category_name5 ? ', ' + item.category_name5 : ''}
+                    //             ${item.category_name6 ? ', ' + item.category_name6 : ''}
+                    //             ${item.category_name7 ? ', ' + item.category_name7 : ''}
+                    //             ${item.category_name8 ? ', ' + item.category_name8 : ''}
+                    //             ${item.category_name9 ? ', ' + item.category_name9 : ''}
+                    //             ${item.category_name10 ? ', ' + item.category_name10 : ''}
+                    //         </td> <!-- Categories -->
+                    //         <td>
+                    //             <span class="price-text">${item.price}</span>
+                    //             <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
+                    //         </td>
+                    //         <td>${item.uom}</td>
+                    //     </tr>
+                    // `;
+                    //         });
+
+                            // const paginationWrapper = document.getElementById('paginationWrapper');
+                            // if (data.rawMaterials.length <= 10) {
+                            //     paginationWrapper.style.display = 'none';
+
+                            // } else {
+                            //     paginationWrapper.style.display = '';
+                            // }
+
+                            // const showingDiv = document.getElementById('showingEntries');
+                            // const totalItems = data.rawMaterials.length;
+                            // if (totalItems > 0) {
+                            //     const start = 1;
+                            //     const end = totalItems;
+                            //     showingDiv.textContent = `Showing ${start} to ${end} of ${totalItems} entries`;
+                            // } else {
+                            //     showingDiv.textContent = 'No entries found';
+                            // }
+
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while fetching rawMaterials(s).');
+                        });
+                } else {
+                    location.reload();
+                }
+            }
+default_searchType();
+});
+
+function default_searchType()
+{
+   const searchType = document.getElementById('searchtype').value;
+            const categoryItems = document.querySelectorAll(".category-item");
+            if (searchType === 'category') {
+                categoryItems.forEach(item => item.style.display = "block");
+
+            } else if (searchType === 'items') {
+
+                categoryItems.forEach(item => item.style.display = "none");
+            }
+}
+ /* For filter Functions*/
         /*
         function filterRawMaterials() {
             // Get all selected categories
@@ -846,136 +1169,4 @@
             updateSerialNumbers();
         }
         */
-
-        function updateSerialNumbers() {
-            let currentPage = parseInt(document.querySelector("#currentPage").value) || 1; // Get current page number
-            let perPage = parseInt(document.querySelector("#perPage").value) || 10;
-            // Get all visible rows
-            const visibleRows = Array.from(document.querySelectorAll("#rawMaterialTable tr"))
-                .filter(row => row.style.display !== 'none');
-
-            // Update serial numbers for visible rows only
-            visibleRows.forEach((row, index) => {
-                const snoCell = row.querySelector("td:nth-child(2)"); // Adjust the column index for S.NO
-                if (snoCell) {
-                    snoCell.textContent = ((currentPage - 1) * perPage + index + 1) + "."; //`${index + 1}.`; // Update the serial number
-                }
-            });
-        }
-
-        document.getElementById('categorySearch').addEventListener('keyup', function() {
-            const searchType = document.getElementById('searchtype').value;
-
-            if (searchType === 'category') {
-                filterCategories();
-            } else if (searchType === 'items') {
-                filterItems();
-            }
-        });
-
-        setTimeout(function() {
-            const successMessage = document.getElementById('success-message');
-            const errorMessage = document.getElementById('error-message');
-            if (successMessage) {
-                successMessage.style.display = 'none';
-            } else if (errorMessage) {
-                errorMessage.style.display = 'none';
-            }
-        }, 2000);
-
-    });
-
-    function filterCategories() {
-        // Get the search input value
-        const searchValue = document.getElementById('categorySearch').value.toLowerCase();
-        const keywords = searchValue.split(',').map(keyword => keyword.trim()).filter(keyword => keyword);
-        // Get all category items
-        const categoryItems = document.querySelectorAll('.category-item');
-
-        // If the search box is empty, show all categories
-        if (keywords.length === 0) {
-            categoryItems.forEach((item) => {
-                item.style.display = ''; // Show all items
-            });
-            return;
-        }
-        // Loop through category items and filter them
-        categoryItems.forEach((item) => {
-            const label = item.querySelector('.form-check-label').textContent.toLowerCase();
-
-            // Check if any of the keywords match the label
-            const isVisible = keywords.some(keyword => label.includes(keyword));
-
-            // Show or hide the category item based on the match
-            item.style.display = isVisible ? '' : 'none';
-        });
-    }
-
-    function filterItems() {
-        let searchText = document.getElementById('categorySearch').value.toLowerCase().trim();
-        let table = document.getElementById('rawMaterialTable');
-        let rows = table.getElementsByTagName('tr');
-
-        if (searchText.length > 0) {
-            const queryParams = new URLSearchParams({
-                rmText: searchText,
-            });
-            console.log(queryParams.toString());
-            // Construct the URL dynamically based on selected categories
-            const url = `/rawmaterial?${queryParams.toString()}`;
-
-            // Fetch updated data from server
-            fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Clear existing table content
-                    rawMaterialTable.innerHTML = '';
-                    console.log('Fetched Data:', data.rawMaterials);
-                    // Populate the table with new data
-                    data.rawMaterials.forEach((item, index) => {
-                        rawMaterialTable.innerHTML += `
-                        <tr data-id="${item.id}">
-                            <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
-                            <td>${index + 1}.</td>
-                            <td class="left-align"><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
-                            <td>${item.rmcode}</td>
-                             <td>
-                                ${item.category_name1 ?? ''}
-                                ${item.category_name2 ? ', ' + item.category_name2 : ''}
-                                ${item.category_name3 ? ', ' + item.category_name3 : ''}
-                                ${item.category_name4 ? ', ' + item.category_name4 : ''}
-                                ${item.category_name5 ? ', ' + item.category_name5 : ''}
-                                ${item.category_name6 ? ', ' + item.category_name6 : ''}
-                                ${item.category_name7 ? ', ' + item.category_name7 : ''}
-                                ${item.category_name8 ? ', ' + item.category_name8 : ''}
-                                ${item.category_name9 ? ', ' + item.category_name9 : ''}
-                                ${item.category_name10 ? ', ' + item.category_name10 : ''}
-                            </td> <!-- Categories -->
-                            <td>
-                                <span class="price-text">${item.price}</span>
-                                <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
-                            </td>
-                            <td>${item.uom}</td>
-                        </tr>
-                    `;
-                    });
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while fetching rawMaterials(s).');
-                });
-        } else {
-            location.reload();
-        }
-    }
 </script>

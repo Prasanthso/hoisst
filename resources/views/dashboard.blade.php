@@ -9,207 +9,59 @@
         }
     </style>
 
-
     <div class="pagetitle">
         <h1> DASHBOARD </h1>
     </div><!-- End Page Title -->
 
     <section class="section dashboard">
+            <!-- End Left side columns -->
+            <!-- Right side columns -->
 
-        <!-- End Left side columns -->
-        <!-- Right side columns -->
-        <!-- First Row of Boxes -->
+        <!-- Box 4 -->
         <div class="row d-flex flex-wrap justify-content-between" style="margin: 0 -10px;">
-            <!-- Box 1 -->
-            <div class="col-xxl-2 col-md-4" style="margin: 10px;">
-                <a href="{{ route('rawMaterials.index') }}" style="text-decoration: none; color: inherit;">
-                    <div class="card info-card revenue-card" style="background-color: rgb(255, 226, 229); border-radius: 20px; padding: 15px 0 15px 0;">
-                        <div class="card-body">
-                            <div class="d-flex flex-column align-items-start">
-                                <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
-                                    <!-- <i class="bi bi-currency-dollar"></i>-->
-                                    <img src="/assets/img/RmIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;">
-                                </div>
-                                <div class="ps-3" style="margin-bottom: 10px;">
-                                    <h6>{{ $totalRm }}</h6>
-                                </div>
-                                <div class="ps-3">
-                                    <span class="text-muted small pt-2 ps-1"><b>Raw Materials</b></span>
-                                </div>
+        <div class="col-xxl-2 col-md-2" style="margin: 10px;">
+            <a href="{{ route('products.index') }}" style="text-decoration: none; color: inherit;">
+                <div class="card info-card revenue-card" style="background-color: rgb(243,232,255); border-radius: 20px; padding: 15px 0 15px 0;">
+                    <div class="card-body">
+                        <div class="d-flex flex-column align-items-start">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;background-color:rgb(191,131,255); width: 40px; height: 40px; border-radius: 60%;">
+                                {{-- <img src="/assets/img/PdIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;"> --}}
+                                <img src="/assets/img/package.png" alt="Pdc Icon" style="width: 0.7em; height: auto; margin-right:10px;">
+                            </div>
+                            <div class="ps-3" style="margin-bottom: 10px;">
+                                <h6>{{ $totalPd }}</h6>
+                            </div>
+                            <div class="ps-3">
+                                <span class="text-muted small pt-2 ps-1"><b>Products</b></span>
                             </div>
                         </div>
                     </div>
-                </a>
-            </div>
-
-            <!-- Box 2 -->
-            <div class="col-xxl-2 col-md-4" style="margin: 10px;">
-                <a href="{{ route('packingMaterials.index') }}" style="text-decoration: none; color: inherit;">
-                    <div class="card info-card revenue-card" style="background-color: rgb(255,244,222); border-radius: 20px; padding: 15px 0 15px 0;">
-                        <div class="card-body">
-                            <div class="d-flex flex-column align-items-start">
-                                <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
-                                    <img src="/assets/img/pmIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;">
-                                </div>
-                                <div class="ps-3" style="margin-bottom: 10px;">
-                                    <h6>{{ $totalPm }}</h6>
-                                </div>
-                                <div class="ps-1">
-                                    <span class="text-muted small pt-2 ps-1"><b>Packing Materials</b></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <!-- Box 3 -->
-            <div class="col-xxl-2 col-md-4" style="margin: 10px;">
-                <a href="{{ route('overheads.index') }}" style="text-decoration: none; color: inherit;">
-                    <div class="card info-card revenue-card" style="background-color: rgb(220,252,231); border-radius: 20px; padding: 15px 0 15px 0;">
-                        <div class="card-body">
-                            <div class="d-flex flex-column align-items-start">
-                                <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
-                                    <img src="/assets/img/OhIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;">
-                                </div>
-                                <div class="ps-3" style="margin-bottom: 10px;">
-                                    <h6>{{ $totalOh }}</h6>
-                                </div>
-                                <div class="ps-3">
-                                    <span class="text-muted small pt-2 ps-1"><b>Overheads</b></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <!-- Box 4 -->
-            <div class="col-xxl-2 col-md-4" style="margin: 10px;">
-                <a href="{{ route('products.index') }}" style="text-decoration: none; color: inherit;">
-                    <div class="card info-card revenue-card" style="background-color: rgb(243,232,255); border-radius: 20px; padding: 15px 0 15px 0;">
-                        <div class="card-body">
-                            <div class="d-flex flex-column align-items-start">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;background-color:rgb(191,131,255); width: 40px; height: 40px; border-radius: 60%;">
-                                    {{-- <img src="/assets/img/PdIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;"> --}}
-                                    <img src="/assets/img/package.png" alt="Pdc Icon" style="width: 0.7em; height: auto; margin-right:10px;">
-                                </div>
-                                <div class="ps-3" style="margin-bottom: 10px;">
-                                    <h6>{{ $totalPd }}</h6>
-                                </div>
-                                <div class="ps-3">
-                                    <span class="text-muted small pt-2 ps-1"><b>Products</b></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <!-- Box 5 -->
-            <div class="col-xxl-2 col-md-4" style="margin: 10px;">
-                <a href="{{ route('receipedetails.index') }}" style="text-decoration: none; color: inherit;">
-                    <div class="card info-card revenue-card" style="background-color: rgb(214,236,236); border-radius: 20px; padding: 15px 0 15px 0;">
-                        <div class="card-body">
-                            <div class="d-flex flex-column align-items-start">
-                                <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
-                                    <img src="/assets/img/rIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;">
-                                </div>
-                                <div class="ps-3" style="margin-bottom: 10px;">
-                                    <h6>{{ $totalrecipes }}</h6>
-                                </div>
-                                <div class="ps-3">
-                                    <span class="text-muted small pt-2 ps-1"><b>Recipes</b></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
+                </div>
+            </a>
         </div>
-        <!-- Second Row of Boxes -->
-        <div class="row d-flex flex-wrap justify-content-between" style="margin: 0 -10px;">
-            <!-- Box 1 -->
-            <div class="col-xxl-2 col-md-4" style="margin: 10px;">
-                <a href="{{ route('categoryitem.index') }}" style="text-decoration: none; color: inherit;">
-                    <div class="card info-card revenue-card" style="background-color: rgb(212,245,255); border-radius: 20px; padding: 15px 0 15px 0;">
-                        <div class="card-body">
-                            <div class="d-flex flex-column align-items-start">
-                                <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
-                                    <img src="/assets/img/RmcIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;">
-                                </div>
-                                <div class="ps-3" style="margin-bottom: 10px;">
-                                    <h6>{{ $totalRmC }}</h6>
-                                </div>
-                                <div class="ps-3">
-                                    <span class="text-muted small pt-2 ps-1"><b>Raw Material Categories</b></span>
-                                </div>
+         <!-- Box 5 -->
+        <div class="col-xxl-2 col-md-2" style="margin: 10px;">
+            <a href="{{ route('receipedetails.index') }}" style="text-decoration: none; color: inherit;">
+                <div class="card info-card revenue-card" style="background-color: rgb(214,236,236); border-radius: 20px; padding: 15px 0 15px 0;">
+                    <div class="card-body">
+                        <div class="d-flex flex-column align-items-start">
+                            <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
+                                <img src="/assets/img/rIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;">
+                            </div>
+                            <div class="ps-3" style="margin-bottom: 10px;">
+                                <h6>{{ $totalrecipes }}</h6>
+                            </div>
+                            <div class="ps-3">
+                                <span class="text-muted small pt-2 ps-1"><b>Recipes</b></span>
                             </div>
                         </div>
                     </div>
-                </a>
-            </div>
-            <!-- Box 2 -->
-            <div class="col-xxl-2 col-md-4" style="margin: 10px;">
-                <a href="{{ route('categoryitem.index') }}" style="text-decoration: none; color: inherit;">
-                    <div class="card info-card revenue-card" style="background-color: rgb(255,254,222); border-radius: 20px; padding: 15px 0 15px 0;">
-                        <div class="card-body">
-                            <div class="d-flex flex-column align-items-start">
-                                <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
-                                    <img src="/assets/img/PmcIcon.png" alt="receipe Icon" style="width: 2.5em; height: auto; margin-right:10px;">
-                                </div>
-                                <div class="ps-3" style="margin-bottom: 10px;">
-                                    <h6>{{ $totalPmC }}</h6>
-                                </div>
-                                <div class="ps-2">
-                                    <span class="text-muted small pt-2 ps-1"><b>Packing Material Categories</b></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
+                </div>
+            </a>
+        </div>
 
-            <!-- Box 3 -->
-            <div class="col-xxl-2 col-md-4" style="margin: 10px;">
-                <a href="{{ route('categoryitem.index') }}" style="text-decoration: none; color: inherit;">
-                    <div class="card info-card revenue-card" style="background-color: rgb(223,234,227); border-radius: 20px; padding: 15px 0 15px 0;">
-                        <div class="card-body">
-                            <div class="d-flex flex-column align-items-start">
-                                <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 10px;">
-                                    <img src="/assets/img/OhcIcon.png" alt="Ovc Icon" style="width: 2.5em; height: auto; margin-right:10px;">
-                                </div>
-                                <div class="ps-3" style="margin-bottom: 10px;">
-                                    <h6>{{ $totalOhC }}</h6>
-                                </div>
-                                <div class="ps-3">
-                                    <span class="text-muted small pt-2 ps-1"><b>Overheads Categories</b></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <!-- Box 4 -->
-            <div class="col-xxl-2 col-md-4" style="margin: 10px;">
-                <a href="{{ route('categoryitem.index') }}" style="text-decoration: none; color: inherit;">
-                    <div class="card info-card revenue-card" style="background-color: rgb(232,238,255); border-radius: 20px; padding: 15px 0 15px 0;">
-                        <div class="card-body">
-                            <div class="d-flex flex-column align-items-start">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px; background-color:rgb(103,133,220); width: 40px; height: 40px; border-radius: 60%;">
-                                    <img src="/assets/img/package.png" alt="Pdc Icon" style="width: 0.7em; height: auto; margin-right:10px;">
-                                </div>
-                                <div class="ps-3" style="margin-bottom: 10px;">
-                                    <h6>{{ $totalPdC }}</h6>
-                                </div>
-                                <div class="ps-3">
-                                    <span class="text-muted small pt-2 ps-1"><b>Product Categories</b></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <!-- Box 5 -->
-            <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+             <!-- Box 5 -->
+            <div class="col-xxl-2 col-md-2" style="margin: 10px;">
                 <div class="card info-card revenue-card" style="background-color: rgb(249,207,180); border-radius: 20px; padding: 15px 0 15px 0;">
                     <div class="card-body">
                         <div class="d-flex flex-column align-items-start">
@@ -227,32 +79,28 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-
-        <!-- Box 11 -->
-        <div class="col-xxl-2 col-md-4" style="margin: 10px;">
-            <div class="card info-card revenue-card" style="background-color: rgb(180,249,242); border-radius: 20px; padding: 15px 0 15px 0;">
-                <div class="card-body">
-                    <div class="d-flex flex-column align-items-start">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;background-color:rgb(59,218,202); width: 40px; height: 40px; border-radius: 60%;">
-                            <!--<i class="bi bi-currency-dollar"></i>-->
-                            <img src="/assets/img/package.png" alt="Pdc Icon" style="width: 0.7em; height: auto; margin-right:10px;">
-                        </div>
-                        <div class="ps-3" style="margin-bottom: 10px;">
-                            <h6>{{ $totalPm }}</h6>
-                        </div>
-                        <div class="ps-3">
-                            <span class="text-muted small pt-2 ps-1"><b>Products with high & low margins</b></span>
-                        </div>
+            <!-- Box 11 -->
+            <div class="col-xxl-2 col-md-4" style="margin: 10px;">
+                <div class="card info-card revenue-card" style="background-color: rgb(180,249,242); border-radius: 20px; padding: 15px 0 15px 0;">
+                    <div class="card-body">
+                        <div class="d-flex flex-column align-items-start">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="margin-bottom: 10px;background-color:rgb(59,218,202); width: 40px; height: 40px; border-radius: 60%;">
+                                <!--<i class="bi bi-currency-dollar"></i>-->
+                                <img src="/assets/img/package.png" alt="Pdc Icon" style="width: 0.7em; height: auto; margin-right:10px;">
+                            </div>
+                            <div class="ps-3" style="margin-bottom: 10px;">
+                                <h6>{{ ($alerts['lowMarginCount']) + ($alerts['highMarginCount']) }}</h6>
+                            </div>
+                            <div class="ps-1">
+                                <span class="text-muted small pt-2 ps-1"><b>Products margin (Low & High)</b></span>
+                            </div>
 
                     </div>
                 </div>
             </div>
-
         </div>
-
-        <!-- End Right side columns -->
+                <!-- End Right side columns -->
     </section>
     <section class="section dashboard">
         {{-- <div class="container mt-4">
@@ -267,256 +115,352 @@
         <button class="btn btn-danger" onclick="alert('WhatsApp mgs is not sent')">No</button>
         </div> --}}
 
+    {{-- <button class="btn btn-outline-primary whatsapp-btn" onclick="window.location.href='{{ route('whatsapp') }}'">whatsapp</button> --}}
 
-        {{-- <button class="btn btn-outline-primary whatsapp-btn" onclick="window.location.href='{{ route('whatsapp') }}'">whatsapp</button> --}}
-
-    </section>
-
-    {{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+</section>
 <section class="section dashboard">
-    <div class="row">
-        <div class="row">
-            <!-- Line Chart Column -->
-            <div class="col-md-12">
-                <div class="card p-3" style="border-radius: 15px; height: 400px;">
-                    <h5>Product Margin & Cost Chart</h5>
-                    <canvas id="marginLineChart" height="300"></canvas>
+    <!-- this is for sanpshot panel section -->
+    <div class="container"> <!--container-fluid-->
+        <!-- First Row: Cost Trend + Chart -->
+        <div class="row mb-4">
+            <!-- Cost Trend -->
+            <div class="col-md-3">
+                {{-- <div class="snapshot-panel card bg-light p-3 h-60"> --}}
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">Cost Trend</div>
+                        <div class="card-body">
+                        <p>Current Month: ₹{{ number_format($costindicator['thisMonthCost'], 2) }}</p>
+                        <p>Last Month: ₹{{ number_format($costindicator['lastMonthCost'], 2) }}</p>
+                        <p>
+                            Change:
+                            <span class="{{ $costindicator['costTrendIndicator'] == 'increase' ? 'text-success fw-bold' : ($costindicator['costTrendIndicator'] == 'decrease' ? 'text-danger fw-bold' : '') }}">
+                                {{ number_format($costindicator['costChange'], 2) }}%
+                                @if($costindicator['costTrendIndicator'] == 'increase')
+                                    🔺
+                                @elseif($costindicator['costTrendIndicator'] == 'decrease')
+                                    🔻
+                                @else
+                                    ➖
+                                @endif
+                            </span>
+                        </p>
+                        </div>
+                    </div>
+                {{-- </div> --}}
+            </div>
+            <!-- Chart -->
+            <div class="col-md-9">
+                <div class="card  h-100">
+                    <div class="card-header bg-primary text-white">
+                        Trend Analytics - Modifications & Impact
+                    </div>
+                    <div class="card-body">
+                        <canvas id="trendChart" width="500" height="240"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
-        <!-- Bar Chart Column -->
-        <div class="col-md-6">
-            <div class="card p-3" style="padding: 20px; border-radius: 15px; height: 450px;">
-                <h5>Product Margin</h5>
-                <canvas id="marginChart" height="300"></canvas> <!-- Increased height -->
-            </div>
-        </div>
 
-        <!-- Pie Chart Column -->
-        <div class="col-md-6">
-            <div class="card p-3 d-flex justify-content-center align-items-center" style="height: 450px; border-radius: 15px;">
-                <h5>Trading Product Cost </h5>
-                <canvas id="marginPieChart" width="100" height="150"></canvas>
+        <!-- Second Row: Alerts -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">Alerts & Red Flags</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="check-form" class="d-flex align-items-center">
+                            <label for="material_name" class="form-label mb-0 me-2">Rawmaterial name:</label>
+                            <input type="text" id="material_name" class="form-control me-2" name="material_name" placeholder="Enter raw material name" required>
+                            <button class="btn btn-primary me-2" type="submit">Check</button>
+                            {{-- <button class="btn btn-primary" type="btnClear">Clear</button> --}}
+                        </form>
+                          <!-- High Cost Ingredients Alerts -->
+                        <div id="alert-container">
+                            @if(isset($highcostingredients) && !empty($highcostingredients))
+                                <div class="alert alert-danger">
+                                    <h5>🚨 High Cost Ingredient</h5>
+                                    @foreach($highcostingredients as $alert)
+                                        <p><strong>{{ $alert['item'] }}</strong> - {{ $alert['description'] }}</p>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="alert alert-info mt-2" id="result">No high cost alert for this material.</div>
+                            @endif
+                        </div>
+
+                    <!-- Low Margin Products Alerts -->
+                    @if(count($alerts['lowMarginAlerts']) > 0)
+                        <div class="alert alert-warning">
+                            <h5>🚨 Low Margin Products</h5>
+                            @foreach($alerts['lowMarginAlerts'] as $lowalert)
+                                <p><strong>{{ $lowalert['item'] }}</strong> - {{ $lowalert['description'] }}</p>
+                                {{-- <p>{{ $lowalert['cost'] }}</p> --}}
+                            @endforeach
+                        </div>
+                    @else
+                        <p>No low margin product alerts.</p>
+                    @endif
+
+                    <!-- High Margin Products Alerts -->
+                    @if(count($alerts['highMarginAlerts']) > 0)
+                        <div class="alert alert-success">
+                            <h5>🚨 High Margin Products</h5>
+                            @foreach($alerts['highMarginAlerts'] as $highalert)
+                                <p><strong>{{ $highalert['item'] }}</strong> - {{ $highalert['description'] }}</p>
+
+                            @endforeach
+                        </div>
+                    @else
+                        <p>No high margin product alerts.</p>
+                    @endif
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-</section> --}}
+{{-- </section>
+<section class="section dashboard"> --}}
 
-    {{--
-<section class="section dashboard">
-    <!-- Dot (Scatter) Chart -->
-    <div class="card" style="padding: 20px; border-radius: 15px;">
-        <h5 class="card-title">Product Margin Scatter Plot</h5>
-        <canvas id="marginDotChart" height="80"></canvas>
+    <div class="container">
+        <h5>Cost Insights</h5>
+        <!-- Cost Trend Chart -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">Cost Trend (Last 6 Months)</div>
+            <div class="card-body">
+                <canvas id="costTrendChart" height="h-100"></canvas>
+            </div>
+        </div>
+        <!-- Top Profitable Recipes -->
+        @php
+            $topProfitable = $trendData['top_profitable'];
+        @endphp
+        <div class="card">
+            <div class="card-header  bg-primary text-white">Top Profitable Recipes</div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Margin (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($topProfitable as $item)
+                            <tr>
+                                <td>{{ $item->name }}</td>
+
+                                <td>{{ number_format($item->price, 2) }}</td>
+                                <td>{{ $item->margin }}%</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
-</section> --}}
-    {{--
-<section class="section dashboard">
-    <div class="card p-3 d-flex justify-content-center align-items-center" style="height: 400px;">
-    <h5>Product Margin</h5>
-    <canvas id="marginPieChart"  width="150" height="100"></canvas>
-</div>
-</section> --}}
-</main><!-- End #main -->
-
-@endsection
-
+</section>
+</main>  <!-- End #main -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const ctx = document.getElementById('marginChart').getContext('2d');
-        const labels = {
-            !!json_encode(collect($graphproducts) - > pluck('name')) !!
-        };
-        const data = {
-            !!json_encode(collect($graphproducts) - > pluck('margin')) !!
-        };
-        const purcCostData = {
-            !!json_encode(collect($graphproducts) - > pluck('purcCost')) !!
-        };
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                        label: 'Product Margin',
-                        data: data,
-                        backgroundColor: data.map(value => value < 25 ? '#f87171' : '#4ade80'), // red or green
-                        borderWidth: 1
-                    },
-                    // {
-                    //     label: 'Purchase cost',
-                    //     data: purcCostData,
-                    //     backgroundColor: data.map(value => value < 100 ? '#f87171' : '#4ade80'), // red or green
-                    //     borderWidth: 1
-                    // },
-                ]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
+        $('#check-form').on('submit', function(e) {
+            e.preventDefault();
+
+            let materialName = $('#material_name').val();
+
+            $.ajax({
+                url: '{{ route("dashboard") }}',
+                type: 'GET',
+                data: { material_name: materialName },
+                success: function(response) {
+                    // Update the content based on the response
+                    if (response.highcostingredients.length > 0) {
+                        let alertHtml = '<div class="alert alert-danger"><h5>🚨 High Cost Ingredient</h5>';
+                        response.highcostingredients.forEach(function(alert) {
+                            alertHtml += `<p><strong>${alert.item}</strong> - ${alert.description}</p>`;
+                        });
+                        alertHtml += '</div>';
+                        $('#alert-container').html(alertHtml);
+                    } else {
+                        $('#alert-container').html('<div class="alert alert-info mt-2" id="result">No high cost alert for this material.</div>');
+                    }
+
+                    // Handle other alerts (if needed)
+                    // Example: Low Margin Alerts, High Margin Alerts, etc.
+                },
+                error: function() {
+                    $('#alert-container').html('<div class="alert alert-danger">Something went wrong. Please try again.</div>');
+                }
+            });
+        });
+
+        $('#btnClear').on('click', function () {
+            $('#material_name').val('');              // Clear input
+            $('#alert-container').html('');           // Clear alert messages
+        });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        barchart();
+        costtrendLineChart();
+    });
+
+    // modifications & Impact
+    function barchart() {
+    const months = @json($months);
+    const products = @json($products);
+    const rawMaterials = @json($rawMaterials);
+    const quantities = @json($quantities);
+    const impacts = @json($impacts);
+
+    const labels = months.map((month, i) => `${month} - ${products[i]} (${rawMaterials[i]})`);
+
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Top Raw Material Quantity',
+                data: quantities,
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                marginData: impacts // Custom data for tooltips
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Quantity'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Month - Product (Raw Material)'
+                    }
+                }
+            }, // <- FIXED: added missing comma here
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const quantity = context.raw;
+                            const margin = context.dataset.marginData[context.dataIndex];
+                            return `Quantity: ${quantity}, Margin: ${margin.toFixed(2)}%`;
+                        }
                     }
                 }
             }
-        });
-        // dotchart();
-        piechart();
-        graphchart();
+        }
     });
+    }
 
-    function dotchart() {
-        const dotctx = document.getElementById('marginDotChart').getContext('2d');
+    function costtrendLineChart()
+    {
+        const ctx = document.getElementById('costTrendChart').getContext('2d');
+        const rawData = @json($trendData['trendData']);
+        // Extract unique months
+        const months = [...new Set(rawData.map(item => item.month))];
 
-        const rawData = {
-            !!json_encode($graphproducts) !!
-        };
+        // Group prices
+        const groupedOld = {};
+        const groupedNew = {};
 
-        const scatterData = rawData.map(item => ({
-            x: item.purcCost,
-            y: item.margin,
-        }));
+        rawData.forEach(item => {
+            if (!groupedOld[item.material_name]) groupedOld[item.material_name] = {};
+            if (!groupedNew[item.material_name]) groupedNew[item.material_name] = {};
 
-        new Chart(dotctx, {
-            type: 'scatter',
+            groupedOld[item.material_name][item.month] = item.avg_old_price;
+            groupedNew[item.material_name][item.month] = item.avg_new_price;
+        });
+
+        // Create datasets (old in dashed lines, new in solid lines)
+        const datasets = [];
+
+        Object.keys(groupedOld).forEach((name, index) => {
+            const color = randomColor();
+
+            datasets.push({
+                label: `${name} - Old Price`,
+                data: months.map(m => groupedOld[name][m] ?? null),
+                borderColor: color,
+                borderDash: [5, 5],
+                pointBackgroundColor: color,
+                backgroundColor: color,
+                fill: false,
+                tension: 0.3
+            });
+
+            datasets.push({
+                label: `${name} - New Price`,
+                data: months.map(m => groupedNew[name][m] ?? null),
+                borderColor: color,
+                pointBackgroundColor: color,
+                backgroundColor: color,
+                fill: false,
+                tension: 0.3
+            });
+        });
+
+
+        new Chart(document.getElementById('costTrendChart'), {
+            type: 'line',
             data: {
-                datasets: [{
-                    label: 'Margin vs purcCost',
-                    data: scatterData,
-                    backgroundColor: '#60a5fa',
-                    pointRadius: 6,
-                    pointHoverRadius: 8
-                }]
+                labels: months,
+                datasets: datasets
             },
             options: {
                 responsive: true,
                 scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: 'Price ($)'
+                        }
+                    },
                     x: {
                         title: {
                             display: true,
-                            text: 'Purchase Cost'
+                            text: 'Month'
                         }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Margin'
-                        },
-                        beginAtZero: true
                     }
                 },
                 plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top'
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => `${ctx.dataset.label}: $${ctx.raw?.toFixed(2)}`
+                        }
+                    }
+                },
+                elements: {
+                    point: {
+                        radius: 4,
+                        hoverRadius: 6
+                    },
+                    line: {
+                        borderWidth: 2
                     }
                 }
             }
         });
-
     }
-
-    function piechart() {
-        const ctx = document.getElementById('marginPieChart').getContext('2d');
-
-        const labels = {
-            !!json_encode(collect($graphproducts) - > pluck('name')) !!
-        };
-        const data = {
-            !!json_encode(collect($graphproducts) - > pluck('purcCost')) !!
-        };
-
-        new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Product Cost',
-                    data: data,
-                    backgroundColor: labels.map(() => getRandomColor())
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'right'
-                    }
-                }
-            }
-        });
-
-        // Helper function to generate random colors
-        function getRandomColor() {
-            const letters = '0123456789ABCDEF';
-            let color = '#';
-            for (let i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
+    function randomColor() {
+            const colors = ['#f44336', '#03a9f4', '#ffeb3b', '#4caf50', '#9c27b0'];
+            return colors[Math.floor(Math.random() * colors.length)];
         }
-    }
-
-    function graphchart() {
-        const labels = {
-            !!json_encode(collect($graphproducts) - > pluck('name')) !!
-        };
-        const data = {
-            !!json_encode(collect($graphproducts) - > pluck('margin')) !!
-        };
-        const purcCostData = {
-            !!json_encode(collect($graphproducts) - > pluck('purcCost')) !!
-        };
-        // Color logic: pink if < 25, green if ≥ 25
-        const pointColors = data.map(value => value < 25 ? '#f472b6' : '#4ade80');
-
-        new Chart(document.getElementById('marginLineChart').getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                        label: 'Product Margin',
-                        data: data,
-                        fill: false,
-                        borderColor: '#4ade80', // line color (you can set to '#999' if you want neutral)
-                        pointBackgroundColor: pointColors, // dynamic dot colors
-                        pointBorderColor: pointColors,
-                        tension: 0.3
-                    },
-                    {
-                        label: 'Purchase Cost',
-                        data: purcCostData,
-                        fill: false,
-                        borderColor: '#3b82f6', // blue line
-                        pointBackgroundColor: '#f87171',
-                        pointBorderColor: '#3b82f6',
-                        tension: 0.3
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Margin'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Product Name'
-                        }
-                    }
-                }
-            }
-        });
-    }
 </script>
 
 
