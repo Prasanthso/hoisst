@@ -66,7 +66,7 @@
                                 </div>
                                 <div class=" col-md-12">
                                     <label for="categorySelect" class="form-label">Raw Material Category</label>
-                                    <select id="categorySelect" class="form-select select2" name="category_ids[]" multiple>
+                                    <select id="categorySelect" class="form-select" name="category_ids[]" multiple>
                                         @foreach($rawMaterialCategories as $categories)
                                         <option value="{{ $categories->id }}"
                                             {{ in_array($categories->id, old('category_ids', [])) ? 'selected' : '' }}>
