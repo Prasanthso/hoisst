@@ -139,7 +139,7 @@
                             </div>
                             @if(count($lowMarginProducts) > 2)
                             <div class="text-end pe-3 mt-1">
-                                <a href="#" style="font-size: 12px;">View all</a>
+                                <a href="/lowmarginNotification" style="font-size: 12px;">View all</a>
                             </div>
                             @endif
                         </div>
