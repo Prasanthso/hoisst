@@ -279,51 +279,72 @@
 */
         // PDF Export Function
         document.getElementById('exportPdfBtn').addEventListener('click', function() {
-            const {
-                jsPDF
-            } = window.jspdf;
-            const doc = new jsPDF();
 
-            const table = document.getElementById('exportCategory');
-            if (!table) {
-                console.error('Table with ID "exportCategory" not found.');
-                return;
-            }
+    const table = document.getElementById('catagoriesTable');
+    const rows = table.querySelectorAll('tr');
+    let exportData = [];
+    const header = ["S. NO.", "Category", "Category Items", "Description"];
+    exportData.push(header);
+    let serial = 1;
 
-            const rows = Array.from(table.querySelectorAll('tr'));
-            const tableData = [];
-            let serialNumber = 1;
+    visibleData.forEach(item => {
+        exportData.push([
+            serial++, // Serial number
+            item.categoryname,
+            item.itemname, // Category Item Name
+            item.description // Description
+        ]);
+    });
 
-            rows.forEach((row, rowIndex) => {
-                if (row.style.display !== 'none') {
-                    const cells = Array.from(row.children);
-                    const rowData = [];
-
-                    if (rowIndex > 0) {
-                        rowData.push(serialNumber++);
-                    } else {
-                        rowData.push("S.NO");
-                    }
-
-                    cells.forEach((cell, index) => {
-                        if (index !== 0) { // Skip checkboxes column
-                            rowData.push(cell.innerText.trim());
-                        }
-                    });
-
-                    tableData.push(rowData);
+    if (isFilter) {
+        // Export filtered data to PDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.autoTable({
+            head: [header],
+            body: exportData.slice(1), // Exclude the header row
+            startY: 20,
+            margin: { top: 10, left: 10, right: 10 },
+            theme: 'grid', // You can change the theme to 'striped', 'plain', etc.
+        });
+        doc.save('categoryItems_filtered.pdf');
+    } else {
+        fetch('/categoryitem/export-all')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
                 }
-            });
+                return response.json();
+            })
+            .then(data => {
+                console.log('Export Data:', data);
+                data.forEach((item, index) => {
+                    exportData.push([
+                        index + 1,
+                        item.categoryname,
+                        item.itemname,
+                        item.description
+                    ]);
+                });
 
-            // Add Table to PDF
-            doc.autoTable({
-                head: [tableData[0]], // Header row
-                body: tableData.slice(1), // Table content
-                startY: 20,
-                theme: 'striped',
+                // Export all data to PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.autoTable({
+                    head: [header],
+                    body: exportData.slice(1), // Exclude the header row
+                    startY: 20,
+                    margin: { top: 10, left: 10, right: 10 },
+                    theme: 'grid', // You can change the theme to 'striped', 'plain', etc.
+                });
+                doc.save('categoryItems_all.pdf');
+            })
+            .catch(error => {
+                console.error('Export error:', error);
+                alert('Failed to export all data: ' + error.message);
             });
+    }
 
-            doc.save('categories_list.pdf');
         });
 
         // Listen for changes to any category checkbox
