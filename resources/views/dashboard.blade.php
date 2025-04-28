@@ -203,7 +203,7 @@
         @endif
     @endforeach
 
-    @if(count($alerts['lowMarginAlerts']) > 1)
+    @if(count($alerts['lowMarginAlerts']) > 2)
         <button onclick="toggleLowMarginAlerts()" class="btn btn-primary btn-sm mt-2">View More</button>
     @endif
 </div>
@@ -212,7 +212,7 @@
 @endif
 
 <!-- High Margin Products Alerts -->
-@if(count($alerts['highMarginAlerts']) > 2)
+@if(count($alerts['highMarginAlerts']) > 0)
 <div class="alert alert-success">
     <h5>🚨 High Margin Products</h5>
     @foreach($alerts['highMarginAlerts'] as $index => $highalert)

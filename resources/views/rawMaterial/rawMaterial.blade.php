@@ -238,38 +238,37 @@
         const rows = document.querySelectorAll('#rawMaterialTable tr');
         const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
         let isEditing = false; // Track if edit mode is active
+        let isFilter = false;
+        let visibleData = [];
 
         document.getElementById('exportBtn').addEventListener('click', function() {
-            const table = document.getElementById('rawMaterialTable');
+            // const table = document.getElementById('rawMaterialTable');
             const rows = table.querySelectorAll('tr');
             let exportData = [];
             const header = ["S. NO.", "Raw Materials", "RM Code", "Raw Materials Category", "Price(Rs)", "UoM"];
             exportData.push(header);
 
-            let visibleData = [];
-
             let serial = 1;
 
-            rows.forEach(row => {
-                const style = window.getComputedStyle(row);
-                if (style.display !== 'none') {
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length >= 6) {
-                        visibleData.push([
-                            serial++, // S.NO
-                            cells[2].innerText.trim(), // Name
-                            cells[3].innerText.trim(), // RM Code
-                            cells[4].innerText.trim(), // Categories (already joined in UI)
-                            cells[5].querySelector('.price-text')?.innerText.trim() ?? '', // Price
-                            cells[6].innerText.trim() // UoM
-                        ]);
-                    }
-                }
-            });
+                visibleData.forEach(item => {
+                    const categories = [
+                        item.category_name1, item.category_name2, item.category_name3,
+                        item.category_name4, item.category_name5, item.category_name6,
+                        item.category_name7, item.category_name8, item.category_name9,
+                        item.category_name10
+                    ].filter(Boolean).join(', ');
 
-            if (visibleData.length < 10) {
-                // Export filtered data
-                exportData = exportData.concat(visibleData);
+                    exportData.push([
+                        serial++, // Serial number
+                        item.name, // Raw Material Name
+                        item.rmcode, // RM Code
+                        categories, // Raw Materials Category
+                        item.price, // Price (you can directly use it from item)
+                        item.uom // UoM
+                    ]);
+                });
+            if (isFilter) {
+                // exportData = exportData.concat(visibleData);
                 const ws = XLSX.utils.aoa_to_sheet(exportData);
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, 'RawMaterials');
@@ -305,36 +304,36 @@
         document.getElementById('exportPdfBtn').addEventListener('click', function() {
             const table = document.getElementById('rawMaterialTable');
             const rows = table.querySelectorAll('tr');
-
+            let exportData = [];
             const summaryText = document.querySelector('.d-flex')?.innerText || '';
             const totalMatch = summaryText.match(/of\s+(\d+)\s+entries/i);
             const totalEntries = totalMatch ? parseInt(totalMatch[1]) : 0;
 
             const header = ["S. No.", "Raw Materials", "RM Code", "Raw Materials Category", "Price(Rs)", "UoM"];
-            let visibleData = [];
+            // let visibleData = [];
 
             // Get visible rows from DOM table
             let count = 1;
-            rows.forEach(row => {
-                const style = window.getComputedStyle(row);
-                if (style.display !== 'none') {
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length >= 6) {
-                        visibleData.push([
-                            count++, // S. No.
-                            cells[2]?.innerText.trim() || '',
-                            cells[3]?.innerText.trim() || '',
-                            cells[4]?.innerText.trim() || '',
-                            cells[5]?.querySelector('.price-text')?.innerText.trim() || '',
-                            cells[6]?.innerText.trim() || ''
-                        ]);
-                    }
-                }
-            });
+            visibleData.forEach(item => {
+                const categories = [
+                        item.category_name1, item.category_name2, item.category_name3,
+                        item.category_name4, item.category_name5, item.category_name6,
+                        item.category_name7, item.category_name8, item.category_name9,
+                        item.category_name10
+                    ].filter(Boolean).join(', ');
+                    exportData.push([
+                        count++, // Serial number
+                        item.name, // Raw Material Name
+                        item.rmcode, // RM Code
+                        categories, // Raw Materials Category
+                        item.price, // Price (you can directly use it from item)
+                        item.uom // UoM
+                    ]);
+                });
 
-            if (visibleData.length < 10) {
-                console.log("Exporting visible data:", visibleData);
-                generatePdf(header, visibleData, 'rawmaterials_filtered.pdf');
+            if (isFilter) {
+                console.log("Exporting visible data:", exportData);
+                generatePdf(header, exportData, 'rawmaterials_filtered.pdf');
             } else {
                 // Fetch all data from backend
                 fetch('/rawMaterials/export-all')
@@ -754,6 +753,7 @@
                     document.querySelectorAll('.category-checkbox:checked')
                 ).map(cb => cb.value);
 
+                isFilter = true;
                 if (selectedCategories.length > 0) {
                     const queryParams = new URLSearchParams({
                         category_ids: selectedCategories.join(','),
@@ -777,6 +777,7 @@
                         })
                         .then(data => {
                             filteredData = data.rawMaterials;
+                            visibleData = data.rawMaterials;
                             currentPage = 1; // reset to page 1 on new filter
                             renderTablePage(currentPage, filteredData);
                             renderPagination(filteredData.length);
@@ -974,20 +975,20 @@
             const searchType = document.getElementById('searchtype').value;
             // const categoryItems = document.querySelectorAll(".category-item");
             if (searchType === 'category') {
-                // categoryItems.forEach(item => item.style.display = "block");
                 filterCategories();
+                // isFilter = true;
             } else if (searchType === 'items') {
-                // categoryItems.forEach(item => item.style.display = "none");
                 filterItems();
+                isFilter = true;
             }
         });
 
         document.getElementById('searchtype').addEventListener('change', function () {
             const searchTypeselection = this.value;
+            document.getElementById("categorySearch").value ="";
             const categoryItems = document.querySelectorAll(".category-item");
             if (searchTypeselection === 'category') {
                 categoryItems.forEach(item => item.style.display = "block");
-
             } else if (searchTypeselection === 'items') {
                 categoryItems.forEach(item => item.style.display = "none");
             }
@@ -1060,6 +1061,7 @@
                         })
                         .then(data => {
                             filteredData = data.rawMaterials;
+                            visibleData = data.rawMaterials;
                             console.log('Fetched Data:', data.rawMaterials);
                             currentPage = 1; // reset to page 1 on new filter
                             renderTablePage(currentPage, filteredData);
@@ -1139,6 +1141,7 @@ function default_searchType()
                 categoryItems.forEach(item => item.style.display = "none");
             }
 }
+
  /* For filter Functions*/
         /*
         function filterRawMaterials() {

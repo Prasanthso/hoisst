@@ -484,6 +484,7 @@
                 <tr data-id="${item.id}">
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${start+index + 1}.</td>
+                            <td>${item.categoryname}</td>
                             <td class="left-align"><a href="/editcategoryitem/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
                             <td>${item.description}</td>
                             <td>${item.created_user}</td>
@@ -694,7 +695,6 @@
                     location.reload();
                     }
             }
-
 default_searchType();
 });
 
@@ -704,9 +704,7 @@ function default_searchType()
             const categoryItems = document.querySelectorAll(".category-item");
             if (searchType === 'category') {
                 categoryItems.forEach(item => item.style.display = "block");
-
             } else if (searchType === 'items') {
-
                 categoryItems.forEach(item => item.style.display = "none");
             }
 }
