@@ -301,21 +301,56 @@
 
                 </li><!-- End Notification Nav -->
 
-                <li>
+
+                <!-- <li>
                     <a class="nav-link nav-icon" href="login.html">
                         <i class=" bi bi-person"></i>
                     </a>
-                </li>
+                </li> -->
+
+                @php
+                $user = Auth::user();
+                @endphp
+
+                <li class="nav-item dropdown pe-3">
+                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                        <!-- Profile Image -->
+                        <img src="https://static.vecteezy.com/system/resources/previews/000/439/863/original/vector-users-icon.jpg" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px;">
+                        <span class="d-none d-md-block dropdown-toggle ps-2">{{ $user->name }}</span>
+                    </a><!-- End Profile Image Icon -->
+
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                        <li class="dropdown-header">
+                            <h6>Name : {{ $user->name }}</h6>
+                            <span>Role: {{ $user->role ?? 'User' }}</span>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST" id="logout-form">
+                                @csrf
+                                <!-- Use JavaScript to submit the form -->
+                                <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="document.getElementById('logout-form').submit();">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    <span>Sign Out</span>
+                                </a>
+                            </form>
+                        </li>
+
+                    </ul><!-- End Profile Dropdown Items -->
+                </li><!-- End Profile Nav -->
+
 
                 <!-- Same wrapper as other icons -->
-                <li class="nav-item pe-3">
+                <!-- <li class="nav-item pe-3">
                     <form action="{{ route('logout') }}" method="POST" id="logout-form">
                         @csrf
                         <button type="submit" class="nav-link nav-icon btn p-0" style="color: red; background: none; border: none;">
                             <i class="bi bi-box-arrow-right"></i>
                         </button>
                     </form>
-                </li>
+                </li> -->
 
 
 
