@@ -29,6 +29,7 @@ class LoginController extends Controller
                 'user_id' => $user->id,
                 'user_name' => $user->name,
                 'user_role' => $user->role ?? 'user', // If you have a role column
+                'store_id' => $user->store_id,
                 // Add more if needed
             ]);
 

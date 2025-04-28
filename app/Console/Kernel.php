@@ -16,6 +16,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('check:rm-price-updates')->hourly();
         $schedule->command('check:pm-price-updates')->everyFiveMinutes();
         $schedule->command('check:pd-price-updates')->everyFiveMinutes();
+
+        $schedule->command('check:rwm-price-threshold')->hourly();
+        $schedule->command('check:pm-price-threshold')->everyFiveMinutes();
+        $schedule->command('check:pd-price-threshold')->everyFiveMinutes();
         
     }
 
