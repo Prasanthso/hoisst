@@ -402,4 +402,36 @@ class CategoryItemController extends Controller
         //   return back()->with('success', 'Excel file imported successfully!');
     }
 
+    public function exportAll()
+    {
+        try {
+            $categoryItems = \App\Models\CategoryItems::select([
+                'categoryitems.id',
+                'categoryitems.itemname',
+                'categoryitems.categoryId',
+                'categoryitems.description',
+                'categoryitems.status',
+                'category.categoryname as categoryname'
+            ])
+            ->leftJoin('categories', 'categoryitems.categoryId', '=', 'categories.id')
+            ->where('categoryitems.status', 'active') // only active items
+            ->orderBy('categoryitems.itemname', 'asc')
+            ->get();
+            // ->map(function ($item) {
+            //     return [
+            //         'id' => $item->id,
+            //         'categoryname' => $item->categoryname ?? '',
+            //         'itemname' => $item->itemname,
+            //         'description' => $item->description,
+            //     ];
+            // });
+
+        } catch (\Exception $e) {
+            // Return the error message if an exception occurs
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+        return response()->json($categoryItems);
+    }
+
+
 }

@@ -189,31 +189,49 @@
                             @endif
                         </div>
 
-                    <!-- Low Margin Products Alerts -->
-                    @if(count($alerts['lowMarginAlerts']) > 0)
-                        <div class="alert alert-warning">
-                            <h5>🚨 Low Margin Products</h5>
-                            @foreach($alerts['lowMarginAlerts'] as $lowalert)
-                                <p><strong>{{ $lowalert['item'] }}</strong> - {{ $lowalert['description'] }}</p>
-                                {{-- <p>{{ $lowalert['cost'] }}</p> --}}
-                            @endforeach
-                        </div>
-                    @else
-                        <p>No low margin product alerts.</p>
-                    @endif
+                  <!-- Low Margin Products Alerts -->
+@if(count($alerts['lowMarginAlerts']) > 0)
+<div class="alert alert-warning">
+    <h5>🚨 Low Margin Products</h5>
+    @foreach($alerts['lowMarginAlerts'] as $index => $lowalert)
+        @if($index < 2)
+            <p><strong>{{ $lowalert['item'] }}</strong> - {{ $lowalert['description'] }}</p>
+        @else
+            <div class="more-low-margin-alerts" style="display: none;">
+                <p><strong>{{ $lowalert['item'] }}</strong> - {{ $lowalert['description'] }}</p>
+            </div>
+        @endif
+    @endforeach
 
-                    <!-- High Margin Products Alerts -->
-                    @if(count($alerts['highMarginAlerts']) > 0)
-                        <div class="alert alert-success">
-                            <h5>🚨 High Margin Products</h5>
-                            @foreach($alerts['highMarginAlerts'] as $highalert)
-                                <p><strong>{{ $highalert['item'] }}</strong> - {{ $highalert['description'] }}</p>
+    @if(count($alerts['lowMarginAlerts']) > 2)
+        <button onclick="toggleLowMarginAlerts()" class="btn btn-primary btn-sm mt-2">View More</button>
+    @endif
+</div>
+@else
+<p>No low margin product alerts.</p>
+@endif
 
-                            @endforeach
-                        </div>
-                    @else
-                        <p>No high margin product alerts.</p>
-                    @endif
+<!-- High Margin Products Alerts -->
+@if(count($alerts['highMarginAlerts']) > 0)
+<div class="alert alert-success">
+    <h5>🚨 High Margin Products</h5>
+    @foreach($alerts['highMarginAlerts'] as $index => $highalert)
+        @if($index < 2)
+            <p><strong>{{ $highalert['item'] }}</strong> - {{ $highalert['description'] }}</p>
+        @else
+            <div class="more-high-margin-alerts" style="display: none;">
+                <p><strong>{{ $highalert['item'] }}</strong> - {{ $highalert['description'] }}</p>
+            </div>
+        @endif
+    @endforeach
+
+    @if(count($alerts['highMarginAlerts']) > 2)
+        <button onclick="toggleHighMarginAlerts()" class="btn btn-primary btn-sm mt-2">View More</button>
+    @endif
+</div>
+@else
+<p>No high margin product alerts.</p>
+@endif
 
                     </div>
                 </div>
