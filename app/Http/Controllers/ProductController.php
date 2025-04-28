@@ -491,13 +491,13 @@ class ProductController extends Controller
                     $query->select(DB::raw(1))
                         ->from('recipedetails')
                         ->whereColumn('recipedetails.product_id', 'product_master.id')
-                        ->where('status', '!=', 'active');
+                        ->where('status', '=', 'active');
                 })
                 ->whereNotExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('recipe_master')
                         ->whereColumn('recipe_master.product_id', 'product_master.id')
-                        ->where('status', '!=', 'active');
+                        ->where('status', '=', 'active');
                 })
                 ->get();
 
