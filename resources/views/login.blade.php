@@ -89,6 +89,12 @@
             margin-bottom: 20px;
             font-size: 20px;
         }
+
+        .forgot-password {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+        }
     </style>
 </head>
 
@@ -152,6 +158,8 @@
                 </div>
             </form>
 
+            <!-- Forgot Password Link -->
+            <a href="{{ route('password.request') }}" class="forgot-password">Forgot Password?</a>
         </div>
     </div>
 

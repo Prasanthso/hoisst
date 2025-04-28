@@ -26,4 +26,38 @@ class PasswordController extends Controller
 
         return back()->with('status', 'password-updated');
     }
+
+    public function showResetForm(Request $request, $token = null)
+    {
+        return view('auth.reset-password')->with(
+            ['token' => $token, 'email' => $request->email]
+        );
+    }
+
+    // Handle the password reset logic
+    public function reset(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|confirmed|min:8',
+            'token' => 'required'
+        ]);
+
+        // Attempt to reset the password
+        $response = Password::reset(
+            $validated,
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => bcrypt($password),
+                ])->save();
+            }
+        );
+
+        // Check for success or failure
+        if ($response == Password::PASSWORD_RESET) {
+            return redirect()->route('login')->with('status', 'Password has been reset!');
+        }
+
+        return back()->withErrors(['email' => [trans($response)]]);
+    }
 }
