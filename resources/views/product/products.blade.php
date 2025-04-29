@@ -233,6 +233,8 @@
          const rows = document.querySelectorAll('#productsTable tr');
          const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
          let isEditing = false; // Track if edit mode is active
+         let visibleData = [];
+         let isFilter = false;
 
          document.getElementById('exportBtn').addEventListener('click', function() {
              const table = document.getElementById('productsTable');
@@ -240,31 +242,28 @@
              let exportData = [];
              const header = ["S. NO.", "Products", "PD Code", "Products Category", "Price(Rs)", "UoM"];
              exportData.push(header);
-
-             let visibleData = [];
-
              let serial = 1;
 
-             rows.forEach(row => {
-                 const style = window.getComputedStyle(row);
-                 if (style.display !== 'none') {
-                     const cells = row.querySelectorAll('td');
-                     if (cells.length >= 6) {
-                         visibleData.push([
-                             serial++, // S.NO
-                             cells[2].innerText.trim(), // Name
-                             cells[3].innerText.trim(), // RM Code
-                             cells[4].innerText.trim(), // Categories (already joined in UI)
-                             cells[5].querySelector('.price-text')?.innerText.trim() ?? '', // Price
-                             cells[6].innerText.trim() // UoM
-                         ]);
-                     }
-                 }
-             });
+             visibleData.forEach(item => {
+                const categories = [
+                        item.category_name1, item.category_name2, item.category_name3,
+                        item.category_name4, item.category_name5, item.category_name6,
+                        item.category_name7, item.category_name8, item.category_name9,
+                        item.category_name10
+                    ].filter(Boolean).join(', ');
+                    exportData.push([
+                        serial++, // Serial number
+                        item.name, // Raw Material Name
+                        item.pdcode, // RM Code
+                        categories, // Raw Materials Category
+                        item.price, // Price (you can directly use it from item)
+                        item.uom // UoM
+                    ]);
+                });
 
-             if (visibleData.length < 10) {
+             if (isFilter) {
                  // Export filtered data
-                 exportData = exportData.concat(visibleData);
+                //  exportData = exportData.concat(visibleData);
                  const ws = XLSX.utils.aoa_to_sheet(exportData);
                  const wb = XLSX.utils.book_new();
                  XLSX.utils.book_append_sheet(wb, ws, 'products');
@@ -278,7 +277,7 @@
                              exportData.push([
                                  index + 1,
                                  item.name,
-                                 item.rmcode,
+                                 item.pdcode,
                                  item.categories, // Comes as comma-separated string
                                  item.price,
                                  item.uom
@@ -306,31 +305,32 @@
              const totalEntries = totalMatch ? parseInt(totalMatch[1]) : 0;
 
              const header = ["S. No.", "products", "PD Code", "products Category", "Price(Rs)", "UoM"];
-             let visibleData = [];
+             let exportData = [];
 
              // Get visible rows from DOM table
              let count = 1;
-             rows.forEach(row => {
-                 const style = window.getComputedStyle(row);
-                 if (style.display !== 'none') {
-                     const cells = row.querySelectorAll('td');
-                     if (cells.length >= 6) {
-                         visibleData.push([
-                             count++, // S. No.
-                             cells[2]?.innerText.trim() || '',
-                             cells[3]?.innerText.trim() || '',
-                             cells[4]?.innerText.trim() || '',
-                             cells[5]?.querySelector('.price-text')?.innerText.trim() || '',
-                             cells[6]?.innerText.trim() || ''
-                         ]);
-                     }
-                 }
-             });
 
-             if (visibleData.length < 10) {
-                 console.log("Exporting visible data:", visibleData);
-                 generatePdf(header, visibleData, 'products_filtered.pdf');
-             } else {
+            visibleData.forEach(item => {
+                const categories = [
+                        item.category_name1, item.category_name2, item.category_name3,
+                        item.category_name4, item.category_name5, item.category_name6,
+                        item.category_name7, item.category_name8, item.category_name9,
+                        item.category_name10
+                    ].filter(Boolean).join(', ');
+                    exportData.push([
+                        count++, // Serial number
+                        item.name, // Raw Material Name
+                        item.pdcode, // RM Code
+                        categories, // Raw Materials Category
+                        item.price, // Price (you can directly use it from item)
+                        item.uom // UoM
+                    ]);
+                });
+
+            if (isFilter) {
+                console.log("Exporting visible data:", exportData);
+                generatePdf(header, exportData, 'products_filtered.pdf');
+            } else {
                  // Fetch all data from backend
                  fetch('/products/export-all')
                      .then(response => {
@@ -343,7 +343,7 @@
                          const allData = data.map((item, index) => [
                              index + 1, // S. No.
                              item.name || '',
-                             item.rmcode || '',
+                             item.pdcode || '',
                              item.categories || '', // ✅ Correct usage
                              item.price || '',
                              item.uom || ''
@@ -745,7 +745,7 @@
                  const selectedCategories = Array.from(
                      document.querySelectorAll('.category-checkbox:checked')
                  ).map(cb => cb.value);
-
+                 isFilter = true;
                  if (selectedCategories.length > 0) {
                      const queryParams = new URLSearchParams({
                          category_ids: selectedCategories.join(','),
@@ -770,6 +770,7 @@
                          .then(data => {
                             filteredData = data.product;
                             console.log('Fetched Data:', data.product);
+                            visibleData = data.product;
                             currentPage = 1; // reset to page 1 on new filter
                             renderTablePage(currentPage, filteredData);
                             renderPagination(filteredData.length);
@@ -958,10 +959,12 @@
                 filterCategories();
             } else if (searchType === 'items') {
                 filterItems();
+                isFilter = true;
             }
         });
         document.getElementById('searchtype').addEventListener('change', function () {
             const searchTypeselection = this.value;
+            document.getElementById("categorySearch").value ="";
             const categoryItems = document.querySelectorAll(".category-item");
             if (searchTypeselection === 'category') {
                 categoryItems.forEach(item => item.style.display = "block");
@@ -1035,6 +1038,7 @@
                          .then(data => {
                             filteredData = data.product;
                             console.log('Fetched Data:', data.product);
+                            visibleData = data.product;
                             currentPage = 1; // reset to page 1 on new filter
                             renderTablePage(currentPage, filteredData);
                             renderPagination(filteredData.length);

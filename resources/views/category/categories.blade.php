@@ -89,7 +89,7 @@
                     </div>
 
                     <!-- Bordered Table -->
-                    <table class="table table-bordered mt-2" id='exportRm'>
+                    <table class="table table-bordered mt-2" id='exportCategory'>
                         <thead class="custom-header">
                             <tr>
                                 <th class="head" scope="col">
@@ -173,14 +173,74 @@
 
         const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
         let isEditing = false; // Track if edit mode is active
+        let visibleData = [];
+        let isFilter = false;
 
         document.getElementById('exportBtn').addEventListener('click', function() {
-            const table = document.getElementById('exportRm'); // Ensure this ID exists in your table
+        const table = document.getElementById('catagoriesTable');
+        const rows = table.querySelectorAll('tr');
+        let exportData = [];
+        const header = ["S. NO.","Catagory", "Category Items", "Description"];
+        exportData.push(header);
+        let serial = 1;
+
+            visibleData.forEach(item => {
+                // const categories = (item.categories || '').split(',').map(c => c.trim()).join(', ');
+
+                exportData.push([
+                    serial++, // Serial number
+                    item.categoryname,
+                    item.itemname, // Category Item Name
+                    item.description // Description
+                ]);
+            });
+
+            if (isFilter) {
+                // Export filtered data
+                const ws = XLSX.utils.aoa_to_sheet(exportData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'CategoryItems');
+                XLSX.writeFile(wb, 'categoryItems_filtered.xlsx');
+            } else {
+                fetch('/categoryitem/export-all')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok: ' + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Export Data:', data);
+                        data.forEach((item, index) => {
+                            exportData.push([
+                                index + 1,
+                                item.categoryname,
+                                item.itemname,
+                                item.description
+                            ]);
+                        });
+
+                        const ws = XLSX.utils.aoa_to_sheet(exportData);
+                        const wb = XLSX.utils.book_new();
+                        XLSX.utils.book_append_sheet(wb, ws, 'CategoryItems');
+                        XLSX.writeFile(wb, 'categoryItems_all.xlsx');
+                    })
+                    .catch(error => {
+                        console.error('Export error:', error);
+                        alert('Failed to export all data: ' + error.message);
+                    });
+
+                }
+        });
+
+/*
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const table = document.getElementById('exportCategory'); // Ensure this ID exists in your table
             if (!table) {
-                console.error('Table with ID "exportRm" not found.');
+                console.error('Table with ID "exportCategory" not found.');
                 return;
             }
-            console.log('Table with ID "exportRm" not found.');
+            console.log('Table with ID "exportCategory" not found.');
 
             const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
             const visibleData = [];
@@ -216,54 +276,75 @@
             // Export as an Excel file
             XLSX.writeFile(wb, 'categories_list.xlsx');
         });
-
+*/
         // PDF Export Function
         document.getElementById('exportPdfBtn').addEventListener('click', function() {
-            const {
-                jsPDF
-            } = window.jspdf;
-            const doc = new jsPDF();
 
-            const table = document.getElementById('exportRm');
-            if (!table) {
-                console.error('Table with ID "exportRm" not found.');
-                return;
-            }
+    const table = document.getElementById('catagoriesTable');
+    const rows = table.querySelectorAll('tr');
+    let exportData = [];
+    const header = ["S. NO.", "Category", "Category Items", "Description"];
+    exportData.push(header);
+    let serial = 1;
 
-            const rows = Array.from(table.querySelectorAll('tr'));
-            const tableData = [];
-            let serialNumber = 1;
+    visibleData.forEach(item => {
+        exportData.push([
+            serial++, // Serial number
+            item.categoryname,
+            item.itemname, // Category Item Name
+            item.description // Description
+        ]);
+    });
 
-            rows.forEach((row, rowIndex) => {
-                if (row.style.display !== 'none') {
-                    const cells = Array.from(row.children);
-                    const rowData = [];
-
-                    if (rowIndex > 0) {
-                        rowData.push(serialNumber++);
-                    } else {
-                        rowData.push("S.NO");
-                    }
-
-                    cells.forEach((cell, index) => {
-                        if (index !== 0) { // Skip checkboxes column
-                            rowData.push(cell.innerText.trim());
-                        }
-                    });
-
-                    tableData.push(rowData);
+    if (isFilter) {
+        // Export filtered data to PDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.autoTable({
+            head: [header],
+            body: exportData.slice(1), // Exclude the header row
+            startY: 20,
+            margin: { top: 10, left: 10, right: 10 },
+            theme: 'grid', // You can change the theme to 'striped', 'plain', etc.
+        });
+        doc.save('categoryItems_filtered.pdf');
+    } else {
+        fetch('/categoryitem/export-all')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
                 }
-            });
+                return response.json();
+            })
+            .then(data => {
+                console.log('Export Data:', data);
+                data.forEach((item, index) => {
+                    exportData.push([
+                        index + 1,
+                        item.categoryname,
+                        item.itemname,
+                        item.description
+                    ]);
+                });
 
-            // Add Table to PDF
-            doc.autoTable({
-                head: [tableData[0]], // Header row
-                body: tableData.slice(1), // Table content
-                startY: 20,
-                theme: 'striped',
+                // Export all data to PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.autoTable({
+                    head: [header],
+                    body: exportData.slice(1), // Exclude the header row
+                    startY: 20,
+                    margin: { top: 10, left: 10, right: 10 },
+                    theme: 'grid', // You can change the theme to 'striped', 'plain', etc.
+                });
+                doc.save('categoryItems_all.pdf');
+            })
+            .catch(error => {
+                console.error('Export error:', error);
+                alert('Failed to export all data: ' + error.message);
             });
+    }
 
-            doc.save('categories_list.pdf');
         });
 
         // Listen for changes to any category checkbox
@@ -272,7 +353,7 @@
                 const selectedCategories = Array.from(
                     document.querySelectorAll('.category-checkbox:checked')
                 ).map(cb => cb.value);
-
+                isFilter = true;
                 if (selectedCategories.length > 0) {
                     const queryParams = new URLSearchParams({
                         category_ids: selectedCategories.join(','),
@@ -297,6 +378,7 @@
                         .then(data => {
                             filteredData = data.categoriesitems;
                             console.log('Fetched Data:', data.categoriesitems);
+                            visibleData = data.categoriesitems;
                             currentPage = 1; // reset to page 1 on new filter
                             renderTablePage(currentPage, filteredData);
                             renderPagination(filteredData.length);
@@ -484,6 +566,7 @@
                 <tr data-id="${item.id}">
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${start+index + 1}.</td>
+                            <td>${item.categoryname}</td>
                             <td class="left-align"><a href="/editcategoryitem/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
                             <td>${item.description}</td>
                             <td>${item.created_user}</td>
@@ -584,14 +667,15 @@
                 filterCategories();
             } else if (searchType === 'items') {
                 filterItems();
+                isFilter = true;
             }
         });
         document.getElementById('searchtype').addEventListener('change', function () {
             const searchTypeselection = this.value;
+            document.getElementById("categorySearch").value ="";
             const categoryItems = document.querySelectorAll(".category-item");
             if (searchTypeselection === 'category') {
                 categoryItems.forEach(item => item.style.display = "block");
-
             } else if (searchTypeselection === 'items') {
                 categoryItems.forEach(item => item.style.display = "none");
             }
@@ -660,6 +744,7 @@
                         .then(data => {
                             filteredData = data.categoriesitems;
                             console.log('Fetched Data:', data.categoriesitems);
+                            visibleData = data.categoriesitems;
                             currentPage = 1; // reset to page 1 on new filter
                             renderTablePage(currentPage, filteredData);
                             renderPagination(filteredData.length);
@@ -694,7 +779,6 @@
                     location.reload();
                     }
             }
-
 default_searchType();
 });
 
@@ -704,9 +788,7 @@ function default_searchType()
             const categoryItems = document.querySelectorAll(".category-item");
             if (searchType === 'category') {
                 categoryItems.forEach(item => item.style.display = "block");
-
             } else if (searchType === 'items') {
-
                 categoryItems.forEach(item => item.style.display = "none");
             }
 }

@@ -75,6 +75,7 @@ Route::post('/categoryitem-import', [CategoryItemController::class, 'importExcel
 Route::get('/categoryitem-excel', function () {
     return Storage::download('public/excel_file/categoryitems_.xlsx');
 });
+Route::get('/categoryitem/export-all', [CategoryItemController::class, 'exportAll']);
 
 // rawmaterials route
 Route::get('/rawmaterial', [RawMaterialController::class, 'index'])->name('rawMaterials.index');

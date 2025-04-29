@@ -491,13 +491,13 @@ class ProductController extends Controller
                     $query->select(DB::raw(1))
                         ->from('recipedetails')
                         ->whereColumn('recipedetails.product_id', 'product_master.id')
-                        ->where('status', '!=', 'active');
+                        ->where('status', '=', 'active');
                 })
                 ->whereNotExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('recipe_master')
                         ->whereColumn('recipe_master.product_id', 'product_master.id')
-                        ->where('status', '!=', 'active');
+                        ->where('status', '=', 'active');
                 })
                 ->get();
 
@@ -606,7 +606,6 @@ class ProductController extends Controller
                 $duplicateNames[] = $row[1];
                 continue; // Skip duplicate row
             }
-
                 // $prod_categoryId = DB::table('categories')
                 // ->whereRaw("REPLACE(LOWER(TRIM(categoryname)), ' ', '') = ?", ['products']) // removes all spaces
                 // ->value('id');
@@ -686,33 +685,6 @@ class ProductController extends Controller
 
             $pdCode = UniqueCode::generatePdCode();
 
-            $categoryIds = [];
-                Product::create([
-                    'name' => $row[1] ?? null,
-                    'pdcode' => $pdCode ?? null,
-                    'uom' => $row[2] ?? null,
-                    'hsnCode' => $row[3] ?? null,
-                    'itemWeight' => $row[4] ?? null,
-                    'category_id1' => $categoryIds['id1'] ,
-                    'category_id2' => $categoryIds['id2'] ?? null,
-                    'category_id3' => $categoryIds['id3'] ?? null,
-                    'category_id4' => $categoryIds['id4'] ?? null,
-                    'category_id5' => $categoryIds['id5'] ?? null,
-                    'category_id6' => $categoryIds['id6'] ?? null,
-                    'category_id7' => $categoryIds['id7'] ?? null,
-                    'category_id8' => $categoryIds['id8'] ?? null,
-                    'category_id9' => $categoryIds['id9'] ?? null,
-                    'category_id10' => $categoryIds['id10'] ?? null,
-                    'purcCost' => $row[15],
-                    'margin' => $row[16],
-                    'price' => $row[17],
-                    'tax' => $row[18],
-                    'update_frequency' => $row[19],
-                    'price_update_frequency' => $row[20],
-                    'price_threshold' => $row[21],
-                    'itemType_id' => $itemtype_id,
-                ]);
-                $importedCount++;
             for ($i = 1; $i <= 10; $i++) {
                 $categoryIds["id$i"] = !empty($row[$i + 4]) // Adjusting index to match $row[4] for category_id1
                     ? DB::table('categoryitems')
