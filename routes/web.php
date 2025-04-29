@@ -6,6 +6,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CategoryItemController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\Auth\PasswordController;
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PackingMaterialController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\OverAllCostingController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NotificationController;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\Overhead;
 use Illuminate\Support\Facades\Storage;
@@ -36,6 +38,9 @@ use App\Http\Controllers\TwilioController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Auth::routes(); // This will include the password reset routes by default
+
 
 Route::get('/', function () {
     return view('landingPage');
@@ -235,3 +240,11 @@ Route::get('/productNotification', [NotificationController::class, 'productAlert
 Route::get('/rawmaterialNotification', [NotificationController::class, 'rawmaterialAlertNotification'])->name('rawmaterial.notification');
 Route::get('/packingmaterialNotification', [NotificationController::class, 'packingmaterialAlertNotification'])->name('packingmaterial.notification');
 Route::get('/lowmarginNotification', [NotificationController::class, 'lowMarginAlert'])->name('lowmargin.notification');
+
+
+
+Route::get('forgot-password', [LoginController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('forgot-password', [LoginController::class, 'sendResetLink'])->name('password.email');
+
+Route::get('reset-password/{token}/{email}', [LoginController::class, 'showResetPasswordForm'])->name('password.reset');
+Route::post('reset-password', [LoginController::class, 'resetPassword'])->name('password.update');

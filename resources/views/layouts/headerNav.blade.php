@@ -9,8 +9,6 @@
     <meta content="" name="description">
     <meta content="" name="keywords">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
 
     <!-- Favicons -->
     <link href="{{ asset('/assets/img/favicon.png') }}" rel="icon">
@@ -82,25 +80,19 @@
             <ul class="d-flex align-items-center">
 
                 <li class="nav-item d-block d-lg-none">
-                    <a class="nav-link nav-icon search-bar-toggle " href="#">
+                    <a class="nav-link nav-icon search-bar-toggle" href="#">
                         <i class="bi bi-search"></i>
                     </a>
                 </li><!-- End Search Icon-->
 
-                <li class="nav-item dropdown">
-
-                    <!-- Search Icon -->
                 <li>
-                    <a class="nav-link nav-icon" href="#" onclick="toggleSearchBox()">
-                        <i class="bi bi-search"></i>
-                    </a>
+                    <div class="search-bar mt-3">
+                        <form class="search-form d-flex align-items-center" id="menu-search-form" action="#" onsubmit="return false;">
+                            <input type="text" id="menu-search-input" name="query" placeholder="Search Menu" title="Enter search keyword">
+                            <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+                        </form>
+                    </div><!-- End Search Bar -->
                 </li>
-
-                <!-- Search Box -->
-                <div id="search-box" style="display: none; position: absolute; top: 20px; right: 200px; background-color: #fff; border: 1px solid #ccc; padding: 10px; border-radius: 5px; z-index: 1000;">
-                    <input type="text" placeholder="Search..." style="padding: 5px; width: 200px;">
-                    <button onclick="performSearch()" style="padding: 5px;">Go</button>
-                </div>
 
                 @php
                 $alertTypeCount = 0;
@@ -113,200 +105,186 @@
                 $alertTypeCount += count($packingMaterialsPriceAlertCollection) > 0 ? 1 : 0;
                 @endphp
 
-                <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-                    <i class="bi bi-bell"></i>
-                    <span class="badge bg-primary badge-number">{{ $alertTypeCount }}</span>
-                </a><!-- End Notification Icon -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                        <i class="bi bi-bell"></i>
+                        <span class="badge bg-primary badge-number">{{ $alertTypeCount }}</span>
+                    </a><!-- End Notification Icon -->
 
-                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
-                    <li class="dropdown-header">
-                        You have {{ $alertTypeCount }} new notifications
-                    </li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+                        <li class="dropdown-header">
+                            You have {{ $alertTypeCount }} new notifications
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
 
-                    <!-- Low Margin Products -->
-                    @if(count($lowMarginProducts) > 0)
-                    <li class="notification-item">
-                        <i class="bi bi-x-circle text-danger"></i>
-                        <div class="d-flex flex-column" style="width: 100%;">
-                            <div>
-                                <h4>Low Margin Alert</h4>
-                                @foreach($lowMarginProducts->slice(0, 2) as $product)
-                                <p>* {{ $product['name'] }}: Margin {{ $product['margin'] }}% (Threshold: {{ $product['threshold'] }}%)</p>
-                                @endforeach
+                        <!-- Low Margin Products -->
+                        @if(count($lowMarginProducts) > 0)
+                        <li class="notification-item">
+                            <i class="bi bi-x-circle text-danger"></i>
+                            <div class="d-flex flex-column" style="width: 100%;">
+                                <div>
+                                    <h4>Low Margin Alert</h4>
+                                    @foreach($lowMarginProducts->slice(0, 2) as $product)
+                                    <p>* {{ $product['name'] }}: Margin {{ $product['margin'] }}% (Threshold: {{ $product['threshold'] }}%)</p>
+                                    @endforeach
+                                </div>
+                                @if(count($lowMarginProducts) > 2)
+                                <div class="text-end pe-3 mt-1">
+                                    <a href="#" style="font-size: 12px;">View all</a>
+                                </div>
+                                @endif
                             </div>
-                            @if(count($lowMarginProducts) > 2)
-                            <div class="text-end pe-3 mt-1">
-                                <a href="/lowmarginNotification" style="font-size: 12px;">View all</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        @endif
+
+
+                        <!-- Product Price Threshold Exceeded -->
+                        @if(count($productPriceThresholdCollection) > 0)
+                        <li class="notification-item">
+                            <i class="bi bi-exclamation-circle text-warning"></i>
+                            <div class="d-flex flex-column" style="width: 100%;">
+                                <div>
+                                    <h4 style="font-size: 14px; margin-bottom: 4px;">Product Price Threshold Exceeded</h4>
+                                    @foreach($productPriceThresholdCollection->slice(0, 2) as $product)
+                                    <p style="font-size: 12px; margin-bottom: 2px;">* {{ $product['name'] }} (Code: {{ $product['pdcode'] }}): Price {{ $product['price'] }} > Threshold {{ $product['threshold'] }}</p>
+                                    @endforeach
+                                </div>
+
+                                @if(count($productPriceThresholdCollection) > 2)
+                                <div class="text-end pe-3 mt-1">
+                                    <a href="/productNotification" style="font-size: 12px;">View all</a>
+                                </div>
+                                @endif
                             </div>
-                            @endif
-                        </div>
-                    </li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    @endif
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        @endif
 
 
-                    <!-- Product Price Threshold Exceeded -->
-                    @if(count($productPriceThresholdCollection) > 0)
-                    <li class="notification-item">
-                        <i class="bi bi-exclamation-circle text-warning"></i>
-                        <div class="d-flex flex-column" style="width: 100%;">
-                            <div>
-                                <h4 style="font-size: 14px; margin-bottom: 4px;">Product Price Threshold Exceeded</h4>
-                                @foreach($productPriceThresholdCollection->slice(0, 2) as $product)
-                                <p style="font-size: 12px; margin-bottom: 2px;">* {{ $product['name'] }} (Code: {{ $product['pdcode'] }}): Price {{ $product['price'] }} > Threshold {{ $product['threshold'] }}</p>
-                                @endforeach
+                        <!-- Product Price Update Alert -->
+                        @if(count($productPriceAlertCollection) > 0)
+                        <li class="notification-item">
+                            <i class="bi bi-exclamation-circle text-warning"></i>
+                            <div class="d-flex flex-column" style="width: 100%;">
+                                <div>
+                                    <h4>Product Price Update Alert</h4>
+                                    @foreach($productPriceAlertCollection->slice(0, 2) as $productPriceAlert)
+                                    <p>* {{ $productPriceAlert['name'] }} (Code: {{ $productPriceAlert['pdcode'] }})</p>
+                                    @endforeach
+                                </div>
+                                @if(count($productPriceAlertCollection) > 2)
+                                <div class="text-end pe-3 mt-1">
+                                    <a href="/productNotification" style="font-size: 12px;">View all</a>
+                                </div>
+                                @endif
                             </div>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        @endif
 
-                            @if(count($productPriceThresholdCollection) > 2)
-                            <div class="text-end pe-3 mt-1">
-                                <a href="/productNotification" style="font-size: 12px;">View all</a>
+                        <!-- Raw Material Price Threshold Exceeded -->
+                        @if(count($rawMaterialsPriceThresholdCollection) > 0)
+                        <li class="notification-item">
+                            <i class="bi bi-exclamation-circle text-warning"></i>
+                            <div class="d-flex flex-column" style="width: 100%;">
+                                <div>
+                                    <h4>Raw Material Price Threshold Exceeded</h4>
+                                    @foreach($rawMaterialsPriceThresholdCollection->slice(0, 2) as $rawMaterials)
+                                    <p>* {{ $rawMaterials['name'] }} (Code: {{ $rawMaterials['rmcode'] }}): Price {{ $rawMaterials['price'] }} > Threshold {{ $rawMaterials['threshold'] }}</p>
+                                    @endforeach
+                                </div>
+                                @if(count($rawMaterialsPriceThresholdCollection) > 2)
+                                <div class="text-end pe-3 mt-1">
+                                    <a href="/rawmaterialNotification" style="font-size: 12px;">View all</a>
+                                </div>
+                                @endif
+
                             </div>
-                            @endif
-                        </div>
-                    </li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    @endif
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        @endif
 
-
-                    <!-- Product Price Update Alert -->
-                    @if(count($productPriceAlertCollection) > 0)
-                    <li class="notification-item">
-                        <i class="bi bi-exclamation-circle text-warning"></i>
-                        <div class="d-flex flex-column" style="width: 100%;">
-                            <div>
-                                <h4>Product Price Update Alert</h4>
-                                @foreach($productPriceAlertCollection->slice(0, 2) as $productPriceAlert)
-                                <p>* {{ $productPriceAlert['name'] }} (Code: {{ $productPriceAlert['pdcode'] }})</p>
-                                @endforeach
+                        <!-- Raw Material Price Update Alert -->
+                        @if(count($rawMaterialsPriceAlertCollection) > 0)
+                        <li class="notification-item">
+                            <i class="bi bi-exclamation-circle text-warning"></i>
+                            <div class="d-flex flex-column" style="width: 100%;">
+                                <div>
+                                    <h4>Raw Material Price Update Alert</h4>
+                                    @foreach($rawMaterialsPriceAlertCollection->slice(0, 2) as $rawMaterialsPriceAlert)
+                                    <p>* {{ $rawMaterialsPriceAlert['name'] }} (Code: {{ $rawMaterialsPriceAlert['rmcode'] }})</p>
+                                    @endforeach
+                                </div>
+                                @if(count($rawMaterialsPriceAlertCollection) > 2)
+                                <div class="text-end pe-3 mt-1">
+                                    <a href="/rawmaterialNotification" style="font-size: 12px;">View all</a>
+                                </div>
+                                @endif
                             </div>
-                            @if(count($productPriceAlertCollection) > 2)
-                            <div class="text-end pe-3 mt-1">
-                                <a href="/productNotification" style="font-size: 12px;">View all</a>
-                            </div>
-                            @endif
-                        </div>
-                    </li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    @endif
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        @endif
 
-                    <!-- Raw Material Price Threshold Exceeded -->
-                    @if(count($rawMaterialsPriceThresholdCollection) > 0)
-                    <li class="notification-item">
-                        <i class="bi bi-exclamation-circle text-warning"></i>
-                        <div class="d-flex flex-column" style="width: 100%;">
-                            <div>
-                                <h4>Raw Material Price Threshold Exceeded</h4>
-                                @foreach($rawMaterialsPriceThresholdCollection->slice(0, 2) as $rawMaterials)
-                                <p>* {{ $rawMaterials['name'] }} (Code: {{ $rawMaterials['rmcode'] }}): Price {{ $rawMaterials['price'] }} > Threshold {{ $rawMaterials['threshold'] }}</p>
-                                @endforeach
+                        <!-- Packing Material Price Threshold Exceeded -->
+                        @if(count($packingMaterialsPriceThresholdCollection) > 0)
+                        <li class="notification-item">
+                            <i class="bi bi-exclamation-circle text-warning"></i>
+                            <div class="d-flex flex-column" style="width: 100%;">
+                                <div>
+                                    <h4>Packing Material Price Threshold Exceeded</h4>
+                                    @foreach($packingMaterialsPriceThresholdCollection->slice(0, 2) as $packingMaterials)
+                                    <p>* {{ $packingMaterials['name'] }} (Code: {{ $packingMaterials['pmcode'] }}): Price {{ $packingMaterials['price'] }} > Threshold {{ $packingMaterials['threshold'] }}</p>
+                                    @endforeach
+                                </div>
+                                @if(count($packingMaterialsPriceThresholdCollection) > 2)
+                                <div class="text-end pe-3 mt-1">
+                                    <a href="/packingmaterialNotification" style="font-size: 12px;">View all</a>
+                                </div>
+                                @endif
                             </div>
-                            @if(count($rawMaterialsPriceThresholdCollection) > 2)
-                            <div class="text-end pe-3 mt-1">
-                                <a href="/rawmaterialNotification" style="font-size: 12px;">View all</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        @endif
+
+                        <!-- Packing Material Price Update Alert -->
+                        @if(count($packingMaterialsPriceAlertCollection) > 0)
+                        <li class="notification-item">
+                            <i class="bi bi-exclamation-circle text-warning"></i>
+                            <div class="d-flex flex-column" style="width: 100%;">
+                                <div>
+                                    <h4>Packing Material Price Update Alert</h4>
+                                    @foreach($packingMaterialsPriceAlertCollection->slice(0, 2) as $packingMaterialsPriceAlert)
+                                    <p>* {{ $packingMaterialsPriceAlert['name'] }} (Code: {{ $packingMaterialsPriceAlert['pmcode'] }})</p>
+                                    @endforeach
+                                </div>
+                                @if(count($packingMaterialsPriceAlertCollection) > 2)
+                                <div class="text-end pe-3 mt-1">
+                                    <a href="/packingmaterialNotification" style="font-size: 12px;">View all</a>
+                                </div>
+                                @endif
                             </div>
-                            @endif
-
-                        </div>
-                    </li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    @endif
-
-                    <!-- Raw Material Price Update Alert -->
-                    @if(count($rawMaterialsPriceAlertCollection) > 0)
-                    <li class="notification-item">
-                        <i class="bi bi-exclamation-circle text-warning"></i>
-                        <div class="d-flex flex-column" style="width: 100%;">
-                            <div>
-                                <h4>Raw Material Price Update Alert</h4>
-                                @foreach($rawMaterialsPriceAlertCollection->slice(0, 2) as $rawMaterialsPriceAlert)
-                                <p>* {{ $rawMaterialsPriceAlert['name'] }} (Code: {{ $rawMaterialsPriceAlert['rmcode'] }})</p>
-                                @endforeach
-                            </div>
-                            @if(count($rawMaterialsPriceAlertCollection) > 2)
-                            <div class="text-end pe-3 mt-1">
-                                <a href="/rawmaterialNotification" style="font-size: 12px;">View all</a>
-                            </div>
-                            @endif
-                        </div>
-                    </li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    @endif
-
-                    <!-- Packing Material Price Threshold Exceeded -->
-                    @if(count($packingMaterialsPriceThresholdCollection) > 0)
-                    <li class="notification-item">
-                        <i class="bi bi-exclamation-circle text-warning"></i>
-                        <div class="d-flex flex-column" style="width: 100%;">
-                            <div>
-                                <h4>Packing Material Price Threshold Exceeded</h4>
-                                @foreach($packingMaterialsPriceThresholdCollection->slice(0, 2) as $packingMaterials)
-                                <p>* {{ $packingMaterials['name'] }} (Code: {{ $packingMaterials['pmcode'] }}): Price {{ $packingMaterials['price'] }} > Threshold {{ $packingMaterials['threshold'] }}</p>
-                                @endforeach
-                            </div>
-                            @if(count($packingMaterialsPriceThresholdCollection) > 2)
-                            <div class="text-end pe-3 mt-1">
-                                <a href="/packingmaterialNotification" style="font-size: 12px;">View all</a>
-                            </div>
-                            @endif
-                        </div>
-                    </li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    @endif
-
-                    <!-- Packing Material Price Update Alert -->
-                    @if(count($packingMaterialsPriceAlertCollection) > 0)
-                    <li class="notification-item">
-                        <i class="bi bi-exclamation-circle text-warning"></i>
-                        <div class="d-flex flex-column" style="width: 100%;">
-                            <div>
-                                <h4>Packing Material Price Update Alert</h4>
-                                @foreach($packingMaterialsPriceAlertCollection->slice(0, 2) as $packingMaterialsPriceAlert)
-                                <p>* {{ $packingMaterialsPriceAlert['name'] }} (Code: {{ $packingMaterialsPriceAlert['pmcode'] }})</p>
-                                @endforeach
-                            </div>
-                            @if(count($packingMaterialsPriceAlertCollection) > 2)
-                            <div class="text-end pe-3 mt-1">
-                                <a href="/packingmaterialNotification" style="font-size: 12px;">View all</a>
-                            </div>
-                            @endif
-                        </div>
-                    </li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    @endif
-
-                    <!-- <li class="dropdown-footer">
-                        <a href="#">Show all notifications</a>
-                    </li> -->
-                </ul>
-
-
-                <!-- End Notification Dropdown Items -->
-
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        @endif
+                    </ul>
                 </li><!-- End Notification Nav -->
-
-
-                <!-- <li>
-                    <a class="nav-link nav-icon" href="login.html">
-                        <i class=" bi bi-person"></i>
-                    </a>
-                </li> -->
 
                 @php
                 $user = Auth::user();
@@ -321,7 +299,7 @@
 
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                         <li class="dropdown-header">
-                            <h6>Name : {{ $user->name }}</h6>
+                            <h6>Name: {{ $user->name }}</h6>
                             <span>Role: {{ $user->role ?? 'User' }}</span>
                         </li>
                         <li>
@@ -330,44 +308,23 @@
                         <li>
                             <form action="{{ route('logout') }}" method="POST" id="logout-form">
                                 @csrf
-                                <!-- Use JavaScript to submit the form -->
                                 <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="document.getElementById('logout-form').submit();">
                                     <i class="bi bi-box-arrow-right"></i>
                                     <span>Sign Out</span>
                                 </a>
                             </form>
                         </li>
-
                     </ul><!-- End Profile Dropdown Items -->
                 </li><!-- End Profile Nav -->
-
-
-                <!-- Same wrapper as other icons -->
-                <!-- <li class="nav-item pe-3">
-                    <form action="{{ route('logout') }}" method="POST" id="logout-form">
-                        @csrf
-                        <button type="submit" class="nav-link nav-icon btn p-0" style="color: red; background: none; border: none;">
-                            <i class="bi bi-box-arrow-right"></i>
-                        </button>
-                    </form>
-                </li> -->
-
-
-
-            </ul><!-- End Profile Dropdown Items -->
-
             </ul>
         </nav><!-- End Icons Navigation -->
-
     </header><!-- End Header -->
 
     <!-- ======= Sidebar ======= -->
     <aside id="sidebar" class="sidebar" style="background-color: #BAEAF9;">
-
         <ul class="sidebar-nav" id="sidebar-nav">
             <li class="nav-item">
                 <a class="nav-link" href="/dashboard" style="background-color: rgb(186, 234, 249); font-size:17px;">
-                    {{-- <i class="bi bi-grid"></i> --}}
                     <img src="/assets/img/Dashboard.svg" alt="dashboard Icon" style="width: 1.1em; height: auto; margin-right: 6px;">
                     <span>Dashboard</span>
                 </a>
@@ -375,13 +332,11 @@
 
             <li class="nav-item">
                 <a class="nav-link {{ Request::is('rawmaterial') || Request::is('showcategoryitem') || Request::is('products') || Request::is('overheads') || Request::is('packingmaterial') ? '' : 'collapsed' }}" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); font-size:17px;text-decoration: none;">
-                    {{-- <i class="bi bi-menu-button-wide"></i> --}}
                     <img src="/assets/img/Masters.svg" alt="master Icon" style="width: 1em; height: auto; margin-right: 10px;">
                     <span>Masters</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="components-nav"
-
-                    class="nav-content collapse {{ Request::is('rawmaterial') ||  Request::routeIs('rawMaterial.edit') || Request::is('showcategoryitem') || Request::is('addcategory') || Request::routeIs('categoryitem.edit') || Request::is('addrawmaterial') || Request::routeIs('packingMaterial.edit') || Request::is('packingmaterial') || Request::is('addpackingmaterial') || Request::is('overheads') ||  Request::is('addoverheads') ||  Request::routeIs('overheads.edit') || Request::is('products') || Request::routeIs('products.edit') || Request::is('addproduct')   ? 'show' : '' }}"
+                    class="nav-content collapse {{ Request::is('rawmaterial') || Request::routeIs('rawMaterial.edit') || Request::is('showcategoryitem') || Request::is('addcategory') || Request::routeIs('categoryitem.edit') || Request::is('addrawmaterial') || Request::routeIs('packingMaterial.edit') || Request::is('packingmaterial') || Request::is('addpackingmaterial') || Request::is('overheads') || Request::is('addoverheads') || Request::routeIs('overheads.edit') || Request::is('products') || Request::routeIs('products.edit') || Request::is('addproduct') ? 'show' : '' }}"
                     data-bs-parent="#sidebar-nav">
                     <li>
                         <a href="/showcategoryitem" class="{{ Request::is('showcategoryitem') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none">
@@ -408,81 +363,49 @@
                             <span>Overheads</span>
                         </a>
                     </li>
-                    {{-- <li>
-                        <a href="/products" class="{{ Request::is('products') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
-                    <span>Products</span>
-                    </a>
-            </li> --}}
-            {{-- <li>
-                        <a href="/showcategoryitem" class="{{ Request::is('showcategoryitem') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none">
-            <span>Category</span>
-            </a>
-            </li> --}}
-        </ul>
-        </li><!-- End Masters Nav -->
+                </ul>
+            </li><!-- End Masters Nav -->
 
-        <li class="nav-item">
-            <a class="nav-link {{ Request::is('receipedetails') ||  Request::is('addreceipedetails') ||  Request::is('pricing-records') ? '' : 'collapsed'}} " data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); font-size:17px;text-decoration: none;">
-                {{-- <i class="bi bi-journal-text"></i> --}}
-                <img src="/assets/img/Recipe.svg" alt="receipe Icon" style="width: 1em; height: auto; margin-right:10px;">
-                <span>Recipe</span><i class="bi bi-chevron-down ms-auto"></i>
-            </a>
-            <ul id="forms-nav" class="nav-content collapse {{ Request::is('receipedetails') ||  Request::is('addreceipedetails') || Request::routeIs('editrecipedetails.edit') || Request::is('pricing-records') ||  Request::is('pricing') || Request::routeIs('receipepricing.edit') || Request::is('overallcosting') || Request::is('addoverallcosting') || Request::routeIs('overallcosting.edit') ? 'show' :'' }}"
-                data-bs-parent="#sidebar-nav">
-                <li>
-                    <a href="/receipedetails" class="{{ Request::is('receipedetails') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
-                        <span>Details & Description</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/pricing-records" class="{{Request::is('pricing-records') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
-                        <span>Pricing</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/overallcosting" class="{{Request::is('overallcosting') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
-                        <span>Overall Costing</span>
-                    </a>
-                </li>
-            </ul>
-        </li><!-- End Recipe Nav -->
+            <li class="nav-item">
+                <a class="nav-link {{ Request::is('receipedetails') || Request::is('addreceipedetails') || Request::is('pricing-records') ? '' : 'collapsed'}} " data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); font-size:17px;text-decoration: none;">
+                    <img src="/assets/img/Recipe.svg" alt="recipe Icon" style="width: 1em; height: auto; margin-right:10px;">
+                    <span>Recipe</span><i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="forms-nav" class="nav-content collapse {{ Request::is('receipedetails') || Request::is('addreceipedetails') || Request::routeIs('editrecipedetails.edit') || Request::is('pricing-records') || Request::is('pricing') || Request::routeIs('receipepricing.edit') || Request::is('overallcosting') || Request::is('addoverallcosting') || Request::routeIs('overallcosting.edit') ? 'show' :'' }}"
+                    data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="/receipedetails" class="{{ Request::is('receipedetails') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                            <span>Details & Description</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pricing-records" class="{{Request::is('pricing-records') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                            <span>Pricing</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/overallcosting" class="{{Request::is('overallcosting') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
+                            <span>Overall Costing</span>
+                        </a>
+                    </li>
+                </ul>
+            </li><!-- End Recipe Nav -->
 
-        <li class="nav-item">
-            <a class="nav-link" href="/recipepricing" style="background-color: rgb(186, 234, 249); font-size:17px;">
-                {{-- <i class="bi bi-grid"></i> --}}
-                <img src="/assets/img/Recipepricing.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 8px;">
-                <span>Recipe Pricing</span>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link" href="/report" style="background-color: rgb(186, 234, 249); font-size:17px;">
-                {{-- <i class="bi bi-grid"></i> --}}
-                <img src="/assets/img/Report.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 9px;">
-                <span>Report</span>
-            </a>
-        </li>
-
-        <!-- <li class="nav-item">
-                <a class="nav-link" href="/permission" style="background-color: rgb(186, 234, 249); font-size:17px;">
-                    {{-- <i class="bi bi-grid"></i> --}}
-                    <img src="/assets/img/dashboard_pic.svg" alt="dashboard Icon" style="width: 1.2em; height: auto; margin-right: 4px;">
-                    <span>Permission</span>
+            <li class="nav-item">
+                <a class="nav-link" href="/recipepricing" style="background-color: rgb(186, 234, 249); font-size:17px;">
+                    <img src="/assets/img/Recipepricing.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 8px;">
+                    <span>Recipe Pricing</span>
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="/role" style="background-color: rgb(186, 234, 249); font-size:17px;">
-                    {{-- <i class="bi bi-grid"></i> --}}
-                    <img src="/assets/img/dashboard_pic.svg" alt="dashboard Icon" style="width: 1.2em; height: auto; margin-right: 4px;">
-                    <span>Role</span>
+                <a class="nav-link" href="/report" style="background-color: rgb(186, 234, 249); font-size:17px;">
+                    <img src="/assets/img/Report.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 9px;">
+                    <span>Report</span>
                 </a>
-            </li> -->
-
+            </li>
         </ul>
-    </aside>
-
-    <!-- End Sidebar-->
+    </aside><!-- End Sidebar-->
 
     <main>
         @yield('content') <!-- This is where child content will be injected -->
@@ -491,7 +414,7 @@
     <!-- ======= Footer ======= -->
     <!-- <footer id="footer" class="footer">
         <div class="copyright">
-            &copy; Copyright <strong><span>RMS</span></strong>. All Rights Reserved
+            © Copyright <strong><span>RMS</span></strong>. All Rights Reserved
         </div>
         <div class="credits">
             Designed by <a href="https://www.hoisst.in/rms">Hoisst</a>
@@ -515,23 +438,45 @@
     <!-- Template Main JS File -->
     <script src="{{ asset('/js/main.js') }}"></script>
 
-
+    <!-- Search Functionality Script -->
     <script>
-        // Toggle the search box visibility
-        function toggleSearchBox() {
-            const searchBox = document.getElementById("search-box");
-            if (searchBox.style.display === "none") {
-                searchBox.style.display = "block";
-            } else {
-                searchBox.style.display = "none";
-            }
-        }
+        document.getElementById('menu-search-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+            const query = document.getElementById('menu-search-input').value.trim().toLowerCase();
 
-        // Example: Perform a search (you can replace this with actual search functionality)
-        function performSearch() {
-            const input = document.querySelector("#search-box input");
-            alert(`Searching for: ${input.value}`);
-        }
+            // Menu mappings
+            const menuMap = {
+                'dashboard': '/dashboard',
+                'product': '/products',
+                'raw material': '/rawmaterial',
+                'packing material': '/packingmaterial',
+                'overhead': '/overheads',
+                'category': '/showcategoryitem',
+                'recipe': '/receipedetails',
+                'pricing': '/pricing-records',
+                'overall costing': '/overallcosting',
+                'recipe pricing': '/recipepricing',
+                'report': '/report'
+            };
+
+            // Find a matching menu
+            for (const key in menuMap) {
+                if (query.includes(key)) {
+                    window.location.href = menuMap[key];
+                    return;
+                }
+            }
+
+            // If no match is found
+            alert('No matching menu found for: ' + query);
+        });
+
+        document.getElementById('menu-search-input').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                document.getElementById('menu-search-form').dispatchEvent(new Event('submit'));
+            }
+        });
     </script>
 
 </body>
