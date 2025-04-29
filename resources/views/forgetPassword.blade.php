@@ -7,6 +7,8 @@
     <title>Login Page</title>
     <!-- Bootstrap 4 CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+
     <style>
         body {
             margin: 0;
@@ -18,6 +20,24 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
+        }
+
+        .form-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            width: 300px;
+            margin: auto;
+            margin-top: 10%;
+            text-align: center;
+        }
+
+        input {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
         }
 
         .floating-img {
@@ -81,19 +101,13 @@
         .custom-btn {
             border-radius: 30px;
             height: 40px;
-            width: 100px;
+            width: 160px;
         }
 
         h2 {
             text-align: center;
             margin-bottom: 20px;
             font-size: 20px;
-        }
-
-        .forgot-password {
-            display: block;
-            text-align: center;
-            margin-top: 10px;
         }
     </style>
 </head>
@@ -111,55 +125,37 @@
             <div class="d-flex justify-content-center mb-3">
                 <img src="/assets/img/RMSLogo.png" alt="Recipe Management System Logo" style="height: 70px;">
             </div>
-
-            <h2 class="text-center"><b>LOGIN</b></h2>
-
-            <!-- Display Success Message -->
-            @if(session('success'))
+            <h2 class="text-center">Forget Password</h2>
+            @if (session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
             </div>
             @endif
-
-            <!-- Display Error Message -->
-            @if($errors->has('login_failed'))
-            <div class="alert alert-danger">
-                {{ $errors->first('login_failed') }}
-            </div>
-            @endif
-
-            <form action="{{ route('login.verify') }}" method="POST">
+            <!-- Display Success Message -->
+            <form action="{{ route('password.email') }}" method="POST">
                 @csrf
+                <!-- <input type="email" name="email" placeholder="Enter your email" required> -->
                 <div class="form-group">
-                    <label for="username">Email</label>
                     <input
                         type="email"
-                        id="username"
-                        name="username"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email"
                         class="form-control custom-input"
-                        placeholder="rms2024@gmail.com"
-                        required>
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        class="form-control custom-input"
-                        placeholder="Rms@1234"
-                        pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$"
-                        title="Password must be at least 8 characters long, include at least one letter, one number, and one special character like @, #, $, etc."
                         required>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary custom-btn">Login</button>
+                    <button type="submit" class="btn btn-primary custom-btn">Send Reset Link</button>
                 </div>
             </form>
 
-            <!-- Forgot Password Link -->
-            <a href="{{ route('password.request') }}" class="forgot-password">Forgot Password?</a>
+            @if ($errors->any())
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            @endif
         </div>
     </div>
 

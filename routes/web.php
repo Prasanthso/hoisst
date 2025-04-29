@@ -240,9 +240,10 @@ Route::get('/rawmaterialNotification', [NotificationController::class, 'rawmater
 Route::get('/packingmaterialNotification', [NotificationController::class, 'packingmaterialAlertNotification'])->name('packingmaterial.notification');
 Route::get('/lowmarginNotification', [NotificationController::class, 'lowMarginAlert'])->name('lowmargin.notification');
 
-Route::get('password/reset', [PasswordController::class, 'showResetForm'])->name('password.request');
-// Password Reset Routes
-Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
-Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
-Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
-Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('password.update');
+
+
+Route::get('forgot-password', [LoginController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('forgot-password', [LoginController::class, 'sendResetLink'])->name('password.email');
+
+Route::get('reset-password/{token}/{email}', [LoginController::class, 'showResetPasswordForm'])->name('password.reset');
+Route::post('reset-password', [LoginController::class, 'resetPassword'])->name('password.update');
