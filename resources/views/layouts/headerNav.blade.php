@@ -58,6 +58,12 @@
             border-color: #0079AD !important;
             color: white !important;
         }
+
+        .dropdown-menu.notifications {
+            min-width: 400px;
+            max-width: 600px;
+            white-space: normal;
+        }
     </style>
 </head>
 
