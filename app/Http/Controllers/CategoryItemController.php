@@ -385,9 +385,10 @@ class CategoryItemController extends Controller
               ]);
               $importedCount++;
           }
-        if ($importedCount === 0 && !empty($duplicateNames)) {
-            return back()->with('error', 'All rows are duplicates. Skipped: ' . implode(', ', $duplicateNames));
-        }
+
+        // if ($importedCount === 0) {
+        //     return back()->with('error', 'All rows are duplicates. Skipped: ' . implode(', ', $duplicateNames));
+        // }
 
         $message = $importedCount . ' row(s) imported successfully.';
         if (!empty($duplicateNames)) {

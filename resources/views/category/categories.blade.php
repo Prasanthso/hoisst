@@ -686,6 +686,7 @@
                 successMessage.style.display = 'none';
             }
         }, 5000);
+
     // });
 
     function filterCategories() {
@@ -780,6 +781,7 @@
                     }
             }
 default_searchType();
+
 });
 
 function default_searchType()
