@@ -410,28 +410,24 @@
         // let pTotal = 0;
 
         function recipevalidation() {
-        const rpvalue = document.getElementById('productSelect').value.trim();
-        const rpopvalue = document.getElementById('recipeOutput').value.trim();
-        const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+            const rpvalue = document.getElementById('productSelect').value.trim();
+            const rpopvalue = document.getElementById('recipeOutput').value.trim();
+            const rpuomvalue = document.getElementById('recipeUoM').value.trim();
 
-        if (rpvalue === "" && rpvalue === "Choose...") {
-            alert("Please fill in the Recipe Name.");
-            document.getElementById('productSelect').focus();
-            return;
+            if (rpvalue === "" && rpvalue === "Choose...") {
+                alert("Please fill in the Recipe Name.");
+                document.getElementById('productSelect').focus();
+                return;
+            } else if (rpopvalue === "") {
+                alert("Please fill in the Recipe Output.");
+                document.getElementById('recipeOutput').focus();
+                return;
+            } else if (rpuomvalue === "") {
+                alert("Please fill in the Recipe UoM.");
+                document.getElementById('recipeUoM').focus();
+                return;
+            }
         }
-        else if(rpopvalue === "")
-        {
-            alert("Please fill in the Recipe Output.");
-            document.getElementById('recipeOutput').focus();
-            return;
-        }
-        else if(rpuomvalue === "")
-        {
-            alert("Please fill in the Recipe UoM.");
-            document.getElementById('recipeUoM').focus();
-            return;
-        }
-    }
 
         // Function to toggle visibility based on checkbox selection
         function toggleForms() {
@@ -499,7 +495,7 @@
         toggleForms();
 
         productSelect.addEventListener('change', function() {
-           product_id = this.value; // Update product_id with the selected value
+            product_id = this.value; // Update product_id with the selected value
             console.log('Selected product ID:', product_id); // Debug log to check the selected value
         });
 
@@ -522,7 +518,7 @@
             updateAmount();
         });
         rawMaterialSelect.addEventListener('input', (event) => {
-            const selectedOption = event.target.options[event.target.selectedIndex];  //this.options[this.selectedIndex];
+            const selectedOption = event.target.options[event.target.selectedIndex]; //this.options[this.selectedIndex];
             if (selectedOption.disabled) {
                 clearFields();
                 return;
@@ -541,7 +537,7 @@
 
         // Add raw material row to the table
         addButton.addEventListener('click', function() {
-            console.log('rm p',product_id);
+            console.log('rm p', product_id);
 
             if (!product_id) {
                 alert('Please select a valid product.');
@@ -1003,8 +999,7 @@
         //     return;
         // }
 
-        function calcForManual()
-        {
+        function calcForManual() {
             let manualOhAmount = 0;
             let manualOhPercent = 0;
             const manualOhType = document.getElementById("manualOhType").value.trim();
@@ -1015,16 +1010,13 @@
                 alert("Please add raw materials & packing materials.");
                 return;
             }
-            if(manualOhType == 'percentage')
-            {
+            if (manualOhType == 'percentage') {
                 manualOhPercValue = parseFloat(document.getElementById("manualOhPerc").value) || 0;
                 console.log(parseFloat(rmTotal));
-                    manualOhAmount = ((rmTotal + pmTotal) * manualOhPercValue/100);
-                    console.log(manualOhAmount);
-                    manualOhPriceValue = manualOhAmount;
-            }
-            else if(manualOhType == 'price')
-            {
+                manualOhAmount = ((rmTotal + pmTotal) * manualOhPercValue / 100);
+                console.log(manualOhAmount);
+                manualOhPriceValue = manualOhAmount;
+            } else if (manualOhType == 'price') {
                 manualOhPriceValue = parseFloat(document.getElementById("manualOhPrice").value) || 0;
                 console.log(parseFloat(rmTotal));
                 manualOhPercent = (manualOhPriceValue / (rmTotal + pmTotal)) * 100;
@@ -1149,45 +1141,44 @@
                 .catch((error) => console.error("Fetch error:", error));
         });
 
-        if(overheadsTable)
-        {
-        overheadsTable.addEventListener('click', function(e) {
-            if (e.target.classList.contains('delete-icon')) {
-                const deleteIcon = e.target;
-                const row = deleteIcon.closest('tr'); // Get the clicked row
-                const insertedId = deleteIcon.getAttribute('data-id');
+        if (overheadsTable) {
+            overheadsTable.addEventListener('click', function(e) {
+                if (e.target.classList.contains('delete-icon')) {
+                    const deleteIcon = e.target;
+                    const row = deleteIcon.closest('tr'); // Get the clicked row
+                    const insertedId = deleteIcon.getAttribute('data-id');
 
-                if (!row) {
-                    console.error("Row not found.");
-                    return;
+                    if (!row) {
+                        console.error("Row not found.");
+                        return;
+                    }
+
+                    // Confirm deletion
+                    if (!confirm('Are you sure you want to delete this record?')) {
+                        return;
+                    }
+
+                    // Get the CSRF token
+                    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    if (!token) {
+                        console.error('CSRF token not found.');
+                        return;
+                    }
+
+                    // ✅ Get the code value from the correct row (assuming the code is in the second column)
+                    const code = row.cells[1]?.textContent.trim(); // Adjust the index if needed
+
+                    console.log("Code value from row:", code); // Debugging
+
+                    if (code === '-') {
+                        console.log("Calling mohDelete() because code is empty");
+                        mohDelete(insertedId, row, token);
+                    } else {
+                        console.log(`Calling ohDelete() because code has a value: ${code}`);
+                        ohDelete(insertedId, row, token);
+                    }
                 }
-
-                // Confirm deletion
-                if (!confirm('Are you sure you want to delete this record?')) {
-                    return;
-                }
-
-                // Get the CSRF token
-                const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                if (!token) {
-                    console.error('CSRF token not found.');
-                    return;
-                }
-
-                // ✅ Get the code value from the correct row (assuming the code is in the second column)
-                const code = row.cells[1]?.textContent.trim(); // Adjust the index if needed
-
-                console.log("Code value from row:", code); // Debugging
-
-                if (code === '-') {
-                    console.log("Calling mohDelete() because code is empty");
-                    mohDelete(insertedId, row, token);
-                } else {
-                    console.log(`Calling ohDelete() because code has a value: ${code}`);
-                    ohDelete(insertedId, row, token);
-                }
-            }
-        });
+            });
         }
 
         // Function to handle deletion when the code is empty
@@ -1340,6 +1331,7 @@
             totalOhCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
             updateGrandTotal();
         }
+
         function recipePricing() {
             const rpoutputInput = document.getElementById('recipeOutput');
             const rpuomInput = document.getElementById('recipeUoM');

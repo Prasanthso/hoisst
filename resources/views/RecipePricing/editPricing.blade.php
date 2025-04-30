@@ -301,14 +301,14 @@
             $ohTotal = 0;
             $mohTotal = 0;
             @endphp
-           <div><input type="hidden" id="oh_mohValue" value="{{ $pricingData->whereNotNull('oh_name')->isNotEmpty() ? 'masters' : ($pricingData->whereNotNull('moh_name')->isNotEmpty() ? 'manual' : '') }}"></div>
+            <div><input type="hidden" id="oh_mohValue" value="{{ $pricingData->whereNotNull('oh_name')->isNotEmpty() ? 'masters' : ($pricingData->whereNotNull('moh_name')->isNotEmpty() ? 'manual' : '') }}"></div>
 
             @if($pricingData->whereNotNull('oh_name')->isNotEmpty())
             <div class="row mb-2">
                 <div class="col-auto">
                     <label for="pricingoverheads" class="form-label text-primary" id="pricingoverheads">Overheads From Masters</label>
                 </div>
-               <div class="col-2 form-check">
+                <div class="col-2 form-check">
                     <input type="checkbox" class="form-check-input" id="frommasters" checked>
                     <label class="form-check-label" for="frommasters"> From Masters </label>
                 </div>
@@ -675,6 +675,18 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+<script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/chart.js/chart.umd.js') }}"></script>
+<script src="{{ asset('assets/vendor/echarts/echarts.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/quill/quill.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
+<script src="{{ asset('assets/vendor/tinymce/tinymce.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/php-email-form/validate.js') }}"></script>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script>
     // Ensure functions are available in the global scope
     document.addEventListener('DOMContentLoaded', function() {
@@ -697,8 +709,7 @@
         // manualOhType.addEventListener("change", toggleFields);
     });
 
-    function for_Oh_Manual()
-    {
+    function for_Oh_Manual() {
         const fromMastersCheckbox = document.getElementById("frommasters1");
         const enterManuallyCheckbox = document.getElementById("entermanually1");
         const masterEntryDiv = document.getElementById("newOh");
@@ -706,8 +717,7 @@
         const ohMohValue = document.getElementById("oh_mohValue").value;
         console.log("new overheads");
         console.log(ohMohValue);
-        if(ohMohValue === "")
-        {
+        if (ohMohValue === "") {
             console.log("check 2");
             // Function to toggle visibility based on checkbox selection
             function toggleForms() {
@@ -741,7 +751,7 @@
                     manualOhPerc.style.display = "block";
                     manualOhPerclab.style.display = "block";
                 }
-        }
+            }
             // Ensure correct field is shown when the page loads
             toggleFields();
 
@@ -776,15 +786,11 @@
             alert("Please fill in the Recipe Name.");
             document.getElementById('productSelect').focus();
             return;
-        }
-        else if(rpopvalue === "")
-        {
+        } else if (rpopvalue === "") {
             alert("Please fill in the Recipe Output.");
             document.getElementById('recipeOutput').focus();
             return;
-        }
-        else if(rpuomvalue === "")
-        {
+        } else if (rpuomvalue === "") {
             alert("Please fill in the Recipe UoM.");
             document.getElementById('recipeUoM').focus();
             return;
@@ -1237,9 +1243,9 @@
             }
             // if((parseFloat(recipeOutput.textContent) || 0) <= 0)
             const totalCostSpan = document.getElementById('totalRmCost');
-            if((parseFloat(totalCostSpan.textContent) || 0) <= 0) {
-                    alert("Please add raw materials");
-                    return;
+            if ((parseFloat(totalCostSpan.textContent) || 0) <= 0) {
+                alert("Please add raw materials");
+                return;
             }
 
             const packingMaterialId = packingMaterialSelect.value;
@@ -1509,11 +1515,10 @@
         });
 
         if ((parseFloat(totalCostSpan.textContent) || 0) <= 0) {
-                alert("Please add raw materials");
-                return;
-            }
-        if(overheadsSelect)
-        {
+            alert("Please add raw materials");
+            return;
+        }
+        if (overheadsSelect) {
             console.log("from masters");
             overheadsSelect.addEventListener('change', function() {
                 const selectedOption = this.options[this.selectedIndex];
@@ -1530,87 +1535,86 @@
                 updateOhAmount();
             });
 
-        // Update amount on quantity input
-        if (ohQuantityInput) {
-        ohQuantityInput.addEventListener('input', updateOhAmount);
-        }
-        // ohQuantityInput.addEventListener('input', updateOhAmount);
-        // Add overheads
-        ohAddButton.addEventListener('click', function() {
-            const product_id = productSelect.value;
-            if (!product_id) {
-                alert('Please select a valid product.');
-                return;
+            // Update amount on quantity input
+            if (ohQuantityInput) {
+                ohQuantityInput.addEventListener('input', updateOhAmount);
             }
-
-            const overheadsId = overheadsSelect.value;
-            const overheadsName = overheadsSelect.options[overheadsSelect.selectedIndex]?.text;
-            const quantity = parseFloat(ohQuantityInput.value) || 0;
-            const code = ohCodeInput.value;
-            const uom = ohUoMInput.value;
-            const price = parseFloat(ohPriceInput.value) || 0;
-            const amount = parseFloat(ohAmountInput.value) || 0;
-
-            if (!overheadsName || !quantity || !code || !uom || !price || !amount) {
-                alert('Please fill all fields before adding.');
-                return;
-            }
-            if(overheadsTable)
-            {
-            const rows = Array.from(overheadsTable.querySelectorAll('tr'));
-            const isAlreadyAdded = rows.some(row => row.cells[0].textContent === overheadsName);
-            if (isAlreadyAdded) {
-                alert('This overheads has already been added to the table.');
-                clearOhFields();
-                return;
+            // ohQuantityInput.addEventListener('input', updateOhAmount);
+            // Add overheads
+            ohAddButton.addEventListener('click', function() {
+                const product_id = productSelect.value;
+                if (!product_id) {
+                    alert('Please select a valid product.');
+                    return;
                 }
-            }
-            //     const newRow = ohtbody.insertRow();
-            // newRow.innerHTML = `
-            //    <td>${overheadsName}</td>
-            //     <td>${quantity}</td>
-            //     <td>${code}</td>
-            //     <td>${uom}</td>
-            //     <td>${price.toFixed(2)}</td>
-            //     <td>${amount.toFixed(2)}</td>
-            // `;
 
-            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-            if (!token) {
-                console.error('CSRF token not found.');
-                return;
-            }
-            if (!overheadsId || quantity <= 0 || amount <= 0) {
-                alert('Please select a valid overheads and fill all fields correctly.');
-                return;
-            }
-            // Prepare data for server request
-            const ohData = {
-                product_id: product_id,
-                overheads_id: overheadsId,
-                quantity: quantity,
-                amount: amount,
-                code: code,
-                uom: uom,
-                price: price,
-            };
+                const overheadsId = overheadsSelect.value;
+                const overheadsName = overheadsSelect.options[overheadsSelect.selectedIndex]?.text;
+                const quantity = parseFloat(ohQuantityInput.value) || 0;
+                const code = ohCodeInput.value;
+                const uom = ohUoMInput.value;
+                const price = parseFloat(ohPriceInput.value) || 0;
+                const amount = parseFloat(ohAmountInput.value) || 0;
 
-            // Send data to the server
-            fetch('/oh-for-recipe', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': token,
-                    },
-                    body: JSON.stringify(ohData),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        console.log('Success:', data);
-                        const insertedId = data.inserted_id;
-                        // Add row to the table
-                        const row = `<tr>
+                if (!overheadsName || !quantity || !code || !uom || !price || !amount) {
+                    alert('Please fill all fields before adding.');
+                    return;
+                }
+                if (overheadsTable) {
+                    const rows = Array.from(overheadsTable.querySelectorAll('tr'));
+                    const isAlreadyAdded = rows.some(row => row.cells[0].textContent === overheadsName);
+                    if (isAlreadyAdded) {
+                        alert('This overheads has already been added to the table.');
+                        clearOhFields();
+                        return;
+                    }
+                }
+                //     const newRow = ohtbody.insertRow();
+                // newRow.innerHTML = `
+                //    <td>${overheadsName}</td>
+                //     <td>${quantity}</td>
+                //     <td>${code}</td>
+                //     <td>${uom}</td>
+                //     <td>${price.toFixed(2)}</td>
+                //     <td>${amount.toFixed(2)}</td>
+                // `;
+
+                const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                if (!token) {
+                    console.error('CSRF token not found.');
+                    return;
+                }
+                if (!overheadsId || quantity <= 0 || amount <= 0) {
+                    alert('Please select a valid overheads and fill all fields correctly.');
+                    return;
+                }
+                // Prepare data for server request
+                const ohData = {
+                    product_id: product_id,
+                    overheads_id: overheadsId,
+                    quantity: quantity,
+                    amount: amount,
+                    code: code,
+                    uom: uom,
+                    price: price,
+                };
+
+                // Send data to the server
+                fetch('/oh-for-recipe', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': token,
+                        },
+                        body: JSON.stringify(ohData),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log('Success:', data);
+                            const insertedId = data.inserted_id;
+                            // Add row to the table
+                            const row = `<tr>
                         <td>${overheadsName}</td>
                         <td>${quantity}</td>
                         <td>${code}</td>
@@ -1621,69 +1625,69 @@
                             <span class="delete-icon" style="cursor: pointer; color: red;" title="Remove Row" data-id="${insertedId}">&#x1F5D1;</span>
                         </td>
                     </tr>`;
-                        overheadsTable.insertAdjacentHTML('beforeend', row);
-                        // updateOhTotalCost(amount); // Update the total cost after adding a row
-                        clearOhFields();
-                        alert('Overheads added successfully!');
-                        window.location.reload();
-                    } else {
-                        alert('Failed to add overheads. Please try again.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    // alert('An error occurred while adding overheads.');
-                });
+                            overheadsTable.insertAdjacentHTML('beforeend', row);
+                            // updateOhTotalCost(amount); // Update the total cost after adding a row
+                            clearOhFields();
+                            alert('Overheads added successfully!');
+                            window.location.reload();
+                        } else {
+                            alert('Failed to add overheads. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // alert('An error occurred while adding overheads.');
+                    });
             });
         }
         // Delete row functionality
-        if(overheadsTable){
-        overheadsTable.addEventListener('click', function(e) {
+        if (overheadsTable) {
+            overheadsTable.addEventListener('click', function(e) {
 
-            if (e.target.classList.contains('delete-icon')) {
-                const deleteIcon = e.target;
-                const row = deleteIcon.closest('tr');
-                const insertedId = deleteIcon.getAttribute('data-id');
+                if (e.target.classList.contains('delete-icon')) {
+                    const deleteIcon = e.target;
+                    const row = deleteIcon.closest('tr');
+                    const insertedId = deleteIcon.getAttribute('data-id');
 
-                // Confirm deletion
-                if (!confirm('Are you sure you want to delete this record?')) {
-                    return;
+                    // Confirm deletion
+                    if (!confirm('Are you sure you want to delete this record?')) {
+                        return;
+                    }
+                    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    if (!token) {
+                        console.error('CSRF token not found.');
+                        return;
+                    }
+
+                    // Send DELETE request to the server
+                    fetch(`/oh-for-recipe/${insertedId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': token,
+                            },
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Server response not OK');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Success:', data);
+
+                            // Remove the row from the table
+                            const amount = parseFloat(row.cells[5].textContent) || 0;
+                            row.remove();
+
+                            // Update the total cost
+                            updateOhTotalCost(-amount);
+
+                        })
+                        .catch(error => console.error('Error:', error.message));
                 }
-                const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                if (!token) {
-                    console.error('CSRF token not found.');
-                    return;
-                }
-
-                // Send DELETE request to the server
-                fetch(`/oh-for-recipe/${insertedId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': token,
-                        },
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Server response not OK');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Success:', data);
-
-                        // Remove the row from the table
-                        const amount = parseFloat(row.cells[5].textContent) || 0;
-                        row.remove();
-
-                        // Update the total cost
-                        updateOhTotalCost(-amount);
-
-                    })
-                    .catch(error => console.error('Error:', error.message));
-            }
-        });
-    }
+            });
+        }
 
         function updateOhAmount() {
             const price = parseFloat(ohPriceInput.value) || 0;
@@ -1709,8 +1713,7 @@
         }
     }
 
-    function mohforRecipe()
-    {
+    function mohforRecipe() {
         let manualOhPriceValue = 0;
         let manualOhPercValue = 0;
         let totalCostSpan = document.getElementById('totalRmCost');
@@ -1719,12 +1722,11 @@
         const manualOverheads = document.getElementById('manualOverheads');
         const ohMohValue = document.getElementById("oh_mohValue").value;
         let manualTable = document.getElementById('overheadsTable');
-        if((parseFloat(totalCostSpan.textContent) || 0) <= 0) {
-                alert("Please add raw materials");
-                return;
-            }
-        if(manualOverheads)
-        {
+        if ((parseFloat(totalCostSpan.textContent) || 0) <= 0) {
+            alert("Please add raw materials");
+            return;
+        }
+        if (manualOverheads) {
 
             function toggleFields1() {
                 let manualOhPrice = document.getElementById("manualOhPrice");
@@ -1745,8 +1747,7 @@
             }
             manualOhType.addEventListener("change", toggleFields1);
 
-            function calcForManual()
-            {
+            function calcForManual() {
                 let manualOhAmount = 0;
                 let manualOhPercent = 0;
                 let totalRmCost = document.getElementById('totalRmCost');
@@ -1760,18 +1761,15 @@
                     return;
                 }
 
-                if(manualOhType == 'percentage')
-                {
+                if (manualOhType == 'percentage') {
                     manualOhPercValue = parseFloat(document.getElementById("manualOhPerc").value) || 0;
                     // manualOhPercValue = parseFloat(document.getElementById("manualOhPrice").value) || 0;
                     console.log("manualOhPerc/price : ", manualOhPercValue);
                     console.log(parseFloat(rmTotal));
-                        manualOhAmount = ((rmTotal + pmTotal) * manualOhPercValue/100);
-                        console.log(manualOhAmount);
-                        manualOhPriceValue = manualOhAmount;
-                }
-                else if(manualOhType == 'price')
-                {
+                    manualOhAmount = ((rmTotal + pmTotal) * manualOhPercValue / 100);
+                    console.log(manualOhAmount);
+                    manualOhPriceValue = manualOhAmount;
+                } else if (manualOhType == 'price') {
                     manualOhPriceValue = parseFloat(document.getElementById("manualOhPrice").value) || 0;
                     console.log(parseFloat(rmTotal));
                     manualOhPercent = (manualOhPriceValue / (rmTotal + pmTotal)) * 100;
@@ -1780,8 +1778,7 @@
                 }
             }
             const manualOhAddButton = document.getElementById('manualOhaddbtn');
-            if(totalOhCostSpan)
-            {
+            if (totalOhCostSpan) {
                 manualOhAddButton.addEventListener('click', function() {
                     console.log("Add button clicked"); // Debugging
 
@@ -1791,63 +1788,63 @@
                         return;
                     }
 
-            const manualOverheadsName = document.getElementById('manualOverheads').value.trim();
-            const manualOhType = document.getElementById("manualOhType").value;
+                    const manualOverheadsName = document.getElementById('manualOverheads').value.trim();
+                    const manualOhType = document.getElementById("manualOhType").value;
 
-            if (manualOhType === "price") {
-                manualOhPriceValue = parseFloat(document.getElementById('manualOhPrice').value) || 0;
-                calcForManual();
-            } else {
-                manualOhPercValue = parseFloat(document.getElementById('manualOhPerc').value) || 0;
-                console.log("manualOhPercValue: ", manualOhPercValue);
-                calcForManual();
-            }
+                    if (manualOhType === "price") {
+                        manualOhPriceValue = parseFloat(document.getElementById('manualOhPrice').value) || 0;
+                        calcForManual();
+                    } else {
+                        manualOhPercValue = parseFloat(document.getElementById('manualOhPerc').value) || 0;
+                        console.log("manualOhPercValue: ", manualOhPercValue);
+                        calcForManual();
+                    }
 
-            if (!manualOverheadsName || (manualOhType === "price" && manualOhPriceValue <= 0) || (manualOhType === "percentage" && manualOhPercValue <= 0)) {
-                console.log(manualOhPercValue);
-                alert('Please fill all fields before adding.');
-                return;
-            }
+                    if (!manualOverheadsName || (manualOhType === "price" && manualOhPriceValue <= 0) || (manualOhType === "percentage" && manualOhPercValue <= 0)) {
+                        console.log(manualOhPercValue);
+                        alert('Please fill all fields before adding.');
+                        return;
+                    }
 
-            const existingNames = Array.from(document.querySelectorAll('#manualEntryTable tr td:first-child')).map(td => td.textContent.trim());
-            if (existingNames.includes(manualOverheadsName)) {
-                alert('This overhead name already exists in the table.');
-                clearMohFields();
-                return;
-            }
+                    const existingNames = Array.from(document.querySelectorAll('#manualEntryTable tr td:first-child')).map(td => td.textContent.trim());
+                    if (existingNames.includes(manualOverheadsName)) {
+                        alert('This overhead name already exists in the table.');
+                        clearMohFields();
+                        return;
+                    }
 
-            const data = {
-                product_id: product_id, // Ensure product_id is set
-                manualOverheads: manualOverheadsName,
-                manualOverheadsType: manualOhType,
-                manualOhPrice: manualOhPriceValue,
-                manualOhPerc: manualOhPercValue,
-            };
+                    const data = {
+                        product_id: product_id, // Ensure product_id is set
+                        manualOverheads: manualOverheadsName,
+                        manualOverheadsType: manualOhType,
+                        manualOhPrice: manualOhPriceValue,
+                        manualOhPerc: manualOhPercValue,
+                    };
 
-            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-            if (!token) {
-                console.error('CSRF token not found.');
-                return;
-            }
+                    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    if (!token) {
+                        console.error('CSRF token not found.');
+                        return;
+                    }
 
-            fetch('/manual-overhead', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': token,
-                    },
-                    body: JSON.stringify(data),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Parsed Response:", data);
-                    if (data.success) {
-                        //alert('Manual overhead added successfully!');
-                        console.log("Manual overhead added successfully!.");
-                        const insertedId = data.inserted_id; // Get the inserted ID from the response
+                    fetch('/manual-overhead', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': token,
+                            },
+                            body: JSON.stringify(data),
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log("Parsed Response:", data);
+                            if (data.success) {
+                                //alert('Manual overhead added successfully!');
+                                console.log("Manual overhead added successfully!.");
+                                const insertedId = data.inserted_id; // Get the inserted ID from the response
 
-                        // Add a new row to the table
-                        const row = `<tr>
+                                // Add a new row to the table
+                                const row = `<tr>
                     <td>${manualOverheadsName}</td>
                     <td>-</td>
                     <td>-</td>
@@ -1859,75 +1856,75 @@
                     </td>
                 </tr>`;
 
-                       // Assuming you have a table with ID 'overheadsTable'
-                       if(ohMohValue === '')
-                       {  manualTable.insertAdjacentHTML('beforeend', row);  }
-                       else{
-                         manualEntryTable.insertAdjacentHTML('beforeend', row);
-                       }
-                        clearMohFields()
-                        window.location.reload();
-                        // Optionally, update the total cost after adding a row
-                        // updateOhTotalCost(); // Assuming this function exists and updates the total cost
+                                // Assuming you have a table with ID 'overheadsTable'
+                                if (ohMohValue === '') {
+                                    manualTable.insertAdjacentHTML('beforeend', row);
+                                } else {
+                                    manualEntryTable.insertAdjacentHTML('beforeend', row);
+                                }
+                                clearMohFields()
+                                window.location.reload();
+                                // Optionally, update the total cost after adding a row
+                                // updateOhTotalCost(); // Assuming this function exists and updates the total cost
 
-                    } else {
-                        alert('Failed to save manual overhead.');
-                    }
-                })
-                .catch(error => console.error("Fetch error:", error));
-        });
-        }
+                            } else {
+                                alert('Failed to save manual overhead.');
+                            }
+                        })
+                        .catch(error => console.error("Fetch error:", error));
+                });
+            }
 
-        if(manualEntryTable){
-        manualEntryTable.addEventListener('click', function(e) {
+            if (manualEntryTable) {
+                manualEntryTable.addEventListener('click', function(e) {
 
-            if (e.target.classList.contains('delete-icon')) {
-                const deleteIcon = e.target;
-                const row = deleteIcon.closest('tr');
-                const insertedId = deleteIcon.getAttribute('data-id');
+                    if (e.target.classList.contains('delete-icon')) {
+                        const deleteIcon = e.target;
+                        const row = deleteIcon.closest('tr');
+                        const insertedId = deleteIcon.getAttribute('data-id');
 
-                console.log("moh",
-                    insertedId); // Debugging
+                        console.log("moh",
+                            insertedId); // Debugging
 
-                // Confirm deletion
-                if (!confirm('Are you sure you want to delete this record?')) {
-                    return;
-                }
-                const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                if (!token) {
-                    console.error('CSRF token not found.');
-                    return;
-                }
-
-                // Send DELETE request to the server
-                fetch(`/moh-for-recipe/${insertedId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': token,
-                        },
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Server response not OK');
+                        // Confirm deletion
+                        if (!confirm('Are you sure you want to delete this record?')) {
+                            return;
                         }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Success:', data);
+                        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                        if (!token) {
+                            console.error('CSRF token not found.');
+                            return;
+                        }
 
-                        // Remove the row from the table
-                        const amount = parseFloat(row.cells[5].textContent) || 0;
-                        row.remove();
-                        window.location.reload();
-                        // Update the total cost
-                        // updateOhTotalCost(-amount);
-                    })
-                    .catch(error => console.error('Error:', error.message));
-                }
-            });
+                        // Send DELETE request to the server
+                        fetch(`/moh-for-recipe/${insertedId}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': token,
+                                },
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Server response not OK');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                console.log('Success:', data);
+
+                                // Remove the row from the table
+                                const amount = parseFloat(row.cells[5].textContent) || 0;
+                                row.remove();
+                                window.location.reload();
+                                // Update the total cost
+                                // updateOhTotalCost(-amount);
+                            })
+                            .catch(error => console.error('Error:', error.message));
+                    }
+                });
+            }
         }
-    }
     }
 
     function updateGrandTotal() {

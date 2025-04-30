@@ -53,7 +53,7 @@
             <div class="d-flex align-items-center mb-2">
                 <strong>Output :</strong> <span class="ms-2">{{ $rpoutput }}</span>
                 <strong class="ms-4">UoM :</strong> <span class="ms-2">{{ $rpuom }}</span>
-             </div>
+            </div>
             <div class="row mb-4">
                 <!-- Raw Materials Table -->
                 <div class="table-responsive">
@@ -150,8 +150,8 @@
                 </div>
             </div>
             @php
-                $ohTotal = 0;
-                $mohTotal = 0;
+            $ohTotal = 0;
+            $mohTotal = 0;
             @endphp
             @if($pricingData->whereNotNull('oh_name')->isNotEmpty())
             <div class="row mb-4">
@@ -275,7 +275,7 @@
                 </div>
             </div>
 
-           {{-- @else
+            {{-- @else
             <p>No pricing recipe selected.</p> --}}
             @endif
         </div>
@@ -289,6 +289,19 @@
     </section>
 </main>
 @endsection
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+<script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/chart.js/chart.umd.js') }}"></script>
+<script src="{{ asset('assets/vendor/echarts/echarts.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/quill/quill.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
+<script src="{{ asset('assets/vendor/tinymce/tinymce.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/php-email-form/validate.js') }}"></script>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -337,33 +350,33 @@
                 return;
             }
             try {
-            // AJAX request to check if the product exists in overall_costing
-            let response = await fetch(`/check-product-exists?productId=${productId}`);
-            let data = await response.json();
-            console.log("Server Response:", data);
-            if (data.exists) {
-                alert('Recipe-Pricing data might be in use and cannot be deleted.');
-                return;
-            }
+                // AJAX request to check if the product exists in overall_costing
+                let response = await fetch(`/check-product-exists?productId=${productId}`);
+                let data = await response.json();
+                console.log("Server Response:", data);
+                if (data.exists) {
+                    alert('Recipe-Pricing data might be in use and cannot be deleted.');
+                    return;
+                }
                 // if (productId) {
-                    // Show confirmation dialog
-                    if (confirm('Are you sure you want to delete the pricing data for this product?')) {
-                        // Set the product ID to the hidden input
-                        document.getElementById('product_id_to_delete').value = productId;
+                // Show confirmation dialog
+                if (confirm('Are you sure you want to delete the pricing data for this product?')) {
+                    // Set the product ID to the hidden input
+                    document.getElementById('product_id_to_delete').value = productId;
 
-                        // Submit the form
-                        document.getElementById('deleteForm').submit();
-                    } else {
-                        // User canceled the action
-                        console.log('Delete action canceled by user.');
-                    }
+                    // Submit the form
+                    document.getElementById('deleteForm').submit();
+                } else {
+                    // User canceled the action
+                    console.log('Delete action canceled by user.');
+                }
                 // } else {
                 //     alert('Please select a product before deleting.');
                 // }
             } catch (error) {
-            console.error('Error checking product existence:', error);
-            alert('Something went wrong. Please try again.');
-        }
+                console.error('Error checking product existence:', error);
+                alert('Something went wrong. Please try again.');
+            }
         });
 
     });
