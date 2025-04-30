@@ -74,7 +74,7 @@
 
         <div class="d-flex align-items-center justify-content-between">
             <a href="#" class="d-flex align-items-center" style="text-decoration: none;">
-                <img src="/assets/img/RMSLogo.png" alt="Recipe Management System Logo">
+                <img src="/assets/img/logo.svg" alt="Recipe Management System Logo" style="width:45%;">
             </a>
             <!-- <i class="bi bi-list toggle-sidebar-btn"></i> -->
         </div>

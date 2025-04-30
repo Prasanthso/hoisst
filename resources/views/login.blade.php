@@ -109,7 +109,7 @@
     <div class="container text-center">
         <div class="custom-container mx-auto text-left">
             <div class="d-flex justify-content-center mb-3">
-                <img src="/assets/img/RMSLogo.png" alt="Recipe Management System Logo" style="height: 70px;">
+                <img src="/assets/img/logo.svg" alt="Recipe Management System Logo" style="height: 70px;">
             </div>
 
             <h2 class="text-center"><b>LOGIN</b></h2>

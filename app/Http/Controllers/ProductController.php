@@ -615,12 +615,12 @@ class ProductController extends Controller
                 $uom = trim($row[2] ?? '');
                 $hsncode = trim($row[3] ?? '');
                 $itemwgt = trim($row[4] ?? '');
-                $price = trim($row[15] ?? '');
-                $ptax = trim($row[16] ?? '');
-                $frequency = trim($row[17] ?? '');
-                $priceupdatefrequency = trim($row[18] ?? '');
-                $thershold = trim($row[19] ?? '');
-                $itemType = trim($row[20] ?? '');
+                $price = trim($row[17] ?? '');
+                $ptax = trim($row[18] ?? '');
+                $frequency = trim($row[19] ?? '');
+                $priceupdatefrequency = trim($row[20] ?? '');
+                $thershold = trim($row[21] ?? '');
+                $itemType = trim($row[22] ?? '');
                 $categoryIds['id1'] = trim($row[5] ?? '');
 
                 /*
@@ -712,7 +712,7 @@ class ProductController extends Controller
                 'category_id8' => $categoryIds['id8'] ?? null,
                 'category_id9' => $categoryIds['id9'] ?? null,
                 'category_id10' => $categoryIds['id10'] ?? null,
-                'purcCost' => $row[15],
+                'purcCost' =>  $row[15] ?? null,
                 'margin' => $row[16],
                 'price' => $row[17],
                 'tax' => $row[18],

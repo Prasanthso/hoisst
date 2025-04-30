@@ -569,7 +569,7 @@
                             <td>${item.categoryname}</td>
                             <td class="left-align"><a href="/editcategoryitem/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
                             <td>${item.description}</td>
-                            <td>${item.created_user}</td>
+
                     </tr>
             `;
         });
@@ -686,6 +686,7 @@
                 successMessage.style.display = 'none';
             }
         }, 5000);
+
     // });
 
     function filterCategories() {
@@ -780,6 +781,7 @@
                     }
             }
 default_searchType();
+
 });
 
 function default_searchType()

@@ -39,7 +39,6 @@ use App\Http\Controllers\TwilioController;
 |
 */
 
-Auth::routes(); // This will include the password reset routes by default
 
 
 Route::get('/', function () {
