@@ -14,9 +14,9 @@ class ItemTypeSeeder extends Seeder
     public function run(): void
     {
         DB::table('item_type')->insert([
-            ['itemtypename' => 'Daily'],
             ['itemtypename' => 'Own'],
-            ['itemtypename' => 'Trading']
+            ['itemtypename' => 'Trading'],
+            ['itemtypename' => 'Daily'],
         ]);
     }
 }
