@@ -18,7 +18,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-
+        $storeid = $request->session()->get('store_id');
         $categoryitems = CategoryItems::pdCategoryItem();
         $selectedCategoryIds = $request->input('category_ids', []);
         $searchValue = $request->input('pdText', '');
@@ -525,6 +525,7 @@ class ProductController extends Controller
     // import excel data to db
     public function importExcel(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $request->validate([
             'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048'
         ]);
@@ -593,6 +594,7 @@ class ProductController extends Controller
             $existingProduct = Product::whereRaw("
                     REPLACE(LOWER(TRIM(name)), ' ', '') = ?
                 ", [$normalizedName])
+                ->where('store_id', $storeid)
                 // ->where('hsnCode', $row[3])
                 ->first();
 
@@ -690,11 +692,12 @@ class ProductController extends Controller
                     ? DB::table('categoryitems')
                     ->where('categoryId', 4)
                     ->where('status', 'active')
+                    ->where('store_id', $storeid)
                     // ->where('itemname', $row[$i + 3])
                     ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 4]))])
                     ->value('id')
                     : null;            }
-            $itemtype_id = DB::table('item_type')->where('itemtypename', $row[22])->where('status', 'active')->value('id');
+            $itemtype_id = DB::table('item_type')->where('itemtypename', $row[22])->where('status', 'active')->where('store_id', $storeid)->value('id');
 
             Product::create([
                 'name' => $row[1] ?? null,
@@ -720,6 +723,7 @@ class ProductController extends Controller
                 'price_update_frequency' => $row[20],
                 'price_threshold' => $row[21],
                 'itemType_id' => $itemtype_id,
+                'store_id' => $storeid
             ]);
             $importedCount++;
         }
@@ -734,9 +738,10 @@ class ProductController extends Controller
             return back()->with('success',  $message);
     }
 
-    public function exportAll()
+    public function exportAll(Request $request)
     {
-        $categories = \App\Models\CategoryItems::pluck('itemname', 'id');
+        $storeid = $request->session()->get('store_id');
+        $categories = \App\Models\CategoryItems::where('store_id', $storeid)->pluck('itemname', 'id');
 
         $products = \App\Models\Product::select([
             'id',
@@ -756,6 +761,7 @@ class ProductController extends Controller
             'category_id10'
         ])
             ->where('status', 'active')  // Filter active records
+            ->where('store_id', $storeid)
             ->orderBy('name', 'asc')     // Sort by name ASC
             ->get();
 

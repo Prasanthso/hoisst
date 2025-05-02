@@ -430,7 +430,7 @@ class CategoryItemController extends Controller
         //   return back()->with('success', 'Excel file imported successfully!');
     }
 
-    public function exportAll()
+    public function exportAll(Request $request)
     {
         $storeid = $request->session()->get('store_id');
         try {
