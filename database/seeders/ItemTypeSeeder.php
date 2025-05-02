@@ -17,7 +17,6 @@ class ItemTypeSeeder extends Seeder
             ['itemtypename' => 'Own'],
             ['itemtypename' => 'Trading'],
             ['itemtypename' => 'Daily'],
-
         ]);
     }
 }

@@ -30,7 +30,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Foreign key constraint if you have a stores table
-            $table->foreign('store_id')->references('id')->on('stores')->onDelete('cascade');
+            $table->foreign('store_id')->references('id')->on('store')->onDelete('cascade');
         });
     }
 
