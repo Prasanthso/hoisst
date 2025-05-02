@@ -61,6 +61,12 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'verifyLogin'])->name('login.verify');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+Route::get('forgot-password', [LoginController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('forgot-password', [LoginController::class, 'sendResetLink'])->name('password.email');
+
+Route::get('reset-password/{token}/{email}', [LoginController::class, 'showResetPasswordForm'])->name('password.reset');
+Route::post('reset-password', [LoginController::class, 'resetPassword'])->name('password.update');
+
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/addcategory', [CategoryItemController::class, 'create'])->name('category.create');
 Route::post('/categoryitem', [CategoryItemController::class, 'store'])->name('categoryitem.store');
@@ -242,8 +248,4 @@ Route::get('/lowmarginNotification', [NotificationController::class, 'lowMarginA
 
 
 
-Route::get('forgot-password', [LoginController::class, 'showForgotPasswordForm'])->name('password.request');
-Route::post('forgot-password', [LoginController::class, 'sendResetLink'])->name('password.email');
 
-Route::get('reset-password/{token}/{email}', [LoginController::class, 'showResetPasswordForm'])->name('password.reset');
-Route::post('reset-password', [LoginController::class, 'resetPassword'])->name('password.update');
