@@ -21,13 +21,16 @@ class CategoryItemController extends Controller
 
     public function index(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
+
         $categories = DB::table('categories')->get();
         $categoryIds = $request->input('category_ids');
         $searchValue = $request->input('categoryItem', '');
 
         $query = DB::table('categoryitems')
             ->join('categories', 'categoryitems.categoryId', '=', 'categories.id')
-            ->select('categoryitems.*', 'categories.categoryname');
+            ->select('categoryitems.*', 'categories.categoryname')
+            ->where('categoryitems.store_id', $storeid);
 
         if (!empty($searchValue)) {
             $query->where('categoryitems.status', 'active')
@@ -59,6 +62,7 @@ class CategoryItemController extends Controller
      */
     public function create()
     {
+        // $storeid = $request->session()->get('store_id');
     $categories = DB::table('categories')->get(); // Fetch all category data
     return view('category.addCategory', compact('categories')); // Match view name
     }
@@ -69,6 +73,7 @@ class CategoryItemController extends Controller
     public function store(Request $request)
     {
         try{
+            $storeid = $request->session()->get('store_id');
         $request->validate([
             'categoryId' => 'required|integer',
             'itemname' => [
@@ -97,6 +102,7 @@ class CategoryItemController extends Controller
             'description' => $request->description ?: null,
             'created_user' => auth()->id(), // Assuming the user is authenticated
             'status' => 'active',
+            'store_id' => $storeid,
         ]);
 
         return redirect()->back()->with('success', 'Category item created successfully.');
@@ -120,7 +126,12 @@ class CategoryItemController extends Controller
 
     public function edit(string $id)
     {
+        //  $storeid = $request->session()->get('store_id');
         $items = CategoryItems::with('category')->findOrFail($id);
+        // $items = CategoryItems::with('category')
+        //         ->where('store_id', $storeid)
+        //         ->where('id', $id)
+        //         ->firstOrFail();
 
         // Return the view with categories and category items
         return view('category.editCategory', compact('items'));
@@ -128,11 +139,15 @@ class CategoryItemController extends Controller
 
     public function update(Request $request,$id)
     {
-        $categoriesitems = CategoryItems::findOrFail($id);
+         $storeid = $request->session()->get('store_id');
+        // $categoriesitems = CategoryItems::findOrFail($id);
+        $categoriesitems = CategoryItems::where('id', $id)
+                            ->where('store_id', $storeid)
+                            ->firstOrFail();
         try{
         $stritemName = strtolower(preg_replace('/\s+/', '', $request->itemname));
         // Check for existing CategoryItems with the same normalized name or HSN code
-        $existingItems = CategoryItems::where(function ($query) use ($stritemName) {
+        $existingItems =CategoryItems::where('store_id', $storeid)->where(function ($query) use ($stritemName) {
             $query->whereRaw("LOWER(REPLACE(itemname, ' ', '')) = ?", [$stritemName]);
         })
         ->where('id', '!=', $categoriesitems->id) // Exclude the current product
@@ -177,6 +192,7 @@ class CategoryItemController extends Controller
 
     public function deleteConfirmation(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $ids = $request->input('ids');
 
         if (!$ids || !is_array($ids)) {
@@ -186,36 +202,40 @@ class CategoryItemController extends Controller
         try {
             // Update only CategoryItems that are NOT present in any of the related tables
             $updatedCount = CategoryItems::whereIn('id', $ids)
-                ->whereNotExists(function ($query) {
+                ->whereNotExists(function ($query) use ($storeid) {
                     $query->select(DB::raw(1))
                         ->from('raw_materials')
+                        ->where('store_id', $storeid)
                         ->where(function ($q) {
                             for ($i = 1; $i <= 10; $i++) {
                                 $q->orWhereColumn("raw_materials.category_id{$i}", 'categoryitems.id');
                             }
                         });
                 })
-                ->whereNotExists(function ($query) {
+                ->whereNotExists(function ($query) use ($storeid) {
                     $query->select(DB::raw(1))
                         ->from('packing_materials')
+                        ->where('store_id', $storeid)
                         ->where(function ($q) {
                             for ($i = 1; $i <= 10; $i++) {
                                 $q->orWhereColumn("packing_materials.category_id{$i}", 'categoryitems.id');
                             }
                         });
                 })
-                ->whereNotExists(function ($query) {
+                ->whereNotExists(function ($query) use ($storeid) {
                     $query->select(DB::raw(1))
                         ->from('overheads')
+                        ->where('store_id', $storeid)
                         ->where(function ($q) {
                             for ($i = 1; $i <= 10; $i++) {
                                 $q->orWhereColumn("overheads.category_id{$i}", 'categoryitems.id');
                             }
                         });
                 })
-                ->whereNotExists(function ($query) {
+                ->whereNotExists(function ($query) use ($storeid) {
                     $query->select(DB::raw(1))
                         ->from('product_master')
+                        ->where('store_id', $storeid)
                         ->where(function ($q) {
                             for ($i = 1; $i <= 10; $i++) {
                                 $q->orWhereColumn("product_master.category_id{$i}", 'categoryitems.id');
@@ -240,6 +260,7 @@ class CategoryItemController extends Controller
 
     public function delete(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $ids = $request->input('ids'); // Get the 'ids' array from the request
 
         if (!$ids || !is_array($ids)) {
@@ -248,36 +269,40 @@ class CategoryItemController extends Controller
             try {
                 // Update only CategoryItems that are NOT present in any of the related tables
                 $itemsToDelete = CategoryItems::whereIn('id', $ids)
-                    ->whereNotExists(function ($query) {
+                    ->whereNotExists(function ($query) use ($storeid) {
                         $query->select(DB::raw(1))
                             ->from('raw_materials')
+                            ->where('store_id', $storeid)
                             ->where(function ($q) {
                                 for ($i = 1; $i <= 10; $i++) {
                                     $q->orWhereColumn("raw_materials.category_id{$i}", 'categoryitems.id');
                                 }
                             });
                     })
-                    ->whereNotExists(function ($query) {
+                    ->whereNotExists(function ($query) use ($storeid) {
                         $query->select(DB::raw(1))
                             ->from('packing_materials')
+                            ->where('store_id', $storeid)
                             ->where(function ($q) {
                                 for ($i = 1; $i <= 10; $i++) {
                                     $q->orWhereColumn("packing_materials.category_id{$i}", 'categoryitems.id');
                                 }
                             });
                     })
-                    ->whereNotExists(function ($query) {
+                    ->whereNotExists(function ($query) use ($storeid) {
                         $query->select(DB::raw(1))
                             ->from('overheads')
+                            ->where('store_id', $storeid)
                             ->where(function ($q) {
                                 for ($i = 1; $i <= 10; $i++) {
                                     $q->orWhereColumn("overheads.category_id{$i}", 'categoryitems.id');
                                 }
                             });
                     })
-                    ->whereNotExists(function ($query) {
+                    ->whereNotExists(function ($query) use ($storeid) {
                         $query->select(DB::raw(1))
                             ->from('product_master')
+                            ->where('store_id', $storeid)
                             ->where(function ($q) {
                                 for ($i = 1; $i <= 10; $i++) {
                                     $q->orWhereColumn("product_master.category_id{$i}", 'categoryitems.id');
@@ -309,6 +334,7 @@ class CategoryItemController extends Controller
     // import excel data to db
     public function importExcel(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
           $request->validate([
               'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048'
           ]);
@@ -382,6 +408,7 @@ class CategoryItemController extends Controller
                   'categoryId' => $categoryId ?? null,
                   'description' => $row[3] ?? '',
                   'status' => 'active',
+                  'store_id' => $storeid
               ]);
               $importedCount++;
           }
@@ -405,6 +432,7 @@ class CategoryItemController extends Controller
 
     public function exportAll()
     {
+        $storeid = $request->session()->get('store_id');
         try {
             $categoryItems = \App\Models\CategoryItems::select([
                 'categoryitems.id',
@@ -415,6 +443,7 @@ class CategoryItemController extends Controller
             ])
             ->leftJoin('categories', 'categoryitems.categoryId', '=', 'categories.id')
             ->where('categoryitems.status', 'active') // Only active items
+            ->where('categoryitems.store_id', $storeid)
             ->orderBy('categoryitems.itemname', 'asc')
             ->get();
 

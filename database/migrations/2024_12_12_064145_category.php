@@ -15,6 +15,7 @@ return new class extends Migration
             Schema::create('categories', function (Blueprint $table) {
                 $table->id(); // Auto-incrementing primary key
                 $table->string('categoryname')->unique(); // Column for category name
+                $table->unsignedBigInteger('store_id');
                 $table->timestamps(); // Created and updated timestamps
             });
         }

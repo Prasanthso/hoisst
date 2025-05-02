@@ -19,6 +19,7 @@ class CreateCategoryItemsTable extends Migration
                 $table->string('description');
                 $table->string('created_user')->nullable();
                 $table->string('status');
+                $table->unsignedBigInteger('store_id');
                 $table->timestamps(); // Created and updated timestamps
             });
 
