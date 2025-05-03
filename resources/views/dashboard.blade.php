@@ -458,13 +458,12 @@
                         text: 'Month'
                     },
                     ticks: {
-                        callback: function(value) {
-                            const date = new Date(value);
-                            if (!isNaN(date)) {
-                                    return date.toLocaleString('default', { month: 'short', year: 'numeric' });
-                                }
-                                return value;
-                            // return date.toLocaleString('default', { month: 'short', year: 'numeric' }); // Format month
+                        callback: function(value, index, ticks) {
+                            const label = this.getLabelForValue(value);  // <-- Proper label string like '2025-05'
+                            const [year, month] = label.split('-');
+                            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                            return `${monthNames[parseInt(month) - 1]} ${year}`;
                         }
                     }
                 }
