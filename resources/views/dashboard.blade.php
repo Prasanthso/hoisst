@@ -455,7 +455,7 @@
                 x: {
                     title: {
                         display: true,
-                        text: 'Month'
+                        text: 'Month(s)'
                     },
                     ticks: {
                         callback: function(value, index, ticks) {
