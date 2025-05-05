@@ -127,7 +127,7 @@
                 <div class="col-md-3">
                     {{-- <div class="snapshot-panel card bg-light p-3 h-60"> --}}
                     <div class="card">
-                        <div class="card-header bg-primary text-white">Rawmaterial Cost Trend</div>
+                        <div class="card-header bg-primary text-white">Raw Material Cost Trend</div>
                         <div class="card-body">
                             <p>Current Month: ₹{{ number_format($costindicator['thisMonthCost'], 2) }}</p>
                             <p>Last Month: ₹{{ number_format($costindicator['lastMonthCost'], 2) }}</p>
@@ -170,7 +170,7 @@
                         </div>
                         <div class="card-body">
                             <form id="check-form" class="d-flex align-items-center">
-                                <label for="material_name" class="form-label mb-0 me-2">Rawmaterial name:</label>
+                                <label for="material_name" class="form-label mb-0 me-2">Raw Material name:</label>
                                 <input type="text" id="material_name" class="form-control me-2" name="material_name" placeholder="Enter raw material name (ex. sugar, butter, etc)" required>
                                 <button class="btn btn-primary me-2" type="submit">Check</button>
                                 {{-- <button class="btn btn-primary" type="btnClear">Clear</button> --}}
