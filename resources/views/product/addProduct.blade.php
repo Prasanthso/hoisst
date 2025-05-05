@@ -179,7 +179,7 @@
     const purcCost = document.querySelector("#inputPurCost");
     const selectedOption = $(this).find('option:selected');
     const itemTypeName = selectedOption.data('name');
-    if (itemTypeName == 'Trading') {
+    if (itemTypeValue !== "2") {
         // hasTyped = true;
         clearError(purcCost); // hide error for non-Trading
     }

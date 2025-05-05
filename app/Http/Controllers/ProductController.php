@@ -506,7 +506,8 @@ class ProductController extends Controller
 
         try {
             // Update the status of raw materials to 'inactive'
-            $itemsToDelete = Product::whereIn('id', $ids)
+            $itemsToDelete = Product::where('store_id',$storeid)
+                ->whereIn('id', $ids)
                 ->whereNotExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('recipedetails')
@@ -799,7 +800,7 @@ class ProductController extends Controller
             return [
                 'id' => $item->id,
                 'name' => $item->name,
-                'pdcode' => $item->rmcode,
+                'pdcode' => $item->pdcode,
                 'price' => $item->price,
                 'uom' => $item->uom,
                 'categories' => implode(', ', $categoryNames), // Comma-separated for easier frontend use

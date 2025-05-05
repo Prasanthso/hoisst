@@ -22,9 +22,9 @@ class CategoryItems extends Model
         'store_id',
     ];
 
-    public static function rmCategoryItem()
+    public static function rmCategoryItem($storeId)
     {
-        $rmCategoryItems = DB::table('categoryitems')->where('categoryId', 1)->where('status', 'active')->get();
+        $rmCategoryItems = DB::table('categoryitems')->where('categoryId', 1)->where('status', 'active')->where('store_id', $storeId)->get();
         return $rmCategoryItems;
     }
 
