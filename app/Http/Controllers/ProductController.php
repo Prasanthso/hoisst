@@ -19,7 +19,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $storeid = $request->session()->get('store_id');
-        $categoryitems = CategoryItems::pdCategoryItem();
+        $categoryitems = CategoryItems::pdCategoryItem($storeid);
         $selectedCategoryIds = $request->input('category_ids', []);
         $searchValue = $request->input('pdText', '');
 
@@ -55,6 +55,7 @@ class ProductController extends Controller
                         'c10.itemname as category_name10'
                     )
                     ->where('pd.status', '=', 'active') // Filter by active status
+                    ->where('pd.store_id', $storeid)
                     ->where('pd.name', 'LIKE', "{$searchValue}%")
                     ->get();
                 // Return filtered raw materials as JSON response
@@ -118,6 +119,7 @@ class ProductController extends Controller
                             ->orWhereIn('c10.id', $selectedCategoryIds);
                     })
                     ->where('pd.status', '=', 'active') // Filter by active status
+                    ->where('pd.store_id', $storeid)
                     ->orderBy('pd.name', 'asc')
                     ->get();
                 // Return filtered raw materials as JSON response
@@ -159,6 +161,7 @@ class ProductController extends Controller
                 'c10.itemname as category_name10'
             )
             ->where('pd.status', '=', 'active') // Filter by active status
+            ->where('pd.store_id', $storeid)
             ->orderBy('pd.name', 'asc')
             ->paginate(10);
 
@@ -169,10 +172,11 @@ class ProductController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        $product = CategoryItems::pdCategoryItem();
-        $itemtype = DB::table('item_type')->where('status', '=', 'active')->get();
+        $storeid = $request->session()->get('store_id');
+        $product = CategoryItems::pdCategoryItem($storeid);
+        $itemtype = DB::table('item_type')->where('status', '=', 'active')->where('store_id', 0)->get();
         return view('product.addProduct', compact('product', 'itemtype')); // Match view name
     }
 
@@ -181,6 +185,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         try {
             $request->validate([
                 'name' => [
@@ -188,11 +193,11 @@ class ProductController extends Controller
                     'string',
                     'max:255',
                     'unique:product_master,name',
-                    function ($attribute, $value, $fail) {
+                    function ($attribute, $value, $fail) use ($storeid) {
                         // Convert input to lowercase and remove spaces
                         $formattedValue = strtolower(str_replace(' ', '', $value));
                         // Fetch existing names from the database (case-insensitive)
-                        $existingNames = Product::pluck('name')->map(function ($name) {
+                        $existingNames = Product::where('store_id', $storeid)->pluck('name')->map(function ($name) {
                             return strtolower(str_replace(' ', '', $name));
                         })->toArray();
                         if (in_array($formattedValue, $existingNames)) {
@@ -242,6 +247,7 @@ class ProductController extends Controller
                     'update_frequency' => $request->update_frequency,
                     'price_update_frequency' => $request->price_update_frequency,
                     'price_threshold' => $request->price_threshold,
+                    'store_id' => $storeid,
                 ]);
             } catch (\Exception $e) {
                 // \Log::error('Error inserting data: ' . $e->getMessage());
@@ -261,6 +267,7 @@ class ProductController extends Controller
 
     public function updatePrices(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $validatedData = $request->validate([
             'updatedMaterials' => 'required|array',
             'updatedMaterials.*.id' => 'required|exists:product_master,id',
@@ -268,10 +275,10 @@ class ProductController extends Controller
         ]);
 
         try {
-            DB::transaction(function () use ($validatedData) {
+            DB::transaction(function () use ($validatedData,$storeid) {
                 foreach ($validatedData['updatedMaterials'] as $material) {
                     // Fetch the current material
-                    $currentMaterial = Product::find($material['id']);
+                    $currentMaterial = Product::where('store_id', $storeid)->where('id', $material['id'])->first();
 
                     // Check if the price has changed
                     if ($currentMaterial->price != $material['price']) {
@@ -281,6 +288,7 @@ class ProductController extends Controller
                             'old_price' => $currentMaterial->price,
                             'new_price' => $material['price'],
                             'updated_by' => 1, // Ensure user is authenticated
+                            'store_id' => $storeid,
                             'updated_at' => now(),
                         ]);
 
@@ -300,10 +308,12 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function getPdPriceHistory($id)
+    public function getPdPriceHistory(Request $request, $id)
     {
+        $storeid = $request->session()->get('store_id');
         $priceHistory = DB::table('pd_price_histories')
             ->where('product_id', $id)
+            ->where('store_id', $storeid)
             ->orderBy('updated_at', 'desc') // Replace 'id' with the column you want to sort by
             ->get();
         return response()->json(['priceDetails' => $priceHistory]);
@@ -312,15 +322,16 @@ class ProductController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Request $request, string $id)
     {
         // Fetch all categories
         // $productCategories = DB::table('categoryitems')->get();
-        $productCategories = CategoryItems::pdCategoryItem();
-        $itemtype = DB::table('item_type')->where('status', '=', 'active')->get();
+        $storeid = $request->session()->get('store_id');
+        $productCategories = CategoryItems::pdCategoryItem($storeid);
+        $itemtype = DB::table('item_type')->where('status', '=', 'active')->where('store_id', 0)->get();
         $selectedItemType = $product->itemType_id ?? null;
         // Fetch the specific raw material by its ID
-        $product = DB::table('product_master')->where('id', $id)->first(); // Fetch the single raw material entry
+        $product = DB::table('product_master')->where('store_id', $storeid)->where('id', $id)->first(); // Fetch the single raw material entry
 
         // Return the view with raw material data and categories
         return view('product.editProduct', compact('product', 'productCategories', 'itemtype', 'selectedItemType'));
@@ -332,8 +343,11 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Find the existing raw material by ID
-        $product = Product::findOrFail($id);
+        $storeid = $request->session()->get('store_id');
+        // $product = Product::findOrFail($id);
+        $product = Product::where('store_id', $storeid)
+                            ->where('id', $id)
+                            ->firstOrFail();
         try {
             // for duplicate
             $strName = strtolower(preg_replace('/\s+/', '', $request->name));
@@ -345,6 +359,7 @@ class ProductController extends Controller
                 // ->orWhereRaw("LOWER(REPLACE(hsnCode, ' ', '')) = ?", [$strHsnCode]);
             })
                 ->where('id', '!=', $product->id) // Exclude the current product
+                ->where('store_id', $storeid)
                 ->first();
 
             if ($existingProduct) {
@@ -383,6 +398,7 @@ class ProductController extends Controller
                     'old_price' => $product->price, // Correct way to get the old price
                     'new_price' => $request->price,
                     'updated_by' => 1, // Ensure user is authenticated
+                    'store_id' => $storeid,
                     'updated_at' => now(),
                 ]);
             }
@@ -412,6 +428,7 @@ class ProductController extends Controller
                     'update_frequency' => $request->update_frequency,
                     'price_update_frequency' => $request->price_update_frequency,
                     'price_threshold' => $request->price_threshold,
+                    'store_id' => $storeid,
                 ]);
             } catch (\Exception $e) {
                 // Handle the error gracefully (e.g., log it and show an error message)
@@ -436,6 +453,7 @@ class ProductController extends Controller
      */
     public function deleteConfirmation(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $ids = $request->input('ids'); // Get the 'ids' array from the request
 
         if (!$ids || !is_array($ids)) {
@@ -453,7 +471,8 @@ class ProductController extends Controller
             // })
             // ->update(['status' => 'inactive']);
 
-            $updatedCount = Product::whereIn('id', $ids)
+            $updatedCount = Product::where('store_id',$storeid)
+            ->whereIn('id', $ids)
                 ->whereNotExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('recipedetails')
@@ -478,6 +497,7 @@ class ProductController extends Controller
 
     public function delete(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $ids = $request->input('ids'); // Get the 'ids' array from the request
 
         if (!$ids || !is_array($ids)) {
@@ -697,7 +717,7 @@ class ProductController extends Controller
                     ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 4]))])
                     ->value('id')
                     : null;            }
-            $itemtype_id = DB::table('item_type')->where('itemtypename', $row[22])->where('status', 'active')->where('store_id', $storeid)->value('id');
+            $itemtype_id = DB::table('item_type')->where('itemtypename', $row[22])->where('status', 'active')->where('store_id', 0)->value('id');
 
             Product::create([
                 'name' => $row[1] ?? null,

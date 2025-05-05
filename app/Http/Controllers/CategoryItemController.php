@@ -60,10 +60,11 @@ class CategoryItemController extends Controller
     /**
      * Display the create form.
      */
-    public function create()
+    public function create(Request $request)
     {
-        // $storeid = $request->session()->get('store_id');
-    $categories = DB::table('categories')->get(); // Fetch all category data
+        $storeid = $request->session()->get('store_id');
+        $storeid = 0;
+    $categories = DB::table('categories')->where('store_id', $storeid)->get(); // Fetch all category data
     return view('category.addCategory', compact('categories')); // Match view name
     }
 
@@ -124,9 +125,9 @@ class CategoryItemController extends Controller
     //     return view('categories', compact('categoriesitems'));
     // }
 
-    public function edit(string $id)
+    public function edit(Request $request,string $id)
     {
-        //  $storeid = $request->session()->get('store_id');
+        $storeid = $request->session()->get('store_id');
         $items = CategoryItems::with('category')->findOrFail($id);
         // $items = CategoryItems::with('category')
         //         ->where('store_id', $storeid)

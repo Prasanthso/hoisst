@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('old_price');
             $table->string('new_price');
             $table->integer('updated_by');
+            $table->unsignedBigInteger('store_id');
             $table->timestamps();
 
             $table->foreign('packing_material_id')->references('id')->on('packing_materials');

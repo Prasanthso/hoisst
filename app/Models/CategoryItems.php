@@ -40,9 +40,9 @@ class CategoryItems extends Model
         return $ohCategoryItem;
     }
 
-    public static function pdCategoryItem()
+    public static function pdCategoryItem($storeId)
     {
-        $pdCategoryItem = DB::table('categoryitems')->where('categoryId', 4)->where('status', 'active')->get();
+        $pdCategoryItem = DB::table('categoryitems')->where('categoryId', 4)->where('status', 'active')->where('store_id', $storeId)->get();
         return $pdCategoryItem;
     }
 

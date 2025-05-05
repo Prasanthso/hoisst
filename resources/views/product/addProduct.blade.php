@@ -80,6 +80,7 @@
                                     <select id="itemType" class="form-select" name="itemType_id">
                                         @foreach($itemtype as $types)
                                         <option value="{{ $types->id }}"
+                                             data-name="{{ $types->itemtypename }}"
                                             {{ old('itemType_id') == $types->id ? 'selected' : '' }}>
                                             {{ $types->itemtypename }}
                                         </option>
@@ -176,8 +177,9 @@
           .on('change', function () {
     const itemTypeValue = $(this).val(); // get selected value
     const purcCost = document.querySelector("#inputPurCost");
-
-    if (itemTypeValue !== "2") {
+    const selectedOption = $(this).find('option:selected');
+    const itemTypeName = selectedOption.data('name');
+    if (itemTypeName == 'Trading') {
         // hasTyped = true;
         clearError(purcCost); // hide error for non-Trading
     }
