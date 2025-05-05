@@ -127,7 +127,7 @@
                 <div class="col-md-3">
                     {{-- <div class="snapshot-panel card bg-light p-3 h-60"> --}}
                     <div class="card">
-                        <div class="card-header bg-primary text-white">Cost Trend</div>
+                        <div class="card-header bg-primary text-white">Rawmaterial Cost Trend</div>
                         <div class="card-body">
                             <p>Current Month: ₹{{ number_format($costindicator['thisMonthCost'], 2) }}</p>
                             <p>Last Month: ₹{{ number_format($costindicator['lastMonthCost'], 2) }}</p>
@@ -171,7 +171,7 @@
                         <div class="card-body">
                             <form id="check-form" class="d-flex align-items-center">
                                 <label for="material_name" class="form-label mb-0 me-2">Rawmaterial name:</label>
-                                <input type="text" id="material_name" class="form-control me-2" name="material_name" placeholder="Enter raw material name" required>
+                                <input type="text" id="material_name" class="form-control me-2" name="material_name" placeholder="Enter raw material name (ex. sugar, butter, etc)" required>
                                 <button class="btn btn-primary me-2" type="submit">Check</button>
                                 {{-- <button class="btn btn-primary" type="btnClear">Clear</button> --}}
                             </form>
@@ -389,102 +389,113 @@
     }
 
     function costtrendLineChart() {
-        const ctx = document.getElementById('costTrendChart').getContext('2d');
-        const rawData = @json($trendData['trendData']);
-        // Extract unique months
-        const months = [...new Set(rawData.map(item => item.month))];
+    const ctx = document.getElementById('costTrendChart').getContext('2d');
+    const rawData = @json($trendData['trendData']);
 
-        // Group prices
-        const groupedOld = {};
-        const groupedNew = {};
+    // Extract unique months
+    const months = [...new Set(rawData.map(item => item.month))];
 
-        rawData.forEach(item => {
-            if (!groupedOld[item.material_name]) groupedOld[item.material_name] = {};
-            if (!groupedNew[item.material_name]) groupedNew[item.material_name] = {};
+    // Group prices by material and month
+    const groupedOld = {};
+    const groupedNew = {};
 
-            groupedOld[item.material_name][item.month] = item.avg_old_price;
-            groupedNew[item.material_name][item.month] = item.avg_new_price;
+    rawData.forEach(item => {
+        if (!groupedOld[item.material_name]) groupedOld[item.material_name] = {};
+        if (!groupedNew[item.material_name]) groupedNew[item.material_name] = {};
+
+        groupedOld[item.material_name][item.month] = item.old_price;
+        groupedNew[item.material_name][item.month] = item.new_price;
+    });
+
+    // Create datasets (old in dashed lines, new in solid lines)
+    const datasets = [];
+
+    Object.keys(groupedOld).forEach((name) => {
+        const color = randomColor();  // Generate a random color for each material
+
+        datasets.push({
+            label: `${name} - Old Price`,
+            data: months.map(m => groupedOld[name][m] ?? 0),  // Show 0 if no data for a month
+            borderColor: color,
+            borderDash: [5, 5],
+            pointBackgroundColor: color,
+            backgroundColor: color,
+            fill: false,
+            tension: 0.3
         });
 
-        // Create datasets (old in dashed lines, new in solid lines)
-        const datasets = [];
-
-        Object.keys(groupedOld).forEach((name, index) => {
-            const color = randomColor();
-
-            datasets.push({
-                label: `${name} - Old Price`,
-                data: months.map(m => groupedOld[name][m] ?? null),
-                borderColor: color,
-                borderDash: [5, 5],
-                pointBackgroundColor: color,
-                backgroundColor: color,
-                fill: false,
-                tension: 0.3
-            });
-
-            datasets.push({
-                label: `${name} - New Price`,
-                data: months.map(m => groupedNew[name][m] ?? null),
-                borderColor: color,
-                pointBackgroundColor: color,
-                backgroundColor: color,
-                fill: false,
-                tension: 0.3
-            });
+        datasets.push({
+            label: `${name} - New Price`,
+            data: months.map(m => groupedNew[name][m] ?? 0),  // Show 0 if no data for a month
+            borderColor: color,
+            pointBackgroundColor: color,
+            backgroundColor: color,
+            fill: false,
+            tension: 0.3
         });
+    });
 
-
-        new Chart(document.getElementById('costTrendChart'), {
-            type: 'line',
-            data: {
-                labels: months,
-                datasets: datasets
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        title: {
-                            display: true,
-                            text: 'Price ($)'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Month'
-                        }
+    // Initialize Chart.js
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: months,  // Display months as the x-axis labels
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    title: {
+                        display: true,
+                        text: 'Price ($)'
                     }
                 },
-                plugins: {
-                    legend: {
-                        position: 'bottom'
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Month(s)'
                     },
-                    tooltip: {
-                        callbacks: {
-                            label: ctx => `${ctx.dataset.label}: $${ctx.raw?.toFixed(2)}`
+                    ticks: {
+                        callback: function(value, index, ticks) {
+                            const label = this.getLabelForValue(value);  // <-- Proper label string like '2025-05'
+                            const [year, month] = label.split('-');
+                            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                            return `${monthNames[parseInt(month) - 1]} ${year}`;
                         }
-                    }
-                },
-                elements: {
-                    point: {
-                        radius: 4,
-                        hoverRadius: 6
-                    },
-                    line: {
-                        borderWidth: 2
                     }
                 }
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => `${ctx.dataset.label}: $${ctx.raw?.toFixed(2)}`
+                    }
+                }
+            },
+            elements: {
+                point: {
+                    radius: 4,
+                    hoverRadius: 6
+                },
+                line: {
+                    borderWidth: 2
+                }
             }
-        });
-    }
+        }
+    });
+}
 
-    function randomColor() {
-        const colors = ['#f44336', '#03a9f4', '#ffeb3b', '#4caf50', '#9c27b0'];
-        return colors[Math.floor(Math.random() * colors.length)];
-    }
+// Function to generate random color
+function randomColor() {
+    const colors = ['#f44336', '#03a9f4', '#ffeb3b', '#4caf50', '#9c27b0'];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
 </script>
 
 

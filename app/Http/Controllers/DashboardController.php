@@ -86,11 +86,11 @@ class DashboardController extends Controller
         $endOfLastMonth = Carbon::now()->subMonth()->endOfMonth();
 
         // This month's total cost
-        $thisMonthCost = RawMaterial::whereBetween('created_at', [$startOfMonth, now()])
+        $thisMonthCost = RawMaterial::whereBetween('updated_at', [$startOfMonth, now()])
             ->sum('price'); // or 'price', depending on your column
 
         // Last month's total cost
-        $lastMonthCost = RawMaterial::whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])
+        $lastMonthCost = RawMaterial::whereBetween('updated_at', [$startOfLastMonth, $endOfLastMonth])
             ->sum('price');
 
         // % Change
@@ -302,17 +302,17 @@ class DashboardController extends Controller
     {
         $trendData = DB::table('rm_price_histories as h')
         ->join('raw_materials as r', 'h.raw_material_id', '=', 'r.id')
-        ->selectRaw("
-            r.name AS material_name,
-            DATE_FORMAT(h.updated_at, '%Y-%m') AS month,
-            ROUND(AVG(h.old_price), 2) AS avg_old_price,
-            ROUND(AVG(h.new_price), 2) AS avg_new_price
-        ")
-        ->where('h.updated_at', '>=', Carbon::now()->subMonths(6))
-        ->groupBy('r.name', 'month')
-        ->orderBy('r.name')
-        ->orderBy('month')
+        ->select(
+            'r.name AS material_name',
+            'h.updated_at AS month',  // Get the actual date of the price change
+            'h.old_price',
+            'h.new_price'
+        )
+        ->where('h.updated_at', '>=', Carbon::now()->subMonths(6))  // Get the last 6 months of data
+        ->orderBy('h.updated_at', 'desc')  // Order by most recent price changes
+        ->limit(10)  // Optional: limit to the last 10 price updates
         ->get();
+
 
             // $topProfitable = DB::table('product_master')
             // ->select('name', 'price', 'margin')
@@ -324,19 +324,20 @@ class DashboardController extends Controller
             ->where('product_master.status', 'active')
             ->where('recipe_master.status', 'active')
             ->where('overall_costing.status', 'active')
-            ->select('product_master.*', 'overall_costing.suggested_mrp')
-            ->distinct()
-            ->limit(10) // Added limit to fetch only top 10
+            ->select(
+                'product_master.*',
+                'overall_costing.total_cost',
+                \DB::raw('((product_master.price - overall_costing.total_cost) / overall_costing.total_cost) * 100 as profit_margin')
+            )
+            ->having('profit_margin', '>', 0) // ensure only profitable ones
+            ->orderByDesc('profit_margin')
+            ->limit(10)
             ->get();
 
-            // Filter products where price is less than suggested_mrp
-            $filteredProfitable = $topProfitable->filter(function ($product) {
-                return $product->price > $product->suggested_mrp;
-            });
 
             return [
                 'trendData' => $trendData,       // structured properly for Chart.js
-                'top_profitable' => $filteredProfitable  // for table
+                'top_profitable' => $topProfitable  // for table
             ];
 
     }
