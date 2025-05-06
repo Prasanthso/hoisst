@@ -81,7 +81,7 @@ class CategoryItemController extends Controller
                     'required',
                     'string',
                     'max:255',
-                    'unique:categoryitems,itemname',
+                    // 'unique:categoryitems,itemname',
                     function ($attribute, $value, $fail) use ($storeid){
                         // Convert input to lowercase and remove spaces
                         $formattedValue = strtolower(str_replace(' ', '', $value));
