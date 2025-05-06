@@ -17,8 +17,9 @@ class PackingMaterialController extends Controller
      */
     public function index(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         // Fetch all category items
-        $categoryitems = CategoryItems::pmCategoryItem();
+        $categoryitems = CategoryItems::pmCategoryItem($storeid);
         $selectedCategoryIds = $request->input('category_ids', []);
         $searchValue = $request->input('pmText','');
 
@@ -55,6 +56,7 @@ class PackingMaterialController extends Controller
                      'c10.itemname as category_name10'
                  )
                  ->where('pm.status', '=', 'active')
+                 ->where('pm.store_id', $storeid)
                  ->Where('pm.name', 'LIKE', "{$searchValue}%")
                 //  ->orderBy('pm.name', 'asc')
                  ->get();
@@ -118,6 +120,7 @@ class PackingMaterialController extends Controller
                             ->orWhereIn('c10.id', $selectedCategoryIds);
                     })
                     // ->where('pm.status', '=', 'active') // Filter by active status
+                    ->where('pm.store_id', $storeid)
                     ->orderBy('pm.name', 'asc')
                     ->get();
 
@@ -160,6 +163,7 @@ class PackingMaterialController extends Controller
             'c10.itemname as category_name10'
         )
         ->where('pm.status', '=', 'active') // Filter by active status
+        ->where('pm.store_id', $storeid)
         ->orderBy('pm.name', 'asc')
         ->paginate(10);
 
@@ -169,10 +173,11 @@ class PackingMaterialController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        $packingMaterialCategories = CategoryItems::pmCategoryItem();
-        $itemtype = DB::table('item_type')->where('status', '=', 'active')->get();
+        $storeid = $request->session()->get('store_id');
+        $packingMaterialCategories = CategoryItems::pmCategoryItem($storeid);
+        $itemtype = DB::table('item_type')->where('status', '=', 'active')->where('store_id', 0)->get();
 
         return view('packingMaterial.addPackingMaterial', compact('packingMaterialCategories', 'itemtype'));
     }
@@ -182,6 +187,7 @@ class PackingMaterialController extends Controller
      */
     public function store(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         try{
         $request->validate([
             'name' => [
@@ -189,11 +195,11 @@ class PackingMaterialController extends Controller
             'string',
             'max:255',
             'unique:packing_materials,name',
-            function ($attribute, $value, $fail) {
+            function ($attribute, $value, $fail) use ($storeid){
                 // Convert input to lowercase and remove spaces
                 $formattedValue = strtolower(str_replace(' ', '', $value));
                 // Fetch existing names from the database (case-insensitive)
-                $existingNames = PackingMaterial::pluck('name')->map(function ($name) {
+                $existingNames = PackingMaterial::where('store_id', $storeid)->pluck('name')->map(function ($name) {
                     return strtolower(str_replace(' ', '', $name));
                 })->toArray();
                 // Check if the formatted input already exists
@@ -242,6 +248,7 @@ class PackingMaterialController extends Controller
                 'update_frequency' => $request->update_frequency,
                 'price_update_frequency' => $request->price_update_frequency,
                 'price_threshold' => $request->price_threshold,
+                'store_id' => $storeid,
             ]);
         } catch (\Exception $e) {
             // \Log::error('Error inserting data: ' . $e->getMessage());
@@ -261,6 +268,7 @@ class PackingMaterialController extends Controller
 
     public function updatePrices(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $validatedData = $request->validate([
             'updatedMaterials' => 'required|array',
             'updatedMaterials.*.id' => 'required|exists:packing_materials,id',
@@ -268,10 +276,10 @@ class PackingMaterialController extends Controller
         ]);
 
         try {
-            DB::transaction(function () use ($validatedData) {
+            DB::transaction(function () use ($validatedData, $storeid) {
                 foreach ($validatedData['updatedMaterials'] as $material) {
                     // Fetch the current material
-                    $currentMaterial = PackingMaterial::find($material['id']);
+                    $currentMaterial = PackingMaterial::where('store_id', $storeid)->where('id', $material['id'])->first();   //find($material['id']);
 
                     // Check if the price has changed
                     if ($currentMaterial->price != $material['price']) {
@@ -281,6 +289,7 @@ class PackingMaterialController extends Controller
                             'old_price' => $currentMaterial->price,
                             'new_price' => $material['price'],
                             'updated_by' => 1, // Ensure user is authenticated
+                            'store_id' => $storeid,
                             'updated_at' => now(),
                         ]);
 
@@ -299,10 +308,12 @@ class PackingMaterialController extends Controller
     /**
      * Display the specified resource.
      */
-    public function getPmPriceHistory($id)
+    public function getPmPriceHistory(Request $request, $id)
     {
+        $storeid = $request->session()->get('store_id');
         $priceHistory = DB::table('pm_price_histories')
         ->where('packing_material_id', $id)
+        ->where('store_id', $storeid)
             ->orderBy('updated_at', 'desc') // Replace 'id' with the column you want to sort by
             ->get();
         return response()->json(['priceDetails' => $priceHistory]);
@@ -311,14 +322,15 @@ class PackingMaterialController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Request $request, string $id)
     {
-        $packingMaterialCategories = CategoryItems::pmCategoryItem();
+        $storeid = $request->session()->get('store_id');
+        $packingMaterialCategories = CategoryItems::pmCategoryItem($storeid);
 
-        $itemtype = DB::table('item_type')->where('status', '=', 'active')->get();
+        $itemtype = DB::table('item_type')->where('status', '=', 'active')->where('store_id', 0)->get();
         $selectedItemType = $packingMaterial->itemType_id ?? null;
         // Fetch the specific packing material by its ID
-        $packingMaterial = DB::table('packing_materials')->where('id', $id)->first(); // Fetch the single packing material entry
+        $packingMaterial = DB::table('packing_materials')->where('store_id', $storeid)->where('id', $id)->first(); // Fetch the single packing material entry
 
         // Return the view with packing material data and categories
         return view('packingMaterial.editPackingMaterial', compact('packingMaterial', 'packingMaterialCategories', 'itemtype', 'selectedItemType'));
@@ -329,8 +341,11 @@ class PackingMaterialController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $storeid = $request->session()->get('store_id');
         // Find the existing packing material by ID
-        $packingMaterial = PackingMaterial::findOrFail($id);
+        $packingMaterial = PackingMaterial::where('store_id', $storeid)
+                        ->where('id', $id)
+                        ->firstOrFail();     //findOrFail($id);
         try {
 
               $strName = strtolower(preg_replace('/\s+/', '', $request->name));
@@ -341,6 +356,7 @@ class PackingMaterialController extends Controller
                     // ->orWhereRaw("LOWER(REPLACE(hsncode, ' ', '')) = ?", [$strHsnCode]);
             })
             ->where('id', '!=', $packingMaterial->id) // Exclude the current product
+            ->where('store_id', $storeid)
             ->first();
 
             if ($existingMaterial) {
@@ -379,6 +395,7 @@ class PackingMaterialController extends Controller
                 'old_price' => $packingMaterial->price, // Correct way to get the old price
                 'new_price' => $request->price,
                 'updated_by' => 1, // Ensure user is authenticated
+                'store_id' => $storeid,
                 'updated_at' => now(),
             ]);
         }
@@ -405,6 +422,7 @@ class PackingMaterialController extends Controller
                 'update_frequency' => $request->update_frequency,
                 'price_update_frequency' => $request->price_update_frequency,
                 'price_threshold' => $request->price_threshold,
+                'store_id' => $storeid,
             ]);
         } catch (\Exception $e) {
             // Handle the error gracefully (e.g., log it and show an error message)
@@ -436,7 +454,8 @@ class PackingMaterialController extends Controller
         }
         try {
             // Update only if the raw materials are NOT referenced in rm_for_recipe
-            $updatedCount = PackingMaterial::whereIn('id', $ids)
+            $updatedCount = PackingMaterial::where('store_id',$storeid)
+                ->whereIn('id', $ids)
                 ->whereNotExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('pm_for_recipe')
@@ -457,6 +476,7 @@ class PackingMaterialController extends Controller
     }
     public function delete(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $ids = $request->input('ids'); // Get the 'ids' array from the request
 
         if (!$ids || !is_array($ids)) {
@@ -464,7 +484,8 @@ class PackingMaterialController extends Controller
         }
         try {
             // First, check which items are not referenced in pm_for_recipe
-            $itemsToDelete = PackingMaterial::whereIn('id', $ids)
+            $itemsToDelete = PackingMaterial::where('store_id',$storeid)
+                ->whereIn('id', $ids)
                 ->whereNotExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('pm_for_recipe')
@@ -507,6 +528,7 @@ class PackingMaterialController extends Controller
         // import excel data to db
         public function importExcel(Request $request)
         {
+            $storeid = $request->session()->get('store_id');
             $request->validate([
                 'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048'
             ]);
@@ -558,6 +580,7 @@ class PackingMaterialController extends Controller
             $existingPacking = PackingMaterial::whereRaw("
                     REPLACE(LOWER(TRIM(name)), ' ', '') = ?
                 ", [$normalizedName])
+                ->where('store_id', $storeid)
                 // ->where('hsnCode', $row[3])
                 ->first();
 
@@ -648,12 +671,13 @@ class PackingMaterialController extends Controller
                         ? DB::table('categoryitems')
                             ->where('categoryId', 2)
                             ->where('status', 'active')
+                            ->where('store_id', $storeid)
                             // ->where('itemname', $row[$i + 3])
                             ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 4]))])
                             ->value('id')
                         : null;
                 }
-                $itemtype_id = DB::table('item_type')->where('itemtypename',$row[20])->where('status', 'active')->value('id');
+                $itemtype_id = DB::table('item_type')->where('itemtypename',$row[20])->where('status', 'active')->where('store_id', 0)->value('id');
 
                 PackingMaterial::create([
                     'name' => $row[1] ,
@@ -677,6 +701,7 @@ class PackingMaterialController extends Controller
                     'price_update_frequency' => $row[18],
                     'price_threshold' => $row[19],
                     'itemType_id' => $itemtype_id,
+                    'store_id' => $storeid
                 ]);
                 $importedCount++;
             }
@@ -695,9 +720,10 @@ class PackingMaterialController extends Controller
             // return back()->with('success', 'Excel file imported successfully!');
         }
 
-    public function exportAll()
+    public function exportAll(Request $request)
     {
-        $categories = \App\Models\CategoryItems::pluck('itemname', 'id');
+        $storeid = $request->session()->get('store_id');
+        $categories = \App\Models\CategoryItems::where('store_id', $storeid)->pluck('itemname', 'id');
 
         $PackingMaterial = \App\Models\PackingMaterial::select([
             'id',
@@ -717,6 +743,7 @@ class PackingMaterialController extends Controller
             'category_id10'
         ])
             ->where('status', 'active')  // Filter active records
+            ->where('store_id', $storeid)
             ->orderBy('name', 'asc')     // Sort by name ASC
             ->get();
 

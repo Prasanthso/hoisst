@@ -32,6 +32,7 @@ class PackingMaterial extends Model
         'tax',
         'update_frequency',
         'price_update_frequency',
-        'price_threshold'
+        'price_threshold',
+        'store_id'
     ];
 }

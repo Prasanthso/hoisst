@@ -17,8 +17,9 @@ class OverheadController extends Controller
      */
     public function index(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         // Fetch all category items
-        $categoryitems = CategoryItems::ohCategoryItem();
+        $categoryitems = CategoryItems::ohCategoryItem($storeid);
         $selectedCategoryIds = $request->input('category_ids', []);
         $searchValue = $request->input('ohText','');
 
@@ -56,6 +57,7 @@ class OverheadController extends Controller
                     'c10.itemname as category_name10'
                 )
                     ->where('oh.status', '=', 'active') // Filter by active status
+                    ->where('oh.store_id', $storeid)
                     ->Where('oh.name', 'LIKE', "{$searchValue}%")
                     // ->orderBy('oh.name', 'asc')
                     ->get();
@@ -119,6 +121,7 @@ class OverheadController extends Controller
                             ->orWhereIn('c10.id', $selectedCategoryIds);
                     })
                     ->where('oh.status', '=', 'active') // Filter by active status
+                    ->where('oh.store_id', $storeid)
                     ->orderBy('oh.name', 'asc')
                     ->get();
             // Return filtered packing materials as JSON response
@@ -160,6 +163,7 @@ class OverheadController extends Controller
             'c10.itemname as category_name10'
         )
         ->where('oh.status', '=', 'active') // Filter by active status
+        ->where('oh.store_id', $storeid)
         ->orderBy('oh.name', 'asc')
         ->paginate(10);
 
@@ -169,10 +173,11 @@ class OverheadController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        $overheadsCategories = CategoryItems::ohCategoryItem();
-        $itemtype = DB::table('item_type')->where('status', '=', 'active')->get();
+        $storeid = $request->session()->get('store_id');
+        $overheadsCategories = CategoryItems::ohCategoryItem($storeid);
+        $itemtype = DB::table('item_type')->where('status', '=', 'active')->where('store_id', 0)->get();
         return view('overheads.addOverheads', compact('overheadsCategories', 'itemtype')); // Match view name
     }
     /**
@@ -180,6 +185,7 @@ class OverheadController extends Controller
      */
     public function store(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         try{
         $request->validate([
             'name' => [
@@ -187,11 +193,11 @@ class OverheadController extends Controller
             'string',
             'max:255',
             'unique:overheads,name',
-            function ($attribute, $value, $fail) {
+            function ($attribute, $value, $fail) use ($storeid) {
                 // Convert input to lowercase and remove spaces
                 $formattedValue = strtolower(str_replace(' ', '', $value));
                 // Fetch existing names from the database (case-insensitive)
-                $existingNames = Overhead::pluck('name')->map(function ($name) {
+                $existingNames = Overhead::where('store_id', $storeid)->pluck('name')->map(function ($name) {
                     return strtolower(str_replace(' ', '', $name));
                 })->toArray();
                 if (in_array($formattedValue, $existingNames)) {
@@ -237,6 +243,7 @@ class OverheadController extends Controller
                 'price_threshold' => $request->price_threshold,
                 // 'hsncode' => $request->hsncode,
                 'itemweight' => $request->itemweight,
+                'store_id' => $storeid,
                 // 'itemType_id' => $request->itemType_id,
                 // 'tax' => $request->tax,
             ]);
@@ -259,6 +266,7 @@ class OverheadController extends Controller
 
     public function updatePrices(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $validatedData = $request->validate([
             'updatedMaterials' => 'required|array',
             'updatedMaterials.*.id' => 'required|exists:overheads,id',
@@ -266,10 +274,10 @@ class OverheadController extends Controller
         ]);
 
         try {
-            DB::transaction(function () use ($validatedData) {
+            DB::transaction(function () use ($validatedData, $storeid ) {
                 foreach ($validatedData['updatedMaterials'] as $material) {
                     // Fetch the current material
-                    $currentMaterial = Overhead::find($material['id']);
+                    $currentMaterial = Overhead::where('store_id', $storeid)->where('id', $material['id'])->first();  //find($material['id']);
 
                     // Check if the price has changed
                     if ($currentMaterial->price != $material['price']) {
@@ -279,6 +287,7 @@ class OverheadController extends Controller
                             'old_price' => $currentMaterial->price,
                             'new_price' => $material['price'],
                             'updated_by' => 1, // Ensure user is authenticated
+                            'store_id' => $storeid,
                             'updated_at' => now(),
                         ]);
 
@@ -298,10 +307,12 @@ class OverheadController extends Controller
     /**
      * Display the specified resource.
      */
-    public function getOhPriceHistory($id)
+    public function getOhPriceHistory(Request $request, $id)
     {
+        $storeid = $request->session()->get('store_id');
         $priceHistory = DB::table('oh_price_histories')
         ->where('overheads_id', $id)
+        ->where('store_id', $storeid)
             ->orderBy('updated_at', 'desc') // Replace 'id' with the column you want to sort by
             ->get();
         return response()->json(['priceDetails' => $priceHistory]);
@@ -310,15 +321,16 @@ class OverheadController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Request $request, string $id)
     {
-        // / Fetch all categories
-        $overheadsCategories = CategoryItems::ohCategoryItem();
+        $storeid = $request->session()->get('store_id');
+        // // Fetch all categories
+        $overheadsCategories = CategoryItems::ohCategoryItem($storeid);
 
-        $itemtype = DB::table('item_type')->where('status', '=', 'active')->get();
+        $itemtype = DB::table('item_type')->where('status', '=', 'active')->where('store_id', 0)->get();
         $selectedItemType = $overheads->itemType_id ?? null;
         // Fetch the specific raw material by its ID
-        $overheads = DB::table('overheads')->where('id', $id)->first(); // Fetch the single raw material entry
+        $overheads = DB::table('overheads')->where('store_id', $storeid)->where('id', $id)->first(); // Fetch the single raw material entry
 
         // Return the view with raw material data and categories
         return view('overheads.editOverheads', compact('overheads', 'overheadsCategories', 'itemtype', 'selectedItemType'));
@@ -329,8 +341,11 @@ class OverheadController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $storeid = $request->session()->get('store_id');
         // Find the existing raw material by ID
-        $overheads = Overhead::findOrFail($id);
+        $overheads = Overhead::where('store_id', $storeid)
+                    ->where('id', $id)
+                    ->firstOrFail();  //findOrFail($id);
         try {
             // for duplicate
             $strName = strtolower(preg_replace('/\s+/', '', $request->name));
@@ -341,6 +356,7 @@ class OverheadController extends Controller
 
             })
             ->where('id', '!=', $overheads->id) // Exclude the current product
+            ->where('store_id', $storeid)
             ->first();
 
             if ($existingOverhead) {
@@ -376,6 +392,7 @@ class OverheadController extends Controller
                 'old_price' => $overheads->price, // Correct way to get the old price
                 'new_price' => $request->price,
                 'updated_by' => 1, // Ensure user is authenticated
+                'store_id' => $storeid,
                 'updated_at' => now(),
             ]);
         }
@@ -401,6 +418,7 @@ class OverheadController extends Controller
                 'price_threshold' => $request->price_threshold,
                 // 'hsncode' => $request->hsncode,
                 'itemweight' => $request->itemweight,
+                'store_id' => $storeid,
                 // 'itemType_id' => $request->itemType_id,
                     // 'tax' => $request->tax,
                 ]);
@@ -428,6 +446,7 @@ class OverheadController extends Controller
      */
     public function deleteConfirmation(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $ids = $request->input('ids'); // Get the 'ids' array from the request
 
         if (!$ids || !is_array($ids)) {
@@ -437,7 +456,8 @@ class OverheadController extends Controller
         try {
             // Update the status of raw materials to 'inactive'
             // Overhead::whereIn('id', $ids)->update(['status' => 'inactive']);
-            $updatedCount = Overhead::whereIn('id', $ids)
+            $updatedCount = Overhead::where('store_id',$storeid)
+            ->whereIn('id', $ids)
             ->whereNotExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('oh_for_recipe')
@@ -457,6 +477,7 @@ class OverheadController extends Controller
 
     public function delete(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $ids = $request->input('ids'); // Get the 'ids' array from the request
 
         if (!$ids || !is_array($ids)) {
@@ -466,7 +487,8 @@ class OverheadController extends Controller
         try {
             // Update the status of raw materials to 'inactive'
             // Overhead::whereIn('id', $ids)->update(['status' => 'inactive']);
-            $itemsToDelete = Overhead::whereIn('id', $ids)
+            $itemsToDelete = Overhead::where('store_id',$storeid)
+            ->whereIn('id', $ids)
             ->whereNotExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('oh_for_recipe')
@@ -498,6 +520,7 @@ class OverheadController extends Controller
       // import excel data to db
       public function importExcel(Request $request)
       {
+        $storeid = $request->session()->get('store_id');
           $request->validate([
               'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048'
           ]);
@@ -548,6 +571,7 @@ class OverheadController extends Controller
               $existingOverhead = Overhead::whereRaw("
                       REPLACE(LOWER(TRIM(name)), ' ', '') = ?
                   ", [$normalizedName])
+                ->where('store_id', $storeid)
                 ->first();
 
             if ($existingOverhead) {
@@ -626,10 +650,11 @@ class OverheadController extends Controller
                   $categoryIds["id$i"] = !empty($row[$i + 3]) // Adjusting index to match $row[3] for category_id1
                       ? DB::table('categoryitems')
                           ->where('categoryId', 3) // here, 3 is overheads id
+                          ->where('store_id', $storeid)
                           ->where('status', 'active')
                         //   ->whereRaw("TRIM(itemname) = ?", [trim($row[$i + 2])])
                         ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 3]))])
-                          ->value('id')
+                        ->value('id')
                       : null;
               }
             //   $itemtype_id = DB::table('item_type')->where('itemtypename',$row[18])->where('status', 'active')->value('id');
@@ -655,6 +680,7 @@ class OverheadController extends Controller
                   'update_frequency' => $row[15],
                   'price_update_frequency' => $row[16],
                   'price_threshold' => $row[17],
+                  'store_id' => $storeid,
                 //   'itemType_id' => $itemtype_id,
               ]);
               $importedCount++;
@@ -675,9 +701,10 @@ class OverheadController extends Controller
         //   return back()->with('success', 'Excel file imported successfully!');
       }
 
-    public function exportAll()
+    public function exportAll(Request $request)
     {
-        $categories = \App\Models\CategoryItems::pluck('itemname', 'id');
+        $storeid = $request->session()->get('store_id');
+        $categories = \App\Models\CategoryItems::where('store_id', $storeid)->pluck('itemname', 'id');
 
         $overheads = \App\Models\Overhead::select([
             'id',
@@ -697,6 +724,7 @@ class OverheadController extends Controller
             'category_id10'
         ])
             ->where('status', 'active')  // Filter active records
+            ->where('store_id', $storeid)
             ->orderBy('name', 'asc')     // Sort by name ASC
             ->get();
 
