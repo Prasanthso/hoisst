@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('uom'); // String field for the unit of measurement
             $table->decimal('price', 10, 2); // Numeric field for price with two decimal points
             $table->decimal('amount', 10, 2); // Numeric field for amount with two decimal points
+            $table->unsignedBigInteger('store_id');
             $table->timestamps(); // Timestamp fields for created_at and updated_at
 
             $table->foreign('packing_material_id')->references('id')->on('packing_materials');

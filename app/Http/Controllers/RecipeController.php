@@ -12,35 +12,43 @@ use Illuminate\Validation\ValidationException;
 
 class RecipeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $recipes = DB::table('product_master')->where('recipe_created_status', 'yes')->get();
+        $storeid = $request->session()->get('store_id');
+        $recipes = DB::table('product_master')->where('store_id', $storeid)->where('recipe_created_status', 'yes')->get();
         return view('recipedetails.receipeDetails_Description', compact('recipes'));
     }
 
-    public function recipeDetails()
+    public function recipeDetails(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         // $recipes = DB::table('product_master')->where('recipe_created_status', 'yes')->get();
         $recipes = DB::table('product_master')
         ->join('recipedetails', 'product_master.id', '=', 'recipedetails.product_id') // Adjust column names as needed
         ->where('product_master.recipe_created_status', 'yes')
         ->where('recipedetails.status', 'active')
+        ->where('product_master.store_id', $storeid)
         ->select('product_master.*', 'recipedetails.id as rcpid','recipedetails.status') // Select required columns
         ->get();
         return view('recipedetails.receipeDetails_Description', compact('recipes'));
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
-    // Fetch the recipe by ID
-    $recipe = Recipe::findOrFail($id);
-      // Pass the recipe to the view
-    return view('recipedetails.receipeDetails_Description', compact('recipe'));
+        $storeid = $request->session()->get('store_id');
+        // Fetch the recipe by ID
+        $recipe = Recipe::where('store_id', $storeid)
+                ->where('id', $id)
+                ->firstOrFail();  //findOrFail($id);
+        // Pass the recipe to the view
+        return view('recipedetails.receipeDetails_Description', compact('recipe'));
     }
 
-    public function fetchRecipeDetails($id)
+    public function fetchRecipeDetails(Request $request, $id)
     {
-        $recipe = Recipe::find($id);
+        $storeid = $request->session()->get('store_id');
+        $recipe = Recipe::where('store_id', $storeid)
+                 ->where('id', $id)->first();  //find($id);
 
         if (!$recipe) {
             return response()->json(['error' => 'Recipe not found'], 404);
@@ -49,14 +57,16 @@ class RecipeController extends Controller
         return response()->json($recipe);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $recipes = DB::table('product_master')->where('recipe_created_status', 'no')->get();
+        $storeid = $request->session()->get('store_id');
+        $recipes = DB::table('product_master')->where('store_id', $storeid)->where('recipe_created_status', 'no')->get();
         return view('recipedetails.addReceipeDetails', compact('recipes'));
     }
 
     public function store(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         try{
         $validated = $request->validate([
             'productId' => 'required|exists:product_master,id',
