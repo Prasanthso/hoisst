@@ -126,7 +126,9 @@ class AppServiceProvider extends ServiceProvider
             }
 
 
-            $product = Product::where('status', 'active')->get();
+            $product = Product::where('status', 'active')
+                ->where('store_id', $storeId)
+                ->get();
 
             foreach ($product as $product) {
                 if (is_numeric($product->price) && is_numeric($product->price_threshold)) {
@@ -143,7 +145,9 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
 
-            $products = Product::where('status', 'active')->get();
+            $products = Product::where('status', 'active')
+                ->where('store_id', $storeId)
+                ->get();
             $now = Carbon::now();
 
             if (!$products->isEmpty()) {
@@ -195,7 +199,9 @@ class AppServiceProvider extends ServiceProvider
             }
 
 
-            $rawMaterials = RawMaterial::where('status', 'active')->get();
+            $rawMaterials = RawMaterial::where('status', 'active')
+                ->where('store_id', $storeId)
+                ->get();
 
             foreach ($rawMaterials as $rawMaterial) {
                 if (is_numeric($rawMaterial->price) && is_numeric($rawMaterial->price_threshold)) {
@@ -212,7 +218,9 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
 
-            $rawMaterials = RawMaterial::where('status', 'active')->get();
+            $rawMaterials = RawMaterial::where('status', 'active')
+                ->where('store_id', $storeId)
+                ->get();
             $now = Carbon::now();
 
             if (!$rawMaterials->isEmpty()) {
@@ -264,7 +272,9 @@ class AppServiceProvider extends ServiceProvider
             }
 
 
-            $packingMaterials = PackingMaterial::where('status', 'active')->get();
+            $packingMaterials = PackingMaterial::where('status', 'active')
+                ->where('store_id', $storeId)
+                ->get();
 
             foreach ($packingMaterials as $packingMaterial) {
                 if (is_numeric($packingMaterial->price) && is_numeric($packingMaterial->price_threshold)) {
@@ -281,7 +291,9 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
 
-            $packingMaterials = PackingMaterial::where('status', 'active')->get();
+            $packingMaterials = PackingMaterial::where('status', 'active')
+                ->where('store_id', $storeId)
+                ->get();
             $now = Carbon::now();
 
             if (!$packingMaterials->isEmpty()) {

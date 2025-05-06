@@ -23,7 +23,12 @@ class CheckRmPriceUpdates extends Command
     {
         Log::info("Running check:rm-price-updates command...");
 
-        $rawMaterials = RawMaterial::where('status', 'active')->get();
+        $storeId = session('store_id');
+
+        $rawMaterials = RawMaterial::where('status', 'active')
+            ->where('store_id', $storeId)
+            ->get();
+            
         $now = Carbon::now();
         $materialsToNotify = [];
 

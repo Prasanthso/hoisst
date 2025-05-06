@@ -20,7 +20,12 @@ class CheckPmPriceThreshold extends Command
     {
         Log::info("Running check:pm-price-threshold...");
 
-        $materials = PackingMaterial::where('status', 'active')->get();
+        $storeId = session('store_id');
+
+        $materials = PackingMaterial::where('status', 'active')
+            ->where('store_id', $storeId)
+            ->get();
+            
         $materialsToNotify = [];
 
         foreach ($materials as $material) {
