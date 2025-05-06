@@ -38,7 +38,7 @@ class RmForRecipeController extends Controller
      */
     public function store(Request $request)
     {
-
+        $storeid = $request->session()->get('store_id');
         try {
             // Validate the request
             $request->validate([
@@ -55,6 +55,7 @@ class RmForRecipeController extends Controller
             {
                 $isProduct = DB::table('recipe_master')
                 ->where('product_id', $request->product_id)
+                ->where('store_id',$storeid)
                 ->exists();
 
                 if($isProduct == false)
@@ -69,6 +70,7 @@ class RmForRecipeController extends Controller
                             'totalCost' => 0,
                             'singleCost' => 0,
                             'status' => 'active',
+                            'store_id' => $storeid
                         ]);
                         // Product::where('id', $request->product_id)
                         // ->where('status', 'active')
@@ -79,6 +81,7 @@ class RmForRecipeController extends Controller
                     // $rpCode = UniqueCode::generateRpCode();
                     $rp = DB::table('recipe_master')
                     ->where('product_id', $request->product_id) // Condition to match the row(s) to update
+                    ->where('store_id',$storeid)
                     ->update([
                         // 'rpcode' => $rpCode,
                         'Output' => $request->rpoutput,
@@ -106,6 +109,7 @@ class RmForRecipeController extends Controller
                 'uom' => $request->uom ?? 'default_uom',
                 'price' => $request->price ?? 0,
                 'amount' => $request->amount,
+                'store_id' => $storeid
             ]);
 
             // Return success response
@@ -130,7 +134,7 @@ class RmForRecipeController extends Controller
     public function saveRawMaterials(Request $request)
     {
         // dd($request->all());
-
+        $storeid = $request->session()->get('store_id');
         $request->validate([
             'raw_material_id' => 'required|exists:raw_materials,id',
         ]);
@@ -139,9 +143,10 @@ class RmForRecipeController extends Controller
         RmForRecipe::create([
             'raw_material_id' => $request->raw_material_id,
             'product_id' => 1,
+            'store_id' => $storeid
         ]);
 
-        $rmRecipe = DB::table('rm_for_recipe')->get();
+        $rmRecipe = DB::table('rm_for_recipe')->where('store_id',$storeid)->get();
 
     return redirect()->back()->with([
         'success' => 'Data saved successfully!',
@@ -171,6 +176,7 @@ class RmForRecipeController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $storeid = $request->session()->get('store_id');
         try {
             // Validate the request
             $request->validate([
@@ -181,6 +187,7 @@ class RmForRecipeController extends Controller
               // Perform the update
                 $updated = DB::table('rm_for_recipe')
                 ->where('id', $request->id)
+                ->where('store_id',$storeid)
                 ->update(['quantity' => $request->quantity,
                         'amount' => $request->amount,
                         'updated_at' => Carbon::now(),]);
@@ -198,11 +205,14 @@ class RmForRecipeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+        $storeid = $request->session()->get('store_id');
         try {
             // Find the record by ID
-            $rmForRecipe = RmForRecipe::findOrFail($id);
+            $rmForRecipe = RmForRecipe::where('store_id', $storeid)
+                            ->where('id', $id)
+                            ->firstOrFail();  //findOrFail($id);
 
             // Delete the record
             $rmForRecipe->delete();

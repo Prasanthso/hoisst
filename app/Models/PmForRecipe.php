@@ -17,6 +17,6 @@ class PmForRecipe extends Model
         'uom',
         'price',
         'amount',
-        'store_id',
+        'store_id'
     ];
 }

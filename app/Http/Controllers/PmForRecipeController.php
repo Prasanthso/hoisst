@@ -32,6 +32,7 @@ class PmForRecipeController extends Controller
      */
     public function store(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         // dd($request->all());
         try {
             // Validate the request
@@ -52,6 +53,7 @@ class PmForRecipeController extends Controller
                 'uom' => $request->uom ?? 'default_uom',
                 'price' => $request->price ?? 0,
                 'amount' => $request->amount,
+                'store_id' => $storeid
             ]);
 
             // Return success response
@@ -94,6 +96,7 @@ class PmForRecipeController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $storeid = $request->session()->get('store_id');
         try {
             // Validate the request
             $request->validate([
@@ -104,6 +107,7 @@ class PmForRecipeController extends Controller
               // Perform the update
                 $updated = DB::table('pm_for_recipe')
                 ->where('id', $request->id)
+                ->where('store_id',$storeid)
                 ->update(['quantity' => $request->quantity,
                     'amount' => $request->amount,
                     'updated_at' => Carbon::now(),]);
@@ -121,11 +125,15 @@ class PmForRecipeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+        $storeid = $request->session()->get('store_id');
+
         try {
             // Find the record by ID
-            $pmForRecipe = PmForRecipe::findOrFail($id);
+            $pmForRecipe = PmForRecipe::where('store_id', $storeid)
+                        ->where('id', $id)
+                        ->firstOrFail();  //findOrFail($id);
 
             // Delete the record
             $pmForRecipe->delete();

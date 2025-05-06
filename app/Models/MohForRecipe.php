@@ -15,5 +15,6 @@ class MohForRecipe extends Model
         'oh_type',
         'price',      // Make sure price is included in fillable
         'percentage', // Make sure percentage is included in fillable
+        'store_id'
     ];
 }

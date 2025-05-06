@@ -18,5 +18,6 @@ class OhForRecipe extends Model
         'price',
         'amount',
         'percentage',
+        'store_id'
     ];
 }
