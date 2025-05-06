@@ -16,7 +16,7 @@ class CreateCategoryItemsTable extends Migration
                 $table->id(); // Auto-incrementing primary key
                 $table->string('categoryId');
                 $table->string('itemname');
-                $table->string('description');
+                $table->string('description')->nullable();
                 $table->string('created_user')->nullable();
                 $table->string('status');
                 $table->unsignedBigInteger('store_id');

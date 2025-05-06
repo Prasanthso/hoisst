@@ -75,32 +75,32 @@ class CategoryItemController extends Controller
     {
         try{
             $storeid = $request->session()->get('store_id');
-        $request->validate([
-            'categoryId' => 'required|integer',
-            'itemname' => [
-                'required',
-                'string',
-                'max:255',
-                'unique:categoryitems,itemname',
-                function ($attribute, $value, $fail) {
-                    // Convert input to lowercase and remove spaces
-                    $formattedValue = strtolower(str_replace(' ', '', $value));
-                    // Fetch existing names from the database (case-insensitive)
-                    $existingNames = CategoryItems::pluck('itemname')->map(function ($itemname) {
-                        return strtolower(str_replace(' ', '', $itemname));
-                    })->toArray();
-                    if (in_array($formattedValue, $existingNames)) {
-                        $fail('This name is duplicate. Please choose a different one.');
+            $request->validate([
+                'categoryId' => 'required|integer',
+                'itemname' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    'unique:categoryitems,itemname',
+                    function ($attribute, $value, $fail) use ($storeid){
+                        // Convert input to lowercase and remove spaces
+                        $formattedValue = strtolower(str_replace(' ', '', $value));
+                        // Fetch existing names from the database (case-insensitive)
+                        $existingNames = CategoryItems::where('store_id', $storeid)->pluck('itemname')->map(function ($itemname) {
+                            return strtolower(str_replace(' ', '', $itemname));
+                        })->toArray();
+                        if (in_array($formattedValue, $existingNames)) {
+                            $fail('This name is duplicate. Please choose a different one.');
+                        }
                     }
-                }
-            ],  // 'itemname' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
+                ],  // 'itemname' => 'required|string|max:255',
+                'description' => 'nullable|string',
+            ]);
 
         CategoryItems::create([
             'categoryId' => $request->categoryId,
             'itemname' => $request->itemname,
-            'description' => $request->description ?: null,
+            'description' => $request->description ?? 'none',
             'created_user' => auth()->id(), // Assuming the user is authenticated
             'status' => 'active',
             'store_id' => $storeid,
@@ -118,7 +118,6 @@ class CategoryItemController extends Controller
         }
     }
 
-
     // public function getCategoriesItems($categoryId)
     // {
     //     $categoriesitems = DB::table('categoryitems')->where('categoryId',$categoryId)->get(); // Fetch all category data
@@ -128,11 +127,11 @@ class CategoryItemController extends Controller
     public function edit(Request $request,string $id)
     {
         $storeid = $request->session()->get('store_id');
-        $items = CategoryItems::with('category')->findOrFail($id);
-        // $items = CategoryItems::with('category')
-        //         ->where('store_id', $storeid)
-        //         ->where('id', $id)
-        //         ->firstOrFail();
+        // $items = CategoryItems::with('category')->findOrFail($id);
+        $items = CategoryItems::with('category')
+                ->where('store_id', $storeid)
+                ->where('id', $id)
+                ->firstOrFail();
 
         // Return the view with categories and category items
         return view('category.editCategory', compact('items'));

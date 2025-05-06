@@ -28,15 +28,15 @@ class CategoryItems extends Model
         return $rmCategoryItems;
     }
 
-    public static function pmCategoryItem()
+    public static function pmCategoryItem($storeId)
     {
-        $pmCategoryItem = DB::table('categoryitems')->where('categoryId', 2)->where('status', 'active')->get();
+        $pmCategoryItem = DB::table('categoryitems')->where('categoryId', 2)->where('status', 'active')->where('store_id', $storeId)->get();
         return $pmCategoryItem;
     }
 
-    public static function ohCategoryItem()
+    public static function ohCategoryItem($storeId)
     {
-        $ohCategoryItem = DB::table('categoryitems')->where('categoryId', 3)->where('status', 'active')->get();
+        $ohCategoryItem = DB::table('categoryitems')->where('categoryId', 3)->where('status', 'active')->where('store_id', $storeId)->get();
         return $ohCategoryItem;
     }
 
