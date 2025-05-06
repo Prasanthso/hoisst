@@ -195,7 +195,7 @@ class RawMaterialController extends Controller
                 'required',
                 'string',
                 'max:255',
-                'unique:raw_materials,name',
+                // 'unique:raw_materials,name',
                 function ($attribute, $value, $fail) use ($storeid) {
                     // Convert input to lowercase and remove spaces
                     $formattedValue = strtolower(str_replace(' ', '', $value));

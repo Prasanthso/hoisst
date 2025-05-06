@@ -192,7 +192,7 @@ class ProductController extends Controller
                     'required',
                     'string',
                     'max:255',
-                    'unique:product_master,name',
+                    // 'unique:product_master,name',
                     function ($attribute, $value, $fail) use ($storeid) {
                         // Convert input to lowercase and remove spaces
                         $formattedValue = strtolower(str_replace(' ', '', $value));
