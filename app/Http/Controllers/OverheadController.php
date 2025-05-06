@@ -458,9 +458,10 @@ class OverheadController extends Controller
             // Overhead::whereIn('id', $ids)->update(['status' => 'inactive']);
             $updatedCount = Overhead::where('store_id',$storeid)
             ->whereIn('id', $ids)
-            ->whereNotExists(function ($query) {
+            ->whereNotExists(function ($query) use ($storeid) {
                 $query->select(DB::raw(1))
                     ->from('oh_for_recipe')
+                    ->where('store_id',$storeid)
                     ->whereColumn('oh_for_recipe.overheads_id', 'overheads.id'); // Ensure correct column name
             })
             ->update(['status' => 'inactive']);
@@ -489,9 +490,10 @@ class OverheadController extends Controller
             // Overhead::whereIn('id', $ids)->update(['status' => 'inactive']);
             $itemsToDelete = Overhead::where('store_id',$storeid)
             ->whereIn('id', $ids)
-            ->whereNotExists(function ($query) {
+            ->whereNotExists(function ($query) use ($storeid){
                 $query->select(DB::raw(1))
                     ->from('oh_for_recipe')
+                    ->where('store_id',$storeid)
                     ->whereColumn('oh_for_recipe.overheads_id', 'overheads.id'); // Ensure correct column name
             })
             ->get();

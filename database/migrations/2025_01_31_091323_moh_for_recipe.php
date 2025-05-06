@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('oh_type');
             $table->decimal('price', 8, 2)->default(0.00); // Price as decimal with 2 decimal points
             $table->decimal('percentage', 5, 2)->default(0.00); // Percentage as decimal with 2 decimal points
+            $table->unsignedBigInteger('store_id');
             $table->timestamps();
 
             $table->foreign('product_id')->references('id')->on('product_master');

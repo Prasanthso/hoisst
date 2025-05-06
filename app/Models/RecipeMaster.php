@@ -17,6 +17,7 @@ class RecipeMaster extends Model
         'uom',
         'totalCost',
         'singleCost',
+        'store_id'
     ];
 
     // public function product()

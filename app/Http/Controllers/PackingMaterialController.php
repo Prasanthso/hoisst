@@ -456,9 +456,10 @@ class PackingMaterialController extends Controller
             // Update only if the raw materials are NOT referenced in rm_for_recipe
             $updatedCount = PackingMaterial::where('store_id',$storeid)
                 ->whereIn('id', $ids)
-                ->whereNotExists(function ($query) {
+                ->whereNotExists(function ($query) use ($storeid) {
                     $query->select(DB::raw(1))
                         ->from('pm_for_recipe')
+                        ->where('store_id',$storeid)
                         ->whereColumn('pm_for_recipe.packing_material_id', 'packing_materials.id'); // Ensure correct column name
                 })
                 ->update(['status' => 'inactive']);
@@ -486,9 +487,10 @@ class PackingMaterialController extends Controller
             // First, check which items are not referenced in pm_for_recipe
             $itemsToDelete = PackingMaterial::where('store_id',$storeid)
                 ->whereIn('id', $ids)
-                ->whereNotExists(function ($query) {
+                ->whereNotExists(function ($query) use ($storeid) {
                     $query->select(DB::raw(1))
                         ->from('pm_for_recipe')
+                        ->where('store_id',$storeid)
                         ->whereColumn('pm_for_recipe.packing_material_id', 'packing_materials.id'); // Ensure correct column name
                 })
                 ->get();

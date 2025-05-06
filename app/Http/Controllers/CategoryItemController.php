@@ -394,6 +394,7 @@ class CategoryItemController extends Controller
                     REPLACE(LOWER(TRIM(itemname)), ' ', '') = ?
                 ", [$normalizedName])
                 ->where('categoryId', $categoryId)
+                ->where('store_id', $storeid)
                 ->first();
 
                 if ($existingCategory) {

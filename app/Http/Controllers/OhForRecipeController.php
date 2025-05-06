@@ -33,6 +33,7 @@ class OhForRecipeController extends Controller
      */
     public function store(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         // dd($request->all());
         try {
             // Validate the request
@@ -53,6 +54,7 @@ class OhForRecipeController extends Controller
                 'uom' => $request->uom ?? 'default_uom',
                 'price' => $request->price ?? 0,
                 'amount' => $request->amount,
+                'store_id' => $storeid
             ]);
 
             // Return success response
@@ -76,6 +78,7 @@ class OhForRecipeController extends Controller
 
     public function storeManualOverhead(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         // Validate the incoming data
         $validatedData = $request->validate([
             'product_id' => 'required|exists:product_master,id',
@@ -92,6 +95,7 @@ class OhForRecipeController extends Controller
             'oh_type' => $validatedData['manualOverheadsType'],
             'price' => $validatedData['manualOhPrice'] , //$validatedData['manualOverheadsType'] === 'price' ? $validatedData['manualOhPrice'] : 0,
             'percentage' => $validatedData['manualOhPerc'] , //$validatedData['manualOverheadsType'] === 'percentage' ? $validatedData['manualOhPerc'] : 0,
+            'store_id' => $storeid,
         ]);
 
         // Return the success response with the inserted record ID
@@ -123,6 +127,7 @@ class OhForRecipeController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $storeid = $request->session()->get('store_id');
         try {
             // Validate the request
             $request->validate([
@@ -133,6 +138,7 @@ class OhForRecipeController extends Controller
             // Perform the update
             $updated = DB::table('oh_for_recipe')
                 ->where('id', $request->id)
+                ->where('store_id',$storeid)
                 ->update([
                     'quantity' => $request->quantity,
                     'amount' => $request->amount,
@@ -152,11 +158,14 @@ class OhForRecipeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+        $storeid = $request->session()->get('store_id');
         try {
             // Find the record by ID
-            $ohForRecipe = OhForRecipe::findOrFail($id);
+            $ohForRecipe = OhForRecipe::where('store_id', $storeid)
+                        ->where('id', $id)
+                        ->firstOrFail();   //findOrFail($id);
 
             // Delete the record
             $ohForRecipe->delete();
@@ -181,11 +190,14 @@ class OhForRecipeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function mohDestroy($id)
+    public function mohDestroy(Request $request, $id)
     {
+        $storeid = $request->session()->get('store_id');
         try {
             // Find the record by ID
-            $mohForRecipe = MohForRecipe::find($id);
+            $mohForRecipe = MohForRecipe::where('store_id', $storeid)
+            ->where('id', $id)
+            ->firstOrFail();  //find($id);
 
             // Delete the record
             $mohForRecipe->delete();

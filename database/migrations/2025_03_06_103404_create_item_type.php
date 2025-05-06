@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('itemtypename')->unique();
             $table->string('remarks')->nullable();
             $table->string('status')->default('active');
+            $table->unsignedBigInteger('store_id');
             $table->timestamps();
         });
     }

@@ -32,7 +32,8 @@ class OverallCosting extends Model
         'sugg_rate',
         'sugg_rate_bf',
         'suggested_mrp',
-        'status'
+        'status',
+        'store_id'
     ];
 
     // // If you want to work with timestamps (created_at and updated_at)

@@ -32,6 +32,7 @@ return new class extends Migration
             $table->decimal('sugg_rate_bf', 10, 2)->default(0);
             $table->decimal('suggested_mrp', 10, 2)->default(0);
             $table->string('status')->default('active');
+            $table->unsignedBigInteger('store_id');
             $table->timestamps();
         });
     }

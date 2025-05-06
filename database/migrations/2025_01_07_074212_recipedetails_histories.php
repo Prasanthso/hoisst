@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('new_video');
             $table->integer('changed_by');
             $table->integer('approved_by');
+            $table->unsignedBigInteger('store_id');
             $table->timestamps();
 
             $table->foreign('recipe_id')->references('id')->on('recipedetails');

@@ -10,8 +10,9 @@ use App\Models\OverallCosting;
 
 class OverAllCostingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         // $products = DB::table('product_master')->get();
         $costings = DB::table('overall_costing')
             ->join('product_master', 'overall_costing.productId', '=', 'product_master.id')
@@ -20,19 +21,23 @@ class OverAllCostingController extends Controller
                 'product_master.name as product_name' // Select product name from product_master
             )
             ->where('overall_costing.status', 'active') // Fetch only active records
+            ->where('overall_costing.store_id',$storeid)
             ->paginate(10);
         return view('overallCost.overallCosting', compact('costings'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $recipeproducts = DB::table('recipe_master')
             ->join('product_master', 'recipe_master.product_id', '=', 'product_master.id')
-            ->leftJoin('overall_costing', function ($join) {
+            ->leftJoin('overall_costing', function ($join) use ($storeid) {
                 $join->on('recipe_master.product_id', '=', 'overall_costing.productId')
-                    ->where('overall_costing.status', 'active'); // Ensures active costing is filtered out
+                    ->where('overall_costing.status', 'active') // Ensures active costing is filtered out
+                    ->where('overall_costing.store_id',$storeid);
             })
             ->where('recipe_master.status', 'active')
+            ->where('recipe_master.store_id',$storeid)
             ->whereNull('overall_costing.productId') // This now ensures there's no active costing
             ->select('recipe_master.product_id as id', 'product_master.name as name')
             ->get();
@@ -60,6 +65,7 @@ class OverAllCostingController extends Controller
 
     public function getABCcost(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         // If a product is selected, fetch the pricing data
         $productId = $request->query('productId');  // Get productId from request
 
@@ -86,20 +92,24 @@ class OverAllCostingController extends Controller
         //    else{
         $totalRmCost = DB::table('rm_for_recipe')
             ->where('product_id', $productId)
+            ->where('store_id',$storeid)
             ->sum('amount');
 
         $totalPmCost = DB::table('pm_for_recipe')
             ->where('product_id', $productId)
+            ->where('store_id',$storeid)
             ->sum('amount');
 
         $totalOhCost = DB::table('oh_for_recipe')
             ->where('product_id', $productId)
+            ->where('store_id',$storeid)
             ->sum('amount');
 
         // $totalMohCost = 0;
         if (empty($totalOhCost)) { // If NULL or 0
             $totalOhCost = DB::table('moh_for_recipe')
                 ->where('product_id', $productId)
+                ->where('store_id',$storeid)
                 ->sum('price');
         }
 
@@ -111,6 +121,7 @@ class OverAllCostingController extends Controller
             ->join('product_master', 'product_master.id', '=', 'recipe_master.product_id')
             ->where('recipe_master.product_id', $productId)
             ->where('recipe_master.status', 'active')
+            ->where('recipe_master.store_id',$storeid)
             ->select(
                 'rm_for_recipe.raw_material_id as rm_id',
                 'rm_for_recipe.quantity as rm_quantity',
@@ -133,10 +144,10 @@ class OverAllCostingController extends Controller
             ->get();
 
         // Fetch names for IDs separately
-        $pricingData->transform(function ($item) {
-            $item->rm_name = DB::table('raw_materials')->where('id', $item->rm_id)->value('name');
-            $item->pm_name = DB::table('packing_materials')->where('id', $item->pm_id)->value('name');
-            $item->oh_name = DB::table('overheads')->where('id', $item->oh_id)->value('name');
+        $pricingData->transform(function ($item) use ($storeid) {
+            $item->rm_name = DB::table('raw_materials')->where('store_id',$storeid)->where('id', $item->rm_id)->value('name');
+            $item->pm_name = DB::table('packing_materials')->where('store_id',$storeid)->where('id', $item->pm_id)->value('name');
+            $item->oh_name = DB::table('overheads')->where('store_id',$storeid)->where('id', $item->oh_id)->value('name');
             return $item;
         });
 
@@ -166,6 +177,7 @@ class OverAllCostingController extends Controller
 
     public function store(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
 
         $request->validate([
             'productId' => 'required|exists:product_master,id',
@@ -210,6 +222,7 @@ class OverAllCostingController extends Controller
                 'sugg_rate_bf' => (float) $request->inputSuggRatebf,
                 'suggested_mrp' => (float) $request->inputSuggMrp,
                 'status' => 'active',
+                'store_id' => $storeid
             ]);
         } catch (\Exception $e) {
             \Log::error('Error inserting OverallCosting data: ' . $e->getMessage());
@@ -218,19 +231,23 @@ class OverAllCostingController extends Controller
         // Redirect to another page with a success message
         return redirect()->route('overallcosting.index')->with('success', 'Costing saved successfully!');
     }
-    public function show($id)
+    public function show(Request $request, $id)
     {
+        $storeid = $request->session()->get('store_id');
         $productId = DB::table('overall_costing')  // get product id
             ->where('id', $id)
+            ->where('store_id',$storeid)
             ->value('productId');
 
         $producttax = DB::table('product_master') // get product tax
             ->where('id', $productId)
+            ->where('store_id',$storeid)
             ->value('tax');
 
         $rpoutput = DB::table('recipe_master')
             ->where('product_id', $productId)
             ->where('status', 'active')
+            ->where('store_id',$storeid)
             ->value('Output');
 
         $totalRmCost = DB::table('rm_for_recipe')
@@ -278,6 +295,7 @@ class OverAllCostingController extends Controller
             )
             ->where('overall_costing.id', $id)
             ->where('overall_costing.status', 'active')
+            ->where('overall_costing.store_id',$storeid)
             ->get(); // Retrieve only records
 
         // Check if data exists
@@ -296,19 +314,22 @@ class OverAllCostingController extends Controller
         ]);
     }
 
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
         $productId = DB::table('overall_costing')  // get product id
             ->where('id', $id)
+            ->where('store_id',$storeid)
             ->value('productId');
 
         $producttax = DB::table('product_master') // get product tax
             ->where('id', $productId)
+            ->where('store_id',$storeid)
             ->value('tax');
 
         $rpoutput = DB::table('recipe_master')
             ->where('product_id', $productId)
             ->where('status', 'active')
+            ->where('store_id',$storeid)
             ->value('Output');
 
         $totalRmCost = DB::table('rm_for_recipe')
@@ -353,6 +374,7 @@ class OverAllCostingController extends Controller
                 'product_master.name as product_name',
             )
             ->where('overall_costing.id', $id)
+            ->where('overall_costing.store_id',$storeid)
             ->first(); // Retrieve only one record
 
         // Check if data exists
@@ -366,6 +388,7 @@ class OverAllCostingController extends Controller
 
     public function update(Request $request, $id)
     {
+        $storeid = $request->session()->get('store_id');
         $request->validate([
             'inputRmcost' => 'required|numeric',
             'inputPmcost' => 'required|numeric',
@@ -387,7 +410,7 @@ class OverAllCostingController extends Controller
         ]);
 
         try {
-            DB::table('overall_costing')->where('id', $id)->update([
+            DB::table('overall_costing')->where('id', $id)->where('store_id',$storeid)->update([
                 'rm_cost_unit' => (float) $request->inputRmcost,
                 'pm_cost_unit' => (float) $request->inputPmcost,
                 'rm_pm_cost' => (float) $request->inputRmPmcost,
@@ -414,6 +437,7 @@ class OverAllCostingController extends Controller
     }
     public function delete(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $ids = $request->input('ids'); // Get the 'ids' array from the request
 
         if (!$ids || !is_array($ids)) {
@@ -422,7 +446,7 @@ class OverAllCostingController extends Controller
 
         try {
             // Update the status of raw materials to 'inactive'
-            OverallCosting::whereIn('id', $ids)->update(['status' => 'inactive']);
+            OverallCosting::whereIn('id', $ids)->where('store_id',$storeid)->update(['status' => 'inactive']);
 
             return response()->json(['success' => true, 'message' => 'Overall-Costing was inactive successfully.']);
         } catch (\Exception $e) {

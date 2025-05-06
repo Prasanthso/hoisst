@@ -473,14 +473,16 @@ class ProductController extends Controller
 
             $updatedCount = Product::where('store_id',$storeid)
             ->whereIn('id', $ids)
-                ->whereNotExists(function ($query) {
+                ->whereNotExists(function ($query) use ($storeid) {
                     $query->select(DB::raw(1))
                         ->from('recipedetails')
+                        ->where('store_id',$storeid)
                         ->whereColumn('recipedetails.product_id', 'product_master.id');
                 })
-                ->whereNotExists(function ($query) {
+                ->whereNotExists(function ($query) use ($storeid) {
                     $query->select(DB::raw(1))
                         ->from('recipe_master')
+                        ->where('store_id',$storeid)
                         ->whereColumn('recipe_master.product_id', 'product_master.id');
                 })
                 ->update(['status' => 'inactive']);
@@ -508,15 +510,17 @@ class ProductController extends Controller
             // Update the status of raw materials to 'inactive'
             $itemsToDelete = Product::where('store_id',$storeid)
                 ->whereIn('id', $ids)
-                ->whereNotExists(function ($query) {
+                ->whereNotExists(function ($query) use ($storeid) {
                     $query->select(DB::raw(1))
                         ->from('recipedetails')
+                        ->where('store_id',$storeid)
                         ->whereColumn('recipedetails.product_id', 'product_master.id')
                         ->where('status', '=', 'active');
                 })
-                ->whereNotExists(function ($query) {
+                ->whereNotExists(function ($query) use ($storeid) {
                     $query->select(DB::raw(1))
                         ->from('recipe_master')
+                        ->where('store_id',$storeid)
                         ->whereColumn('recipe_master.product_id', 'product_master.id')
                         ->where('status', '=', 'active');
                 })

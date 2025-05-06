@@ -18,6 +18,7 @@ class DashboardController extends Controller
      //
     public function index(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         // category ids
         $rmc = 1;
         $pmc = 2;
@@ -27,11 +28,11 @@ class DashboardController extends Controller
         // $totalRm = RawMaterial::where('status', 'active')->count();
         // $totalPm = PackingMaterial::where('status', 'active')->count();
         // $totalOh = Overhead::where('status', 'active')->count();
-        $totalPd = Product::where('status', 'active')->count();
+        $totalPd = Product::where('status', 'active')->where('store_id',$storeid)->count();
         // $totalCitems = CategoryItems::where('status', 'active')->count();
-        $totalrecipes = Recipe::where('status', 'active')->count();
+        $totalrecipes = Recipe::where('status', 'active')->where('store_id',$storeid)->count();
 
-        $graphproducts = Product::all()->map(function ($product) {
+        $graphproducts = Product::all()->where('store_id',$storeid)->map(function ($product) {
             // $margin = $product->price - $product->purcCost ?? 0;
             // $margin = $product->margin;
             return [
@@ -44,7 +45,7 @@ class DashboardController extends Controller
         // $totalRmC = CategoryItems::where('categoryId', $rmc)->where('status', 'active')->count();
         // $totalPmC = CategoryItems::where('categoryId', $pmc)->where('status', 'active')->count();
         // $totalOhC = CategoryItems::where('categoryId', $ohc)->where('status', 'active')->count();
-        $totalPdC = CategoryItems::where('categoryId', $pdc)->where('status', 'active')->count();
+        $totalPdC = CategoryItems::where('categoryId', $pdc)->where('status', 'active')->where('store_id',$storeid)->count();
 
         $highcostingredients = [];
 
@@ -80,17 +81,18 @@ class DashboardController extends Controller
 
     public function indicatorBadge()
     {
+        $storeid = session()->get('store_id');
            // indicatorBadge below this
         $startOfMonth = Carbon::now()->startOfMonth();
         $startOfLastMonth = Carbon::now()->subMonth()->startOfMonth();
         $endOfLastMonth = Carbon::now()->subMonth()->endOfMonth();
 
         // This month's total cost
-        $thisMonthCost = RawMaterial::whereBetween('updated_at', [$startOfMonth, now()])
+        $thisMonthCost = RawMaterial::where('store_id',$storeid)->whereBetween('updated_at', [$startOfMonth, now()])
             ->sum('price'); // or 'price', depending on your column
 
         // Last month's total cost
-        $lastMonthCost = RawMaterial::whereBetween('updated_at', [$startOfLastMonth, $endOfLastMonth])
+        $lastMonthCost = RawMaterial::where('store_id',$storeid)->whereBetween('updated_at', [$startOfLastMonth, $endOfLastMonth])
             ->sum('price');
 
         // % Change
@@ -117,6 +119,7 @@ class DashboardController extends Controller
 
     public function getTrendAnalyticsData()
     {
+        $storeid = session()->get('store_id');
         // $modifications  = RmForRecipe::selectRaw('MONTH(updated_at) as month, COUNT(*) as changes, SUM(margin) as impact')
         // ->whereYear('updated_at', now()->year)
         // ->groupBy('month')
@@ -131,6 +134,7 @@ class DashboardController extends Controller
             ')
             ->join('product_master', 'product_master.id', '=', 'rm_for_recipe.product_id')
             ->join('raw_materials', 'raw_materials.id', '=', 'rm_for_recipe.raw_material_id')
+            ->where('raw_materials.store_id',$storeid)
             ->whereYear('rm_for_recipe.updated_at', now()->year)
             ->groupByRaw('MONTH(rm_for_recipe.updated_at), product_master.name, raw_materials.name')
             ->orderByRaw('MONTH(rm_for_recipe.updated_at), product_master.name, total_quantity DESC')
@@ -165,12 +169,14 @@ class DashboardController extends Controller
 
     public function getAlertforFlags()
     {
+        $storeid = session()->get('store_id');
         $lowMarginAlerts = [];
         $highMarginAlerts = [];
         $allUnitCosts = [];
 
         $products = Product::join('recipe_master', 'product_master.id', '=', 'recipe_master.product_id')
             ->join('overall_costing', 'recipe_master.product_id', '=', 'overall_costing.productid')
+            ->where('product_master.store_id', $storeid)
             ->where('product_master.status', 'active')
             ->where('recipe_master.status', 'active')
             ->where('overall_costing.status', 'active')
@@ -188,6 +194,7 @@ class DashboardController extends Controller
                 ->leftJoin('packing_materials', 'pm_for_recipe.packing_material_id', '=', 'packing_materials.id')
                 ->leftJoin('overheads', 'oh_for_recipe.overheads_id', '=', 'overheads.id')
                 ->where('recipe_master.product_id', $product->id)
+                ->where('recipe_master.store_id', $storeid)
                 ->select(
                     'rm_for_recipe.quantity as rm_quantity',
                     'raw_materials.price as rm_price',
@@ -261,8 +268,9 @@ class DashboardController extends Controller
         ];
     }
     // for costIngredients
-    public function highCostIngredients(Request $request)
+    public function highCostIngredients()
     {
+        $storeid = session()->get('store_id');
         $inputName = strtolower(trim($request->input('material_name')));
         $materialNames = array_map('strtolower', array_map('trim', explode(',', $inputName)));
         $highCostAlerts = [];
@@ -272,6 +280,7 @@ class DashboardController extends Controller
             $material = DB::table('raw_materials')
                 ->whereRaw('LOWER(name) = ?', [$name])
                 ->where('status', 'active')
+                ->where('store_id', $storeid)
                 ->first();
 
             if ($material) {
@@ -300,6 +309,7 @@ class DashboardController extends Controller
     // for cost-insights
     public function priceTrendChart()
     {
+        $storeid = session()->get('store_id');
         $trendData = DB::table('rm_price_histories as h')
         ->join('raw_materials as r', 'h.raw_material_id', '=', 'r.id')
         ->select(
@@ -309,6 +319,7 @@ class DashboardController extends Controller
             'h.new_price'
         )
         ->where('h.updated_at', '>=', Carbon::now()->subMonths(6))  // Get the last 6 months of data
+        ->where('h.store_id', $storeid)
         ->orderBy('h.updated_at', 'desc')  // Order by most recent price changes
         ->limit(10)  // Optional: limit to the last 10 price updates
         ->get();
@@ -324,6 +335,7 @@ class DashboardController extends Controller
             ->where('product_master.status', 'active')
             ->where('recipe_master.status', 'active')
             ->where('overall_costing.status', 'active')
+            ->where('product_master.store_id', $storeid)
             ->select(
                 'product_master.*',
                 'overall_costing.total_cost',
