@@ -32,6 +32,7 @@ class Overhead extends Model
         // 'hsncode',
         'itemweight',
         'itemType_id',
+        'store_id'
         // 'tax',
     ];
 }

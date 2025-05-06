@@ -40,8 +40,6 @@ class AppServiceProvider extends ServiceProvider
 
             $storeId = session('store_id');
 
-            $storeId = session('store_id');
-
             $reports = DB::select("
         SELECT 
             pm.id AS SNO, 

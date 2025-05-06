@@ -736,7 +736,7 @@ class RawMaterialController extends Controller
         // return back()->with('success', 'Excel file imported successfully!');
     }
 
-    public function exportAll()
+    public function exportAll(Request $request)
     {
         $storeid = $request->session()->get('store_id');
         $categories = \App\Models\CategoryItems::where('store_id', $storeid)->pluck('itemname', 'id');
