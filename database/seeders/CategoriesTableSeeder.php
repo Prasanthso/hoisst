@@ -14,11 +14,12 @@ class CategoriesTableSeeder extends Seeder
      */
     public function run()
     {
+        $storeid = $request->session()->get('store_id');
         DB::table('categories')->insert([
-            ['categoryname' => 'Raw Materials'],
-            ['categoryname' => 'Packing Materials'],
-            ['categoryname' => 'Overheads'],
-            ['categoryname' => 'Products'],
+            ['categoryname' => 'Raw Materials','store_id' => $storeid],
+            ['categoryname' => 'Packing Materials','store_id' => $storeid],
+            ['categoryname' => 'Overheads','store_id' => $storeid],
+            ['categoryname' => 'Products','store_id' => $storeid],
         ]);
     }
 }

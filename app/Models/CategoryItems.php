@@ -19,11 +19,12 @@ class CategoryItems extends Model
         'description',
         'created_user',
         'status',
+        'store_id',
     ];
 
-    public static function rmCategoryItem()
+    public static function rmCategoryItem($storeId)
     {
-        $rmCategoryItems = DB::table('categoryitems')->where('categoryId', 1)->where('status', 'active')->get();
+        $rmCategoryItems = DB::table('categoryitems')->where('categoryId', 1)->where('status', 'active')->where('store_id', $storeId)->get();
         return $rmCategoryItems;
     }
 
@@ -39,9 +40,9 @@ class CategoryItems extends Model
         return $ohCategoryItem;
     }
 
-    public static function pdCategoryItem()
+    public static function pdCategoryItem($storeId)
     {
-        $pdCategoryItem = DB::table('categoryitems')->where('categoryId', 4)->where('status', 'active')->get();
+        $pdCategoryItem = DB::table('categoryitems')->where('categoryId', 4)->where('status', 'active')->where('store_id', $storeId)->get();
         return $pdCategoryItem;
     }
 

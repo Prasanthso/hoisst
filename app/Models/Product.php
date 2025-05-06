@@ -36,7 +36,8 @@ class Product extends Model
         // 'cost',
         'recipe_crated_status',
         'price_update_frequency',
-        'price_threshold'
+        'price_threshold',
+        'store_id'
     ];
 
     // public function itemtypeId()

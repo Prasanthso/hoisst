@@ -17,7 +17,8 @@ class RawMaterialController extends Controller
     public function index(Request $request)
     {
         // Fetch all category items
-        $categoryitems = CategoryItems::rmCategoryItem();
+        $storeid = $request->session()->get('store_id');
+        $categoryitems = CategoryItems::rmCategoryItem($storeid);
         $selectedCategoryIds = $request->input('category_ids', []);
         $searchValue = $request->input('rmText','');
 
@@ -53,6 +54,7 @@ class RawMaterialController extends Controller
                     'c10.itemname as category_name10'
                 )
                     ->where('rm.status', '=', 'active')
+                    ->where('rm.store_id', $storeid)
                     ->Where('rm.name', 'LIKE', "{$searchValue}%")
                     // ->orderBy('rm.name', 'asc') // Filter by active status
                     ->get();
@@ -117,6 +119,7 @@ class RawMaterialController extends Controller
                             ->orWhereIn('c10.id', $selectedCategoryIds);
                     })
                     // ->where('rm.status', '=', 'active')
+                    ->where('rm.store_id', $storeid)
                     ->orderBy('rm.name', 'asc') // Filter by active status
                     ->get();
                     // ->paginate(10);
@@ -161,6 +164,7 @@ class RawMaterialController extends Controller
             'c10.itemname as category_name10'
         )
             ->where('rm.status', '=', 'active')
+            ->where('rm.store_id', $storeid)
             ->orderBy('rm.name', 'asc') // Filter by active status
             ->paginate(10);
 
@@ -170,10 +174,11 @@ class RawMaterialController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        $rawMaterialCategories = CategoryItems::rmCategoryItem();
-        $itemtype = DB::table('item_type')->where('status', '=', 'active')->get();
+        $storeid = $request->session()->get('store_id');
+        $rawMaterialCategories = CategoryItems::rmCategoryItem($storeid);
+        $itemtype = DB::table('item_type')->where('status', '=', 'active')->where('store_id', 0)->get();
 
         return view('rawMaterial.addRawMaterial', compact('rawMaterialCategories', 'itemtype')); // Match view name
     }
@@ -183,6 +188,7 @@ class RawMaterialController extends Controller
      */
     public function store(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         try{
         $request->validate([
             'name' => [
@@ -190,11 +196,11 @@ class RawMaterialController extends Controller
                 'string',
                 'max:255',
                 'unique:raw_materials,name',
-                function ($attribute, $value, $fail) {
+                function ($attribute, $value, $fail) use ($storeid) {
                     // Convert input to lowercase and remove spaces
                     $formattedValue = strtolower(str_replace(' ', '', $value));
                     // Fetch existing names from the database (case-insensitive)
-                    $existingNames = RawMaterial::pluck('name')->map(function ($name) {
+                    $existingNames = RawMaterial::where('store_id', $storeid)->pluck('name')->map(function ($name) {
                         return strtolower(str_replace(' ', '', $name));
                     })->toArray();
                     // Check if the formatted input already exists
@@ -244,6 +250,7 @@ class RawMaterialController extends Controller
                 'itemweight' => $request->itemweight,
                     'itemType_id' => $request->itemType_id,
                     'tax' => $request->tax,
+                    'store_id' => $storeid,
             ]);
         } catch (\Exception $e) {
             // \Log::error('Error inserting data: ' . $e->getMessage());
@@ -265,6 +272,7 @@ class RawMaterialController extends Controller
 
     public function updatePrices(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $validatedData = $request->validate([
             'updatedMaterials' => 'required|array',
             'updatedMaterials.*.id' => 'required|exists:raw_materials,id',
@@ -272,10 +280,10 @@ class RawMaterialController extends Controller
         ]);
 
         try {
-            DB::transaction(function () use ($validatedData) {
+            DB::transaction(function () use ($validatedData, $storeid) {
                 foreach ($validatedData['updatedMaterials'] as $material) {
                     // Fetch the current material
-                    $currentMaterial = RawMaterial::find($material['id']);
+                    $currentMaterial = RawMaterial::where('store_id', $storeid)->where('id', $material['id'])->first();  //find($material['id']);
 
                     // Check if the price has changed
                     if ($currentMaterial->price != $material['price']) {
@@ -285,6 +293,7 @@ class RawMaterialController extends Controller
                             'old_price' => $currentMaterial->price,
                             'new_price' => $material['price'],
                             'updated_by' => 1, // Ensure user is authenticated
+                            'store_id' => $storeid,
                             'updated_at' => now(),
                         ]);
 
@@ -304,10 +313,12 @@ class RawMaterialController extends Controller
     /**
      * Display the specified resource.
      */
-    public function getRmPriceHistory($id)
+    public function getRmPriceHistory(Request $request, $id)
     {
+        $storeid = $request->session()->get('store_id');
         $priceHistory = DB::table('rm_price_histories')
         ->where('raw_material_id', $id)
+        ->where('store_id', $storeid)
         ->orderBy('updated_at', 'desc') // Replace 'id' with the column you want to sort by
         ->get();
         return response()->json(['priceDetails' => $priceHistory]);
@@ -316,15 +327,16 @@ class RawMaterialController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Request $request, string $id)
     {
+        $storeid = $request->session()->get('store_id');
         // Fetch all categories
-        $rawMaterialCategories = CategoryItems::rmCategoryItem();
+        $rawMaterialCategories = CategoryItems::rmCategoryItem($storeid);
 
-        $itemtype = DB::table('item_type')->where('status', '=', 'active')->get();
+        $itemtype = DB::table('item_type')->where('status', '=', 'active')->where('store_id', 0)->get();
         $selectedItemType = $rawMaterial->itemType_id ?? null;
         // Fetch the specific raw material by its ID
-        $rawMaterial = DB::table('raw_materials')->where('id', $id)->first(); // Fetch the single raw material entry
+        $rawMaterial = DB::table('raw_materials')->where('store_id', $storeid)->where('id', $id)->first(); // Fetch the single raw material entry
 
         // Return the view with raw material data and categories
         return view('rawMaterial.editRawMaterial', compact('rawMaterial', 'rawMaterialCategories', 'itemtype', 'selectedItemType'));
@@ -335,8 +347,11 @@ class RawMaterialController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $storeid = $request->session()->get('store_id');
         // Find the existing raw material by ID
-        $rawMaterial = RawMaterial::findOrFail($id);
+        $rawMaterial = RawMaterial::where('store_id', $storeid)
+                        ->where('id', $id)
+                        ->firstOrFail();  //findOrFail($id);
 
     try{
         // Validate the incoming request data
@@ -368,6 +383,7 @@ class RawMaterialController extends Controller
                     // ->orWhereRaw("LOWER(REPLACE(hsncode, ' ', '')) = ?", [$strHsnCode]);
             })
             ->where('id', '!=', $rawMaterial->id) // Exclude the current product
+            ->where('store_id', $storeid)
             ->first();
 
             if ($existingMaterial) {
@@ -389,6 +405,7 @@ class RawMaterialController extends Controller
                     'old_price' => $rawMaterial->price, // Correct way to get the old price
                     'new_price' => $request->price,
                     'updated_by' => 1, // Ensure user is authenticated
+                    'store_id' => $storeid,
                     'updated_at' => now(),
                 ]);
             }
@@ -415,6 +432,7 @@ class RawMaterialController extends Controller
                 'itemweight' => $request->itemweight,
                     'itemType_id' => $request->itemType_id,
                     'tax' => $request->tax,
+                    'store_id' => $storeid,
             ]);
 
         } catch (\Exception $e) {
@@ -440,6 +458,7 @@ class RawMaterialController extends Controller
      */
     public function deleteConfirmation(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $ids = $request->input('ids'); // Get the 'ids' array from the request
 
         if (!$ids || !is_array($ids)) {
@@ -451,7 +470,8 @@ class RawMaterialController extends Controller
 
         try {
             // Update only if the raw materials are NOT referenced in rm_for_recipe
-            $updatedCount = RawMaterial::whereIn('id', $ids)
+            $updatedCount = RawMaterial::where('store_id',$storeid)
+                ->whereIn('id', $ids)
                 ->whereNotExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('rm_for_recipe')
@@ -473,6 +493,7 @@ class RawMaterialController extends Controller
 
     public function delete(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $ids = $request->input('ids'); // Get the 'ids' array from the request
 
         if (!$ids || !is_array($ids)) {
@@ -484,7 +505,8 @@ class RawMaterialController extends Controller
 
         try {
             // Update only if the raw materials are NOT referenced in rm_for_recipe
-            $itemsToDelete = RawMaterial::whereIn('id', $ids)
+            $itemsToDelete = RawMaterial::where('store_id',$storeid)
+                ->whereIn('id', $ids)
                 ->whereNotExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('rm_for_recipe')
@@ -514,6 +536,7 @@ class RawMaterialController extends Controller
         // import excel data to db
     public function importExcel(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $request->validate([
             'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048'
         ]);
@@ -567,6 +590,7 @@ class RawMaterialController extends Controller
             $existingRawmaterial = RawMaterial::whereRaw("
                 REPLACE(LOWER(TRIM(name)), ' ', '') = ?
             ", [$normalizedName])
+            ->where('store_id', $storeid)
             // ->where('hsncode', $row[3])
             ->first();
         // $existingRawmaterial = RawMaterial::whereRaw("
@@ -663,12 +687,13 @@ class RawMaterialController extends Controller
                     ? DB::table('categoryitems')
                         ->where('categoryId', 1)
                         ->where('status', 'active')
+                        ->where('store_id', $storeid)
                         // ->where('itemname', $row[$i + 3])
                         ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 4]))])
                         ->value('id')
                     : null;
             }
-            $itemtype_id = DB::table('item_type')->where('itemtypename',$row[20])->where('status', 'active')->value('id');
+            $itemtype_id = DB::table('item_type')->where('itemtypename',$row[20])->where('status', 'active')->where('store_id', 0)->value('id');
 
             RawMaterial::create([
                 'name' => $row[1] ?? null,
@@ -692,6 +717,7 @@ class RawMaterialController extends Controller
                 'price_update_frequency' => $row[18],
                 'price_threshold' => $row[19],
                 'itemType_id' => $itemtype_id,
+                'store_id' => $storeid
             ]);
             $importedCount++;
         }
@@ -712,7 +738,8 @@ class RawMaterialController extends Controller
 
     public function exportAll()
     {
-        $categories = \App\Models\CategoryItems::pluck('itemname', 'id');
+        $storeid = $request->session()->get('store_id');
+        $categories = \App\Models\CategoryItems::where('store_id', $storeid)->pluck('itemname', 'id');
 
         $rawMaterials = \App\Models\RawMaterial::select([
             'id',
@@ -732,6 +759,7 @@ class RawMaterialController extends Controller
             'category_id10'
         ])
             ->where('status', 'active')  // Filter active records
+            ->where('store_id', $storeid)
             ->orderBy('name', 'asc')     // Sort by name ASC
             ->get();
 
