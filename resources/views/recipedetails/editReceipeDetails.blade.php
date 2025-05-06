@@ -13,14 +13,14 @@
                     <div class="card">
                         <div class="card-body">
                             <!-- Vertical Form -->
-                            <form action="{{ route('editrecipedetails.update', $editrecipe->id) }}" method="POST" class="row g-3 mt-2" enctype="multipart/form-data"  id="recipeDetailsDescForm">
+                            <form action="{{ route('editrecipedetails.update', $editrecipe->rid) }}" method="POST" class="row g-3 mt-2" enctype="multipart/form-data"  id="recipeDetailsDescForm">
                                 @csrf
                                 @method('PUT')
                                 <div class="col-12">
                                     <label for="recipeSelect" class="form-label">Select Recipe</label>
                                     <div class="col-6">
                                         <select id="recipeSelect" class="form-select" name="productId" aria-labelledby="recipeSelectLabel">
-                                        <option value="{{ $editrecipe->id }}" selected disabled>{{ $editrecipe->name  }}</option>
+                                        <option value="{{ $editrecipe->product_id }}" selected disabled>{{ $editrecipe->name  }}</option>
                                         </select>
                                         @error('productId')
                                         <span class="text-danger">{{ $message }}</span>

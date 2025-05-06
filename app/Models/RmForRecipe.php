@@ -17,6 +17,7 @@ class RmForRecipe extends Model
         'uom',
         'price',
         'amount',
+        'store_id'
     ];
 
 }

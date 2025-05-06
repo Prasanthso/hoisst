@@ -16,7 +16,7 @@ class Recipe extends Model
         'description',
         'instructions',
         'video_path',
-        'store_id',
+        'store_id'
     ];
 
     public function product()
