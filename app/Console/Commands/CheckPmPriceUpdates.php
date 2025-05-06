@@ -22,7 +22,12 @@ class CheckPmPriceUpdates extends Command
     {
         Log::info("Running check:Pm-price-updates command...");
 
-        $packingMaterials = PackingMaterial::where('status', 'active')->get();
+        $storeId = session('store_id');
+
+        $packingMaterials = PackingMaterial::where('status', 'active')
+            ->where('store_id', $storeId)
+            ->get();
+
         $now = Carbon::now();
         $materialsToNotify = [];
 

@@ -20,6 +20,7 @@ class CheckMargins extends Command
 
     public function handle()
     {
+        $storeId = session('store_id');
         $reports = DB::select("
             SELECT
     pm.id AS SNO,
@@ -107,11 +108,12 @@ LEFT JOIN (
 
 LEFT JOIN
     overall_costing oc ON pm.id = oc.productId AND oc.status = 'active'
-WHERE
-    rmst.status = 'active' AND oc.suggested_mrp IS NOT NULL
-ORDER BY
-    pm.name ASC;
-        ");
+WHERE 
+            rmst.status = 'active' 
+            AND oc.suggested_mrp IS NOT NULL 
+            AND pm.store_id = :storeId
+        ORDER BY pm.name ASC
+    ", ['storeId' => $storeId]);
 
         $whatsappController = new WhatsAppController();
         $whatsappEnabledUsers = User::where('whatsapp_enabled', 1)->get();

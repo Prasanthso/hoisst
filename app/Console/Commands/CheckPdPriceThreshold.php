@@ -21,7 +21,11 @@ class CheckRmPriceThreshold extends Command
     {
         Log::info("Running check:pd-price-threshold...");
 
-        $materials = Product::where('status', 'active')->get();
+        $storeId = session('store_id');
+
+        $materials = Product::where('status', 'active')
+            ->where('store_id', $storeId)
+            ->get();
         $materialsToNotify = [];
 
         foreach ($materials as $material) {

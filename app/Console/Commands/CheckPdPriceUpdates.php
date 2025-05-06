@@ -23,7 +23,11 @@ class CheckPdPriceUpdates extends Command
     {
         Log::info("Running check:pd-price-updates command...");
 
-        $products = Product::where('status', 'active')->get();
+        $storeId = session('store_id');
+
+        $products = Product::where('status', 'active')
+            ->where('store_id', $storeId)
+            ->get();
         $now = Carbon::now();
         $materialsToNotify = [];
 

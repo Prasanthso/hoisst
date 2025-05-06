@@ -20,7 +20,12 @@ class CheckRwmPriceThreshold extends Command
     {
         Log::info("Running check:rm-price-threshold...");
 
-        $materials = RawMaterial::where('status', 'active')->get();
+        $storeId = session('store_id');
+
+        $materials = RawMaterial::where('status', 'active')
+            ->where('store_id', $storeId)
+            ->get();
+
         $materialsToNotify = [];
 
         foreach ($materials as $material) {
