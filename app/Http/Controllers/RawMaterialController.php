@@ -280,7 +280,7 @@ class RawMaterialController extends Controller
         ]);
 
         try {
-            DB::transaction(function () use ($validatedData,$storeid) {
+            DB::transaction(function () use ($validatedData, $storeid) {
                 foreach ($validatedData['updatedMaterials'] as $material) {
                     // Fetch the current material
                     $currentMaterial = RawMaterial::where('store_id', $storeid)->where('id', $material['id'])->first();  //find($material['id']);
@@ -590,6 +590,7 @@ class RawMaterialController extends Controller
             $existingRawmaterial = RawMaterial::whereRaw("
                 REPLACE(LOWER(TRIM(name)), ' ', '') = ?
             ", [$normalizedName])
+            ->where('store_id', $storeid)
             // ->where('hsncode', $row[3])
             ->first();
         // $existingRawmaterial = RawMaterial::whereRaw("
@@ -738,7 +739,7 @@ class RawMaterialController extends Controller
     public function exportAll()
     {
         $storeid = $request->session()->get('store_id');
-        $categories = \App\Models\CategoryItems::pluck('itemname', 'id');
+        $categories = \App\Models\CategoryItems::where('store_id', $storeid)->pluck('itemname', 'id');
 
         $rawMaterials = \App\Models\RawMaterial::select([
             'id',
