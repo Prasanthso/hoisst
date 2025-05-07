@@ -2,9 +2,22 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Hoisst login page</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- Favicons -->
+    <link href="{{ asset('/assets/img/favicon.png') }}" rel="icon">
+    <link href="{{ asset('/assets/img/newlogo.png') }}" rel="newlogo">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <!-- Bootstrap 4 CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
@@ -123,7 +136,7 @@
     <div class="container text-center">
         <div class="custom-container mx-auto text-left">
             <div class="d-flex justify-content-center mb-3">
-                <img src="/assets/img/RMSLogo.png" alt="Recipe Management System Logo" style="height: 70px;">
+                <img src="/assets/img/logo.svg" alt="Recipe Management System Logo" style="height: 70px;">
             </div>
             <h2 class="text-center">Forget Password</h2>
             @if (session('success'))
