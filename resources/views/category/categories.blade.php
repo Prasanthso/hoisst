@@ -79,13 +79,30 @@
             <div class="col-lg-8">
                 <div class="row">
                     <!-- Action Buttons -->
-                    <div class="d-flex justify-content-end mb-2 action-buttons">
+                    <div class="d-flex justify-content-between mb-2 align-items-center action-buttons">
                         <!-- <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-edit" style="color: black;"></i>
                         </button>-->
+                        <div>
+                        <div class="form-check form-check-inline m-0 me-2">
+                                <input class="form-check-input single-check" type="checkbox" id="Active" name="Active" checked>
+                                <label class="form-check-label small" for="Active">Active</label>
+                        </div>
+                        <div class="form-check form-check-inline m-0 me-2">
+                            <input class="form-check-input single-check" type="checkbox" id="inActive" name="inActive">
+                            <label class="form-check-label small" for="inActive">inActive</label>
+                          </div>
+
+                        <div class="form-check form-check-inline m-0 me-2">
+                            <input class="form-check-input single-check" type="checkbox" id="all" name="All">
+                            <label class="form-check-label small" for="all">All</label>
+                          </div>
+                        </div>
+                    <div>
                         <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-trash" style="color: red;"></i>
                         </button>
+                    </div>
                     </div>
 
                     <!-- Bordered Table -->
@@ -781,19 +798,44 @@
                     }
             }
 default_searchType();
-
+selection_isActive();
 });
 
-function default_searchType()
-{
-   const searchType = document.getElementById('searchtype').value;
-            const categoryItems = document.querySelectorAll(".category-item");
-            if (searchType === 'category') {
-                categoryItems.forEach(item => item.style.display = "block");
-            } else if (searchType === 'items') {
-                categoryItems.forEach(item => item.style.display = "none");
+    function default_searchType()
+    {
+    const searchType = document.getElementById('searchtype').value;
+                const categoryItems = document.querySelectorAll(".category-item");
+                if (searchType === 'category') {
+                    categoryItems.forEach(item => item.style.display = "block");
+                } else if (searchType === 'items') {
+                    categoryItems.forEach(item => item.style.display = "none");
+                }
+    }
+    function selection_isActive()
+    {
+        const checkboxes = document.querySelectorAll('.single-check');
+
+        checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
+
+            if (this.checked) {
+            // Uncheck all others
+            checkboxes.forEach(cb => {
+                if (cb !== this) cb.checked = false;
+            });
+            } else if (checkedBoxes.length === 0) {
+            // If user tries to uncheck the only selected one, pick another
+            for (const cb of checkboxes) {
+                if (cb !== this) {
+                cb.checked = true;
+                break;
+                }
             }
-}
+            }
+        });
+        });
+    }
 </script>
 
 <!-- Vendor JS Files -->
