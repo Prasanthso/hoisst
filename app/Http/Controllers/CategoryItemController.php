@@ -171,6 +171,7 @@ class CategoryItemController extends Controller
                 // 'categoryId' => $request->categoryId,
                 'itemname' => $request->itemname,
                 'description' => $request->description,
+                'status' => $request->status,
                 'created_user' => auth()->id(), // Assuming the user is authenticated
             ]);
         }

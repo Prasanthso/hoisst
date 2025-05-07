@@ -433,7 +433,8 @@ class RawMaterialController extends Controller
                     'itemType_id' => $request->itemType_id,
                     'tax' => $request->tax,
                     'store_id' => $storeid,
-            ]);
+                    'status' => $request->status,
+                ]);
 
         } catch (\Exception $e) {
             // Handle the error gracefully (e.g., log it and show an error message)

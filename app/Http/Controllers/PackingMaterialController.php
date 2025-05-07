@@ -21,62 +21,10 @@ class PackingMaterialController extends Controller
         // Fetch all category items
         $categoryitems = CategoryItems::pmCategoryItem($storeid);
         $selectedCategoryIds = $request->input('category_ids', []);
-        $searchValue = $request->input('pmText','');
+        $searchValue = $request->input('pmText', '');
 
         if ($request->ajax()) {
-            if(!empty($searchValue))
-            {
-                 // Fetch packing materials filtered by the selected category IDs
-                 $packingMaterials = DB::table('packing_materials as pm')
-                 ->leftJoin('categoryitems as c1', 'pm.category_id1', '=', 'c1.id')
-                 ->leftJoin('categoryitems as c2', 'pm.category_id2', '=', 'c2.id')
-                 ->leftJoin('categoryitems as c3', 'pm.category_id3', '=', 'c3.id')
-                 ->leftJoin('categoryitems as c4', 'pm.category_id4', '=', 'c4.id')
-                 ->leftJoin('categoryitems as c5', 'pm.category_id5', '=', 'c5.id')
-                 ->leftJoin('categoryitems as c6', 'pm.category_id6', '=', 'c6.id')
-                 ->leftJoin('categoryitems as c7', 'pm.category_id7', '=', 'c7.id')
-                 ->leftJoin('categoryitems as c8', 'pm.category_id8', '=', 'c8.id')
-                 ->leftJoin('categoryitems as c9', 'pm.category_id9', '=', 'c9.id')
-                 ->leftJoin('categoryitems as c10', 'pm.category_id10', '=', 'c10.id')
-                 ->select(
-                     'pm.id',
-                     'pm.name',
-                     'pm.pmcode',
-                     'pm.price',
-                     'pm.uom',
-                     'c1.itemname as category_name1',
-                     'c2.itemname as category_name2',
-                     'c3.itemname as category_name3',
-                     'c4.itemname as category_name4',
-                     'c5.itemname as category_name5',
-                     'c6.itemname as category_name6',
-                     'c7.itemname as category_name7',
-                     'c8.itemname as category_name8',
-                     'c9.itemname as category_name9',
-                     'c10.itemname as category_name10'
-                 )
-                 ->where('pm.status', '=', 'active')
-                 ->where('pm.store_id', $storeid)
-                 ->Where('pm.name', 'LIKE', "{$searchValue}%")
-                //  ->orderBy('pm.name', 'asc')
-                 ->get();
-
-             return response()->json([
-                 'status' => 'success',
-                 'message' => count($packingMaterials) > 0 ? 'packingMaterials found' : 'No packingMaterials found',
-                 'packingMaterials' => $packingMaterials
-             ]);
-        }
-        else{
-            $selectedCategoryIds = explode(',', $selectedCategoryIds);
-            // If no categories are selected, return all packing materials
-            if (empty($selectedCategoryIds)) {
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'No category IDs provided',
-                    'packingMaterials' => []
-                ]);
-            } else {
+            if (!empty($searchValue)) {
                 // Fetch packing materials filtered by the selected category IDs
                 $packingMaterials = DB::table('packing_materials as pm')
                     ->leftJoin('categoryitems as c1', 'pm.category_id1', '=', 'c1.id')
@@ -107,21 +55,9 @@ class PackingMaterialController extends Controller
                         'c10.itemname as category_name10'
                     )
                     ->where('pm.status', '=', 'active')
-                    ->where(function ($query) use ($selectedCategoryIds) {
-                        $query->whereIn('c1.id', $selectedCategoryIds)
-                            ->orWhereIn('c2.id', $selectedCategoryIds)
-                            ->orWhereIn('c3.id', $selectedCategoryIds)
-                            ->orWhereIn('c4.id', $selectedCategoryIds)
-                            ->orWhereIn('c5.id', $selectedCategoryIds)
-                            ->orWhereIn('c6.id', $selectedCategoryIds)
-                            ->orWhereIn('c7.id', $selectedCategoryIds)
-                            ->orWhereIn('c8.id', $selectedCategoryIds)
-                            ->orWhereIn('c9.id', $selectedCategoryIds)
-                            ->orWhereIn('c10.id', $selectedCategoryIds);
-                    })
-                    // ->where('pm.status', '=', 'active') // Filter by active status
                     ->where('pm.store_id', $storeid)
-                    ->orderBy('pm.name', 'asc')
+                    ->Where('pm.name', 'LIKE', "{$searchValue}%")
+                    //  ->orderBy('pm.name', 'asc')
                     ->get();
 
                 return response()->json([
@@ -129,43 +65,105 @@ class PackingMaterialController extends Controller
                     'message' => count($packingMaterials) > 0 ? 'packingMaterials found' : 'No packingMaterials found',
                     'packingMaterials' => $packingMaterials
                 ]);
+            } else {
+                $selectedCategoryIds = explode(',', $selectedCategoryIds);
+                // If no categories are selected, return all packing materials
+                if (empty($selectedCategoryIds)) {
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'No category IDs provided',
+                        'packingMaterials' => []
+                    ]);
+                } else {
+                    // Fetch packing materials filtered by the selected category IDs
+                    $packingMaterials = DB::table('packing_materials as pm')
+                        ->leftJoin('categoryitems as c1', 'pm.category_id1', '=', 'c1.id')
+                        ->leftJoin('categoryitems as c2', 'pm.category_id2', '=', 'c2.id')
+                        ->leftJoin('categoryitems as c3', 'pm.category_id3', '=', 'c3.id')
+                        ->leftJoin('categoryitems as c4', 'pm.category_id4', '=', 'c4.id')
+                        ->leftJoin('categoryitems as c5', 'pm.category_id5', '=', 'c5.id')
+                        ->leftJoin('categoryitems as c6', 'pm.category_id6', '=', 'c6.id')
+                        ->leftJoin('categoryitems as c7', 'pm.category_id7', '=', 'c7.id')
+                        ->leftJoin('categoryitems as c8', 'pm.category_id8', '=', 'c8.id')
+                        ->leftJoin('categoryitems as c9', 'pm.category_id9', '=', 'c9.id')
+                        ->leftJoin('categoryitems as c10', 'pm.category_id10', '=', 'c10.id')
+                        ->select(
+                            'pm.id',
+                            'pm.name',
+                            'pm.pmcode',
+                            'pm.price',
+                            'pm.uom',
+                            'c1.itemname as category_name1',
+                            'c2.itemname as category_name2',
+                            'c3.itemname as category_name3',
+                            'c4.itemname as category_name4',
+                            'c5.itemname as category_name5',
+                            'c6.itemname as category_name6',
+                            'c7.itemname as category_name7',
+                            'c8.itemname as category_name8',
+                            'c9.itemname as category_name9',
+                            'c10.itemname as category_name10'
+                        )
+                        ->where('pm.status', '=', 'active')
+                        ->where(function ($query) use ($selectedCategoryIds) {
+                            $query->whereIn('c1.id', $selectedCategoryIds)
+                                ->orWhereIn('c2.id', $selectedCategoryIds)
+                                ->orWhereIn('c3.id', $selectedCategoryIds)
+                                ->orWhereIn('c4.id', $selectedCategoryIds)
+                                ->orWhereIn('c5.id', $selectedCategoryIds)
+                                ->orWhereIn('c6.id', $selectedCategoryIds)
+                                ->orWhereIn('c7.id', $selectedCategoryIds)
+                                ->orWhereIn('c8.id', $selectedCategoryIds)
+                                ->orWhereIn('c9.id', $selectedCategoryIds)
+                                ->orWhereIn('c10.id', $selectedCategoryIds);
+                        })
+                        // ->where('pm.status', '=', 'active') // Filter by active status
+                        ->where('pm.store_id', $storeid)
+                        ->orderBy('pm.name', 'asc')
+                        ->get();
+
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => count($packingMaterials) > 0 ? 'packingMaterials found' : 'No packingMaterials found',
+                        'packingMaterials' => $packingMaterials
+                    ]);
+                }
             }
-        }
         }
 
         // Default view, return all packing materials and category items
         $packingMaterials = DB::table('packing_materials as pm')
-        ->leftJoin('categoryitems as c1', 'pm.category_id1', '=', 'c1.id')
-        ->leftJoin('categoryitems as c2', 'pm.category_id2', '=', 'c2.id')
-        ->leftJoin('categoryitems as c3', 'pm.category_id3', '=', 'c3.id')
-        ->leftJoin('categoryitems as c4', 'pm.category_id4', '=', 'c4.id')
-        ->leftJoin('categoryitems as c5', 'pm.category_id5', '=', 'c5.id')
-        ->leftJoin('categoryitems as c6', 'pm.category_id6', '=', 'c6.id')
-        ->leftJoin('categoryitems as c7', 'pm.category_id7', '=', 'c7.id')
-        ->leftJoin('categoryitems as c8', 'pm.category_id8', '=', 'c8.id')
-        ->leftJoin('categoryitems as c9', 'pm.category_id9', '=', 'c9.id')
-        ->leftJoin('categoryitems as c10', 'pm.category_id10', '=', 'c10.id')
-        ->select(
-            'pm.id',
-            'pm.name',
-            'pm.pmcode',
-            'pm.price',
-            'pm.uom',
-            'c1.itemname as category_name1',
-            'c2.itemname as category_name2',
-            'c3.itemname as category_name3',
-            'c4.itemname as category_name4',
-            'c5.itemname as category_name5',
-            'c6.itemname as category_name6',
-            'c7.itemname as category_name7',
-            'c8.itemname as category_name8',
-            'c9.itemname as category_name9',
-            'c10.itemname as category_name10'
-        )
-        ->where('pm.status', '=', 'active') // Filter by active status
-        ->where('pm.store_id', $storeid)
-        ->orderBy('pm.name', 'asc')
-        ->paginate(10);
+            ->leftJoin('categoryitems as c1', 'pm.category_id1', '=', 'c1.id')
+            ->leftJoin('categoryitems as c2', 'pm.category_id2', '=', 'c2.id')
+            ->leftJoin('categoryitems as c3', 'pm.category_id3', '=', 'c3.id')
+            ->leftJoin('categoryitems as c4', 'pm.category_id4', '=', 'c4.id')
+            ->leftJoin('categoryitems as c5', 'pm.category_id5', '=', 'c5.id')
+            ->leftJoin('categoryitems as c6', 'pm.category_id6', '=', 'c6.id')
+            ->leftJoin('categoryitems as c7', 'pm.category_id7', '=', 'c7.id')
+            ->leftJoin('categoryitems as c8', 'pm.category_id8', '=', 'c8.id')
+            ->leftJoin('categoryitems as c9', 'pm.category_id9', '=', 'c9.id')
+            ->leftJoin('categoryitems as c10', 'pm.category_id10', '=', 'c10.id')
+            ->select(
+                'pm.id',
+                'pm.name',
+                'pm.pmcode',
+                'pm.price',
+                'pm.uom',
+                'c1.itemname as category_name1',
+                'c2.itemname as category_name2',
+                'c3.itemname as category_name3',
+                'c4.itemname as category_name4',
+                'c5.itemname as category_name5',
+                'c6.itemname as category_name6',
+                'c7.itemname as category_name7',
+                'c8.itemname as category_name8',
+                'c9.itemname as category_name9',
+                'c10.itemname as category_name10'
+            )
+            ->where('pm.status', '=', 'active') // Filter by active status
+            ->where('pm.store_id', $storeid)
+            ->orderBy('pm.name', 'asc')
+            ->paginate(10);
 
         return view('packingMaterial.packingMaterial', compact('packingMaterials', 'categoryitems'));
     }
@@ -188,73 +186,73 @@ class PackingMaterialController extends Controller
     public function store(Request $request)
     {
         $storeid = $request->session()->get('store_id');
-        try{
-        $request->validate([
-            'name' => [
-            'required',
-            'string',
-            'max:255',
-            // 'unique:packing_materials,name',
-            function ($attribute, $value, $fail) use ($storeid){
-                // Convert input to lowercase and remove spaces
-                $formattedValue = strtolower(str_replace(' ', '', $value));
-                // Fetch existing names from the database (case-insensitive)
-                $existingNames = PackingMaterial::where('store_id', $storeid)->pluck('name')->map(function ($name) {
-                    return strtolower(str_replace(' ', '', $name));
-                })->toArray();
-                // Check if the formatted input already exists
-                if (in_array($formattedValue, $existingNames)) {
-                    $fail('This name is duplicate. Please choose a different one.');
-                }
-            }
-        ],  // 'name' => 'required|string|max:255|unique:packing_materials,name',
-            'uom' => 'required|string|in:Ltr,Kgm,Gm,Nos',
-            'category_ids' => 'required|array',
-            'category_ids.*' => 'integer|exists:categoryitems,id',
-            'price' => 'required|string',
-            'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
-            'price_update_frequency' => 'required|string',
-            'price_threshold' => 'required|string',
-            'hsnCode' => 'required|string',
-            'itemType_id' => 'integer|exists:item_type,id',
-            'itemWeight' => 'required|string',
-            'tax' => 'required|string',
-        ]);
-
-        $categoryIds = $request->category_ids;
-
-        $pmCode = UniqueCode::generatePmCode();
-
         try {
-            PackingMaterial::create([
-                'name' => $request->name,
-                'pmcode' => $pmCode,
-                'hsnCode' => $request->hsnCode,
-                'uom' => $request->uom,
-                'itemWeight' => $request->itemWeight,
-                'category_id1' => $categoryIds[0] ?? null,
-                'category_id2' => $categoryIds[1] ?? null,
-                'category_id3' => $categoryIds[2] ?? null,
-                'category_id4' => $categoryIds[3] ?? null,
-                'category_id5' => $categoryIds[4] ?? null,
-                'category_id6' => $categoryIds[5] ?? null,
-                'category_id7' => $categoryIds[6] ?? null,
-                'category_id8' => $categoryIds[7] ?? null,
-                'category_id9' => $categoryIds[8] ?? null,
-                'category_id10' => $categoryIds[9] ?? null,
-                'itemType_id' => $request->itemType_id,
-                'price' => $request->price,
-                'tax' => $request->tax,
-                'update_frequency' => $request->update_frequency,
-                'price_update_frequency' => $request->price_update_frequency,
-                'price_threshold' => $request->price_threshold,
-                'store_id' => $storeid,
+            $request->validate([
+                'name' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    // 'unique:packing_materials,name',
+                    function ($attribute, $value, $fail) use ($storeid) {
+                        // Convert input to lowercase and remove spaces
+                        $formattedValue = strtolower(str_replace(' ', '', $value));
+                        // Fetch existing names from the database (case-insensitive)
+                        $existingNames = PackingMaterial::where('store_id', $storeid)->pluck('name')->map(function ($name) {
+                            return strtolower(str_replace(' ', '', $name));
+                        })->toArray();
+                        // Check if the formatted input already exists
+                        if (in_array($formattedValue, $existingNames)) {
+                            $fail('This name is duplicate. Please choose a different one.');
+                        }
+                    }
+                ],  // 'name' => 'required|string|max:255|unique:packing_materials,name',
+                'uom' => 'required|string|in:Ltr,Kgm,Gm,Nos',
+                'category_ids' => 'required|array',
+                'category_ids.*' => 'integer|exists:categoryitems,id',
+                'price' => 'required|string',
+                'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
+                'price_update_frequency' => 'required|string',
+                'price_threshold' => 'required|string',
+                'hsnCode' => 'required|string',
+                'itemType_id' => 'integer|exists:item_type,id',
+                'itemWeight' => 'required|string',
+                'tax' => 'required|string',
             ]);
-        } catch (\Exception $e) {
-            // \Log::error('Error inserting data: ' . $e->getMessage());
-            dd($e->getMessage());
-        }
-        return redirect()->route('packingMaterials.index')->with('success', 'Packing Material created successfully.');
+
+            $categoryIds = $request->category_ids;
+
+            $pmCode = UniqueCode::generatePmCode();
+
+            try {
+                PackingMaterial::create([
+                    'name' => $request->name,
+                    'pmcode' => $pmCode,
+                    'hsnCode' => $request->hsnCode,
+                    'uom' => $request->uom,
+                    'itemWeight' => $request->itemWeight,
+                    'category_id1' => $categoryIds[0] ?? null,
+                    'category_id2' => $categoryIds[1] ?? null,
+                    'category_id3' => $categoryIds[2] ?? null,
+                    'category_id4' => $categoryIds[3] ?? null,
+                    'category_id5' => $categoryIds[4] ?? null,
+                    'category_id6' => $categoryIds[5] ?? null,
+                    'category_id7' => $categoryIds[6] ?? null,
+                    'category_id8' => $categoryIds[7] ?? null,
+                    'category_id9' => $categoryIds[8] ?? null,
+                    'category_id10' => $categoryIds[9] ?? null,
+                    'itemType_id' => $request->itemType_id,
+                    'price' => $request->price,
+                    'tax' => $request->tax,
+                    'update_frequency' => $request->update_frequency,
+                    'price_update_frequency' => $request->price_update_frequency,
+                    'price_threshold' => $request->price_threshold,
+                    'store_id' => $storeid,
+                ]);
+            } catch (\Exception $e) {
+                // \Log::error('Error inserting data: ' . $e->getMessage());
+                dd($e->getMessage());
+            }
+            return redirect()->route('packingMaterials.index')->with('success', 'Packing Material created successfully.');
         } catch (ValidationException $e) {
             return redirect()->back()
                 ->withErrors($e->errors())
@@ -312,8 +310,8 @@ class PackingMaterialController extends Controller
     {
         $storeid = $request->session()->get('store_id');
         $priceHistory = DB::table('pm_price_histories')
-        ->where('packing_material_id', $id)
-        ->where('store_id', $storeid)
+            ->where('packing_material_id', $id)
+            ->where('store_id', $storeid)
             ->orderBy('updated_at', 'desc') // Replace 'id' with the column you want to sort by
             ->get();
         return response()->json(['priceDetails' => $priceHistory]);
@@ -344,20 +342,20 @@ class PackingMaterialController extends Controller
         $storeid = $request->session()->get('store_id');
         // Find the existing packing material by ID
         $packingMaterial = PackingMaterial::where('store_id', $storeid)
-                        ->where('id', $id)
-                        ->firstOrFail();     //findOrFail($id);
+            ->where('id', $id)
+            ->firstOrFail();     //findOrFail($id);
         try {
 
-              $strName = strtolower(preg_replace('/\s+/', '', $request->name));
+            $strName = strtolower(preg_replace('/\s+/', '', $request->name));
             //   $strHsnCode = strtolower(preg_replace('/\s+/', '', $request->hsnCode));
             // for duplicate
             $existingMaterial = PackingMaterial::where(function ($query) use ($strName) {
                 $query->whereRaw("LOWER(REPLACE(name, ' ', '')) = ?", [$strName]);
-                    // ->orWhereRaw("LOWER(REPLACE(hsncode, ' ', '')) = ?", [$strHsnCode]);
+                // ->orWhereRaw("LOWER(REPLACE(hsncode, ' ', '')) = ?", [$strHsnCode]);
             })
-            ->where('id', '!=', $packingMaterial->id) // Exclude the current product
-            ->where('store_id', $storeid)
-            ->first();
+                ->where('id', '!=', $packingMaterial->id) // Exclude the current product
+                ->where('store_id', $storeid)
+                ->first();
 
             if ($existingMaterial) {
                 // if ($strName == strtolower(preg_replace('/\s+/', '', $existingMaterial->name)) &&
@@ -371,66 +369,67 @@ class PackingMaterialController extends Controller
                 //     return redirect()->back()->with('error', 'HSN Code already exists.');
                 // }
             }
-        // Validate the incoming request data
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'uom' => 'required|string|in:Ltr,Kgm,Gm,Nos',
-            'category_ids' => 'required|array',
-            'category_ids.*' => 'integer|exists:categoryitems,id',
-            'price' => 'required|string',
-            'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
-            'price_update_frequency' => 'required|string',
-            'price_threshold' => 'required|string',
-            'hsnCode' => 'required|string',
+            // Validate the incoming request data
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'uom' => 'required|string|in:Ltr,Kgm,Gm,Nos',
+                'category_ids' => 'required|array',
+                'category_ids.*' => 'integer|exists:categoryitems,id',
+                'price' => 'required|string',
+                'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
+                'price_update_frequency' => 'required|string',
+                'price_threshold' => 'required|string',
+                'hsnCode' => 'required|string',
                 'itemType_id' => 'integer|exists:item_type,id',
                 'itemWeight' => 'required|string',
-            'tax' => 'required|string',
-        ]);
-
-        $categoryIds = $request->category_ids;
-
-        if ($packingMaterial->price != $request->price) {
-            DB::table('pm_price_histories')->insert([
-                'packing_material_id' => $packingMaterial->id,
-                'old_price' => $packingMaterial->price, // Correct way to get the old price
-                'new_price' => $request->price,
-                'updated_by' => 1, // Ensure user is authenticated
-                'store_id' => $storeid,
-                'updated_at' => now(),
+                'tax' => 'required|string',
             ]);
-        }
-        try {
-            // Update the packing material record
-            $packingMaterial->update([
-                'name' => $request->name,
-                'hsnCode' => $request->hsnCode,
-                'uom' => $request->uom,
-                'itemWeight' => $request->itemWeight,
-                'category_id1' => $categoryIds[0] ?? null,
-                'category_id2' => $categoryIds[1] ?? null,
-                'category_id3' => $categoryIds[2] ?? null,
-                'category_id4' => $categoryIds[3] ?? null,
-                'category_id5' => $categoryIds[4] ?? null,
-                'category_id6' => $categoryIds[5] ?? null,
-                'category_id7' => $categoryIds[6] ?? null,
-                'category_id8' => $categoryIds[7] ?? null,
-                'category_id9' => $categoryIds[8] ?? null,
-                'category_id10' => $categoryIds[9] ?? null,
-                'itemType_id' => $request->itemType_id,
-                'price' => $request->price,
-                'tax' => $request->tax,
-                'update_frequency' => $request->update_frequency,
-                'price_update_frequency' => $request->price_update_frequency,
-                'price_threshold' => $request->price_threshold,
-                'store_id' => $storeid,
-            ]);
-        } catch (\Exception $e) {
-            // Handle the error gracefully (e.g., log it and show an error message)
-            // \Log::error('Error updating packing material: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'There was an issue updating the packing material.');
-        }
-        // Return a success message and redirect back
-        return redirect()->route('packingMaterials.index')->with('success', 'packing Material updated successfully.');
+
+            $categoryIds = $request->category_ids;
+
+            if ($packingMaterial->price != $request->price) {
+                DB::table('pm_price_histories')->insert([
+                    'packing_material_id' => $packingMaterial->id,
+                    'old_price' => $packingMaterial->price, // Correct way to get the old price
+                    'new_price' => $request->price,
+                    'updated_by' => 1, // Ensure user is authenticated
+                    'store_id' => $storeid,
+                    'updated_at' => now(),
+                ]);
+            }
+            try {
+                // Update the packing material record
+                $packingMaterial->update([
+                    'name' => $request->name,
+                    'hsnCode' => $request->hsnCode,
+                    'uom' => $request->uom,
+                    'itemWeight' => $request->itemWeight,
+                    'category_id1' => $categoryIds[0] ?? null,
+                    'category_id2' => $categoryIds[1] ?? null,
+                    'category_id3' => $categoryIds[2] ?? null,
+                    'category_id4' => $categoryIds[3] ?? null,
+                    'category_id5' => $categoryIds[4] ?? null,
+                    'category_id6' => $categoryIds[5] ?? null,
+                    'category_id7' => $categoryIds[6] ?? null,
+                    'category_id8' => $categoryIds[7] ?? null,
+                    'category_id9' => $categoryIds[8] ?? null,
+                    'category_id10' => $categoryIds[9] ?? null,
+                    'itemType_id' => $request->itemType_id,
+                    'price' => $request->price,
+                    'tax' => $request->tax,
+                    'update_frequency' => $request->update_frequency,
+                    'price_update_frequency' => $request->price_update_frequency,
+                    'price_threshold' => $request->price_threshold,
+                    'status' => $request->status,
+                    'store_id' => $storeid,
+                ]);
+            } catch (\Exception $e) {
+                // Handle the error gracefully (e.g., log it and show an error message)
+                // \Log::error('Error updating packing material: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'There was an issue updating the packing material.');
+            }
+            // Return a success message and redirect back
+            return redirect()->route('packingMaterials.index')->with('success', 'packing Material updated successfully.');
         } catch (ValidationException $e) {
             return redirect()->back()
                 ->withErrors($e->errors())
@@ -454,20 +453,20 @@ class PackingMaterialController extends Controller
         }
         try {
             // Update only if the raw materials are NOT referenced in rm_for_recipe
-            $updatedCount = PackingMaterial::where('store_id',$storeid)
+            $updatedCount = PackingMaterial::where('store_id', $storeid)
                 ->whereIn('id', $ids)
                 ->whereNotExists(function ($query) use ($storeid) {
                     $query->select(DB::raw(1))
                         ->from('pm_for_recipe')
-                        ->where('store_id',$storeid)
+                        ->where('store_id', $storeid)
                         ->whereColumn('pm_for_recipe.packing_material_id', 'packing_materials.id'); // Ensure correct column name
                 })
                 ->update(['status' => 'inactive']);
 
-                return response()->json([
-                    'success' => true,
-                    'message' => $updatedCount > 0 ? 'Packing materials marked as inactive successfully.' : 'No packing materials were updated.',
-                ]);
+            return response()->json([
+                'success' => true,
+                'message' => $updatedCount > 0 ? 'Packing materials marked as inactive successfully.' : 'No packing materials were updated.',
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -485,12 +484,12 @@ class PackingMaterialController extends Controller
         }
         try {
             // First, check which items are not referenced in pm_for_recipe
-            $itemsToDelete = PackingMaterial::where('store_id',$storeid)
+            $itemsToDelete = PackingMaterial::where('store_id', $storeid)
                 ->whereIn('id', $ids)
                 ->whereNotExists(function ($query) use ($storeid) {
                     $query->select(DB::raw(1))
                         ->from('pm_for_recipe')
-                        ->where('store_id',$storeid)
+                        ->where('store_id', $storeid)
                         ->whereColumn('pm_for_recipe.packing_material_id', 'packing_materials.id'); // Ensure correct column name
                 })
                 ->get();
@@ -527,56 +526,73 @@ class PackingMaterialController extends Controller
         // }
     }
 
-        // import excel data to db
-        public function importExcel(Request $request)
-        {
-            $storeid = $request->session()->get('store_id');
-            $request->validate([
-                'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048'
-            ]);
+    // import excel data to db
+    public function importExcel(Request $request)
+    {
+        $storeid = $request->session()->get('store_id');
+        $request->validate([
+            'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048'
+        ]);
 
-            $file = $request->file('excel_file');
+        $file = $request->file('excel_file');
 
-            // Load spreadsheet
-            $spreadsheet = IOFactory::load($file->getPathname());
-            $sheet = $spreadsheet->getActiveSheet();
-            $rows = $sheet->toArray();
+        // Load spreadsheet
+        $spreadsheet = IOFactory::load($file->getPathname());
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray();
 
-            if (empty($rows) || count($rows) < 2) {
-                return back()->with('error', 'The uploaded file is empty or does not have enough data.');
-            }
+        if (empty($rows) || count($rows) < 2) {
+            return back()->with('error', 'The uploaded file is empty or does not have enough data.');
+        }
 
-            // ✅ Define Expected Headers
-            $expectedHeaders = [
-               'sno', 'name', 'uom', 'hsncode', 'itemweight', 'category_id1', 'category_id2',
-                'category_id3', 'category_id4', 'category_id5', 'category_id6', 'category_id7',
-                'category_id8', 'category_id9', 'category_id10', 'price', 'tax',
-                'update_frequency', 'price_update_frequency', 'price_threshold', 'itemType'
-            ];
+        // ✅ Define Expected Headers
+        $expectedHeaders = [
+            'sno',
+            'name',
+            'uom',
+            'hsncode',
+            'itemweight',
+            'category_id1',
+            'category_id2',
+            'category_id3',
+            'category_id4',
+            'category_id5',
+            'category_id6',
+            'category_id7',
+            'category_id8',
+            'category_id9',
+            'category_id10',
+            'price',
+            'tax',
+            'update_frequency',
+            'price_update_frequency',
+            'price_threshold',
+            'itemType'
+        ];
 
-            // ✅ Get Headers from First Row
-            $fileHeaders = array_map('trim', $rows[0]); // Trim spaces from headers
+        // ✅ Get Headers from First Row
+        $fileHeaders = array_map('trim', $rows[0]); // Trim spaces from headers
 
-            // ✅ Check missing headers
-            $missingHeaders = array_diff($expectedHeaders, $fileHeaders);
-            $extraHeaders = array_diff($fileHeaders, $expectedHeaders);
+        // ✅ Check missing headers
+        $missingHeaders = array_diff($expectedHeaders, $fileHeaders);
+        $extraHeaders = array_diff($fileHeaders, $expectedHeaders);
 
-            if (!empty($missingHeaders)) {
-                return back()->with('error', 'Missing headers: ' . implode(', ', $missingHeaders));
-            }
+        if (!empty($missingHeaders)) {
+            return back()->with('error', 'Missing headers: ' . implode(', ', $missingHeaders));
+        }
 
-            if (!empty($extraHeaders)) {
-                return back()->with('error', 'Extra headers found: ' . implode(', ', $extraHeaders));
-            }
-             // ✅ Check if headers match exactly (Order & Case-Sensitive Check)
-            if ($fileHeaders !== $expectedHeaders) {
-                return back()->with('error',' Invalid column order! Please ensure the headers are exactly: ' . implode(', ', $expectedHeaders));
-            }
-            $duplicateNames = [];
-            $importedCount = 0;
-            // Loop through rows and insert into database
-            foreach ($rows as $index => $row) {
-                if ($index == 0) continue; // Skip the header row
+        if (!empty($extraHeaders)) {
+            return back()->with('error', 'Extra headers found: ' . implode(', ', $extraHeaders));
+        }
+        // ✅ Check if headers match exactly (Order & Case-Sensitive Check)
+        if ($fileHeaders !== $expectedHeaders) {
+            return back()->with('error', ' Invalid column order! Please ensure the headers are exactly: ' . implode(', ', $expectedHeaders));
+        }
+        $duplicateNames = [];
+        $importedCount = 0;
+        // Loop through rows and insert into database
+        foreach ($rows as $index => $row) {
+            if ($index == 0) continue; // Skip the header row
 
             $normalizedName = str_replace(' ', '', strtolower(trim($row[1])));
             $existingPacking = PackingMaterial::whereRaw("
@@ -586,29 +602,29 @@ class PackingMaterialController extends Controller
                 // ->where('hsnCode', $row[3])
                 ->first();
 
-             if ($existingPacking) {
-                 $duplicateNames[] = $row[1];
-                 continue; // Skip duplicate row
-             }
+            if ($existingPacking) {
+                $duplicateNames[] = $row[1];
+                continue; // Skip duplicate row
+            }
 
-                $pmCode = UniqueCode::generatePmCode();
-                // $pm_categoryId = DB::table('categories')
-                // ->whereRaw("REPLACE(LOWER(TRIM(categoryname)), ' ', '') = ?", ['packingmaterials']) // removes all spaces
-                // ->value('id');
+            $pmCode = UniqueCode::generatePmCode();
+            // $pm_categoryId = DB::table('categories')
+            // ->whereRaw("REPLACE(LOWER(TRIM(categoryname)), ' ', '') = ?", ['packingmaterials']) // removes all spaces
+            // ->value('id');
 
-                $categoryIds = [];
-                $name = trim($row[1] ?? '');
-                $uom = trim($row[2] ?? '');
-                $hsncode = trim($row[3] ?? '');
-                $itemwgt = trim($row[4] ?? '');
-                $price = trim($row[15] ?? '');
-                $ptax = trim($row[16] ?? '');
-                $frequency = trim($row[17] ?? '');
-                $priceupdatefrequency = trim($row[18] ?? '');
-                $thershold = trim($row[19] ?? '');
-                $itemType = trim($row[20] ?? '');
-                $categoryIds['id1'] = trim($row[5] ?? '');
-                /*
+            $categoryIds = [];
+            $name = trim($row[1] ?? '');
+            $uom = trim($row[2] ?? '');
+            $hsncode = trim($row[3] ?? '');
+            $itemwgt = trim($row[4] ?? '');
+            $price = trim($row[15] ?? '');
+            $ptax = trim($row[16] ?? '');
+            $frequency = trim($row[17] ?? '');
+            $priceupdatefrequency = trim($row[18] ?? '');
+            $thershold = trim($row[19] ?? '');
+            $itemType = trim($row[20] ?? '');
+            $categoryIds['id1'] = trim($row[5] ?? '');
+            /*
                 for ($i = 1; $i <= 10; $i++) {
                     $itemNameRaw = $row[$i + 4] ?? null;
 
@@ -652,75 +668,75 @@ class PackingMaterialController extends Controller
                     }
                 }
                 */
-                if (
-                    empty($name) ||
-                    empty($uom) ||
-                    (empty($hsncode) || strlen($hsncode) > 8) ||
-                    empty($itemwgt) ||
-                    empty($price) ||
-                    empty($ptax) ||
-                    empty($frequency) ||
-                    empty($priceupdatefrequency) ||
-                    empty($thershold) ||
-                    empty($itemType) ||
-                    empty($categoryIds['id1']) // category_id1 must not be null
-                ) {
-                    $skippedRows[] = "Row ".($index + 1)." skipped: missing required fields (name/uom/hsncode/itemwgt/price/tax/updatefrequency/priceupdatefrequency/threshold/itemType/category_id1).";
-                    continue;
-                }
-                        for ($i = 1; $i <= 10; $i++) {
-                    $categoryIds["id$i"] = !empty($row[$i + 4]) // Adjusting index to match $row[4] for category_id1
-                        ? DB::table('categoryitems')
-                            ->where('categoryId', 2)
-                            ->where('status', 'active')
-                            ->where('store_id', $storeid)
-                            // ->where('itemname', $row[$i + 3])
-                            ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 4]))])
-                            ->value('id')
-                        : null;
-                }
-                $itemtype_id = DB::table('item_type')->where('itemtypename',$row[20])->where('status', 'active')->where('store_id', 0)->value('id');
+            if (
+                empty($name) ||
+                empty($uom) ||
+                (empty($hsncode) || strlen($hsncode) > 8) ||
+                empty($itemwgt) ||
+                empty($price) ||
+                empty($ptax) ||
+                empty($frequency) ||
+                empty($priceupdatefrequency) ||
+                empty($thershold) ||
+                empty($itemType) ||
+                empty($categoryIds['id1']) // category_id1 must not be null
+            ) {
+                $skippedRows[] = "Row " . ($index + 1) . " skipped: missing required fields (name/uom/hsncode/itemwgt/price/tax/updatefrequency/priceupdatefrequency/threshold/itemType/category_id1).";
+                continue;
+            }
+            for ($i = 1; $i <= 10; $i++) {
+                $categoryIds["id$i"] = !empty($row[$i + 4]) // Adjusting index to match $row[4] for category_id1
+                    ? DB::table('categoryitems')
+                    ->where('categoryId', 2)
+                    ->where('status', 'active')
+                    ->where('store_id', $storeid)
+                    // ->where('itemname', $row[$i + 3])
+                    ->whereRaw("REPLACE(LOWER(TRIM(itemname)), ' ', '') = REPLACE(LOWER(TRIM(?)), ' ', '')", [trim(strtolower($row[$i + 4]))])
+                    ->value('id')
+                    : null;
+            }
+            $itemtype_id = DB::table('item_type')->where('itemtypename', $row[20])->where('status', 'active')->where('store_id', 0)->value('id');
 
-                PackingMaterial::create([
-                    'name' => $row[1] ,
-                    'pmcode' => $pmCode ?? null,
-                    'uom' => $row[2] ?? null,
-                    'hsnCode' => $row[3] ?? null,
-                    'itemWeight' => $row[4] ?? null,
-                    'category_id1' => $categoryIds['id1'] ,
-                    'category_id2' => $categoryIds['id2'] ?? null,
-                    'category_id3' => $categoryIds['id3'] ?? null,
-                    'category_id4' => $categoryIds['id4'] ?? null,
-                    'category_id5' => $categoryIds['id5'] ?? null,
-                    'category_id6' => $categoryIds['id6'] ?? null,
-                    'category_id7' => $categoryIds['id7'] ?? null,
-                    'category_id8' => $categoryIds['id8'] ?? null,
-                    'category_id9' => $categoryIds['id9'] ?? null,
-                    'category_id10' => $categoryIds['id10'] ?? null,
-                    'price' => $row[15],
-                    'tax' => $row[16],
-                    'update_frequency' => $row[17],
-                    'price_update_frequency' => $row[18],
-                    'price_threshold' => $row[19],
-                    'itemType_id' => $itemtype_id,
-                    'store_id' => $storeid
-                ]);
-                $importedCount++;
-            }
-            if ($importedCount === 0 && !empty($duplicateNames)) {
-                return back()->with('error', 'All rows are duplicates. Skipped: ' . implode(', ', $duplicateNames));
-            }
-
-            $message = $importedCount . ' row(s) imported successfully.';
-            if (!empty($duplicateNames)) {
-                $message .= ' Skipped duplicates: ' . implode(', ', $duplicateNames);
-            }
-            if (!empty($skippedRows)) {
-                $message .= ' Skipped rows: ' . implode(' | ', $skippedRows);
-            }
-            return back()->with('success',  $message);
-            // return back()->with('success', 'Excel file imported successfully!');
+            PackingMaterial::create([
+                'name' => $row[1],
+                'pmcode' => $pmCode ?? null,
+                'uom' => $row[2] ?? null,
+                'hsnCode' => $row[3] ?? null,
+                'itemWeight' => $row[4] ?? null,
+                'category_id1' => $categoryIds['id1'],
+                'category_id2' => $categoryIds['id2'] ?? null,
+                'category_id3' => $categoryIds['id3'] ?? null,
+                'category_id4' => $categoryIds['id4'] ?? null,
+                'category_id5' => $categoryIds['id5'] ?? null,
+                'category_id6' => $categoryIds['id6'] ?? null,
+                'category_id7' => $categoryIds['id7'] ?? null,
+                'category_id8' => $categoryIds['id8'] ?? null,
+                'category_id9' => $categoryIds['id9'] ?? null,
+                'category_id10' => $categoryIds['id10'] ?? null,
+                'price' => $row[15],
+                'tax' => $row[16],
+                'update_frequency' => $row[17],
+                'price_update_frequency' => $row[18],
+                'price_threshold' => $row[19],
+                'itemType_id' => $itemtype_id,
+                'store_id' => $storeid
+            ]);
+            $importedCount++;
         }
+        if ($importedCount === 0 && !empty($duplicateNames)) {
+            return back()->with('error', 'All rows are duplicates. Skipped: ' . implode(', ', $duplicateNames));
+        }
+
+        $message = $importedCount . ' row(s) imported successfully.';
+        if (!empty($duplicateNames)) {
+            $message .= ' Skipped duplicates: ' . implode(', ', $duplicateNames);
+        }
+        if (!empty($skippedRows)) {
+            $message .= ' Skipped rows: ' . implode(' | ', $skippedRows);
+        }
+        return back()->with('success',  $message);
+        // return back()->with('success', 'Excel file imported successfully!');
+    }
 
     public function exportAll(Request $request)
     {

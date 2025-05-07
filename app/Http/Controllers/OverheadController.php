@@ -418,7 +418,8 @@ class OverheadController extends Controller
                 'price_threshold' => $request->price_threshold,
                 // 'hsncode' => $request->hsncode,
                 'itemweight' => $request->itemweight,
-                'store_id' => $storeid,
+                    'status' => $request->status,
+                    'store_id' => $storeid,
                 // 'itemType_id' => $request->itemType_id,
                     // 'tax' => $request->tax,
                 ]);
