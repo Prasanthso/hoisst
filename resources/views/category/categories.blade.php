@@ -96,8 +96,8 @@
                                     <input type="checkbox" id="select-all" class="form-check-input">
                                 </th>
                                 <th scope="col" style="color:white;">S.NO</th>
-                                <th scope="col" style="color:white;">Category</th>
                                 <th scope="col" style="color:white;">Category Items</th>
+                                <th scope="col" style="color:white;">Category</th>
                                 <th scope="col" style="color:white;">Description</th>
                             </tr>
                         </thead>
@@ -108,8 +108,8 @@
                                     <input type="checkbox" class="form-check-input row-checkbox">
                                 </td>
                                 <td>{{ ($categoriesitems->currentPage() - 1) * $categoriesitems->perPage() + $loop->iteration }}.</td> <!-- Auto-increment S.NO -->
+                                <td class="left-align"><a href="{{ route('categoryitem.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->itemname }}</a></td>
                                 <td>{{ $material->categoryname }}</td>
-                                <td><a href="{{ route('categoryitem.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->itemname }}</a></td>
                                 <td>{{ $material->description }}</td>
 
                             </tr>
@@ -189,8 +189,8 @@
 
                 exportData.push([
                     serial++, // Serial number
-                    item.categoryname,
                     item.itemname, // Category Item Name
+                    item.categoryname,
                     item.description // Description
                 ]);
             });
@@ -214,8 +214,8 @@
                         data.forEach((item, index) => {
                             exportData.push([
                                 index + 1,
-                                item.categoryname,
                                 item.itemname,
+                                item.categoryname,
                                 item.description
                             ]);
                         });
@@ -290,8 +290,8 @@
     visibleData.forEach(item => {
         exportData.push([
             serial++, // Serial number
-            item.categoryname,
             item.itemname, // Category Item Name
+            item.categoryname,
             item.description // Description
         ]);
     });
@@ -321,8 +321,8 @@
                 data.forEach((item, index) => {
                     exportData.push([
                         index + 1,
-                        item.categoryname,
                         item.itemname,
+                        item.categoryname,
                         item.description
                     ]);
                 });
@@ -566,8 +566,8 @@
                 <tr data-id="${item.id}">
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${start+index + 1}.</td>
-                            <td>${item.categoryname}</td>
                             <td class="left-align"><a href="/editcategoryitem/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
+                             <td>${item.categoryname}</td>
                             <td>${item.description}</td>
 
                     </tr>
