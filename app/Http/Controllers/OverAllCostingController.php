@@ -201,6 +201,7 @@ class OverAllCostingController extends Controller
         ]);
         // $isTrading = $request->input('productType') === 'Trading';
         // dd($request->inputPmcost,$request->inputRmPmcost,$request->inputOverhead);
+
         try {
             OverallCosting::create([
                 'productId' => $request->productId,
@@ -224,6 +225,7 @@ class OverAllCostingController extends Controller
                 'status' => 'active',
                 'store_id' => $storeid
             ]);
+
         } catch (\Exception $e) {
             \Log::error('Error inserting OverallCosting data: ' . $e->getMessage());
             return back()->with('error', 'Error saving data: ' . $e->getMessage());
@@ -316,6 +318,7 @@ class OverAllCostingController extends Controller
 
     public function edit(Request $request, $id)
     {
+        $storeid = $request->session()->get('store_id');
         $productId = DB::table('overall_costing')  // get product id
             ->where('id', $id)
             ->where('store_id',$storeid)
