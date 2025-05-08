@@ -116,6 +116,7 @@
                                 <th scope="col" style="color:white;">Category Items</th>
                                 <th scope="col" style="color:white;">Category</th>
                                 <th scope="col" style="color:white;">Description</th>
+                                <th scope="col" style="color:white;">Status</th>
                             </tr>
                         </thead>
                         <tbody id="catagoriesTable">
@@ -128,7 +129,7 @@
                                 <td class="left-align"><a href="{{ route('categoryitem.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->itemname }}</a></td>
                                 <td>{{ $material->categoryname }}</td>
                                 <td>{{ $material->description }}</td>
-
+                                <td>{{ $material->status }}</td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -208,7 +209,8 @@
                     serial++, // Serial number
                     item.itemname, // Category Item Name
                     item.categoryname,
-                    item.description // Description
+                    item.description, // Description
+                    item.status
                 ]);
             });
 
@@ -233,7 +235,8 @@
                                 index + 1,
                                 item.itemname,
                                 item.categoryname,
-                                item.description
+                                item.description,
+                                item.status
                             ]);
                         });
 
@@ -309,7 +312,8 @@
             serial++, // Serial number
             item.itemname, // Category Item Name
             item.categoryname,
-            item.description // Description
+            item.description, // Description
+            item.status
         ]);
     });
 
@@ -340,7 +344,8 @@
                         index + 1,
                         item.itemname,
                         item.categoryname,
-                        item.description
+                        item.description,
+                        item.status
                     ]);
                 });
 
@@ -587,7 +592,7 @@
                             <td class="left-align"><a href="/editcategoryitem/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
                              <td>${item.categoryname}</td>
                             <td>${item.description}</td>
-
+                            <td>${item.status}</td>
                     </tr>
             `;
         });

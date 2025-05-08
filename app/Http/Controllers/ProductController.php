@@ -22,7 +22,16 @@ class ProductController extends Controller
         $categoryitems = CategoryItems::pdCategoryItem($storeid);
         $selectedCategoryIds = $request->input('category_ids', []);
         $searchValue = $request->input('pdText', '');
-
+        $statusValue = $request->input('statusValue', 'active');
+        // if($statusValue == "inactive")
+        // {
+        //     $statusValue = 'inactive';
+        // }
+        // else
+        // {
+        //     $statusValue = 'active';
+        // }
+    // dd($statusValue);
         if ($request->ajax()) {
             if (!empty($searchValue)) {
 
@@ -54,7 +63,7 @@ class ProductController extends Controller
                         'c9.itemname as category_name9',
                         'c10.itemname as category_name10'
                     )
-                    ->where('pd.status', '=', 'active') // Filter by active status
+                    ->where('pd.status', "active") // Filter by active status
                     ->where('pd.store_id', $storeid)
                     ->where('pd.name', 'LIKE', "{$searchValue}%")
                     ->get();
@@ -118,7 +127,7 @@ class ProductController extends Controller
                             ->orWhereIn('c9.id', $selectedCategoryIds)
                             ->orWhereIn('c10.id', $selectedCategoryIds);
                     })
-                    ->where('pd.status', '=', 'active') // Filter by active status
+                    ->where('pd.status', "active") // Filter by active status
                     ->where('pd.store_id', $storeid)
                     ->orderBy('pd.name', 'asc')
                     ->get();
@@ -160,7 +169,7 @@ class ProductController extends Controller
                 'c9.itemname as category_name9',
                 'c10.itemname as category_name10'
             )
-            ->where('pd.status', '=', 'active') // Filter by active status
+            ->where('pd.status', "active") // Filter by active status
             ->where('pd.store_id', $storeid)
             ->orderBy('pd.name', 'asc')
             ->paginate(10);
