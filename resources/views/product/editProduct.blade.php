@@ -53,7 +53,7 @@
                                 <div class="col-12">
                                     <label for="inputHSNcode" class="form-label">HSN Code</label>
                                     <input type="text" class="form-control" id="inputHSNcode" name="hsnCode" value="{{ $product->hsnCode }}"
-                                    maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)" disabled>
+                                        maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)" disabled>
                                 </div>
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Unit</label>
@@ -135,8 +135,39 @@
                                 <div class="col-12">
                                     <label for="price_threshold" class="form-label">Price threshold</label>
                                     <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $product->price_threshold }}"
-                                    oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
+                                        oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
+                                <fieldset class="row mb-3 mt-3">
+                                    <legend class="col-form-label col-sm-2 pt-0">Status</legend>
+                                    <div class="col-sm-10">
+                                        <div class="form-check">
+                                            <input
+                                                class="form-check-input"
+                                                type="radio"
+                                                name="status"
+                                                id="active"
+                                                value="active"
+                                                {{ $product->status == 'active' ? 'checked' : '' }}
+                                                disabled>
+                                            <label class="form-check-label" for="active">
+                                                Active
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input
+                                                class="form-check-input"
+                                                type="radio"
+                                                name="status"
+                                                id="inactive"
+                                                value="inactive"
+                                                {{ $product->status == 'inactive' ? 'checked' : '' }}
+                                                disabled>
+                                            <label class="form-check-label" for="inactive">
+                                                Inactive
+                                            </label>
+                                        </div>
+                                    </div>
+                                </fieldset>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="saveButton" style="display: none;">
                                         Update
@@ -182,16 +213,16 @@
         $('#itemType').select2({
             theme: 'bootstrap-5',
             placeholder: 'Select itemtype',
-        }).on('change', function () {
-    const itemTypeValue = $(this).val(); // get selected value
-    const purcCost = document.querySelector("#inputPurCost");
-    const selectedOption = $(this).find('option:selected');
-    const itemTypeName = selectedOption.data('name');
-    // itemTypeValue !== "2"
-    if (itemTypeValue !== "2") {
-        clearError(purcCost); // hide error for non-Trading
-    }
-});
+        }).on('change', function() {
+            const itemTypeValue = $(this).val(); // get selected value
+            const purcCost = document.querySelector("#inputPurCost");
+            const selectedOption = $(this).find('option:selected');
+            const itemTypeName = selectedOption.data('name');
+            // itemTypeValue !== "2"
+            if (itemTypeValue !== "2") {
+                clearError(purcCost); // hide error for non-Trading
+            }
+        });
 
         // Toggle edit mode
         $('#editButton').on('click', function() {
@@ -302,11 +333,17 @@
         document.querySelectorAll("input, select").forEach(input => {
             let hasTyped = false; // Track if the user has typed
 
-            input.addEventListener("input", () => { hasTyped = true; clearError(input)});
-            input.addEventListener("change", () => { hasTyped = true; clearError(input)});
+            input.addEventListener("input", () => {
+                hasTyped = true;
+                clearError(input)
+            });
+            input.addEventListener("change", () => {
+                hasTyped = true;
+                clearError(input)
+            });
             input.addEventListener("blur", () => {
                 clearError(input);
-                const itemTypeValue =  document.querySelector("#itemtype")?.value;
+                const itemTypeValue = document.querySelector("#itemtype")?.value;
                 const isPurcCost = input.id === "inputPurCost";
                 if (isPurcCost) {
                     if (itemTypeValue === "2") {
@@ -318,12 +355,12 @@
                     }
                     return; // important to skip general required validation
                 }
-                    if(input.value.trim() === "") {
-                        hasTyped = false;
-                        showError(input, "This field is required!");
-                    }
+                if (input.value.trim() === "") {
+                    hasTyped = false;
+                    showError(input, "This field is required!");
+                }
 
-                });
+            });
         });
 
         // Special handling for select2 dropdowns

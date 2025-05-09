@@ -90,51 +90,82 @@
                             <select id="itemType" class="form-select" name="itemType_id" disabled>
                                 @foreach($itemtype as $types)
                                 <option value="{{ $types->id }}"
-                                    {{ (old('itemType_id', $overheads->itemType_id) == $types->id) ? 'selected' : '' }}>
-                                    {{ $types->itemtypename }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </div> --}}
-                        <div class="col-12">
-                            <label for="inputPrice" class="form-label">Price</label>
-                            <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $overheads->price }}"
+                        {{ (old('itemType_id', $overheads->itemType_id) == $types->id) ? 'selected' : '' }}>
+                        {{ $types->itemtypename }}
+                        </option>
+                        @endforeach
+                        </select>
+                    </div> --}}
+                    <div class="col-12">
+                        <label for="inputPrice" class="form-label">Price</label>
+                        <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $overheads->price }}"
                             oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
-                        </div>
-                        {{-- <div class="col-12">
+                    </div>
+                    {{-- <div class="col-12">
                                     <label for="inputTax" class="form-label">Tax</label>
                                     <input type="text" class="form-control mb-2" id="inputTax" name="tax" value="{{ $overheads->tax }}" disabled>
-                    </div> --}}
-                    <div class="row mb-4">
-                        <label for="update_frequency" class="form-label">Pricing update frequency</label>
-                        <div class="col-md-3">
-                            <select class="form-select mb-2" id="update_frequency" name="update_frequency" disabled>
-                                <option selected>{{ $overheads->update_frequency }}</option>
-                                <option>Days</option>
-                                <option>Weeks</option>
-                                <option>Monthly</option>
-                                <option>Yearly</option>
-                            </select>
-                        </div>
-                        <div class="col-md-9">
-                            <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ $overheads->price_update_frequency }}"
+                </div> --}}
+                <div class="row mb-4">
+                    <label for="update_frequency" class="form-label">Pricing update frequency</label>
+                    <div class="col-md-3">
+                        <select class="form-select mb-2" id="update_frequency" name="update_frequency" disabled>
+                            <option selected>{{ $overheads->update_frequency }}</option>
+                            <option>Days</option>
+                            <option>Weeks</option>
+                            <option>Monthly</option>
+                            <option>Yearly</option>
+                        </select>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ $overheads->price_update_frequency }}"
                             oninput="this.value = this.value.replace(/\D/g, '');" disabled>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="price_threshold" class="form-label">Price threshold</label>
+                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $overheads->price_threshold }}"
+                        oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
+                </div>
+                <fieldset class="row mb-3 mt-3">
+                    <legend class="col-form-label col-sm-2 pt-0">Status</legend>
+                    <div class="col-sm-10">
+                        <div class="form-check">
+                            <input
+                                class="form-check-input"
+                                type="radio"
+                                name="status"
+                                id="active"
+                                value="active"
+                                {{ $overheads->status == 'active' ? 'checked' : '' }}
+                                disabled>
+                            <label class="form-check-label" for="active">
+                                Active
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input
+                                class="form-check-input"
+                                type="radio"
+                                name="status"
+                                id="inactive"
+                                value="inactive"
+                                {{ $overheads->status == 'inactive' ? 'checked' : '' }}
+                                disabled>
+                            <label class="form-check-label" for="inactive">
+                                Inactive
+                            </label>
                         </div>
                     </div>
-                    <div class="col-12">
-                        <label for="price_threshold" class="form-label">Price threshold</label>
-                        <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $overheads->price_threshold }}"
-                        oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
-                    </div>
-                    <div>
-                        <button type="submit" class="btn btn-primary" id="saveButton" style="display: none;">
-                            Update
-                        </button>
-                    </div>
-                    </form><!-- Vertical Form -->
-
+                </fieldset>
+                <div>
+                    <button type="submit" class="btn btn-primary" id="saveButton" style="display: none;">
+                        Update
+                    </button>
                 </div>
+                </form><!-- Vertical Form -->
+
             </div>
+        </div>
         </div>
 
         </div>
@@ -260,15 +291,21 @@
         document.querySelectorAll("input, select").forEach(input => {
             let hasTyped = false; // Track if the user has typed
 
-            input.addEventListener("input", () => { hasTyped = true; clearError(input)});
-            input.addEventListener("change", () => { hasTyped = true; clearError(input)});
+            input.addEventListener("input", () => {
+                hasTyped = true;
+                clearError(input)
+            });
+            input.addEventListener("change", () => {
+                hasTyped = true;
+                clearError(input)
+            });
             input.addEventListener("blur", () => {
                 clearError(input);
-                    if (input.value.trim() === "") {
-                        hasTyped = false;
-                        showError(input, "This field is required!");
-                    }
-                });
+                if (input.value.trim() === "") {
+                    hasTyped = false;
+                    showError(input, "This field is required!");
+                }
+            });
         });
 
         // Special handling for select2 dropdowns

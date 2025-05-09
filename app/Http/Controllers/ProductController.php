@@ -476,6 +476,7 @@ class ProductController extends Controller
                     'update_frequency' => $request->update_frequency,
                     'price_update_frequency' => $request->price_update_frequency,
                     'price_threshold' => $request->price_threshold,
+                    'status' => $request->status,
                     'store_id' => $storeid,
                 ]);
             } catch (\Exception $e) {

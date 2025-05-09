@@ -33,6 +33,7 @@ class PackingMaterial extends Model
         'update_frequency',
         'price_update_frequency',
         'price_threshold',
+        'status',
         'store_id'
     ];
 }

@@ -22,10 +22,10 @@
 
                     <div class="card">
                         @if(session('success'))
-                            <div id="success-message" class="alert alert-success">{{ session('success') }}</div>
-                            @endif
-                            @if (session('error'))
-                            <div id="error-message" class="alert alert-danger">{{ session('error') }}</div>
+                        <div id="success-message" class="alert alert-success">{{ session('success') }}</div>
+                        @endif
+                        @if (session('error'))
+                        <div id="error-message" class="alert alert-danger">{{ session('error') }}</div>
                         @endif
                         <div class="card-body">
                             <!-- Vertical Form -->
@@ -39,14 +39,14 @@
                                     </select>
                                     @error('categoryId')
                                     <span class="text-danger">{{ $message }}</span>
-                                @enderror
+                                    @enderror
                                 </div>
                                 <div class="col-12">
                                     <label for="itemname" class="form-label">Category Name</label>
                                     <input type="text" class="form-control" id="itemname" name="itemname" value="{{ $items->itemname}}" disabled>
                                     @error('itemname')
                                     <span id="itemname-error" class="text-danger">{{ $message }}</span>
-                                @enderror
+                                    @enderror
                                 </div>
                                 <div class="col-12">
                                     <label for="floatingTextarea" class="form-label">Description</label>
@@ -55,8 +55,39 @@
                                     </div>
                                     {{-- @error('description')
                                     <span id="desc-error" class="text-danger">{{ $message }}</span>
-                                @enderror --}}
+                                    @enderror --}}
                                 </div>
+                                <fieldset class="row mb-3 mt-3">
+                                    <legend class="col-form-label col-sm-2 pt-0">Status</legend>
+                                    <div class="col-sm-10">
+                                        <div class="form-check">
+                                            <input
+                                                class="form-check-input"
+                                                type="radio"
+                                                name="status"
+                                                id="active"
+                                                value="active"
+                                                {{ $items->status == 'active' ? 'checked' : '' }}
+                                                disabled>
+                                            <label class="form-check-label" for="active">
+                                                Active
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input
+                                                class="form-check-input"
+                                                type="radio"
+                                                name="status"
+                                                id="inactive"
+                                                value="inactive"
+                                                {{ $items->status == 'inactive' ? 'checked' : '' }}
+                                                disabled>
+                                            <label class="form-check-label" for="inactive">
+                                                Inactive
+                                            </label>
+                                        </div>
+                                    </div>
+                                </fieldset>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="saveButton" style="display: none;">Update</button>
                                 </div>
@@ -117,28 +148,27 @@
         });
     });
 
-    document.addEventListener("DOMContentLoaded", function () {
-    const itemNameInput = document.getElementById("itemname");
-    // const desc = document.getElementById("floatingTextarea");
+    document.addEventListener("DOMContentLoaded", function() {
+        const itemNameInput = document.getElementById("itemname");
+        // const desc = document.getElementById("floatingTextarea");
 
-        itemNameInput.addEventListener("input", function () {
+        itemNameInput.addEventListener("input", function() {
             let errorMsg = document.getElementById("itemname-error");
             if (this.value !== "") {
-                if(errorMsg){
-                errorMsg.remove(); }  // Remove error message
+                if (errorMsg) {
+                    errorMsg.remove();
+                } // Remove error message
             }
         });
 
         setTimeout(() => {
-        ['success-message', 'error-message', 'itemname-error'].forEach(id => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.style.display = 'none';
-            }
-        });
-    }, 900);
+            ['success-message', 'error-message', 'itemname-error'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.style.display = 'none';
+                }
+            });
+        }, 900);
 
     });
-
-
 </script>
