@@ -148,7 +148,9 @@
                                     <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                                 </td>
                                 <td>{{ $material->uom }}</td> <!-- UoM -->
-                                 <td>{{ $material->status }}</td>
+                                <td><span class="badge {{ strtolower($material->status) === 'active' ? 'bg-success' : 'bg-danger' }}" style="font-weight: normal;">
+                                    {{ $material->status }}
+                                </span></td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -880,7 +882,11 @@
                         <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                      </td>
                     <td>${item.uom}</td>
-                    <td>${item.status}</td>
+                    <td>
+                    <span class="badge" style="background-color: ${item.status.toLowerCase() === 'active' ? 'green' : '#dc3545'}; font-weight: normal;">
+                    ${item.status}
+                </span>
+                </td>
                 </tr>
             `;
         });

@@ -168,7 +168,7 @@ class RawMaterialController extends Controller
                 )
                     ->where('rm.status', '=', $statusValue)
                     ->where('rm.store_id', $storeid)
-                    // ->orderBy('rm.name', 'asc') // Filter by active status
+                    ->orderBy('rm.name', 'asc') // Filter by active status
                     ->get();
 
                 return response()->json([

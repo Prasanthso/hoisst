@@ -166,6 +166,7 @@ class ProductController extends Controller
                     )
                     ->where('pd.status', $statusValue) // Filter by active status
                     ->where('pd.store_id', $storeid)
+                    ->orderBy('pd.name', 'asc')
                     // ->where('pd.name', 'LIKE', "{$searchValue}%")
                     ->get();
                 // Return filtered raw materials as JSON response
