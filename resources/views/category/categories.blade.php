@@ -124,7 +124,9 @@
                                 <td class="left-align"><a href="{{ route('categoryitem.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->itemname }}</a></td>
                                 <td>{{ $material->categoryname }}</td>
                                 <td>{{ $material->description }}</td>
-                                <td>{{ $material->status }}</td>
+                                <td><span class="badge {{ strtolower($material->status) === 'active' ? 'bg-success' : 'bg-danger' }}" style="font-weight: normal;">
+                                    {{ $material->status }}
+                                </span></td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -427,9 +429,9 @@
                             alert('An error occurred while fetching category items.');
                         });
                 }
-                //  else {
-                //     location.reload();
-                // }
+                 else {
+                    location.reload();
+                }
             });
 
         });
@@ -587,7 +589,11 @@
                             <td class="left-align"><a href="/editcategoryitem/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
                              <td>${item.categoryname}</td>
                             <td>${item.description}</td>
-                            <td>${item.status}</td>
+                           <td>
+                    <span class="badge" style="background-color: ${item.status.toLowerCase() === 'active' ? 'green' : '#dc3545'}; font-weight: normal;">
+                    ${item.status}
+                    </span>
+                    </td>
                     </tr>
             `;
         });
@@ -795,9 +801,9 @@
                             alert('An error occurred while fetching category items.');
                         });
                     }
-                    // else {
-                    // location.reload();
-                    // }
+                    else {
+                    location.reload();
+                    }
             }
     function selection_isActive()
     {
@@ -870,10 +876,12 @@
                             alert('An error occurred while fetching category items.');
                         });
                     }
+                    else {
+                    location.reload();
+                    }
 
-        });
-
-        });
+                 });
+            });
     }
 
     default_searchType();

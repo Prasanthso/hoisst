@@ -45,13 +45,15 @@ class CategoryItemController extends Controller
 
         // Then apply other filters
         if (!empty($searchValue)) {
-            $query->where('categoryitems.itemname', 'LIKE', "%{$searchValue}%");
+            $query->where('categoryitems.itemname', 'LIKE', "{$searchValue}%");
             $categoriesitems = $query->get();
-        } elseif (!empty($categoryIds)) {
+        }
+        if (!empty($categoryIds)) {
             $categoryIds = explode(',', $categoryIds);
             $query->whereIn('categoryitems.categoryId', $categoryIds);
             $categoriesitems = $query->orderBy('categoryitems.itemname', 'asc')->get();
-        } else {
+        }
+       if(!empty($statusValue)) {
             $categoriesitems = $query->orderBy('categoryitems.itemname', 'asc')->paginate(10);
         }
 
