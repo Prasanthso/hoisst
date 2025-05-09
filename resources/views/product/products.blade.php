@@ -1177,9 +1177,7 @@
                             visibleData = data.product;
                             currentPage = 1; // reset to page 1 on new filter
                             renderTablePage(currentPage, filteredData);
-                            // applyStatusColors();
                             renderPagination(filteredData.length);
-
                         })
                         .catch(error => {
                             console.error('Error:', error);
@@ -1189,28 +1187,10 @@
                         location.reload();
                     }
 
-        });
+                });
 
-        });
+            });
     }
-//     function applyStatusColors() {
-//     const statusCells = document.querySelectorAll('.status-cell');
-
-//     statusCells.forEach(cell => {
-//         const value = cell.textContent.trim().toLowerCase();
-
-//         if (value === 'active') {
-//             cell.style.backgroundColor = '#d4edda'; // light green
-//             cell.style.color = '#155724';           // dark green text
-//         } else if (value === 'inactive') {
-//             cell.style.backgroundColor = '#f8d7da'; // light pink
-//             cell.style.color = '#721c24';           // dark pink text
-//         } else {
-//             cell.style.backgroundColor = '';
-//             cell.style.color = '';
-//         }
-//     });
-// }
         default_searchType();
         selection_isActive();
 });
