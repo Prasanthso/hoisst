@@ -81,24 +81,25 @@
              <div class="col-lg-8">
                  <div class="row">
                      <!-- Action Buttons -->
-                    <div class="d-flex justify-content-between mb-2  align-items-center action-buttons">
-                        <div>
-                            <div class="form-check form-check-inline m-0 me-2">
-                                    <input class="form-check-input single-check" type="checkbox" id="Active" name="Active" value="active" checked>
-                                    <label class="form-check-label small" for="Active">Active</label>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <!-- Checkbox Group -->
+                        <div class="d-flex">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input single-check" type="checkbox" id="Active" name="Active" value="active" checked>
+                                <label class="form-check-label small" for="Active">Active</label>
                             </div>
-                            <div class="form-check form-check-inline m-0 me-2">
+                            <div class="form-check form-check-inline">
                                 <input class="form-check-input single-check" type="checkbox" id="inActive" name="inActive" value="inactive">
-                                <label class="form-check-label small" for="inActive">inActive</label>
+                                <label class="form-check-label small" for="inActive">Inactive</label>
                             </div>
                         </div>
-                        <div>
-                         <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
-                             <i class="fas fa-edit" style="color: black;"></i>
-                         </button>
-                         <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
-                             <i class="fas fa-trash" style="color: red;"></i>
-                         </button>
+                        <div class="d-flex action-buttons">
+                        <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                            <i class="fas fa-edit" style="color: black;"></i>
+                        </button>
+                        <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                            <i class="fas fa-trash" style="color: red;"></i>
+                        </button>
                         </div>
                     </div>
 
@@ -116,6 +117,7 @@
                                  <th scope="col" style="color:white;">Price(Rs)</th>
                                  <th scope="col" style="color:white;">UoM</th>
                                  <th scope="col" style="color:white;">Cost</th>
+                                 <th scope="col" style="color:white;">Status</th>
                              </tr>
                          </thead>
                          <tbody id="productsTable">
@@ -146,6 +148,8 @@
                                      <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                                  </td>
                                  <td>{{ $material->uom }}</td> <!-- UoM -->
+                                 <td></td>
+                                 <td class="status-cell">{{ $material->status }}</td>
                              </tr>
                              @endforeach
                          </tbody>
@@ -269,7 +273,8 @@
                         item.pdcode, // RM Code
                         categories, // Raw Materials Category
                         item.price, // Price (you can directly use it from item)
-                        item.uom // UoM
+                        item.uom ,// UoM
+                        // item.status
                     ]);
                 });
 
@@ -292,7 +297,8 @@
                                  item.pdcode,
                                  item.categories, // Comes as comma-separated string
                                  item.price,
-                                 item.uom
+                                 item.uom,
+                                // item.status
                              ]);
                          });
 
@@ -335,7 +341,8 @@
                         item.pdcode, // RM Code
                         categories, // Raw Materials Category
                         item.price, // Price (you can directly use it from item)
-                        item.uom // UoM
+                        item.uom, // UoM
+                        // item.status
                     ]);
                 });
 
@@ -358,7 +365,8 @@
                              item.pdcode || '',
                              item.categories || '', // ✅ Correct usage
                              item.price || '',
-                             item.uom || ''
+                             item.uom || '',
+                            //  item.status || ''
                          ]);
 
                          console.log("Final data to export:", allData);
@@ -709,7 +717,7 @@
                                                  const row = checkbox.closest("tr");
                                                  row.remove();
                                              });
-                                             updateSerialNumbers();
+                                            //  updateSerialNumbers();
                                              alert("Selected rows deleted successfully!");
                                              window.location.reload();
                                          }
@@ -861,6 +869,8 @@
                         <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                      </td>
                     <td>${item.uom}</td>
+                    <td></td>
+                     <td>${item.status}</td>
                 </tr>
             `;
         });
@@ -993,7 +1003,7 @@
             else if(errorMessage){
                 errorMessage.style.display = 'none';
             }
-        }, 3000);
+        }, 4000);
     //  });
 
      function filterCategories() {
@@ -1053,6 +1063,7 @@
                             visibleData = data.product;
                             currentPage = 1; // reset to page 1 on new filter
                             renderTablePage(currentPage, filteredData);
+                            // applyStatusColors();
                             renderPagination(filteredData.length);
                     //          // Clear existing table content
                     //          productsTable.innerHTML = '';
@@ -1098,6 +1109,7 @@
     function selection_isActive()
     {
         const checkboxes = document.querySelectorAll('.single-check');
+
         checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function () {
             const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
@@ -1158,6 +1170,7 @@
                             visibleData = data.product;
                             currentPage = 1; // reset to page 1 on new filter
                             renderTablePage(currentPage, filteredData);
+                            // applyStatusColors();
                             renderPagination(filteredData.length);
 
                         })
@@ -1165,15 +1178,36 @@
                             console.error('Error:', error);
                             alert('An error occurred while fetching product(s).');
                         });
+                    }else{
+                        location.reload();
                     }
 
         });
 
         });
     }
+//     function applyStatusColors() {
+//     const statusCells = document.querySelectorAll('.status-cell');
+
+//     statusCells.forEach(cell => {
+//         const value = cell.textContent.trim().toLowerCase();
+
+//         if (value === 'active') {
+//             cell.style.backgroundColor = '#d4edda'; // light green
+//             cell.style.color = '#155724';           // dark green text
+//         } else if (value === 'inactive') {
+//             cell.style.backgroundColor = '#f8d7da'; // light pink
+//             cell.style.color = '#721c24';           // dark pink text
+//         } else {
+//             cell.style.backgroundColor = '';
+//             cell.style.color = '';
+//         }
+//     });
+// }
         default_searchType();
         selection_isActive();
 });
+
 
 function default_searchType()
 {

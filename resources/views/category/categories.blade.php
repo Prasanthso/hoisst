@@ -92,11 +92,6 @@
                             <input class="form-check-input single-check" type="checkbox" id="inActive" name="inActive" value="inactive">
                             <label class="form-check-label small" for="inActive">inActive</label>
                           </div>
-
-                        <div class="form-check form-check-inline m-0 me-2">
-                            <input class="form-check-input single-check" type="checkbox" id="all" name="All" value="all">
-                            <label class="form-check-label small" for="all">All</label>
-                          </div>
                         </div>
                     <div>
                         <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
