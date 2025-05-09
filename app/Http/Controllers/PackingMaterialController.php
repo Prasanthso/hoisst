@@ -22,7 +22,7 @@ class PackingMaterialController extends Controller
         $categoryitems = CategoryItems::pmCategoryItem($storeid);
         $selectedCategoryIds = $request->input('category_ids', []);
         $searchValue = $request->input('pmText','');
-
+        $statusValue = $request->input('statusValue', 'active');
         if ($request->ajax()) {
             if(!empty($searchValue))
             {
@@ -53,9 +53,10 @@ class PackingMaterialController extends Controller
                      'c7.itemname as category_name7',
                      'c8.itemname as category_name8',
                      'c9.itemname as category_name9',
-                     'c10.itemname as category_name10'
+                     'c10.itemname as category_name10',
+                     'pm.status'
                  )
-                 ->where('pm.status', '=', 'active')
+                //  ->where('pm.status', '=', 'active')
                  ->where('pm.store_id', $storeid)
                  ->Where('pm.name', 'LIKE', "{$searchValue}%")
                 //  ->orderBy('pm.name', 'asc')
@@ -67,16 +68,16 @@ class PackingMaterialController extends Controller
                  'packingMaterials' => $packingMaterials
              ]);
         }
-        else{
+        if(!empty($selectedCategoryIds)){
             $selectedCategoryIds = explode(',', $selectedCategoryIds);
             // If no categories are selected, return all packing materials
-            if (empty($selectedCategoryIds)) {
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'No category IDs provided',
-                    'packingMaterials' => []
-                ]);
-            } else {
+            // if (empty($selectedCategoryIds)) {
+            //     return response()->json([
+            //         'status' => 'success',
+            //         'message' => 'No category IDs provided',
+            //         'packingMaterials' => []
+            //     ]);
+            // } else {
                 // Fetch packing materials filtered by the selected category IDs
                 $packingMaterials = DB::table('packing_materials as pm')
                     ->leftJoin('categoryitems as c1', 'pm.category_id1', '=', 'c1.id')
@@ -104,7 +105,8 @@ class PackingMaterialController extends Controller
                         'c7.itemname as category_name7',
                         'c8.itemname as category_name8',
                         'c9.itemname as category_name9',
-                        'c10.itemname as category_name10'
+                        'c10.itemname as category_name10',
+                        'pm.status'
                     )
                     ->where('pm.status', '=', 'active')
                     ->where(function ($query) use ($selectedCategoryIds) {
@@ -129,8 +131,51 @@ class PackingMaterialController extends Controller
                     'message' => count($packingMaterials) > 0 ? 'packingMaterials found' : 'No packingMaterials found',
                     'packingMaterials' => $packingMaterials
                 ]);
-            }
+            // }
         }
+          if(!empty($statusValue))
+          {
+              // Fetch packing materials filtered by the selected category IDs
+                 $packingMaterials = DB::table('packing_materials as pm')
+                 ->leftJoin('categoryitems as c1', 'pm.category_id1', '=', 'c1.id')
+                 ->leftJoin('categoryitems as c2', 'pm.category_id2', '=', 'c2.id')
+                 ->leftJoin('categoryitems as c3', 'pm.category_id3', '=', 'c3.id')
+                 ->leftJoin('categoryitems as c4', 'pm.category_id4', '=', 'c4.id')
+                 ->leftJoin('categoryitems as c5', 'pm.category_id5', '=', 'c5.id')
+                 ->leftJoin('categoryitems as c6', 'pm.category_id6', '=', 'c6.id')
+                 ->leftJoin('categoryitems as c7', 'pm.category_id7', '=', 'c7.id')
+                 ->leftJoin('categoryitems as c8', 'pm.category_id8', '=', 'c8.id')
+                 ->leftJoin('categoryitems as c9', 'pm.category_id9', '=', 'c9.id')
+                 ->leftJoin('categoryitems as c10', 'pm.category_id10', '=', 'c10.id')
+                 ->select(
+                     'pm.id',
+                     'pm.name',
+                     'pm.pmcode',
+                     'pm.price',
+                     'pm.uom',
+                     'c1.itemname as category_name1',
+                     'c2.itemname as category_name2',
+                     'c3.itemname as category_name3',
+                     'c4.itemname as category_name4',
+                     'c5.itemname as category_name5',
+                     'c6.itemname as category_name6',
+                     'c7.itemname as category_name7',
+                     'c8.itemname as category_name8',
+                     'c9.itemname as category_name9',
+                     'c10.itemname as category_name10',
+                     'pm.status'
+                 )
+                 ->where('pm.status', '=', $statusValue)
+                 ->where('pm.store_id', $storeid)
+                 ->orderBy('pm.name', 'asc')
+                 ->get();
+
+             return response()->json([
+                 'status' => 'success',
+                 'message' => count($packingMaterials) > 0 ? 'packingMaterials found' : 'No packingMaterials found',
+                 'packingMaterials' => $packingMaterials
+             ]);
+          }
         }
 
         // Default view, return all packing materials and category items
@@ -160,9 +205,10 @@ class PackingMaterialController extends Controller
             'c7.itemname as category_name7',
             'c8.itemname as category_name8',
             'c9.itemname as category_name9',
-            'c10.itemname as category_name10'
+            'c10.itemname as category_name10',
+            'pm.status'
         )
-        ->where('pm.status', '=', 'active') // Filter by active status
+        ->where('pm.status', '=', $statusValue) // Filter by active status
         ->where('pm.store_id', $storeid)
         ->orderBy('pm.name', 'asc')
         ->paginate(10);
@@ -447,6 +493,7 @@ class PackingMaterialController extends Controller
      */
     public function deleteConfirmation(Request $request)
     {
+        $storeid = $request->session()->get('store_id');
         $ids = $request->input('ids'); // Get the 'ids' array from the request
 
         if (!$ids || !is_array($ids)) {

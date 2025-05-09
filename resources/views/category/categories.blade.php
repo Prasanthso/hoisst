@@ -79,13 +79,25 @@
             <div class="col-lg-8">
                 <div class="row">
                     <!-- Action Buttons -->
-                    <div class="d-flex justify-content-end mb-2 action-buttons">
+                    <div class="d-flex justify-content-between mb-2 align-items-center action-buttons">
                         <!-- <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-edit" style="color: black;"></i>
                         </button>-->
+                        <div>
+                        <div class="form-check form-check-inline m-0 me-2">
+                                <input class="form-check-input single-check" type="checkbox" id="Active" name="Active" value="active" checked>
+                                <label class="form-check-label small" for="Active">Active</label>
+                        </div>
+                        <div class="form-check form-check-inline m-0 me-2">
+                            <input class="form-check-input single-check" type="checkbox" id="inActive" name="inActive" value="inactive">
+                            <label class="form-check-label small" for="inActive">inActive</label>
+                          </div>
+                        </div>
+                    <div>
                         <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-trash" style="color: red;"></i>
                         </button>
+                    </div>
                     </div>
 
                     <!-- Bordered Table -->
@@ -96,9 +108,10 @@
                                     <input type="checkbox" id="select-all" class="form-check-input">
                                 </th>
                                 <th scope="col" style="color:white;">S.NO</th>
-                                <th scope="col" style="color:white;">Category</th>
                                 <th scope="col" style="color:white;">Category Items</th>
+                                <th scope="col" style="color:white;">Category</th>
                                 <th scope="col" style="color:white;">Description</th>
+                                <th scope="col" style="color:white;">Status</th>
                             </tr>
                         </thead>
                         <tbody id="catagoriesTable">
@@ -108,10 +121,12 @@
                                     <input type="checkbox" class="form-check-input row-checkbox">
                                 </td>
                                 <td>{{ ($categoriesitems->currentPage() - 1) * $categoriesitems->perPage() + $loop->iteration }}.</td> <!-- Auto-increment S.NO -->
+                                <td class="left-align"><a href="{{ route('categoryitem.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->itemname }}</a></td>
                                 <td>{{ $material->categoryname }}</td>
-                                <td><a href="{{ route('categoryitem.edit', $material->id) }}" style="color: black;font-size:16px;text-decoration: none;">{{ $material->itemname }}</a></td>
                                 <td>{{ $material->description }}</td>
-
+                                <td><span class="badge {{ strtolower($material->status) === 'active' ? 'bg-success' : 'bg-danger' }}" style="font-weight: normal;">
+                                    {{ $material->status }}
+                                </span></td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -189,9 +204,10 @@
 
                 exportData.push([
                     serial++, // Serial number
-                    item.categoryname,
                     item.itemname, // Category Item Name
-                    item.description // Description
+                    item.categoryname,
+                    item.description, // Description
+                    item.status
                 ]);
             });
 
@@ -214,9 +230,10 @@
                         data.forEach((item, index) => {
                             exportData.push([
                                 index + 1,
-                                item.categoryname,
                                 item.itemname,
-                                item.description
+                                item.categoryname,
+                                item.description,
+                                item.status
                             ]);
                         });
 
@@ -290,9 +307,10 @@
     visibleData.forEach(item => {
         exportData.push([
             serial++, // Serial number
-            item.categoryname,
             item.itemname, // Category Item Name
-            item.description // Description
+            item.categoryname,
+            item.description, // Description
+            item.status
         ]);
     });
 
@@ -321,9 +339,10 @@
                 data.forEach((item, index) => {
                     exportData.push([
                         index + 1,
-                        item.categoryname,
                         item.itemname,
-                        item.description
+                        item.categoryname,
+                        item.description,
+                        item.status
                     ]);
                 });
 
@@ -376,8 +395,8 @@
                             return response.json();
                         })
                         .then(data => {
-                            filteredData = data.categoriesitems;
-                            console.log('Fetched Data:', data.categoriesitems);
+                            filteredData = data.categoriesitems.data;
+                            console.log('Fetched Data:', data.categoriesitems.data);
                             visibleData = data.categoriesitems;
                             currentPage = 1; // reset to page 1 on new filter
                             renderTablePage(currentPage, filteredData);
@@ -409,7 +428,8 @@
                             console.error('Error:', error);
                             alert('An error occurred while fetching category items.');
                         });
-                } else {
+                }
+                 else {
                     location.reload();
                 }
             });
@@ -566,10 +586,14 @@
                 <tr data-id="${item.id}">
                             <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                             <td>${start+index + 1}.</td>
-                            <td>${item.categoryname}</td>
                             <td class="left-align"><a href="/editcategoryitem/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.itemname}</a></td>
+                             <td>${item.categoryname}</td>
                             <td>${item.description}</td>
-
+                           <td>
+                    <span class="badge" style="background-color: ${item.status.toLowerCase() === 'active' ? 'green' : '#dc3545'}; font-weight: normal;">
+                    ${item.status}
+                    </span>
+                    </td>
                     </tr>
             `;
         });
@@ -743,8 +767,8 @@
                             return response.json();
                         })
                         .then(data => {
-                            filteredData = data.categoriesitems;
-                            console.log('Fetched Data:', data.categoriesitems);
+                            filteredData = data.categoriesitems.data;
+                            console.log('Fetched Data:', data.categoriesitems.data);
                             visibleData = data.categoriesitems;
                             currentPage = 1; // reset to page 1 on new filter
                             renderTablePage(currentPage, filteredData);
@@ -776,24 +800,163 @@
                             console.error('Error:', error);
                             alert('An error occurred while fetching category items.');
                         });
-                    } else {
+                    }
+                    else {
                     location.reload();
                     }
             }
-default_searchType();
+    function selection_isActive()
+    {
+        const checkboxes = document.querySelectorAll('.single-check');
+        checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
 
+            if (this.checked) {
+            // Uncheck all others
+            checkboxes.forEach(cb => {
+                if (cb !== this) cb.checked = false;
+            });
+
+            } else if (checkedBoxes.length === 0) {
+            // If user tries to uncheck the only selected one, pick another
+            for (const cb of checkboxes) {
+                if (cb !== this) {
+                cb.checked = true;
+                break;
+                }
+            }
+            }
+        const checkedBox = document.querySelector('.single-check:checked'); // Finds the checkbox that is checked
+        let table = document.getElementById('catagoriesTable');
+        let rows = table.getElementsByTagName('tr');
+
+            // If no checkbox is checked, exit early
+            if (!checkedBox) {
+                console.log('No checkbox selected');
+                return;
+            }
+            // Get the status from the checkbox's id or value
+            const selectedStatus = checkedBox.value.toLowerCase().trim(); // e.g., 'active', 'inactive', 'all'
+            console.log("Selected Status:", selectedStatus);
+
+        if (selectedStatus) {
+                // Proceed with constructing the URL and fetching data
+                const queryParams = new URLSearchParams({
+                    statusValue: selectedStatus, // Always include the selected status
+                });
+                    console.log(queryParams.toString());
+                   // Construct the URL dynamically based on selected categories
+                   const url = `/showcategoryitem?${queryParams.toString()}`;
+
+                    // Fetch updated data from server
+                    fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            filteredData = data.categoriesitems.data;
+                            console.log('Fetched Data:', data.categoriesitems.data);
+                            visibleData = data.categoriesitems;
+                            currentPage = 1; // reset to page 1 on new filter
+                            renderTablePage(currentPage, filteredData);
+                            renderPagination(filteredData.length);
+
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while fetching category items.');
+                        });
+                    }
+                    else {
+                    location.reload();
+                    }
+
+                 });
+            });
+    }
+
+    default_searchType();
+    selection_isActive();
 });
 
-function default_searchType()
-{
-   const searchType = document.getElementById('searchtype').value;
-            const categoryItems = document.querySelectorAll(".category-item");
-            if (searchType === 'category') {
-                categoryItems.forEach(item => item.style.display = "block");
-            } else if (searchType === 'items') {
-                categoryItems.forEach(item => item.style.display = "none");
+    function default_searchType()
+    {
+    const searchType = document.getElementById('searchtype').value;
+                const categoryItems = document.querySelectorAll(".category-item");
+                if (searchType === 'category') {
+                    categoryItems.forEach(item => item.style.display = "block");
+                } else if (searchType === 'items') {
+                    categoryItems.forEach(item => item.style.display = "none");
+                }
+    }
+
+
+/*
+    function isStatus()
+    {
+        const checkedBox = document.querySelector('.single-check:checked'); // Finds the checkbox that is checked
+        let table = document.getElementById('catagoriesTable');
+        let rows = table.getElementsByTagName('tr');
+
+            // If no checkbox is checked, exit early
+            if (!checkedBox) {
+                console.log('No checkbox selected');
+                return;
             }
-}
+
+            // Get the status from the checkbox's id or value
+            const selectedStatus = checkedBox.value.toLowerCase().trim(); // e.g., 'active', 'inactive', 'all'
+            console.log("Selected Status:", selectedStatus);
+
+        if (selectedStatus) {
+                // Proceed with constructing the URL and fetching data
+                const queryParams = new URLSearchParams({
+                    statusValue: selectedStatus, // Always include the selected status
+                });
+                    console.log(queryParams.toString());
+                   // Construct the URL dynamically based on selected categories
+                   const url = `/showcategoryitem?${queryParams.toString()}`;
+
+                    // Fetch updated data from server
+                    fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            filteredData = data.categoriesitems;
+                            console.log('Fetched Data:', data.categoriesitems);
+                            visibleData = data.categoriesitems;
+                            currentPage = 1; // reset to page 1 on new filter
+                            renderTablePage(currentPage, filteredData);
+                            renderPagination(filteredData.length);
+
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while fetching category items.');
+                        });
+                    } else {
+                    location.reload();
+                    }
+    }*/
+
 </script>
 
 <!-- Vendor JS Files -->

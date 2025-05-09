@@ -81,14 +81,27 @@
              <div class="col-lg-8">
                  <div class="row">
                      <!-- Action Buttons -->
-                     <div class="d-flex justify-content-end mb-2 action-buttons">
-                         <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
-                             <i class="fas fa-edit" style="color: black;"></i>
-                         </button>
-                         <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
-                             <i class="fas fa-trash" style="color: red;"></i>
-                         </button>
-                     </div>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <!-- Checkbox Group -->
+                        <div class="d-flex">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input single-check" type="checkbox" id="Active" name="Active" value="active" checked>
+                                <label class="form-check-label small" for="Active">Active</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input single-check" type="checkbox" id="inActive" name="inActive" value="inactive">
+                                <label class="form-check-label small" for="inActive">Inactive</label>
+                            </div>
+                        </div>
+                        <div class="d-flex action-buttons">
+                        <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                            <i class="fas fa-edit" style="color: black;"></i>
+                        </button>
+                        <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
+                            <i class="fas fa-trash" style="color: red;"></i>
+                        </button>
+                        </div>
+                    </div>
 
                      <!-- Bordered Table -->
                      <table class="table table-bordered mt-2" id='exportRm'>
@@ -104,6 +117,7 @@
                                  <th scope="col" style="color:white;">Price(Rs)</th>
                                  <th scope="col" style="color:white;">UoM</th>
                                  <th scope="col" style="color:white;">Cost</th>
+                                 <th scope="col" style="color:white;">Status</th>
                              </tr>
                          </thead>
                          <tbody id="productsTable">
@@ -134,6 +148,11 @@
                                      <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                                  </td>
                                  <td>{{ $material->uom }}</td> <!-- UoM -->
+                                 <td></td>
+                               <td><span class="badge {{ strtolower($material->status) === 'active' ? 'bg-success' : 'bg-danger' }}" style="font-weight: normal;">
+                                    {{ $material->status }}
+                                </span>
+                                </td>
                              </tr>
                              @endforeach
                          </tbody>
@@ -257,7 +276,8 @@
                         item.pdcode, // RM Code
                         categories, // Raw Materials Category
                         item.price, // Price (you can directly use it from item)
-                        item.uom // UoM
+                        item.uom ,// UoM
+                        // item.status
                     ]);
                 });
 
@@ -280,7 +300,8 @@
                                  item.pdcode,
                                  item.categories, // Comes as comma-separated string
                                  item.price,
-                                 item.uom
+                                 item.uom,
+                                // item.status
                              ]);
                          });
 
@@ -323,7 +344,8 @@
                         item.pdcode, // RM Code
                         categories, // Raw Materials Category
                         item.price, // Price (you can directly use it from item)
-                        item.uom // UoM
+                        item.uom, // UoM
+                        // item.status
                     ]);
                 });
 
@@ -346,7 +368,8 @@
                              item.pdcode || '',
                              item.categories || '', // ✅ Correct usage
                              item.price || '',
-                             item.uom || ''
+                             item.uom || '',
+                            //  item.status || ''
                          ]);
 
                          console.log("Final data to export:", allData);
@@ -697,7 +720,7 @@
                                                  const row = checkbox.closest("tr");
                                                  row.remove();
                                              });
-                                             updateSerialNumbers();
+                                            //  updateSerialNumbers();
                                              alert("Selected rows deleted successfully!");
                                              window.location.reload();
                                          }
@@ -849,6 +872,12 @@
                         <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                      </td>
                     <td>${item.uom}</td>
+                    <td></td>
+                   <td>
+                    <span class="badge" style="background-color: ${item.status.toLowerCase() === 'active' ? 'green' : '#dc3545'}; font-weight: normal;">
+                    ${item.status}
+                </span>
+                </td>
                 </tr>
             `;
         });
@@ -981,7 +1010,7 @@
             else if(errorMessage){
                 errorMessage.style.display = 'none';
             }
-        }, 3000);
+        }, 4000);
     //  });
 
      function filterCategories() {
@@ -1041,6 +1070,7 @@
                             visibleData = data.product;
                             currentPage = 1; // reset to page 1 on new filter
                             renderTablePage(currentPage, filteredData);
+                            // applyStatusColors();
                             renderPagination(filteredData.length);
                     //          // Clear existing table content
                     //          productsTable.innerHTML = '';
@@ -1083,8 +1113,88 @@
                      location.reload();
                 }
         }
+    function selection_isActive()
+    {
+        const checkboxes = document.querySelectorAll('.single-check');
+
+        checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
+
+            if (this.checked) {
+            // Uncheck all others
+            checkboxes.forEach(cb => {
+                if (cb !== this) cb.checked = false;
+            });
+
+            } else if (checkedBoxes.length === 0) {
+            // If user tries to uncheck the only selected one, pick another
+            for (const cb of checkboxes) {
+                if (cb !== this) {
+                cb.checked = true;
+                break;
+                }
+            }
+            }
+        const checkedBox = document.querySelector('.single-check:checked'); // Finds the checkbox that is checked
+        let table = document.getElementById('productsTable');
+        let rows = table.getElementsByTagName('tr');
+
+            // If no checkbox is checked, exit early
+            if (!checkedBox) {
+                console.log('No checkbox selected');
+                return;
+            }
+            // Get the status from the checkbox's id or value
+            const selectedStatus = checkedBox.value.toLowerCase().trim(); // e.g., 'active', 'inactive', 'all'
+            console.log("Selected Status:", selectedStatus);
+
+        if (selectedStatus) {
+                // Proceed with constructing the URL and fetching data
+                const queryParams = new URLSearchParams({
+                    statusValue: selectedStatus, // Always include the selected status
+                });
+                    console.log(queryParams.toString());
+                   // Construct the URL dynamically based on selected categories
+                   const url = `/products?${queryParams.toString()}`;
+
+                    // Fetch updated data from server
+                    fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            filteredData = data.product;
+                            console.log('Fetched Data:', data.product);
+                            visibleData = data.product;
+                            currentPage = 1; // reset to page 1 on new filter
+                            renderTablePage(currentPage, filteredData);
+                            renderPagination(filteredData.length);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while fetching product(s).');
+                        });
+                    }else{
+                        location.reload();
+                    }
+
+                });
+
+            });
+    }
         default_searchType();
+        selection_isActive();
 });
+
 
 function default_searchType()
 {
