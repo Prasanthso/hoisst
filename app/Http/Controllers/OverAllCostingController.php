@@ -118,22 +118,26 @@ class OverAllCostingController extends Controller
             ->join('rm_for_recipe', 'rm_for_recipe.product_id', '=', 'recipe_master.product_id')
             ->leftjoin('pm_for_recipe', 'pm_for_recipe.product_id', '=', 'recipe_master.product_id')
             ->leftjoin('oh_for_recipe', 'oh_for_recipe.product_id', '=', 'recipe_master.product_id')
+            ->leftjoin('moh_for_recipe', 'moh_for_recipe.product_id', '=', 'recipe_master.product_id')
             ->join('product_master', 'product_master.id', '=', 'recipe_master.product_id')
+             ->leftJoin('raw_materials', 'rm_for_recipe.raw_material_id', '=', 'raw_materials.id')
+            ->leftJoin('packing_materials', 'pm_for_recipe.packing_material_id', '=', 'packing_materials.id')
+            ->leftJoin('overheads', 'oh_for_recipe.overheads_id', '=', 'overheads.id')
             ->where('recipe_master.product_id', $productId)
             ->where('recipe_master.status', 'active')
             ->where('recipe_master.store_id',$storeid)
             ->select(
                 'rm_for_recipe.raw_material_id as rm_id',
                 'rm_for_recipe.quantity as rm_quantity',
-                'rm_for_recipe.price as rm_price',
+                'raw_materials.price as rm_price',
                 'rm_for_recipe.amount as rm_amount',
                 'pm_for_recipe.packing_material_id as pm_id',
                 'pm_for_recipe.quantity as pm_quantity',
-                'pm_for_recipe.price as pm_price',
+                'packing_materials.price as pm_price',
                 'pm_for_recipe.amount as pm_amount',
                 'oh_for_recipe.overheads_id as oh_id',
                 'oh_for_recipe.quantity as oh_quantity',
-                'oh_for_recipe.price as oh_price',
+                'overheads.price as oh_price',
                 'oh_for_recipe.amount as oh_amount',
                 'rm_for_recipe.id as rid',
                 'pm_for_recipe.id as pid',

@@ -20,11 +20,11 @@ class RawMaterialController extends Controller
         $storeid = $request->session()->get('store_id');
         $categoryitems = CategoryItems::rmCategoryItem($storeid);
         $selectedCategoryIds = $request->input('category_ids', []);
+        //  $selectedCategoryIds = $request->input('category_ids', '');
         $searchValue = $request->input('rmText','');
         $statusValue = $request->input('statusValue', 'active');
 
         if ($request->ajax()) {
-
             if(!empty($searchValue))
             {
                 $rawMaterials = DB::table('raw_materials as rm')
@@ -110,24 +110,24 @@ class RawMaterialController extends Controller
                     'rm.status'
                 )
                     // Filter by active status
-                    ->where(function ($query) use ($selectedCategoryIds) {
-                        $query->whereIn('c1.id', $selectedCategoryIds)
-                            ->orWhereIn('c2.id', $selectedCategoryIds)
-                            ->orWhereIn('c3.id', $selectedCategoryIds)
-                            ->orWhereIn('c4.id', $selectedCategoryIds)
-                            ->orWhereIn('c5.id', $selectedCategoryIds)
-                            ->orWhereIn('c6.id', $selectedCategoryIds)
-                            ->orWhereIn('c7.id', $selectedCategoryIds)
-                            ->orWhereIn('c8.id', $selectedCategoryIds)
-                            ->orWhereIn('c9.id', $selectedCategoryIds)
-                            ->orWhereIn('c10.id', $selectedCategoryIds);
+                // ->where('rm.status', $statusValue)
+                   ->where(function ($query) use ($selectedCategoryIds) {
+                        $query->whereIn('rm.category_id1', $selectedCategoryIds)
+                            ->orWhereIn('rm.category_id2', $selectedCategoryIds)
+                            ->orWhereIn('rm.category_id3', $selectedCategoryIds)
+                            ->orWhereIn('rm.category_id4', $selectedCategoryIds)
+                            ->orWhereIn('rm.category_id5', $selectedCategoryIds)
+                            ->orWhereIn('rm.category_id6', $selectedCategoryIds)
+                            ->orWhereIn('rm.category_id7', $selectedCategoryIds)
+                            ->orWhereIn('rm.category_id8', $selectedCategoryIds)
+                            ->orWhereIn('rm.category_id9', $selectedCategoryIds)
+                            ->orWhereIn('rm.category_id10', $selectedCategoryIds);
                     })
-                    // ->where('rm.status', '=', 'active')
                     ->where('rm.store_id', $storeid)
                     ->orderBy('rm.name', 'asc') // Filter by active status
                     ->get();
-                    // ->paginate(10);
-                     // Return filtered raw materials as JSON response
+            // dd($rawMaterials->toSql(), $rawMaterials->getBindings());
+
             return response()->json([
                 'status' => 'success',
                 'message' => count($rawMaterials) > 0 ? 'rawMaterials found' : 'No rawMaterials found',
@@ -209,7 +209,7 @@ class RawMaterialController extends Controller
             'c10.itemname as category_name10',
             'rm.status'
         )
-            ->where('rm.status', '=', $statusValue)
+            // ->where('rm.status', '=', $statusValue)
             ->where('rm.store_id', $storeid)
             ->orderBy('rm.name', 'asc') // Filter by active status
             ->paginate(10);
