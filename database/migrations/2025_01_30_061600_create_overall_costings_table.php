@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('overall_costing', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('productId')->constrained('recipe_master'); // Assuming 'recipe_products' table exists
+            $table->foreignId('productId')->constrained('product_master'); // Assuming 'recipe_products' table exists
             $table->decimal('rm_cost_unit', 10, 2)->default(0);
             $table->decimal('pm_cost_unit', 10, 2)->default(0);
             $table->decimal('rm_pm_cost', 10, 2)->default(0);

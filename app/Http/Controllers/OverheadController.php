@@ -22,9 +22,8 @@ class OverheadController extends Controller
         $categoryitems = CategoryItems::ohCategoryItem($storeid);
         $selectedCategoryIds = $request->input('category_ids', []);
         $searchValue = $request->input('ohText','');
-
+        $statusValue = $request->input('statusValue', 'active');
         if ($request->ajax()) {
-
             if(!empty($searchValue))
             {
                 // Fetch packing materials filtered by the selected category IDs
@@ -54,9 +53,10 @@ class OverheadController extends Controller
                     'c7.itemname as category_name7',
                     'c8.itemname as category_name8',
                     'c9.itemname as category_name9',
-                    'c10.itemname as category_name10'
+                    'c10.itemname as category_name10',
+                    'oh.status'
                 )
-                    ->where('oh.status', '=', 'active') // Filter by active status
+                    // ->where('oh.status', '=', 'active') // Filter by active status
                     ->where('oh.store_id', $storeid)
                     ->Where('oh.name', 'LIKE', "{$searchValue}%")
                     // ->orderBy('oh.name', 'asc')
@@ -68,7 +68,7 @@ class OverheadController extends Controller
                     'overheads' => $overheads
                 ]);
             }
-        else{
+        if(!empty($selectedCategoryIds)) {
             $selectedCategoryIds = explode(',', $selectedCategoryIds);
             $selectedCategoryIds = array_filter($selectedCategoryIds, fn($id) => is_numeric($id) && $id > 0);
 
@@ -106,7 +106,8 @@ class OverheadController extends Controller
                     'c7.itemname as category_name7',
                     'c8.itemname as category_name8',
                     'c9.itemname as category_name9',
-                    'c10.itemname as category_name10'
+                    'c10.itemname as category_name10',
+                    'oh.status'
                 )
                     ->where(function ($query) use ($selectedCategoryIds) {
                         $query->whereIn('c1.id', $selectedCategoryIds)
@@ -120,7 +121,7 @@ class OverheadController extends Controller
                             ->orWhereIn('c9.id', $selectedCategoryIds)
                             ->orWhereIn('c10.id', $selectedCategoryIds);
                     })
-                    ->where('oh.status', '=', 'active') // Filter by active status
+                    // ->where('oh.status', '=', 'active') // Filter by active status
                     ->where('oh.store_id', $storeid)
                     ->orderBy('oh.name', 'asc')
                     ->get();
@@ -131,6 +132,50 @@ class OverheadController extends Controller
                 'overheads' => $overheads
             ]);
         }
+          if(!empty($statusValue))
+            {
+                // Fetch packing materials filtered by the selected category IDs
+                $overheads = DB::table('overheads as oh')
+                ->leftJoin('categoryitems as c1', 'oh.category_id1', '=', 'c1.id')
+                ->leftJoin('categoryitems as c2', 'oh.category_id2', '=', 'c2.id')
+                ->leftJoin('categoryitems as c3', 'oh.category_id3', '=', 'c3.id')
+                ->leftJoin('categoryitems as c4', 'oh.category_id4', '=', 'c4.id')
+                ->leftJoin('categoryitems as c5', 'oh.category_id5', '=', 'c5.id')
+                ->leftJoin('categoryitems as c6', 'oh.category_id6', '=', 'c6.id')
+                ->leftJoin('categoryitems as c7', 'oh.category_id7', '=', 'c7.id')
+                ->leftJoin('categoryitems as c8', 'oh.category_id8', '=', 'c8.id')
+                ->leftJoin('categoryitems as c9', 'oh.category_id9', '=', 'c9.id')
+                ->leftJoin('categoryitems as c10', 'oh.category_id10', '=', 'c10.id')
+                ->select(
+                    'oh.id',
+                    'oh.name',
+                    'oh.ohcode',
+                    'oh.price',
+                    'oh.uom',
+                    'c1.itemname as category_name1',
+                    'c2.itemname as category_name2',
+                    'c3.itemname as category_name3',
+                    'c4.itemname as category_name4',
+                    'c5.itemname as category_name5',
+                    'c6.itemname as category_name6',
+                    'c7.itemname as category_name7',
+                    'c8.itemname as category_name8',
+                    'c9.itemname as category_name9',
+                    'c10.itemname as category_name10',
+                    'oh.status'
+                )
+                    ->where('oh.status', '=', $statusValue) // Filter by active status
+                    ->where('oh.store_id', $storeid)
+                    ->Where('oh.name', 'LIKE', "{$searchValue}%")
+                    // ->orderBy('oh.name', 'asc')
+                    ->get();
+                // Return filtered packing materials as JSON response
+                return response()->json([
+                    'status' => 'success',
+                    'message' => count($overheads) > 0 ? 'Overheads found' : 'No Overheads found',
+                    'overheads' => $overheads
+                ]);
+            }
         }
 
         // Default view, return all packing materials and category items
@@ -160,9 +205,10 @@ class OverheadController extends Controller
             'c7.itemname as category_name7',
             'c8.itemname as category_name8',
             'c9.itemname as category_name9',
-            'c10.itemname as category_name10'
+            'c10.itemname as category_name10',
+            'oh.status'
         )
-        ->where('oh.status', '=', 'active') // Filter by active status
+        // ->where('oh.status', '=', $statusValue) // Filter by active status
         ->where('oh.store_id', $storeid)
         ->orderBy('oh.name', 'asc')
         ->paginate(10);
@@ -418,7 +464,8 @@ class OverheadController extends Controller
                 'price_threshold' => $request->price_threshold,
                 // 'hsncode' => $request->hsncode,
                 'itemweight' => $request->itemweight,
-                'store_id' => $storeid,
+                    'status' => $request->status,
+                    'store_id' => $storeid,
                 // 'itemType_id' => $request->itemType_id,
                     // 'tax' => $request->tax,
                 ]);

@@ -39,6 +39,10 @@
                 <div class="card" style="background-color: #EEEEEE;">
                     <div class="card-body">
                         <h5 class="card-title">Categories</h5>
+                         <div class="form-check form-check-inline">
+                                <input class="form-check-input single-check" type="checkbox" id="inActive" name="inActive" value="inactive">
+                                <label class="form-check-label small" for="inActive">Inactive</label>
+                            </div>
                         <div class="row mb-3">
                             <div class="col-sm-12">
                                 <div class="me-2 align-items-center d-flex mb-2">
@@ -82,15 +86,28 @@
             <!-- Right side columns -->
             <div class="col-lg-8">
                 <div class="row">
+                    <div class="d-flex align-items-center justify-content-end mb-2 action-buttons">
+                        <!-- Checkbox Group -->
+                        {{-- <div class="d-flex">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input single-check" type="checkbox" id="Active" name="Active" value="active" checked>
+                                <label class="form-check-label small" for="Active">Active</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input single-check" type="checkbox" id="inActive" name="inActive" value="inactive">
+                                <label class="form-check-label small" for="inActive">Inactive</label>
+                            </div>
+                        </div> --}}
                     <!-- Action Buttons -->
-                    <div class="d-flex justify-content-end mb-2 action-buttons">
+                    {{-- <div class="d-flex action-buttons"> --}}
                         <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-edit" style="color: black;"></i>
                         </button>
                         <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-trash" style="color: red;"></i>
                         </button>
-                    </div>
+                    {{-- </div> --}}
+                </div>
 
                     <!-- Bordered Table -->
                     <table class="table table-bordered mt-2" id='exportRm'>
@@ -105,6 +122,7 @@
                                 <th scope="col" style="color:white;">Raw Material Category</th>
                                 <th scope="col" style="color:white;">Price(Rs)</th>
                                 <th scope="col" style="color:white;">UoM</th>
+                                <th scope="col" style="color:white;">Status</th>
                             </tr>
                         </thead>
                         <tbody id="rawMaterialTable">
@@ -134,6 +152,9 @@
                                     <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                                 </td>
                                 <td>{{ $material->uom }}</td> <!-- UoM -->
+                                <td><span class="badge {{ strtolower($material->status) === 'active' ? 'bg-success' : 'bg-danger' }}" style="font-weight: normal;">
+                                    {{ $material->status }}
+                                </span></td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -394,12 +415,12 @@
         // Function to toggle editing mode for selected rows
         const toggleEditMode = (enable) => {
             table.querySelectorAll("tr").forEach(row => {
-                const checkbox = row.querySelector(".row-checkbox");
+                const rowcheckbox = row.querySelector(".row-checkbox");
                 const priceText = row.querySelector(".price-text");
                 const priceInput = row.querySelector(".price-input");
 
-                if (checkbox && priceText && priceInput) {
-                    if (checkbox.checked && enable) {
+                if (rowcheckbox && priceText && priceInput) {
+                    if (rowcheckbox.checked && enable) {
                         // Enable editing
                         priceText.classList.add("d-none");
                         priceInput.classList.remove("d-none");
@@ -515,6 +536,7 @@
         // Function to cancel editing
         const cancelEditing = () => {
             const selectedRows = Array.from(getRowCheckboxes()).filter(checkbox => checkbox.checked);
+
             if (selectedRows.length === 0) {
                 // No rows selected, prompt the user to select rows
                 alert("Please select at least one row to cancel.");
@@ -571,6 +593,7 @@
             if (isChecked && isEditing) {
                 enableEditing();
             } else {
+
                 exitEditingMode();
             }
         });
@@ -781,47 +804,6 @@
                             currentPage = 1; // reset to page 1 on new filter
                             renderTablePage(currentPage, filteredData);
                             renderPagination(filteredData.length);
-
-                    //         const rawMaterials = data.rawMaterials;
-                    //         const maxPerPage = 10;
-                    //         const paginated = rawMaterials.slice(0, maxPerPage);
-                    //         // Clear existing table content
-                    //         rawMaterialTable.innerHTML = '';
-                    //         console.log('Fetched Data:', data.rawMaterials);
-
-                    //         // Populate the table with new data
-                    //         // data.rawMaterials.forEach((item, index) => {
-                    //     paginated.forEach((item, index) => {
-                    //             rawMaterialTable.innerHTML += `
-                    //     <tr data-id="${item.id}">
-                    //         <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
-                    //         <td>${index + 1}.</td>
-                    //         <td class="left-align"><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
-                    //         <td>${item.rmcode}</td>
-                    //          <td>
-                    //             ${item.category_name1 ?? ''}
-                    //             ${item.category_name2 ? ', ' + item.category_name2 : ''}
-                    //             ${item.category_name3 ? ', ' + item.category_name3 : ''}
-                    //             ${item.category_name4 ? ', ' + item.category_name4 : ''}
-                    //             ${item.category_name5 ? ', ' + item.category_name5 : ''}
-                    //             ${item.category_name6 ? ', ' + item.category_name6 : ''}
-                    //             ${item.category_name7 ? ', ' + item.category_name7 : ''}
-                    //             ${item.category_name8 ? ', ' + item.category_name8 : ''}
-                    //             ${item.category_name9 ? ', ' + item.category_name9 : ''}
-                    //             ${item.category_name10 ? ', ' + item.category_name10 : ''}
-                    //         </td> <!-- Categories -->
-                    //         <td>
-                    //             <span class="price-text">${item.price}</span>
-                    //             <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
-                    //         </td>
-                    //         <td>${item.uom}</td>
-                    //     </tr>
-                    // `;
-                    //         });
-                    //      // Hide pagination if 10 or fewer
-                    //     document.getElementById('paginationWrapper').style.display =
-                    //         rawMaterials.length <= 10 ? 'none' : '';
-
                         })
                         .catch(error => {
                             console.error('Error:', error);
@@ -865,6 +847,11 @@
                         <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                      </td>
                     <td>${item.uom}</td>
+                    <td>
+                    <span class="badge" style="background-color: ${item.status.toLowerCase() === 'active' ? 'green' : '#dc3545'}; font-weight: normal;">
+                    ${item.status}
+                </span>
+                </td>
                 </tr>
             `;
         });
@@ -988,6 +975,7 @@
             document.getElementById("categorySearch").value ="";
             const categoryItems = document.querySelectorAll(".category-item");
             if (searchTypeselection === 'category') {
+                 document.querySelector('.single-check').checked = false;
                 categoryItems.forEach(item => item.style.display = "block");
             } else if (searchTypeselection === 'items') {
                 categoryItems.forEach(item => item.style.display = "none");
@@ -1002,7 +990,7 @@
             } else if (errorMessage) {
                 errorMessage.style.display = 'none';
             }
-        }, 3000);
+        }, 4000);
 
     // });
 
@@ -1067,56 +1055,6 @@
                             renderTablePage(currentPage, filteredData);
                             renderPagination(filteredData.length);
 
-                    //         // Clear existing table content
-                    //         rawMaterialTable.innerHTML = '';
-                    //         console.log('Fetched Data:', data.rawMaterials);
-                    //         // Populate the table with new data
-                    //         data.rawMaterials.forEach((item, index) => {
-                    //             rawMaterialTable.innerHTML += `
-                    //     <tr data-id="${item.id}">
-                    //         <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
-                    //         <td>${index + 1}.</td>
-                    //         <td class="left-align"><a href="/editrawmaterial/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
-                    //         <td>${item.rmcode}</td>
-                    //          <td>
-                    //             ${item.category_name1 ?? ''}
-                    //             ${item.category_name2 ? ', ' + item.category_name2 : ''}
-                    //             ${item.category_name3 ? ', ' + item.category_name3 : ''}
-                    //             ${item.category_name4 ? ', ' + item.category_name4 : ''}
-                    //             ${item.category_name5 ? ', ' + item.category_name5 : ''}
-                    //             ${item.category_name6 ? ', ' + item.category_name6 : ''}
-                    //             ${item.category_name7 ? ', ' + item.category_name7 : ''}
-                    //             ${item.category_name8 ? ', ' + item.category_name8 : ''}
-                    //             ${item.category_name9 ? ', ' + item.category_name9 : ''}
-                    //             ${item.category_name10 ? ', ' + item.category_name10 : ''}
-                    //         </td> <!-- Categories -->
-                    //         <td>
-                    //             <span class="price-text">${item.price}</span>
-                    //             <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
-                    //         </td>
-                    //         <td>${item.uom}</td>
-                    //     </tr>
-                    // `;
-                    //         });
-
-                            // const paginationWrapper = document.getElementById('paginationWrapper');
-                            // if (data.rawMaterials.length <= 10) {
-                            //     paginationWrapper.style.display = 'none';
-
-                            // } else {
-                            //     paginationWrapper.style.display = '';
-                            // }
-
-                            // const showingDiv = document.getElementById('showingEntries');
-                            // const totalItems = data.rawMaterials.length;
-                            // if (totalItems > 0) {
-                            //     const start = 1;
-                            //     const end = totalItems;
-                            //     showingDiv.textContent = `Showing ${start} to ${end} of ${totalItems} entries`;
-                            // } else {
-                            //     showingDiv.textContent = 'No entries found';
-                            // }
-
                         })
                         .catch(error => {
                             console.error('Error:', error);
@@ -1126,7 +1064,91 @@
                     location.reload();
                 }
             }
-default_searchType();
+
+    // function selection_isActive()
+    // {
+        const checkboxes = document.querySelectorAll('.single-check');
+        checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
+
+           if (isEditing) {
+                 isEditing = false;
+                // exitEditingMode();
+                showEditDeleteButtons();
+            }
+            if (this.checked) {
+            // Uncheck all others
+            checkboxes.forEach(cb => {
+                if (cb !== this) cb.checked = false;
+            });
+
+            } else if (checkedBoxes.length === 0) {
+            // If user tries to uncheck the only selected one, pick another
+                for (const cb of checkboxes) {
+                    if (cb !== this) {
+                    cb.checked = true;
+                    break;
+                    }
+                }
+            }
+        const checkedBox = document.querySelector('.single-check:checked'); // Finds the checkbox that is checked
+        let table = document.getElementById('rawMaterialTable');
+        let rows = table.getElementsByTagName('tr');
+
+            // If no checkbox is checked, exit early
+            if (!checkedBox) {
+                console.log('No checkbox selected');
+                location.reload();
+                return;
+            }
+            // Get the status from the checkbox's id or value
+            const selectedStatus = checkedBox.value.toLowerCase().trim(); // e.g., 'active', 'inactive', 'all'
+            console.log("Selected Status:", selectedStatus);
+
+        if (selectedStatus) {
+                // Proceed with constructing the URL and fetching data
+                const queryParams = new URLSearchParams({
+                    statusValue: selectedStatus, // Always include the selected status
+                });
+                    console.log(queryParams.toString());
+                   // Construct the URL dynamically based on selected categories
+                   const url = `/rawmaterial?${queryParams.toString()}`;
+
+                    // Fetch updated data from server
+                    fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            filteredData = data.rawMaterials;
+                            console.log('Fetched Data:', data.rawMaterials);
+                            visibleData = data.rawMaterials;
+                            currentPage = 1; // reset to page 1 on new filter
+                            renderTablePage(currentPage, filteredData);
+                            renderPagination(filteredData.length);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while fetching rawMaterial(s).');
+                        });
+                    }else{
+                        location.reload();
+                    }
+            });
+
+        });
+
+    default_searchType();
+    // selection_isActive();
 });
 
 function default_searchType()

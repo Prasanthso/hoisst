@@ -38,6 +38,10 @@
                 <div class="card" style="background-color: #EEEEEE;">
                     <div class="card-body">
                         <h5 class="card-title">Categories</h5>
+                        <div class="form-check form-check-inline">
+                                <input class="form-check-input single-check" type="checkbox" id="inActive" name="inActive" value="inactive">
+                                <label class="form-check-label small" for="inActive">Inactive</label>
+                            </div>
                         <div class="row mb-3">
                             <div class="col-sm-12">
                                 <div class="me-2 align-items-center d-flex mb-2">
@@ -82,14 +86,28 @@
                 <div class="row">
                     <!-- Action Buttons -->
                     <div class="d-flex justify-content-end mb-2 action-buttons">
+                    {{-- <div class="d-flex align-items-center justify-content-between mb-2"> --}}
+                        <!-- Checkbox Group -->
+                        {{-- <div class="d-flex">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input single-check" type="checkbox" id="Active" name="Active" value="active" checked>
+                                <label class="form-check-label small" for="Active">Active</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input single-check" type="checkbox" id="inActive" name="inActive" value="inactive">
+                                <label class="form-check-label small" for="inActive">Inactive</label>
+                            </div>
+                        </div> --}}
+                    <!-- Action Buttons -->
+                    {{-- <div class="d-flex action-buttons"> --}}
                         <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-edit" style="color: black;"></i>
                         </button>
                         <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-trash" style="color: red;"></i>
                         </button>
-                    </div>
-
+                    {{-- </div> --}}
+                </div>
                     <!-- Bordered Table -->
                     <table class="table table-bordered mt-2" id='exportRm'>
                         <thead class="custom-header">
@@ -103,6 +121,7 @@
                                 <th scope="col" style="color:white;">Overheads Category</th>
                                 <th scope="col" style="color:white;">Price(Rs)</th>
                                 <th scope="col" style="color:white;">UoM</th>
+                                <th scope="col" style="color:white;">Status</th>
                             </tr>
                         </thead>
                         <tbody id="overheadsTable">
@@ -132,6 +151,9 @@
                                     <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                                 </td>
                                 <td>{{ $material->uom }}</td> <!-- UoM -->
+                               <td><span class="badge {{ strtolower($material->status) === 'active' ? 'bg-success' : 'bg-danger' }}" style="font-weight: normal;">
+                                    {{ $material->status }}
+                                </span></td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -646,7 +668,6 @@
                                 </tr>
                             `;
                     }
-
                     priceModal.show(); // Show modal after populating
                 })
                 .catch((error) => {
@@ -857,6 +878,11 @@
                         <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                      </td>
                     <td>${item.uom}</td>
+                    <td>
+                    <span class="badge" style="background-color: ${item.status.toLowerCase() === 'active' ? 'green' : '#dc3545'}; font-weight: normal;">
+                    ${item.status}
+                </span>
+                </td>
                 </tr>
             `;
         });
@@ -959,7 +985,6 @@
 
         document.getElementById('categorySearch').addEventListener('keyup', function() {
             const searchType = document.getElementById('searchtype').value;
-
             if (searchType === 'category') {
                 filterCategories();
             } else if (searchType === 'items') {
@@ -972,8 +997,8 @@
             document.getElementById("categorySearch").value ="";
             const categoryItems = document.querySelectorAll(".category-item");
             if (searchTypeselection === 'category') {
+                document.querySelector('.single-check').checked = false;
                 categoryItems.forEach(item => item.style.display = "block");
-
             } else if (searchTypeselection === 'items') {
                 categoryItems.forEach(item => item.style.display = "none");
             }
@@ -986,7 +1011,7 @@
             } else if (errorMessage) {
                 errorMessage.style.display = 'none';
             }
-        }, 3000);
+        }, 4000);
 
     // });
 
@@ -1089,7 +1114,89 @@
             location.reload();
         }
     }
+    //  function selection_isActive()
+    // {
+        const checkboxes = document.querySelectorAll('.single-check');
+        checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
+             if (isEditing) {
+                 isEditing = false;
+                // exitEditingMode();
+                showEditDeleteButtons();
+            }
+            if (this.checked) {
+            // Uncheck all others
+            checkboxes.forEach(cb => {
+                if (cb !== this) cb.checked = false;
+            });
+
+            } else if (checkedBoxes.length === 0) {
+            // If user tries to uncheck the only selected one, pick another
+            for (const cb of checkboxes) {
+                if (cb !== this) {
+                cb.checked = true;
+                break;
+                }
+            }
+            }
+        const checkedBox = document.querySelector('.single-check:checked'); // Finds the checkbox that is checked
+        let table = document.getElementById('overheadsTable');
+        let rows = table.getElementsByTagName('tr');
+
+            // If no checkbox is checked, exit early
+            if (!checkedBox) {
+                console.log('No checkbox selected');
+                location.reload();
+                return;
+            }
+            // Get the status from the checkbox's id or value
+            const selectedStatus = checkedBox.value.toLowerCase().trim(); // e.g., 'active', 'inactive', 'all'
+            console.log("Selected Status:", selectedStatus);
+
+        if (selectedStatus) {
+                // Proceed with constructing the URL and fetching data
+                const queryParams = new URLSearchParams({
+                    statusValue: selectedStatus, // Always include the selected status
+                });
+                    console.log(queryParams.toString());
+                   // Construct the URL dynamically based on selected categories
+                  const url = `/overheads?${queryParams.toString()}`;
+                    // Fetch updated data from server
+                    fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            filteredData = data.overheads;
+                            console.log('Fetched Data:', data.overheads);
+                            visibleData = data.overheads;
+                            currentPage = 1; // reset to page 1 on new filter
+                            renderTablePage(currentPage, filteredData);
+                            renderPagination(filteredData.length);
+
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while fetching overhead(s).');
+                        });
+                    }else{
+                        location.reload();
+                    }
+            });
+
+        });
+    // }
     default_searchType();
+    // selection_isActive();
 });
 
 function default_searchType()

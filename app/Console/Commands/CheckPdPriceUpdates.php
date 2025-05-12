@@ -23,13 +23,9 @@ class CheckPdPriceUpdates extends Command
     {
         Log::info("Running check:pd-price-updates command...");
 
-        $storeId = session('store_id');
-
-        $products = Product::where('status', 'active')
-            ->where('store_id', $storeId)
-            ->get();
+        $products = Product::where('status', 'active')->get();
         $now = Carbon::now();
-        $materialsToNotify = [];
+        $productsToNotify = [];
 
         if ($products->isEmpty()) {
             Log::warning("No active products found.");
@@ -48,16 +44,14 @@ class CheckPdPriceUpdates extends Command
             $lastUpdateDate = $lastUpdate ? Carbon::parse($lastUpdate->created_at) : Carbon::parse($product->created_at);
             $updateFrequency = strtolower(trim($product->update_frequency));
             $priceUpdateFrequency = (int) $product->price_update_frequency;
-            $shouldNotify = false;
 
             if (!in_array($updateFrequency, ['days', 'weeks', 'monthly', 'yearly'])) {
                 Log::warning("Invalid update_frequency for {$product->name}: {$updateFrequency}");
                 continue;
             }
 
-            // Clone $now before modifying it to avoid issues
+            // Clone $now before modifying it
             $checkDate = (clone $now);
-
             switch ($updateFrequency) {
                 case 'days':
                     $checkDate = $checkDate->subDays($priceUpdateFrequency);
@@ -73,38 +67,42 @@ class CheckPdPriceUpdates extends Command
                     break;
             }
 
-            // Debugging logs
-            Log::info("Product: {$product->name}, ID: {$product->id}");
             Log::info(" - Last update: {$lastUpdateDate->toDateTimeString()}");
-            Log::info(" - Expected update interval: {$updateFrequency} {$priceUpdateFrequency}");
-            Log::info(" - Threshold date for notification: {$checkDate->toDateTimeString()}");
+            Log::info(" - Threshold date: {$checkDate->toDateTimeString()}");
             Log::info(" - Should notify? " . ($lastUpdateDate->lt($checkDate) ? 'Yes' : 'No'));
 
             if ($lastUpdateDate->lt($checkDate)) {
-                Log::info("Price update alert needed for: {$product->name}");
                 $productsToNotify[] = [
                     'name' => $product->name,
                     'id' => $product->id,
                     'pdcode' => $product->pdcode,
+                    'store_id' => $product->store_id,
                 ];
             }
         }
 
-        if (!empty($productsToNotify)) {
-            $users = User::all();
+        if (empty($productsToNotify)) {
+            Log::info("No product update alerts needed.");
+            return;
+        }
+
+        $groupedByStore = collect($productsToNotify)->groupBy('store_id');
+        $whatsappController = new WhatsAppController();
+
+        foreach ($groupedByStore as $storeId => $storeProducts) {
+            $users = User::where('store_id', $storeId)->get();
 
             if ($users->isEmpty()) {
-                Log::warning("No users found to notify.");
-                return;
+                Log::warning("No users found for store ID: {$storeId}");
+                continue;
             }
-            $whatsappController = new WhatsAppController();
 
             foreach ($users as $user) {
                 $channel = 'email';
                 Log::info("Sending email to: {$user->email}");
 
                 try {
-                    Mail::to($user->email)->send(new PdPriceUpdateMail($productsToNotify));
+                    Mail::to($user->email)->send(new PdPriceUpdateMail($storeProducts->toArray()));
                     Log::info("Email successfully sent to {$user->email}");
                 } catch (\Exception $e) {
                     Log::error("Failed to send email to {$user->email}: " . $e->getMessage());
@@ -115,8 +113,8 @@ class CheckPdPriceUpdates extends Command
                     Log::info("Sending WhatsApp message to: {$user->whatsapp_number}");
 
                     try {
-                        $message = "Price Alert\n";
-                        foreach ($productsToNotify as $product) {
+                        $message = "🔔 *Product Price Update Alert*\n";
+                        foreach ($storeProducts as $product) {
                             $message .= "Product: {$product['name']} (Code: {$product['pdcode']})\n";
                         }
                         $message .= "\nPlease update the prices accordingly.";
@@ -129,18 +127,14 @@ class CheckPdPriceUpdates extends Command
                     }
                 }
 
-                // ✅ Save alert (always)
-                $pdIds = collect($productsToNotify)->pluck('id')->toArray();
-
                 PdPriceUpdateAlert::create([
                     'user_id' => $user->id,
-                    'product_ids' => $pdIds,
+                    'store_id' => $storeId,
+                    'product_ids' => $storeProducts->pluck('id')->toArray(),
                     'alerted_at' => now(),
                     'channel' => $channel,
                 ]);
             }
-        } else {
-            Log::info("No price update alerts needed.");
         }
 
         $this->info('Product price update frequency alerts checked successfully.');

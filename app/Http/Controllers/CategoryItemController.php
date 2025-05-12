@@ -26,34 +26,71 @@ class CategoryItemController extends Controller
         $categories = DB::table('categories')->get();
         $categoryIds = $request->input('category_ids');
         $searchValue = $request->input('categoryItem', '');
+        $statusValue = $request->input('statusValue', '');
 
         $query = DB::table('categoryitems')
             ->join('categories', 'categoryitems.categoryId', '=', 'categories.id')
             ->select('categoryitems.*', 'categories.categoryname')
             ->where('categoryitems.store_id', $storeid);
 
+        // Always apply status filter first
+        if (!empty($statusValue)) {
+            if ($statusValue === 'all' || in_array('all', (array)$statusValue)) {
+                $statusValue = ['active', 'inactive'];
+            } else {
+                $statusValue = (array) $statusValue;
+            }
+            $query->whereIn('categoryitems.status', $statusValue);
+        }
+
+        // Then apply other filters
         if (!empty($searchValue)) {
-            $query->where('categoryitems.status', 'active')
-                ->where('categoryitems.itemname', 'LIKE', "{$searchValue}%");
+            $query->where('categoryitems.itemname', 'LIKE', "{$searchValue}%");
             $categoriesitems = $query->get();
-        } elseif (!empty($categoryIds)) {
+        }
+        if (!empty($categoryIds)) {
             $categoryIds = explode(',', $categoryIds);
             $query->whereIn('categoryitems.categoryId', $categoryIds);
             $categoriesitems = $query->orderBy('categoryitems.itemname', 'asc')->get();
-        } else {
-            $categoriesitems = $query
-                ->where('categoryitems.status', 'active')
-                ->orderBy('categoryitems.itemname', 'asc')
-                ->paginate(10);
+        }
+       if(!empty($statusValue)) {
+            $categoriesitems = $query->orderBy('categoryitems.itemname', 'asc')->paginate(10);
         }
 
+        // Return paginated or non-paginated response
         if ($request->ajax()) {
+            $categoriesitems = $query->paginate(10);
             return response()->json([
                 'categoriesitems' => $categoriesitems,
             ]);
+        } else {
+            $categoriesitems = $query->paginate(10);
+            return view('category.categories', compact('categories', 'categoriesitems'));
         }
 
-        return view('category.categories', compact('categories', 'categoriesitems'));
+        // if (!empty($searchValue)) {
+        //     $query->where('categoryitems.itemname', 'LIKE', "{$searchValue}%");
+        //     // ->whereIn('categoryitems.status', (array) $statusValue);
+        //     $categoriesitems = $query->get();
+        // } elseif (!empty($categoryIds)) {
+        //     $categoryIds = explode(',', $categoryIds);
+        //     $query->whereIn('categoryitems.categoryId', $categoryIds);
+        //             // ->whereIn('categoryitems.status', (array) $statusValue);
+        //     $categoriesitems = $query->orderBy('categoryitems.itemname', 'asc')->get();
+        // } else {
+        //     $categoriesitems = $query
+        //     // ->whereIn('categoryitems.status', (array) $statusValue)
+        //                         ->orderBy('categoryitems.itemname', 'asc')
+        //                             ->paginate(10);
+        // }
+
+        // if ($request->ajax()) {
+        //     return response()->json([
+        //         'categoriesitems' => $categoriesitems,
+        //     ]);
+        // }
+
+        // return view('category.categories', compact('categories', 'categoriesitems'));
     }
 
 
@@ -171,6 +208,7 @@ class CategoryItemController extends Controller
                 // 'categoryId' => $request->categoryId,
                 'itemname' => $request->itemname,
                 'description' => $request->description,
+                'status' => $request->status,
                 'created_user' => auth()->id(), // Assuming the user is authenticated
             ]);
         }

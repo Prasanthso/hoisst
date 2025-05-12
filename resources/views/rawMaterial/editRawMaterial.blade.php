@@ -54,7 +54,7 @@
                                 <div class="col-12">
                                     <label for="hsncode" class="form-label">HSN Code</label>
                                     <input type="text" class="form-control" id="hsncode" name="hsncode" value="{{ $rawMaterial->hsncode}}"
-                                    maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)" disabled>
+                                        maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)" disabled>
                                 </div>
                                 <div class="col-md-12">
                                     <label for="inputState" class="form-label">Choose Unit </label>
@@ -105,7 +105,7 @@
                                 <div class="col-12">
                                     <label for="inputTax" class="form-label">Tax(%)</label>
                                     <input type="text" class="form-control mb-2" id="inputTax" name="tax" value="{{ $rawMaterial->tax}}"
-                                    oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
+                                        oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
                                 <div class="row">
                                     <label for="update_frequency" class="form-label">Pricing update frequency</label>
@@ -120,14 +120,45 @@
                                     </div>
                                     <div class="col-md-9">
                                         <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ $rawMaterial->price_update_frequency}}"
-                                        oninput="this.value = this.value.replace(/\D/g, '');" disabled>
+                                            oninput="this.value = this.value.replace(/\D/g, '');" disabled>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="price_threshold" class="form-label">Price threshold</label>
                                     <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $rawMaterial->price_threshold}}"
-                                    oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
+                                        oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
+                                <fieldset class="row mb-3 mt-3">
+                                    <legend class="col-form-label col-sm-2 pt-0">Status</legend>
+                                    <div class="col-sm-10">
+                                        <div class="form-check">
+                                            <input
+                                                class="form-check-input"
+                                                type="radio"
+                                                name="status"
+                                                id="active"
+                                                value="active"
+                                                {{ $rawMaterial->status == 'active' ? 'checked' : '' }}
+                                                disabled>
+                                            <label class="form-check-label" for="active">
+                                                Active
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input
+                                                class="form-check-input"
+                                                type="radio"
+                                                name="status"
+                                                id="inactive"
+                                                value="inactive"
+                                                {{ $rawMaterial->status == 'inactive' ? 'checked' : '' }}
+                                                disabled>
+                                            <label class="form-check-label" for="inactive">
+                                                Inactive
+                                            </label>
+                                        </div>
+                                    </div>
+                                </fieldset>
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="saveButton" style="display: none;">
                                         Update
@@ -275,15 +306,21 @@
 
         document.querySelectorAll("input, select").forEach(input => {
             let hasTyped = false; // Track if the user has typed
-            input.addEventListener("input", () => { hasTyped = true; clearError(input)});
-            input.addEventListener("change", () => { hasTyped = true; clearError(input)});
+            input.addEventListener("input", () => {
+                hasTyped = true;
+                clearError(input)
+            });
+            input.addEventListener("change", () => {
+                hasTyped = true;
+                clearError(input)
+            });
             input.addEventListener("blur", () => {
                 clearError(input);
-                    if (input.value.trim() === "") {
-                        hasTyped = false;
-                        showError(input, "This field is required!");
-                    }
-                });
+                if (input.value.trim() === "") {
+                    hasTyped = false;
+                    showError(input, "This field is required!");
+                }
+            });
         });
 
         // Special handling for select2 dropdowns

@@ -33,6 +33,7 @@ class RawMaterial extends Model
         'itemweight',
         'itemType_id',
         'tax',
+        'status',
         'store_id'
     ];
 

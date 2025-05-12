@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\CategoryItems;
 use App\Models\Product;
 use App\Models\RawMaterial;
+use App\Models\OverallCosting;
 use App\Models\UniqueCode;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -22,10 +23,12 @@ class ProductController extends Controller
         $categoryitems = CategoryItems::pdCategoryItem($storeid);
         $selectedCategoryIds = $request->input('category_ids', []);
         $searchValue = $request->input('pdText', '');
+        $statusValue = $request->input('statusValue', 'active');
 
+        // $costs = $this->getAllProductsABCcosts($storeid, $statusValue);
+        // $unitcost = where('store_id', $storeid)->value('id');
         if ($request->ajax()) {
             if (!empty($searchValue)) {
-
                 $product = DB::table('product_master as pd')
                     ->leftJoin('categoryitems as c1', 'pd.category_id1', '=', 'c1.id')
                     ->leftJoin('categoryitems as c2', 'pd.category_id2', '=', 'c2.id')
@@ -36,7 +39,14 @@ class ProductController extends Controller
                     ->leftJoin('categoryitems as c7', 'pd.category_id7', '=', 'c7.id')
                     ->leftJoin('categoryitems as c8', 'pd.category_id8', '=', 'c8.id')
                     ->leftJoin('categoryitems as c9', 'pd.category_id9', '=', 'c9.id')
-                    ->leftJoin('categoryitems as c10', 'pd.category_id10', '=', 'c10.id')
+                      ->leftJoin('rm_for_recipe as rmr', 'pd.id', '=', 'rmr.product_id')
+    ->leftJoin('pm_for_recipe as pmr', 'pd.id', '=', 'pmr.product_id')
+    ->leftJoin('oh_for_recipe as ohr', 'pd.id', '=', 'ohr.product_id')
+    ->leftJoin('moh_for_recipe as moh', 'pd.id', '=', 'moh.product_id')
+    ->leftJoin('overall_costing as oc', 'pd.id', '=', 'oc.productId')
+      ->leftJoin('raw_materials as rm', 'rmr.raw_material_id', '=', 'rm.id')
+            ->leftJoin('packing_materials as pm', 'pmr.packing_material_id', '=', 'pm.id')
+            ->leftJoin('overheads as oh', 'ohr.overheads_id', '=', 'oh.id')
                     ->select(
                         'pd.id',
                         'pd.name',
@@ -52,11 +62,30 @@ class ProductController extends Controller
                         'c7.itemname as category_name7',
                         'c8.itemname as category_name8',
                         'c9.itemname as category_name9',
-                        'c10.itemname as category_name10'
+                        'c10.itemname as category_name10',
+                        'pd.status',
+                                  DB::raw('
+    (
+        (
+            (
+                (
+                    SUM(rmr.quantity * rm.price) +
+                    SUM(pmr.quantity * pm.price) +
+                    COALESCE(SUM(ohr.quantity * oh.price), SUM(moh.price))
+                ) / rp.Output
+            ) *
+            (1 + (oc.margin / 100))
+        ) *
+        (1 + (pd.tax / 100))
+    ) *
+    (1 + (oc.discount / 100))
+    AS pdCost
+')
                     )
-                    ->where('pd.status', '=', 'active') // Filter by active status
+                    // ->where('pd.status', $statusValue) // Filter by active status
                     ->where('pd.store_id', $storeid)
                     ->where('pd.name', 'LIKE', "{$searchValue}%")
+                    ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom','pd.status','c1.itemname','c2.itemname','c3.itemname','c4.itemname','c5.itemname','c6.itemname','c7.itemname','c8.itemname','c9.itemname','c10.itemname','pd.tax','rp.Output','oc.margin','oc.discount')
                     ->get();
                 // Return filtered raw materials as JSON response
                 return response()->json([
@@ -64,7 +93,9 @@ class ProductController extends Controller
                     'message' => count($product) > 0 ? 'Products found' : 'No products found',
                     'product' => $product
                 ]);
-            } else {
+            }
+
+            if(!empty($selectedCategoryIds)) {
                 $selectedCategoryIds = explode(',', $selectedCategoryIds);
                 $selectedCategoryIds = array_filter($selectedCategoryIds, fn($id) => is_numeric($id) && $id > 0);
 
@@ -76,7 +107,6 @@ class ProductController extends Controller
                         'product' => []
                     ]);
                 }
-
                 // Fetch PRODUCTS filtered by the selected category IDs
                 $product = DB::table('product_master as pd')
                     ->leftJoin('categoryitems as c1', 'pd.category_id1', '=', 'c1.id')
@@ -89,6 +119,14 @@ class ProductController extends Controller
                     ->leftJoin('categoryitems as c8', 'pd.category_id8', '=', 'c8.id')
                     ->leftJoin('categoryitems as c9', 'pd.category_id9', '=', 'c9.id')
                     ->leftJoin('categoryitems as c10', 'pd.category_id10', '=', 'c10.id')
+                       ->leftJoin('rm_for_recipe as rmr', 'pd.id', '=', 'rmr.product_id')
+    ->leftJoin('pm_for_recipe as pmr', 'pd.id', '=', 'pmr.product_id')
+    ->leftJoin('oh_for_recipe as ohr', 'pd.id', '=', 'ohr.product_id')
+    ->leftJoin('moh_for_recipe as moh', 'pd.id', '=', 'moh.product_id')
+    ->leftJoin('overall_costing as oc', 'pd.id', '=', 'oc.productId')
+      ->leftJoin('raw_materials as rm', 'rmr.raw_material_id', '=', 'rm.id')
+            ->leftJoin('packing_materials as pm', 'pmr.packing_material_id', '=', 'pm.id')
+            ->leftJoin('overheads as oh', 'ohr.overheads_id', '=', 'oh.id')
                     ->select(
                         'pd.id',
                         'pd.name',
@@ -104,9 +142,27 @@ class ProductController extends Controller
                         'c7.itemname as category_name7',
                         'c8.itemname as category_name8',
                         'c9.itemname as category_name9',
-                        'c10.itemname as category_name10'
+                        'c10.itemname as category_name10',
+                        'pd.status',
+                                DB::raw('
+    (
+        (
+            (
+                (
+                    SUM(rmr.quantity * rm.price) +
+                    SUM(pmr.quantity * pm.price) +
+                    COALESCE(SUM(ohr.quantity * oh.price), SUM(moh.price))
+                ) / rp.Output
+            ) *
+            (1 + (oc.margin / 100))
+        ) *
+        (1 + (pd.tax / 100))
+    ) *
+    (1 + (oc.discount / 100))
+    AS pdCost
+')
                     )
-                    ->where(function ($query) use ($selectedCategoryIds) {
+                        ->where(function ($query) use ($selectedCategoryIds) {
                         $query->whereIn('c1.id', $selectedCategoryIds)
                             ->orWhereIn('c2.id', $selectedCategoryIds)
                             ->orWhereIn('c3.id', $selectedCategoryIds)
@@ -118,9 +174,80 @@ class ProductController extends Controller
                             ->orWhereIn('c9.id', $selectedCategoryIds)
                             ->orWhereIn('c10.id', $selectedCategoryIds);
                     })
-                    ->where('pd.status', '=', 'active') // Filter by active status
+                    // ->where('pd.status', $statusValue) // Filter by active status
                     ->where('pd.store_id', $storeid)
+                     ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom','pd.status','c1.itemname','c2.itemname','c3.itemname','c4.itemname','c5.itemname','c6.itemname','c7.itemname','c8.itemname','c9.itemname','c10.itemname','pd.tax','rp.Output','oc.margin','oc.discount')
                     ->orderBy('pd.name', 'asc')
+                    ->get();
+                // Return filtered raw materials as JSON response
+                return response()->json([
+                    'status' => 'success',
+                    'message' => count($product) > 0 ? 'Products found' : 'No products found',
+                    'product' => $product
+                ]);
+            }
+              if (!empty($statusValue)) {
+
+                $product = DB::table('product_master as pd')
+                    ->leftJoin('categoryitems as c1', 'pd.category_id1', '=', 'c1.id')
+                    ->leftJoin('categoryitems as c2', 'pd.category_id2', '=', 'c2.id')
+                    ->leftJoin('categoryitems as c3', 'pd.category_id3', '=', 'c3.id')
+                    ->leftJoin('categoryitems as c4', 'pd.category_id4', '=', 'c4.id')
+                    ->leftJoin('categoryitems as c5', 'pd.category_id5', '=', 'c5.id')
+                    ->leftJoin('categoryitems as c6', 'pd.category_id6', '=', 'c6.id')
+                    ->leftJoin('categoryitems as c7', 'pd.category_id7', '=', 'c7.id')
+                    ->leftJoin('categoryitems as c8', 'pd.category_id8', '=', 'c8.id')
+                    ->leftJoin('categoryitems as c9', 'pd.category_id9', '=', 'c9.id')
+                    ->leftJoin('categoryitems as c10', 'pd.category_id10', '=', 'c10.id')
+                           ->leftJoin('rm_for_recipe as rmr', 'pd.id', '=', 'rmr.product_id')
+    ->leftJoin('pm_for_recipe as pmr', 'pd.id', '=', 'pmr.product_id')
+    ->leftJoin('oh_for_recipe as ohr', 'pd.id', '=', 'ohr.product_id')
+    ->leftJoin('moh_for_recipe as moh', 'pd.id', '=', 'moh.product_id')
+    ->leftJoin('overall_costing as oc', 'pd.id', '=', 'oc.productId')
+      ->leftJoin('raw_materials as rm', 'rmr.raw_material_id', '=', 'rm.id')
+            ->leftJoin('packing_materials as pm', 'pmr.packing_material_id', '=', 'pm.id')
+            ->leftJoin('overheads as oh', 'ohr.overheads_id', '=', 'oh.id')
+                    ->select(
+                        'pd.id',
+                        'pd.name',
+                        'pd.pdcode',
+                        'pd.price',
+                        'pd.uom',
+                        'c1.itemname as category_name1',
+                        'c2.itemname as category_name2',
+                        'c3.itemname as category_name3',
+                        'c4.itemname as category_name4',
+                        'c5.itemname as category_name5',
+                        'c6.itemname as category_name6',
+                        'c7.itemname as category_name7',
+                        'c8.itemname as category_name8',
+                        'c9.itemname as category_name9',
+                        'c10.itemname as category_name10',
+                        'pd.status',
+                          // Calculate the total tax and discount
+        DB::raw('
+    (
+        (
+            (
+                (
+                    SUM(rmr.quantity * rm.price) +
+                    SUM(pmr.quantity * pm.price) +
+                    COALESCE(SUM(ohr.quantity * oh.price), SUM(moh.price))
+                ) / rp.Output
+            ) *
+            (1 + (oc.margin / 100))
+        ) *
+        (1 + (pd.tax / 100))
+    ) *
+    (1 + (oc.discount / 100))
+    AS pdCost
+')
+                    )
+                    ->where('pd.status', $statusValue) // Filter by active status
+                    ->where('pd.store_id', $storeid)
+                     ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom','pd.status','c1.itemname','c2.itemname','c3.itemname','c4.itemname','c5.itemname','c6.itemname','c7.itemname','c8.itemname','c9.itemname','c10.itemname','pd.tax','rp.Output','oc.margin','oc.discount')
+                    ->orderBy('pd.name', 'asc')
+                    // ->where('pd.name', 'LIKE', "{$searchValue}%")
                     ->get();
                 // Return filtered raw materials as JSON response
                 return response()->json([
@@ -143,6 +270,15 @@ class ProductController extends Controller
             ->leftJoin('categoryitems as c8', 'pd.category_id8', '=', 'c8.id')
             ->leftJoin('categoryitems as c9', 'pd.category_id9', '=', 'c9.id')
             ->leftJoin('categoryitems as c10', 'pd.category_id10', '=', 'c10.id')
+                  ->leftJoin('rm_for_recipe as rmr', 'pd.id', '=', 'rmr.product_id')
+    ->leftJoin('pm_for_recipe as pmr', 'pd.id', '=', 'pmr.product_id')
+    ->leftJoin('oh_for_recipe as ohr', 'pd.id', '=', 'ohr.product_id')
+    ->leftJoin('moh_for_recipe as moh', 'pd.id', '=', 'moh.product_id')
+     ->leftJoin('overall_costing as oc', 'pd.id', '=', 'oc.productId')
+    ->leftJoin('recipe_master as rp', 'pd.id', '=', 'rp.product_id')
+      ->leftJoin('raw_materials as rm', 'rmr.raw_material_id', '=', 'rm.id')
+            ->leftJoin('packing_materials as pm', 'pmr.packing_material_id', '=', 'pm.id')
+            ->leftJoin('overheads as oh', 'ohr.overheads_id', '=', 'oh.id')
             ->select(
                 'pd.id',
                 'pd.name',
@@ -158,16 +294,107 @@ class ProductController extends Controller
                 'c7.itemname as category_name7',
                 'c8.itemname as category_name8',
                 'c9.itemname as category_name9',
-                'c10.itemname as category_name10'
-            )
-            ->where('pd.status', '=', 'active') // Filter by active status
+                'c10.itemname as category_name10',
+                'pd.status',
+
+         DB::raw('
+    (
+        (
+            (
+                (
+                    SUM(DISTINCT rmr.quantity * rm.price) +
+                    SUM(DISTINCT pmr.quantity * pm.price) +
+                    COALESCE(SUM(DISTINCT ohr.quantity * oh.price), SUM(DISTINCT moh.price))
+                ) / rp.Output
+            ) *
+            (1 + (oc.margin / 100))
+        ) *
+        (1 + (pd.tax / 100))
+    ) *
+    (1 + (oc.discount / 100))
+    AS pdCost
+')
+    )
+            // ->where('pd.status', $statusValue) // Filter by active status
             ->where('pd.store_id', $storeid)
+             ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom','pd.status','c1.itemname','c2.itemname','c3.itemname','c4.itemname','c5.itemname','c6.itemname','c7.itemname','c8.itemname','c9.itemname','c10.itemname','pd.tax','rp.Output','oc.margin','oc.discount')
             ->orderBy('pd.name', 'asc')
             ->paginate(10);
 
         return view('product.products', compact('product', 'categoryitems'));
     }
 
+/*
+   public function getAllProductsABCcosts($storeId, $statusValue)
+{
+    $products = Product::where('store_id', $storeId)
+        ->where('status', $statusValue)
+        ->get();
+
+    $results = [];
+
+    foreach ($products as $product) {
+        $productId = $product->id;
+
+        $totalRmCost = DB::table('rm_for_recipe')
+            ->where('product_id', $productId)
+            ->where('store_id', $storeId)
+            ->sum('amount');
+
+        $totalPmCost = DB::table('pm_for_recipe')
+            ->where('product_id', $productId)
+            ->where('store_id', $storeId)
+            ->sum('amount');
+
+        $totalOhCost = DB::table('oh_for_recipe')
+            ->where('product_id', $productId)
+            ->where('store_id', $storeId)
+            ->sum('amount');
+
+        if (empty($totalOhCost)) {
+            $totalOhCost = DB::table('moh_for_recipe')
+                ->where('product_id', $productId)
+                ->where('store_id', $storeId)
+                ->sum('price');
+        }
+
+        $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
+
+        $recipe = DB::table('recipe_master')
+            ->where('product_id', $productId)
+            ->where('store_id', $storeId)
+            ->where('status', $statusValue)
+            ->first();
+
+      $outputQty = isset($recipe->rpoutput) ? $recipe->rpoutput : 1;
+
+        $unitCost = $outputQty > 0 ? ($totalCost / $outputQty) : 0;
+
+        // Get margin and discount for product
+        $costing = DB::table('overall_costing')
+            ->where('productId', $productId)
+            ->where('store_id', $storeId)
+            ->first();
+
+        $margin = isset($costing) && isset($costing->margin) ? $costing->margin : 0;
+        $discount = isset($costing) && isset($costing->discount) ? $costing->discount : 0;
+
+        $unitCostWithMargin = $unitCost + ($unitCost * $margin / 100);
+        $finalUnitCost = $unitCostWithMargin - ($unitCostWithMargin * $discount / 100);
+
+        $results[] = [
+            'product_id' => $productId,
+            'product_name' => $product->name,
+            'unit_cost' => round($unitCost, 2),
+            'margin' => $margin,
+            'discount' => $discount,
+            'final_cost' => round($finalUnitCost, 2),
+        ];
+    }
+
+    return $results;
+}
+    */
 
     /**
      * Show the form for creating a new resource.
@@ -428,6 +655,7 @@ class ProductController extends Controller
                     'update_frequency' => $request->update_frequency,
                     'price_update_frequency' => $request->price_update_frequency,
                     'price_threshold' => $request->price_threshold,
+                    'status' => $request->status,
                     'store_id' => $storeid,
                 ]);
             } catch (\Exception $e) {
