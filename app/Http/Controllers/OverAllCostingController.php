@@ -89,27 +89,30 @@ class OverAllCostingController extends Controller
         //     $product_tax = $product->tax ?? 0;
         //     $itemtype = 'Trading';
         //    }
-        //    else{
-        $totalRmCost = DB::table('rm_for_recipe')
-            ->where('product_id', $productId)
-            ->where('store_id',$storeid)
-            ->sum('amount');
 
-        $totalPmCost = DB::table('pm_for_recipe')
-            ->where('product_id', $productId)
-            ->where('store_id',$storeid)
-            ->sum('amount');
+        // Raw Material total
+        $totalRmCost = DB::table('rm_for_recipe as r')
+            ->join('raw_materials as rm', 'r.raw_material_id', '=', 'rm.id')
+            ->where('r.product_id', $productId)
+            ->sum(DB::raw('(r.quantity * rm.price)'));
 
-        $totalOhCost = DB::table('oh_for_recipe')
-            ->where('product_id', $productId)
-            ->where('store_id',$storeid)
-            ->sum('amount');
+        // Packing Material total
+        $totalPmCost = DB::table('pm_for_recipe as p')
+            ->join('packing_materials as pm', 'p.packing_material_id', '=', 'pm.id')
+            ->where('p.product_id', $productId)
+            ->sum(DB::raw('(p.quantity * pm.price)'));
 
-        // $totalMohCost = 0;
-        if (empty($totalOhCost)) { // If NULL or 0
-            $totalOhCost = DB::table('moh_for_recipe')
+        // Overheads
+        $totalOhCost = DB::table('oh_for_recipe as o')
+            ->join('overheads as oh', 'o.overheads_id', '=', 'oh.id')
+            ->where('o.product_id', $productId)
+            ->sum(DB::raw('(o.quantity * oh.price)'));
+
+        // MOH fallback
+        $totalMohCost = 0;
+        if ($totalOhCost == 0) {
+            $totalMohCost = DB::table('moh_for_recipe')
                 ->where('product_id', $productId)
-                ->where('store_id',$storeid)
                 ->sum('price');
         }
 
@@ -123,6 +126,7 @@ class OverAllCostingController extends Controller
              ->leftJoin('raw_materials', 'rm_for_recipe.raw_material_id', '=', 'raw_materials.id')
             ->leftJoin('packing_materials', 'pm_for_recipe.packing_material_id', '=', 'packing_materials.id')
             ->leftJoin('overheads', 'oh_for_recipe.overheads_id', '=', 'overheads.id')
+            ->where('product_master.store_id',$storeid)
             ->where('recipe_master.product_id', $productId)
             ->where('recipe_master.status', 'active')
             ->where('recipe_master.store_id',$storeid)
@@ -139,6 +143,7 @@ class OverAllCostingController extends Controller
                 'oh_for_recipe.quantity as oh_quantity',
                 'overheads.price as oh_price',
                 'oh_for_recipe.amount as oh_amount',
+                'moh_for_recipe.price as moh_price',
                 'rm_for_recipe.id as rid',
                 'pm_for_recipe.id as pid',
                 'oh_for_recipe.id as ohid',
@@ -155,11 +160,6 @@ class OverAllCostingController extends Controller
             return $item;
         });
 
-        // $totalRmCost = $pricingData->rm_amount;
-        // $totalPmCost = $pricingData->pm_amount;
-        // $totalOhCost = $pricingData->oh_amount;
-        $totalCost = $totalRmCost + $totalPmCost + $totalOhCost;
-
         $rpoutput = $pricingData->isNotEmpty() ? $pricingData->first()->rpoutput : null;
         $product_tax = $pricingData->isNotEmpty() ? $pricingData->first()->product_tax : null;
         // $itemtype = 'Own';
@@ -171,7 +171,7 @@ class OverAllCostingController extends Controller
         return response()->json([
             'totalRmCost' => $totalRmCost,
             'totalPmCost' => $totalPmCost,
-            'totalOhCost' => $totalOhCost,
+            'totalOhCost' => $totalOhCost > 0 ? $totalOhCost : $totalMohCost,
             'rpoutput' => $rpoutput,
             // 'tradingCost' => $tradingCost,
             'product_tax' => $product_tax,
