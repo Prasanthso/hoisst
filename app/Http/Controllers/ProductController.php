@@ -223,8 +223,13 @@ class ProductController extends Controller
                 ->leftJoin('rm_for_recipe as rmr', 'pd.id', '=', 'rmr.product_id')
     ->leftJoin('pm_for_recipe as pmr', 'pd.id', '=', 'pmr.product_id')
     ->leftJoin('oh_for_recipe as ohr', 'pd.id', '=', 'ohr.product_id')
-    ->leftJoin('moh_for_recipe as mohr', 'pd.id', '=', 'mohr.product_id')
+    ->leftJoin('moh_for_recipe as moh', 'pd.id', '=', 'moh.product_id')
     ->leftJoin('overall_costing as oc', 'pd.id', '=', 'oc.productId')
+    ->leftJoin('recipe_master as rp', 'pd.id', '=', 'rp.product_id')
+      ->leftJoin('raw_materials as rm', 'rmr.raw_material_id', '=', 'rm.id')
+            ->leftJoin('packing_materials as pm', 'pmr.packing_material_id', '=', 'pm.id')
+            ->leftJoin('overheads as oh', 'ohr.overheads_id', '=', 'oh.id')
+
             ->select(
                 'pd.id',
                 'pd.name',
@@ -242,14 +247,27 @@ class ProductController extends Controller
                 'c9.itemname as category_name9',
                 'c10.itemname as category_name10',
                 'pd.status',
-         // Calculate the total tax and discount
-        DB::raw('(
-            (((rmr.quantity * rmr.price) + (pmr.quantity * pmr.price) + (ohr.quantity * ohr.price) + (mohr.price)) * (oc.margin / 100)) * (pd.tax / 100) * (oc.discount / 100)
-        ) as tot_tax_discount')
-
-            )
+         DB::raw('
+    (
+        (
+            (
+                (
+                    SUM(rmr.quantity * rm.price) +
+                    SUM(pmr.quantity * pm.price) +
+                    COALESCE(SUM(ohr.quantity * oh.price), SUM(moh.price))
+                ) / rp.Output
+            ) *
+            (1 + (oc.margin / 100))
+        ) *
+        (1 + (pd.tax / 100))
+    ) *
+    (1 + (oc.discount / 100))
+    AS pdCost
+')
+    )
             // ->where('pd.status', $statusValue) // Filter by active status
             ->where('pd.store_id', $storeid)
+             ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom','pd.status','c1.itemname','c2.itemname','c3.itemname','c4.itemname','c5.itemname','c6.itemname','c7.itemname','c8.itemname','c9.itemname','c10.itemname','pd.tax','rp.Output','oc.margin','oc.discount')
             ->orderBy('pd.name', 'asc')
             ->paginate(10);
 

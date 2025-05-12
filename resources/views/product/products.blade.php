@@ -152,7 +152,7 @@
                                      <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                                  </td>
                                  <td>{{ $material->uom }}</td> <!-- UoM -->
-                               <td>{{ $material->tot_tax_discount ? number_format($material->tot_tax_discount, 2) : '0' }}</td>
+                               <td>{{ $material->pdCost ? number_format($material->pdCost, 2) : '0' }}</td>
                                <td><span class="badge {{ strtolower($material->status) === 'active' ? 'bg-success' : 'bg-danger' }}" style="font-weight: normal;">
                                     {{ $material->status }}
                                 </span>
@@ -876,7 +876,7 @@
                         <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                      </td>
                     <td>${item.uom}</td>
-                   <td>${item.tot_tax_discount ? item.tot_tax_discount.toFixed(2) : '0'}</td>
+                   <td>${item.pdCost ? item.pdCost.toFixed(2) : '0'}</td>
                    <td>
                     <span class="badge" style="background-color: ${item.status.toLowerCase() === 'active' ? 'green' : '#dc3545'}; font-weight: normal;">
                     ${item.status}
