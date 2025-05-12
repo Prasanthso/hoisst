@@ -208,7 +208,7 @@ class OverheadController extends Controller
             'c10.itemname as category_name10',
             'oh.status'
         )
-        ->where('oh.status', '=', $statusValue) // Filter by active status
+        // ->where('oh.status', '=', $statusValue) // Filter by active status
         ->where('oh.store_id', $storeid)
         ->orderBy('oh.name', 'asc')
         ->paginate(10);

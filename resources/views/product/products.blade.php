@@ -38,6 +38,10 @@
                  <div class="card" style="background-color: #EEEEEE;">
                      <div class="card-body">
                          <h5 class="card-title">Categories</h5>
+                         <div class="form-check form-check-inline">
+                                <input class="form-check-input single-check" type="checkbox" id="inActive" name="inActive" value="inactive">
+                                <label class="form-check-label small" for="inActive">Inactive</label>
+                            </div>
                          <div class="row mb-3">
                              <div class="col-sm-12">
                                  <div class="me-2 align-items-center d-flex mb-2">
@@ -81,9 +85,9 @@
              <div class="col-lg-8">
                  <div class="row">
                      <!-- Action Buttons -->
-                    <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="d-flex align-items-center justify-content-end mb-2 action-buttons">
                         <!-- Checkbox Group -->
-                        <div class="d-flex">
+                        {{-- <div class="d-flex">
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input single-check" type="checkbox" id="Active" name="Active" value="active" checked>
                                 <label class="form-check-label small" for="Active">Active</label>
@@ -92,15 +96,15 @@
                                 <input class="form-check-input single-check" type="checkbox" id="inActive" name="inActive" value="inactive">
                                 <label class="form-check-label small" for="inActive">Inactive</label>
                             </div>
-                        </div>
-                        <div class="d-flex action-buttons">
+                        </div> --}}
+                        {{-- <div class="d-flex action-buttons"> --}}
                         <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-edit" style="color: black;"></i>
                         </button>
                         <button class="btn btn-sm delete-table-btn" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-trash" style="color: red;"></i>
                         </button>
-                        </div>
+                        {{-- </div> --}}
                     </div>
 
                      <!-- Bordered Table -->
@@ -148,7 +152,7 @@
                                      <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                                  </td>
                                  <td>{{ $material->uom }}</td> <!-- UoM -->
-                                 <td></td>
+                               <td>{{ $material->pdCost ? number_format($material->pdCost, 2) : '0' }}</td>
                                <td><span class="badge {{ strtolower($material->status) === 'active' ? 'bg-success' : 'bg-danger' }}" style="font-weight: normal;">
                                     {{ $material->status }}
                                 </span>
@@ -872,7 +876,7 @@
                         <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                      </td>
                     <td>${item.uom}</td>
-                    <td></td>
+                   <td>${item.pdCost ? item.pdCost.toFixed(2) : '0'}</td>
                    <td>
                     <span class="badge" style="background-color: ${item.status.toLowerCase() === 'active' ? 'green' : '#dc3545'}; font-weight: normal;">
                     ${item.status}
@@ -996,6 +1000,7 @@
             document.getElementById("categorySearch").value ="";
             const categoryItems = document.querySelectorAll(".category-item");
             if (searchTypeselection === 'category') {
+                 document.querySelector('.single-check').checked = false;
                 categoryItems.forEach(item => item.style.display = "block");
             } else if (searchTypeselection === 'items') {
                 categoryItems.forEach(item => item.style.display = "none");
@@ -1113,14 +1118,18 @@
                      location.reload();
                 }
         }
-    function selection_isActive()
-    {
+    // function selection_isActive()
+    // {
         const checkboxes = document.querySelectorAll('.single-check');
 
         checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function () {
             const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
-
+              if (isEditing) {
+                 isEditing = false;
+                // exitEditingMode();
+                showEditDeleteButtons();
+            }
             if (this.checked) {
             // Uncheck all others
             checkboxes.forEach(cb => {
@@ -1143,7 +1152,9 @@
             // If no checkbox is checked, exit early
             if (!checkedBox) {
                 console.log('No checkbox selected');
+                location.reload();
                 return;
+
             }
             // Get the status from the checkbox's id or value
             const selectedStatus = checkedBox.value.toLowerCase().trim(); // e.g., 'active', 'inactive', 'all'
@@ -1190,9 +1201,9 @@
                 });
 
             });
-    }
+    // }
         default_searchType();
-        selection_isActive();
+        // selection_isActive();
 });
 
 

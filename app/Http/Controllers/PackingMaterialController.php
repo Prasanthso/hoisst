@@ -108,7 +108,7 @@ class PackingMaterialController extends Controller
                         'c10.itemname as category_name10',
                         'pm.status'
                     )
-                    ->where('pm.status', '=', 'active')
+                    // ->where('pm.status', '=', 'active')
                     ->where('pm.store_id', $storeid)
                     ->Where('pm.name', 'LIKE', "{$searchValue}%")
                     //  ->orderBy('pm.name', 'asc')
@@ -196,7 +196,7 @@ class PackingMaterialController extends Controller
             'c10.itemname as category_name10',
             'pm.status'
         )
-        ->where('pm.status', '=', $statusValue) // Filter by active status
+        //->where('pm.status', '=', $statusValue) // Filter by active status
         ->where('pm.store_id', $storeid)
         ->orderBy('pm.name', 'asc')
         ->paginate(10);

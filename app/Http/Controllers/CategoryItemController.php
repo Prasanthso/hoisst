@@ -26,7 +26,7 @@ class CategoryItemController extends Controller
         $categories = DB::table('categories')->get();
         $categoryIds = $request->input('category_ids');
         $searchValue = $request->input('categoryItem', '');
-        $statusValue = $request->input('statusValue', 'active');
+        $statusValue = $request->input('statusValue', '');
 
         $query = DB::table('categoryitems')
             ->join('categories', 'categoryitems.categoryId', '=', 'categories.id')
