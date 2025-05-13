@@ -268,7 +268,7 @@ class DashboardController extends Controller
         ];
     }
     // for costIngredients
-    public function highCostIngredients()
+    public function highCostIngredients(Request $request)
     {
         $storeid = session()->get('store_id');
         $inputName = strtolower(trim($request->input('material_name')));
