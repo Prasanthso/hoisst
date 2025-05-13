@@ -788,9 +788,10 @@ class RawMaterialController extends Controller
     public function exportAll(Request $request)
     {
         $storeid = $request->session()->get('store_id');
+         $statusValue = $request->input('statusValue', '');
         $categories = \App\Models\CategoryItems::where('store_id', $storeid)->pluck('itemname', 'id');
 
-        $rawMaterials = \App\Models\RawMaterial::select([
+        $query = \App\Models\RawMaterial::select([
             'id',
             'name',
             'rmcode',
@@ -805,13 +806,17 @@ class RawMaterialController extends Controller
             'category_id7',
             'category_id8',
             'category_id9',
-            'category_id10'
+            'category_id10',
+            'status'
         ])
-            ->where('status', 'active')  // Filter active records
-            ->where('store_id', $storeid)
-            ->orderBy('name', 'asc')     // Sort by name ASC
-            ->get();
-
+            // ->where('status', 'active')  // Filter active records
+            ->where('store_id', $storeid);
+            // ->orderBy('name', 'asc')     // Sort by name ASC
+            // ->get();
+        if ($statusValue !== null && $statusValue !== '') {
+            $query->where('status', $statusValue);
+        }
+        $rawMaterials = $query->orderBy('name', 'asc')->get();
 
         $rawMaterialsWithNames = $rawMaterials->map(function ($item) use ($categories) {
             $categoryNames = [];
@@ -829,6 +834,7 @@ class RawMaterialController extends Controller
                 'rmcode' => $item->rmcode,
                 'price' => $item->price,
                 'uom' => $item->uom,
+                 'status' => $item->status,
                 'categories' => implode(', ', $categoryNames), // Comma-separated for easier frontend use
             ];
         });

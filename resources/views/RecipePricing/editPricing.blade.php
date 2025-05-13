@@ -663,7 +663,7 @@
                         <label for="unitcost" class="form-label">Unit Cost:</label>
                     </div>
                     <div class="col-md-7">
-                        <input type="text" class="form-control" id="totalcost" value="{{ $data->rp_output ? round(($rmTotal + $pmTotal + $ohTotal + $mohTotal) / $data->rp_output, 2) : 0 }}" disabled>
+                        <input type="text" class="form-control" id="singletotalcost" value="{{ $data->rp_output ? round(($rmTotal + $pmTotal + $ohTotal + $mohTotal) / $data->rp_output, 2) : 0 }}" disabled>
                     </div>
                 </div>
             </div>
@@ -1069,6 +1069,7 @@
                         row.remove();
                         // Update the total cost
                         updateTotalCost(-amount);
+
                     })
                     .catch(error => console.error('Error:', error.message));
             }
@@ -1370,6 +1371,7 @@
                         row.remove();
                         // Update the total cost
                         updatePmTotalCost(-amount);
+
                     })
                     .catch(error => console.error('Error:', error.message));
             }
@@ -1387,6 +1389,7 @@
             const currentTotal = parseFloat(totalPmCostSpan.textContent) || 0;
             totalPmCostSpan.textContent = (currentTotal + newAmount).toFixed(2);
             updateGrandTotal();
+
         }
 
         function clearPmFields() {
@@ -1937,6 +1940,11 @@
         const overheadsTotal = parseFloat(totalOhCostSpan.textContent) || 0;
         const grandTotal = rawMaterialTotal + packingMaterialTotal + overheadsTotal; // Add other totals if needed
         totalCostInput.value = grandTotal.toFixed(2); // Display in Total Cost (A+B+C)
+        // let totalcostval = parseFloat(document.getElementById('totalcost').value);
+            let countrpoutput = parseFloat(document.getElementById('recipeOutput').value);
+            let singleunit = grandTotal/countrpoutput;
+            const singlecost = document.getElementById('singletotalcost');
+            singlecost.value = singleunit.toFixed(2);
     }
 
     function clearMohFields() {

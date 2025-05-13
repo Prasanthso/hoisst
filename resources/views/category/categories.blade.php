@@ -197,13 +197,20 @@
         let isFilter = false;
 
         document.getElementById('exportBtn').addEventListener('click', function() {
+
         const table = document.getElementById('catagoriesTable');
         const rows = table.querySelectorAll('tr');
         let exportData = [];
-        const header = ["S. NO.","Catagory", "Category Items", "Description"];
+        const header = ["S. NO.","Catagory", "Category Items", "Description","Status"];
         exportData.push(header);
         let serial = 1;
-
+        let statusValue = '';
+        const singleCheck = document.querySelector('.single-check'); // get ONE checkbox
+        if (singleCheck && singleCheck.checked) {
+            statusValue = document.getElementById('inActive').value;
+        }
+        console.log(statusValue);
+            // const filteredItems = visibleData.data.filter(item => item.status === statusValue);
             visibleData.forEach(item => {
                 // const categories = (item.categories || '').split(',').map(c => c.trim()).join(', ');
 
@@ -215,7 +222,6 @@
                     item.status
                 ]);
             });
-
             if (isFilter) {
                 // Export filtered data
                 const ws = XLSX.utils.aoa_to_sheet(exportData);
@@ -223,7 +229,8 @@
                 XLSX.utils.book_append_sheet(wb, ws, 'CategoryItems');
                 XLSX.writeFile(wb, 'categoryItems_filtered.xlsx');
             } else {
-                fetch('/categoryitem/export-all')
+
+                fetch(`/categoryitem/export-all?statusValue=${encodeURIComponent(statusValue)}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok: ' + response.statusText);
@@ -301,15 +308,19 @@
 */
         // PDF Export Function
         document.getElementById('exportPdfBtn').addEventListener('click', function() {
-
     const table = document.getElementById('catagoriesTable');
     const rows = table.querySelectorAll('tr');
     let exportData = [];
-    const header = ["S. NO.", "Category", "Category Items", "Description"];
+    const header = ["S. NO.", "Category", "Category Items", "Description","Status"];
     exportData.push(header);
     let serial = 1;
-
-    visibleData.forEach(item => {
+     let statusValue = '';
+        const singleCheck = document.querySelector('.single-check'); // get ONE checkbox
+        if (singleCheck && singleCheck.checked) {
+            statusValue = document.getElementById('inActive').value;
+        }
+        // const filteredItems = visibleData.filter(item => item.status === statusValue);
+        visibleData.forEach(item => {
         exportData.push([
             serial++, // Serial number
             item.itemname, // Category Item Name
@@ -332,7 +343,7 @@
         });
         doc.save('categoryItems_filtered.pdf');
     } else {
-        fetch('/categoryitem/export-all')
+       fetch(`/categoryitem/export-all?statusValue=${encodeURIComponent(statusValue)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok: ' + response.statusText);
@@ -402,7 +413,7 @@
                         .then(data => {
                             filteredData = data.categoriesitems.data;
                             console.log('Fetched Data:', data.categoriesitems.data);
-                            visibleData = data.categoriesitems;
+                            visibleData = data.categoriesitems.data;
                             currentPage = 1; // reset to page 1 on new filter
                             renderTablePage(currentPage, filteredData);
                             renderPagination(filteredData.length);
@@ -775,7 +786,7 @@
                         .then(data => {
                             filteredData = data.categoriesitems.data;
                             console.log('Fetched Data:', data.categoriesitems.data);
-                            visibleData = data.categoriesitems;
+                            visibleData = data.categoriesitems.data;
                             currentPage = 1; // reset to page 1 on new filter
                             renderTablePage(currentPage, filteredData);
                             renderPagination(filteredData.length);
@@ -840,6 +851,7 @@
             // If no checkbox is checked, exit early
             if (!checkedBox) {
                 console.log('No checkbox selected');
+                 statuslevel = null;
                 location.reload();
                 return;
             }
