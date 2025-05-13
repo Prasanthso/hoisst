@@ -4,7 +4,7 @@
 <main id="main" class="main">
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
-        <h1>Add Pricing</h1>
+        <h1>Add Recipe Costing</h1>
         <div class="row">
             <!-- Action Buttons -->
             <!--

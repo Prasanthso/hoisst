@@ -3,7 +3,7 @@
 @section('content')
 <main id="main" class="main">
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
-        <h1>Pricing</h1>
+        <h1>Recipe Costing</h1>
         <div class="d-flex align-items-center">
             <!-- Action Buttons -->
             <!--<div class="d-flex justify-content-end mb-2 action-buttons">-->

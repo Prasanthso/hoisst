@@ -366,7 +366,7 @@
                     </li>
                     <li>
                         <a href="/overheads" class="{{ Request::is('overheads') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
-                            <span>Overheads</span>
+                            <span>Overhead Costs</span>
                         </a>
                     </li>
                 </ul>
@@ -386,7 +386,7 @@
                     </li>
                     <li>
                         <a href="/pricing-records" class="{{Request::is('pricing-records') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
-                            <span>Pricing</span>
+                            <span>Recipe Costing</span>
                         </a>
                     </li>
                     <li>
@@ -414,7 +414,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="/report" style="background-color: rgb(186, 234, 249); font-size:17px;">
                     <img src="/assets/img/Report.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 9px;">
-                    <span>Report</span>
+                    <span>Reports</span>
                 </a>
             </li>
         </ul>
@@ -466,9 +466,10 @@
                 'overhead': '/overheads',
                 'category': '/showcategoryitem',
                 'recipe': '/receipedetails',
-                'pricing': '/pricing-records',
+                'recipecosting': '/pricing-records',
                 'overall costing': '/overallcosting',
                 'recipe pricing': '/recipepricing',
+                'alert' : '/viewalert',
                 'report': '/report'
             };
 
