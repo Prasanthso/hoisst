@@ -263,10 +263,14 @@
              const table = document.getElementById('productsTable');
              const rows = table.querySelectorAll('tr');
              let exportData = [];
-             const header = ["S. NO.", "Products", "PD Code", "Products Category", "Price(Rs)", "UoM"];
+             const header = ["S. NO.", "Products", "PD Code", "Products Category", "Price(Rs)", "UoM","Status"];
              exportData.push(header);
              let serial = 1;
-
+        let statusValue = '';
+        const singleCheck = document.querySelector('.single-check'); // get ONE checkbox
+        if (singleCheck && singleCheck.checked) {
+            statusValue = document.getElementById('inActive').value;
+        }
              visibleData.forEach(item => {
                 const categories = [
                         item.category_name1, item.category_name2, item.category_name3,
@@ -281,7 +285,7 @@
                         categories, // Raw Materials Category
                         item.price, // Price (you can directly use it from item)
                         item.uom ,// UoM
-                        // item.status
+                        item.status
                     ]);
                 });
 
@@ -294,7 +298,7 @@
                  XLSX.writeFile(wb, 'products_filtered.xlsx');
              } else {
                  // Export all from backend
-                 fetch('/products/export-all')
+                 fetch(`/products/export-all?statusValue=${encodeURIComponent(statusValue)}`)
                      .then(response => response.json())
                      .then(data => {
                          data.forEach((item, index) => {
@@ -305,7 +309,7 @@
                                  item.categories, // Comes as comma-separated string
                                  item.price,
                                  item.uom,
-                                // item.status
+                                item.status
                              ]);
                          });
 
@@ -329,12 +333,16 @@
              const totalMatch = summaryText.match(/of\s+(\d+)\s+entries/i);
              const totalEntries = totalMatch ? parseInt(totalMatch[1]) : 0;
 
-             const header = ["S. No.", "products", "PD Code", "products Category", "Price(Rs)", "UoM"];
+             const header = ["S. No.", "products", "PD Code", "products Category", "Price(Rs)", "UoM","Status"];
              let exportData = [];
 
              // Get visible rows from DOM table
              let count = 1;
-
+             let statusValue = '';
+        const singleCheck = document.querySelector('.single-check'); // get ONE checkbox
+        if (singleCheck && singleCheck.checked) {
+            statusValue = document.getElementById('inActive').value;
+        }
             visibleData.forEach(item => {
                 const categories = [
                         item.category_name1, item.category_name2, item.category_name3,
@@ -349,7 +357,7 @@
                         categories, // Raw Materials Category
                         item.price, // Price (you can directly use it from item)
                         item.uom, // UoM
-                        // item.status
+                        item.status
                     ]);
                 });
 
@@ -358,7 +366,7 @@
                 generatePdf(header, exportData, 'products_filtered.pdf');
             } else {
                  // Fetch all data from backend
-                 fetch('/products/export-all')
+                 fetch(`/products/export-all?statusValue=${encodeURIComponent(statusValue)}`)
                      .then(response => {
                          if (!response.ok) throw new Error('Fetch failed');
                          return response.json();
@@ -373,7 +381,7 @@
                              item.categories || '', // ✅ Correct usage
                              item.price || '',
                              item.uom || '',
-                            //  item.status || ''
+                             item.status || ''
                          ]);
 
                          console.log("Final data to export:", allData);
@@ -1003,6 +1011,7 @@
                  document.querySelector('.single-check').checked = false;
                 categoryItems.forEach(item => item.style.display = "block");
             } else if (searchTypeselection === 'items') {
+                document.querySelector('.single-check').checked = false;
                 categoryItems.forEach(item => item.style.display = "none");
             }
         });
@@ -1129,6 +1138,7 @@
                  isEditing = false;
                 // exitEditingMode();
                 showEditDeleteButtons();
+                
             }
             if (this.checked) {
             // Uncheck all others

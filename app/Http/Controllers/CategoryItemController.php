@@ -472,8 +472,10 @@ class CategoryItemController extends Controller
     public function exportAll(Request $request)
     {
         $storeid = $request->session()->get('store_id');
+        $statusValue = $request->input('statusValue', '');
+
         try {
-            $categoryItems = \App\Models\CategoryItems::select([
+            $query = \App\Models\CategoryItems::select([
                 'categoryitems.id',
                 'categories.categoryname',
                 'categoryitems.itemname',
@@ -481,10 +483,14 @@ class CategoryItemController extends Controller
                 'categoryitems.status'
             ])
             ->leftJoin('categories', 'categoryitems.categoryId', '=', 'categories.id')
-            ->where('categoryitems.status', 'active') // Only active items
-            ->where('categoryitems.store_id', $storeid)
-            ->orderBy('categoryitems.itemname', 'asc')
-            ->get();
+            // ->where('categoryitems.status', $statusValue) // Only active items
+            ->where('categoryitems.store_id', $storeid);
+
+        if ($statusValue !== null && $statusValue !== '') {
+            $query->where('categoryitems.status', $statusValue);
+        }
+
+        $categoryItems = $query->orderBy('categoryitems.itemname', 'asc')->get();
 
             return response()->json($categoryItems);
 
