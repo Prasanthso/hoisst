@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LowMarginAlert;
 use App\Models\PmPriceUpdateAlert;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +30,7 @@ class AlertController extends Controller
     {
         $combinedAlerts = $this->getFilteredAlerts($request);
 
-        // Paginate the collection manually
+        // Paginate manually
         $perPage = 10;
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
         $pagedData = new LengthAwarePaginator(
@@ -43,22 +44,37 @@ class AlertController extends Controller
         return view('alert', ['alerts' => $pagedData]);
     }
 
-
     private function getFilteredAlerts(Request $request)
     {
         $storeId = session('store_id');
         $userIds = User::where('store_id', $storeId)->pluck('id');
 
+        $lowMargin = LowMarginAlert::whereIn('user_id', $userIds)->get();
         $pdAlertHistory = PdPriceUpdateAlert::whereIn('user_id', $userIds)->get();
         $pmAlertHistory = PmPriceUpdateAlert::whereIn('user_id', $userIds)->get();
         $rmAlertHistory = RmPriceUpdateAlert::whereIn('user_id', $userIds)->get();
 
-        $products = Product::all()->keyBy('id'); // for PD
+        $products = Product::all()->keyBy('id'); // for PD + Low Margin
         $packingMaterials = PackingMaterial::all()->keyBy('id'); // for PM
         $rawMaterials = RawMaterial::all()->keyBy('id'); // for RM
 
         $combinedAlerts = collect();
 
+        // Low Margin Alerts
+        foreach ($lowMargin as $alert) {
+            $product = $products[$alert->product_id] ?? null;
+            if ($product) {
+                $combinedAlerts->push([
+                    'name' => $product->name,
+                    'code' => $product->pdcode,
+                    'alert_type' => 'Low Margin',
+                    'channel' => ucfirst($alert->channel),
+                    'alerted_at' => $alert->alerted_at,
+                ]);
+            }
+        }
+
+        // PD Price Alerts
         foreach ($pdAlertHistory as $alert) {
             foreach ($alert->product_ids as $id) {
                 if (isset($products[$id])) {
@@ -73,6 +89,7 @@ class AlertController extends Controller
             }
         }
 
+        // PM Price Alerts
         foreach ($pmAlertHistory as $alert) {
             foreach ($alert->packing_material_ids as $id) {
                 if (isset($packingMaterials[$id])) {
@@ -87,6 +104,7 @@ class AlertController extends Controller
             }
         }
 
+        // RM Price Alerts
         foreach ($rmAlertHistory as $alert) {
             foreach ($alert->raw_material_ids as $id) {
                 if (isset($rawMaterials[$id])) {
@@ -101,6 +119,7 @@ class AlertController extends Controller
             }
         }
 
+        // Apply filters
         if ($request->filled('alert_type')) {
             $combinedAlerts = $combinedAlerts->filter(function ($alert) use ($request) {
                 return strtolower($alert['alert_type']) === strtolower($request->alert_type);
