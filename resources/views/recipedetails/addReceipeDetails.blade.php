@@ -54,7 +54,7 @@
                                 </div>
                                 <div class="col-12">
                                     <label for="receipevideo" class="form-label fw-bold">Recipe Making Video</label>
-                                    <input type="file" name="receipevideo" class="form-control" id="receipevideo">
+                                    <input type="file" name="receipevideo" class="form-control" id="receipevideo" required>
                                     @error('receipevideo')
                                     <span id="error-receipevideo" class="text-danger">{{ $message }}</span>
                                     @enderror
