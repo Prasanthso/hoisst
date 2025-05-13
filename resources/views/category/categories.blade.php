@@ -389,6 +389,7 @@
                     document.querySelectorAll('.category-checkbox:checked')
                 ).map(cb => cb.value);
                 isFilter = true;
+                  document.querySelector('.single-check').checked = false;
                 if (selectedCategories.length > 0) {
                     const queryParams = new URLSearchParams({
                         category_ids: selectedCategories.join(','),
@@ -765,6 +766,7 @@
                     const queryParams = new URLSearchParams({
                         categoryItem: searchText,
                     });
+                    document.querySelector('.single-check').checked = false;
                     console.log(queryParams.toString());
                     // Construct the URL dynamically based on selected categories
                    // Construct the URL dynamically based on selected categories
@@ -828,7 +830,10 @@
         checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function () {
             const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
-
+            document.querySelectorAll(".category-checkbox").forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            document.getElementById('categorySearch').value = "";
             if (this.checked) {
             // Uncheck all others
             checkboxes.forEach(cb => {
