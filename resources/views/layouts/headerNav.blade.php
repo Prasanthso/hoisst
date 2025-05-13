@@ -405,6 +405,13 @@
             </li>
 
             <li class="nav-item">
+                <a class="nav-link" href="/viewalert" style="background-color: rgb(186, 234, 249); font-size:17px;">
+                    <img src="/assets/img/Recipepricing.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 8px;">
+                    <span>Alert</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
                 <a class="nav-link" href="/report" style="background-color: rgb(186, 234, 249); font-size:17px;">
                     <img src="/assets/img/Report.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 9px;">
                     <span>Report</span>

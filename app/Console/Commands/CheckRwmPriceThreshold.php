@@ -95,6 +95,7 @@ class CheckRwmPriceThreshold extends Command
                     'store_id' => $storeId,
                     'raw_material_ids' => $materialsInStore->pluck('id')->toArray(),
                     'alerted_at' => now(),
+                    'alert_type' => 'Price Threshold',
                     'channel' => $channel,
                 ]);
             }

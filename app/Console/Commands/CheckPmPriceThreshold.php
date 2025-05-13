@@ -89,7 +89,7 @@ class CheckPmPriceThreshold extends Command
                     'packing_material_ids' => $storeMaterials->pluck('id')->toArray(),
                     'alerted_at' => now(),
                     'channel' => $channel,
-                    'alert_type' => 'threshold',
+                    'alert_type' => 'Price Threshold',
                 ]);
             }
         }

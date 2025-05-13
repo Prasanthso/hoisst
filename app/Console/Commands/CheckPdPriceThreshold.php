@@ -88,7 +88,7 @@ class CheckRmPriceThreshold extends Command
                     'product_ids' => $storeMaterials->pluck('id')->toArray(),
                     'alerted_at' => now(),
                     'channel' => $channel,
-                    'alert_type' => 'threshold',
+                    'alert_type' => 'Price Threshold',
                 ]);
             }
         }

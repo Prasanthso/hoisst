@@ -12,6 +12,7 @@ class RmPriceUpdateAlert extends Model
 
     protected $fillable = [
         'user_id',
+        'store_id',
         'raw_material_ids',
         'alerted_at',
         'channel',
