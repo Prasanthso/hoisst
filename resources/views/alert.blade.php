@@ -16,64 +16,42 @@
         </div>
     </div>
 
-    <!-- Filter Section -->
-    <!-- Filter Section -->
-    <!-- <div class="d-flex align-items-center px-4 py-3">
-        <span class="me-3" style="color: gray;">
-            <i class="bi bi-filter"></i> Filters
-        </span>
-
-        <!-- Combined Search Field with Dropdown -->
-    <!-- <div class="me-2 align-items-center d-flex">
-            <div class="input-group" style="width: 250px;">
-                <input type="text" id="searchInput" class="form-control" placeholder="Search by" style="flex: 1;">
-                <select class="form-select me-2" id="searchCategory" style="width: 30px;">
-                    <option value="product">Product</option>
-                    <option value="rm">Raw Material</option>
-                    <option value="pm">Packing Material</option>
-                </select>
-            </div>
-        </div> -->
+    <form method="GET" action="{{ url()->current() }}" class="row g-3 align-items-center mb-4 px-4">
+        <div class="col-auto">
+            <label for="alert_type" class="col-form-label">Alert Type</label>
+        </div>
+        <div class="col-auto">
+            <select name="alert_type" id="alert_type" class="form-select">
+                <option value="">All</option>
+                <option value="low margin" {{ request('alert_type') == 'low margin' ? 'selected' : '' }}>Low Margin</option>
+                <option value="price threshold" {{ request('alert_type') == 'price threshold' ? 'selected' : '' }}>Price Threshold</option>
+                <option value="price update frequency" {{ request('alert_type') == 'price update frequency' ? 'selected' : '' }}>Price Update Frequency</option>
+            </select>
+        </div>
 
 
-    <!-- RM% Range Filter -->
-    <!-- <div class="d-flex align-items-center me-2">
-            <div class="input-group" style="width: 200px;">
-                <input type="number" id="rmValue" class="form-control" placeholder="RM%" style="flex: 1;">
-                <select class="form-select" id="rmRangeType" style="width: 40px;">
-                    <option value="above">Above</option>
-                    <option value="below">Below</option>
-                </select>
-            </div>
-        </div> -->
+        <div class="col-auto">
+            <label for="start_date" class="col-form-label">Start Date</label>
+        </div>
+        <div class="col-auto">
+            <input type="date" name="start_date" id="start_date" class="form-control"
+                value="{{ request('start_date') }}">
+        </div>
 
+        <div class="col-auto">
+            <label for="end_date" class="col-form-label">End Date</label>
+        </div>
+        <div class="col-auto">
+            <input type="date" name="end_date" id="end_date" class="form-control"
+                value="{{ request('end_date') }}">
+        </div>
 
-    <!-- PM% Range Filter -->
-    <!-- <div class="d-flex align-items-center me-2">
-            <div class="input-group" style="width: 200px;">
-                <input type="text" id="pmValue" class="form-control" placeholder="PM%" style="flex: 1;">
-                <select class="form-select" id="pmRangeType" style="width: 40px;">
-                    <option value="above">Above</option>
-                    <option value="below">Below</option>
-                </select>
-            </div>
-        </div> -->
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{{ url()->current() }}" class="btn btn-secondary">Reset</a>
+        </div>
+    </form>
 
-
-    <!-- Margin Dropdown -->
-    <!-- <select
-            class="form-select me-2"
-            id="marginFilter"
-            style="width: 160px; background: white; border: 1px solid #ccc; border-radius: 5px;"
-            onchange="filterMargin(this.value)">
-            <option value="" disabled selected>Margin %</option>
-            <option value="low" style="color:rgb(183, 18, 34);"><i class="bi bi-filter"></i>⬤ Low</option>
-            <!-- <option value="medium" style="color:rgb(186, 141, 6);"><i class="bi bi-filter"></i> Medium</option> -->
-    <!-- <option value="high" style="color: #155724;">⬤ High</option>
-            <option value="asc">Sort Ascending</option>
-            <option value="desc">Sort Descending</option>
-        </select>
-    </div> -->
 
     <!-- Column Selection Dropdown -->
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
@@ -86,7 +64,7 @@
             <div class="col-lg-1"></div>
             <div class="col-lg-12">
                 <div class="row">
-                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <div class="table-responsive">
                         <table class="table table-bordered" id="reportTable">
                             <thead class="custom-header">
                                 <tr>
@@ -94,21 +72,41 @@
                                     <th scope="col" style="color:white;">Item_Name</th>
                                     <th scope="col" style="color:white;">Item_code</th>
                                     <th scope="col" style="color:white;">Alert Type</th>
+                                    <th scope="col" style="color:white;">Alert Medium</th>
                                     <th scope="col" style="color:white;">Alerted_at</th>
                                 </tr>
                             </thead>
                             <tbody id="ReportTable">
-                                <tr data-rm="" data-pm="">
-                                    <td>1</td>
-                                    <td>Samosa</td>
-                                    <td>PD0001</td>
-                                    <td>Low Margin</td>
-                                    <td>12.05.2025 at 9.30</td>
-                                </tr>
+                                @php $sn = ($alerts->currentPage() - 1) * $alerts->perPage() + 1; @endphp
 
-                                <!-- Add more rows as needed -->
+                                @foreach($alerts as $index => $alert)
+                                <tr>
+                                    <td>{{ $sn++ }}</td>
+                                    <td>{{ $alert['name'] }}</td>
+                                    <td>{{ $alert['code'] }}</td>
+                                    <td>{{ $alert['alert_type'] }}</td>
+                                    <td>{{ $alert['channel'] }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($alert['alerted_at'])->format('d.m.Y \a\t h:i A') }}</td>
+                                </tr>
+                                @endforeach
                             </tbody>
+
+
                         </table>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div id="showingEntries">
+                                Showing {{ $alerts->firstItem() }} to {{ $alerts->lastItem() }} of {{ $alerts->total() }} entries
+                                <input type="hidden" id="currentPage" value="{{ $alerts->currentPage() }}">
+                                <input type="hidden" id="perPage" value="{{ $alerts->perPage() }}">
+                            </div>
+                            <div id="paginationWrapper">
+                                @if ($alerts->total() > $alerts->perPage())
+                                {{ $alerts->links('pagination::bootstrap-5') }}
+                                @endif
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -133,97 +131,65 @@
             checkbox.addEventListener('change', toggleColumn);
         });
 
-        // PDF Export Function
-        document.getElementById('exportPdfBtn').addEventListener('click', function() {
-            const {
-                jsPDF
-            } = window.jspdf;
-            const doc = new jsPDF();
-
-            const table = document.getElementById('reportTable');
-            if (!table) {
-                console.error('Table with ID "exportRm" not found.');
-                return;
-            }
-
-            const rows = Array.from(table.querySelectorAll('tr'));
-            const tableData = [];
-            let serialNumber = 1;
-
-            rows.forEach((row, rowIndex) => {
-                if (row.style.display !== 'none') {
-                    const cells = Array.from(row.children);
-                    const rowData = [];
-
-                    if (rowIndex > 0) {
-                        rowData.push(serialNumber++);
-                    } else {
-                        rowData.push("S.NO");
-                    }
-
-                    cells.forEach((cell, index) => {
-                        if (index !== 0) { // Skip checkboxes column
-                            rowData.push(cell.innerText.trim());
-                        }
-                    });
-
-                    tableData.push(rowData);
-                }
-            });
-
-            // Add Table to PDF
-            doc.autoTable({
-                head: [tableData[0]], // Header row
-                body: tableData.slice(1), // Table content
-                startY: 20,
-                theme: 'striped',
-            });
-
-            doc.save('report.pdf');
-        });
-
         document.getElementById('exportBtn').addEventListener('click', function() {
-            const table = document.getElementById('reportTable'); // Ensure this ID exists in your table
-            if (!table) {
-                console.error('Table with ID "exportRm" not found.');
-                return;
-            }
-            console.log('Table with ID "exportRm" not found.');
+            const params = new URLSearchParams(window.location.search).toString();
+            fetch(`/alerts/export?${params}`)
+                .then(response => response.json())
+                .then(result => {
+                    const data = result.data;
+                    const rows = [
+                        ["S.NO", "Item_Name", "Item_code", "Alert Type", "Alert Medium", "Alerted_at"]
+                    ];
 
-            const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
-            const visibleData = [];
-            let serialNumber = 1; // Initialize serial number
-
-            // Iterate through each row
-            rows.forEach((row, rowIndex) => {
-                if (row.style.display !== 'none') { // Only include visible rows
-                    const cells = Array.from(row.children);
-                    const rowData = [];
-
-                    if (rowIndex > 0) {
-                        rowData.push(serialNumber++); // Auto-increment serial number
-                    } else {
-                        rowData.push("S.NO"); // Add "S.NO" to the header row
-                    }
-
-                    cells.forEach((cell, index) => {
-                        if (index !== 0) { // Skip checkboxes column
-                            rowData.push(cell.innerText.trim());
-                        }
+                    data.forEach((alert, index) => {
+                        rows.push([
+                            index + 1,
+                            alert.name,
+                            alert.code,
+                            alert.alert_type,
+                            alert.channel,
+                            new Date(alert.alerted_at).toLocaleString()
+                        ]);
                     });
 
-                    visibleData.push(rowData);
-                }
-            });
-
-            // Convert data to workbook
-            const ws = XLSX.utils.aoa_to_sheet(visibleData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Report');
-
-            // Export as an Excel file
-            XLSX.writeFile(wb, 'report.xlsx');
+                    const ws = XLSX.utils.aoa_to_sheet(rows);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, 'Alert_history');
+                    XLSX.writeFile(wb, 'Alert_history.xlsx');
+                });
         });
 
+        document.getElementById('exportPdfBtn').addEventListener('click', function() {
+            const params = new URLSearchParams(window.location.search).toString();
+            fetch(`/alerts/export?${params}`)
+                .then(response => response.json())
+                .then(result => {
+                    const data = result.data;
+                    const {
+                        jsPDF
+                    } = window.jspdf;
+                    const doc = new jsPDF();
+
+                    const tableData = data.map((alert, index) => [
+                        index + 1,
+                        alert.name,
+                        alert.code,
+                        alert.alert_type,
+                        alert.channel,
+                        new Date(alert.alerted_at).toLocaleString()
+                    ]);
+
+                    doc.autoTable({
+                        head: [
+                            ["S.NO", "Item_Name", "Item_code", "Alert Type", "Alert Medium", "Alerted_at"]
+                        ],
+                        body: tableData,
+                        startY: 20,
+                        theme: 'striped',
+                    });
+
+                    doc.save('Alert_history.pdf');
+                });
+        });
     });
 </script>

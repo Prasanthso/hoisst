@@ -40,13 +40,13 @@ class ProductController extends Controller
                     ->leftJoin('categoryitems as c8', 'pd.category_id8', '=', 'c8.id')
                     ->leftJoin('categoryitems as c9', 'pd.category_id9', '=', 'c9.id')
                       ->leftJoin('rm_for_recipe as rmr', 'pd.id', '=', 'rmr.product_id')
-    ->leftJoin('pm_for_recipe as pmr', 'pd.id', '=', 'pmr.product_id')
-    ->leftJoin('oh_for_recipe as ohr', 'pd.id', '=', 'ohr.product_id')
-    ->leftJoin('moh_for_recipe as moh', 'pd.id', '=', 'moh.product_id')
-    ->leftJoin('overall_costing as oc', 'pd.id', '=', 'oc.productId')
-      ->leftJoin('raw_materials as rm', 'rmr.raw_material_id', '=', 'rm.id')
-            ->leftJoin('packing_materials as pm', 'pmr.packing_material_id', '=', 'pm.id')
-            ->leftJoin('overheads as oh', 'ohr.overheads_id', '=', 'oh.id')
+                        ->leftJoin('pm_for_recipe as pmr', 'pd.id', '=', 'pmr.product_id')
+                        ->leftJoin('oh_for_recipe as ohr', 'pd.id', '=', 'ohr.product_id')
+                        ->leftJoin('moh_for_recipe as moh', 'pd.id', '=', 'moh.product_id')
+                        ->leftJoin('overall_costing as oc', 'pd.id', '=', 'oc.productId')
+                        ->leftJoin('raw_materials as rm', 'rmr.raw_material_id', '=', 'rm.id')
+                                ->leftJoin('packing_materials as pm', 'pmr.packing_material_id', '=', 'pm.id')
+                                ->leftJoin('overheads as oh', 'ohr.overheads_id', '=', 'oh.id')
                     ->select(
                         'pd.id',
                         'pd.name',
@@ -65,22 +65,22 @@ class ProductController extends Controller
                         'c10.itemname as category_name10',
                         'pd.status',
                                   DB::raw('
-    (
-        (
-            (
-                (
-                    SUM(rmr.quantity * rm.price) +
-                    SUM(pmr.quantity * pm.price) +
-                    COALESCE(SUM(ohr.quantity * oh.price), SUM(moh.price))
-                ) / rp.Output
-            ) *
-            (1 + (oc.margin / 100))
-        ) *
-        (1 + (pd.tax / 100))
-    ) *
-    (1 + (oc.discount / 100))
-    AS pdCost
-')
+                        (
+                            (
+                                (
+                                    (
+                                        SUM(rmr.quantity * rm.price) +
+                                        SUM(pmr.quantity * pm.price) +
+                                        COALESCE(SUM(ohr.quantity * oh.price), SUM(moh.price))
+                                    ) / rp.Output
+                                ) *
+                                (1 + (oc.margin / 100))
+                            ) *
+                            (1 + (pd.tax / 100))
+                        ) *
+                        (1 + (oc.discount / 100))
+                        AS pdCost
+                    ')
                     )
                     // ->where('pd.status', $statusValue) // Filter by active status
                     ->where('pd.store_id', $storeid)

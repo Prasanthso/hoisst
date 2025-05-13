@@ -12,6 +12,7 @@ class LowMarginAlert extends Model
     protected $fillable = [
         'product_id',
         'user_id',
+        'store_id',
         'calculated_margin',
         'threshold_margin',
         'alerted_at',
