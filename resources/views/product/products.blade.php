@@ -781,6 +781,7 @@
                      document.querySelectorAll('.category-checkbox:checked')
                  ).map(cb => cb.value);
                  isFilter = true;
+                  document.querySelector('.single-check').checked = false;
                  if (selectedCategories.length > 0) {
                      const queryParams = new URLSearchParams({
                          category_ids: selectedCategories.join(','),
@@ -1011,7 +1012,7 @@
                  document.querySelector('.single-check').checked = false;
                 categoryItems.forEach(item => item.style.display = "block");
             } else if (searchTypeselection === 'items') {
-                document.querySelector('.single-check').checked = false;
+
                 categoryItems.forEach(item => item.style.display = "none");
             }
         });
@@ -1062,6 +1063,7 @@
              const queryParams = new URLSearchParams({
                  pdText: searchText,
              });
+              document.querySelector('.single-check').checked = false;
              console.log(queryParams.toString());
              // Construct the URL dynamically based on selected categories
              const url = `/products?${queryParams.toString()}`;
@@ -1138,8 +1140,12 @@
                  isEditing = false;
                 // exitEditingMode();
                 showEditDeleteButtons();
-                
+
             }
+           document.querySelectorAll(".category-checkbox").forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            document.getElementById('categorySearch').value = "";
             if (this.checked) {
             // Uncheck all others
             checkboxes.forEach(cb => {
