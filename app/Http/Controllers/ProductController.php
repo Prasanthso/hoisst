@@ -1018,7 +1018,8 @@ class ProductController extends Controller
             'category_id7',
             'category_id8',
             'category_id9',
-            'category_id10'
+            'category_id10',
+             'status'
         ])
             // ->where('status', 'active')  // Filter active records
             ->where('store_id', $storeid);
@@ -1047,6 +1048,7 @@ class ProductController extends Controller
                 'pdcode' => $item->pdcode,
                 'price' => $item->price,
                 'uom' => $item->uom,
+                'status' => $item->status,
                 'categories' => implode(', ', $categoryNames), // Comma-separated for easier frontend use
             ];
         });

@@ -263,10 +263,14 @@
             const table = document.getElementById('packingMaterialTable');
             const rows = table.querySelectorAll('tr');
             let exportData = [];
-            const header = ["S. NO.", "Packing Materials", "PM Code", "Packing Materials Category", "Price(Rs)", "UoM"];
+            const header = ["S. NO.", "Packing Materials", "PM Code", "Packing Materials Category", "Price(Rs)", "UoM","Status"];
             exportData.push(header);
             let serial = 1;
-
+        let statusValue = '';
+        const singleCheck = document.querySelector('.single-check'); // get ONE checkbox
+        if (singleCheck && singleCheck.checked) {
+            statusValue = document.getElementById('inActive').value;
+        }
             visibleData.forEach(item => {
                 const categories = [
                         item.category_name1, item.category_name2, item.category_name3,
@@ -280,7 +284,8 @@
                         item.pmcode, // RM Code
                         categories, // Raw Materials Category
                         item.price, // Price (you can directly use it from item)
-                        item.uom // UoM
+                        item.uom, // UoM
+                         item.status
                     ]);
                 });
             if (isFilter) {
@@ -292,7 +297,7 @@
                 XLSX.writeFile(wb, 'packingMaterials_filtered.xlsx');
             } else {
                 // Export all from backend
-                fetch('/packingMaterials/export-all')
+                fetch(`/packingMaterials/export-all?statusValue=${encodeURIComponent(statusValue)}`)
                     .then(response => response.json())
                     .then(data => {
                         data.forEach((item, index) => {
@@ -302,7 +307,8 @@
                                 item.pmcode,
                                 item.categories, // Comes as comma-separated string
                                 item.price,
-                                item.uom
+                                item.uom,
+                                 item.status
                             ]);
                         });
 
@@ -327,9 +333,13 @@
             const totalEntries = totalMatch ? parseInt(totalMatch[1]) : 0;
 
             // Add S. No. to header
-            const header = ["S. No.", "Packing Materials", "PM Code", "Packing Materials Category", "Price(Rs)", "UoM"];
+            const header = ["S. No.", "Packing Materials", "PM Code", "Packing Materials Category", "Price(Rs)", "UoM","Status"];
             let exportData = [];
-
+        let statusValue = '';
+        const singleCheck = document.querySelector('.single-check'); // get ONE checkbox
+        if (singleCheck && singleCheck.checked) {
+            statusValue = document.getElementById('inActive').value;
+        }
             // Get visible rows from DOM table
             let count = 1;
             visibleData.forEach(item => {
@@ -345,7 +355,8 @@
                         item.pmcode, // RM Code
                         categories, // Raw Materials Category
                         item.price, // Price (you can directly use it from item)
-                        item.uom // UoM
+                        item.uom, // UoM
+                         item.status
                     ]);
                 });
 
@@ -354,7 +365,7 @@
                 generatePdf(header, exportData, 'packingMaterials_filtered.pdf');
             } else {
                 // Fetch all data from backend
-                fetch('/packingMaterials/export-all')
+                fetch(`/packingMaterials/export-all?statusValue=${encodeURIComponent(statusValue)}`)
                     .then(response => {
                         if (!response.ok) throw new Error('Fetch failed');
                         return response.json();
@@ -368,7 +379,8 @@
                             item.pmcode || '',
                             item.categories || '',
                             item.price || '',
-                            item.uom || ''
+                            item.uom || '',
+                             item.status || ''
                         ]);
 
                         console.log("Final data to export:", allData);
@@ -766,6 +778,7 @@
                     document.querySelectorAll('.category-checkbox:checked')
                 ).map(cb => cb.value);
                 isFilter = true;
+                 document.querySelector('.single-check').checked = false;
                 if (selectedCategories.length > 0) {
                     const queryParams = new URLSearchParams({
                         category_ids: selectedCategories.join(','),
@@ -1043,6 +1056,7 @@
             const queryParams = new URLSearchParams({
                 pmText: searchText,
             });
+             document.querySelector('.single-check').checked = false;
             console.log(queryParams.toString());
             // Construct the URL dynamically based on selected categories
             const url = `/packingmaterial?${queryParams.toString()}`;
@@ -1118,6 +1132,10 @@
                 // exitEditingMode();
                 showEditDeleteButtons();
             }
+             document.querySelectorAll(".category-checkbox").forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            document.getElementById('categorySearch').value = "";
             if (this.checked) {
             // Uncheck all others
             checkboxes.forEach(cb => {

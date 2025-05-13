@@ -778,9 +778,10 @@ class PackingMaterialController extends Controller
     public function exportAll(Request $request)
     {
         $storeid = $request->session()->get('store_id');
+          $statusValue = $request->input('statusValue', '');
         $categories = \App\Models\CategoryItems::where('store_id', $storeid)->pluck('itemname', 'id');
 
-        $PackingMaterial = \App\Models\PackingMaterial::select([
+        $query = \App\Models\PackingMaterial::select([
             'id',
             'name',
             'pmcode',
@@ -795,13 +796,17 @@ class PackingMaterialController extends Controller
             'category_id7',
             'category_id8',
             'category_id9',
-            'category_id10'
+            'category_id10',
+            'status'
         ])
-            ->where('status', 'active')  // Filter active records
-            ->where('store_id', $storeid)
-            ->orderBy('name', 'asc')     // Sort by name ASC
-            ->get();
-
+            // ->where('status', 'active')  // Filter active records
+            ->where('store_id', $storeid);
+            // ->orderBy('name', 'asc')     // Sort by name ASC
+            // ->get();
+        if ($statusValue !== null && $statusValue !== '') {
+            $query->where('status', $statusValue);
+        }
+        $PackingMaterial = $query->orderBy('name', 'asc')->get();
 
         $PackingMaterialWithNames = $PackingMaterial->map(function ($item) use ($categories) {
             $categoryNames = [];
@@ -819,6 +824,7 @@ class PackingMaterialController extends Controller
                 'pmcode' => $item->pmcode,
                 'price' => $item->price,
                 'uom' => $item->uom,
+                'status' => $item->status,
                 'categories' => implode(', ', $categoryNames), // Comma-separated for easier frontend use
             ];
         });

@@ -266,11 +266,15 @@
             // const table = document.getElementById('rawMaterialTable');
             const rows = table.querySelectorAll('tr');
             let exportData = [];
-            const header = ["S. NO.", "Raw Materials", "RM Code", "Raw Materials Category", "Price(Rs)", "UoM"];
+            const header = ["S. NO.", "Raw Materials", "RM Code", "Raw Materials Category", "Price(Rs)", "UoM","Status"];
             exportData.push(header);
 
             let serial = 1;
-
+        let statusValue = '';
+        const singleCheck = document.querySelector('.single-check'); // get ONE checkbox
+        if (singleCheck && singleCheck.checked) {
+            statusValue = document.getElementById('inActive').value;
+        }
                 visibleData.forEach(item => {
                     const categories = [
                         item.category_name1, item.category_name2, item.category_name3,
@@ -285,7 +289,8 @@
                         item.rmcode, // RM Code
                         categories, // Raw Materials Category
                         item.price, // Price (you can directly use it from item)
-                        item.uom // UoM
+                        item.uom, // UoM
+                        item.status
                     ]);
                 });
             if (isFilter) {
@@ -296,7 +301,7 @@
                 XLSX.writeFile(wb, 'rawmaterials_filtered.xlsx');
             } else {
                 // Export all from backend
-                fetch('/rawMaterials/export-all')
+                fetch(`/rawMaterials/export-all?statusValue=${encodeURIComponent(statusValue)}`)
                     .then(response => response.json())
                     .then(data => {
                         data.forEach((item, index) => {
@@ -306,7 +311,8 @@
                                 item.rmcode,
                                 item.categories, // Comes as comma-separated string
                                 item.price,
-                                item.uom
+                                item.uom,
+                                 item.status
                             ]);
                         });
 
@@ -330,9 +336,13 @@
             const totalMatch = summaryText.match(/of\s+(\d+)\s+entries/i);
             const totalEntries = totalMatch ? parseInt(totalMatch[1]) : 0;
 
-            const header = ["S. No.", "Raw Materials", "RM Code", "Raw Materials Category", "Price(Rs)", "UoM"];
+            const header = ["S. No.", "Raw Materials", "RM Code", "Raw Materials Category", "Price(Rs)", "UoM","Status"];
             // let visibleData = [];
-
+            let statusValue = '';
+        const singleCheck = document.querySelector('.single-check'); // get ONE checkbox
+        if (singleCheck && singleCheck.checked) {
+            statusValue = document.getElementById('inActive').value;
+        }
             // Get visible rows from DOM table
             let count = 1;
             visibleData.forEach(item => {
@@ -348,7 +358,8 @@
                         item.rmcode, // RM Code
                         categories, // Raw Materials Category
                         item.price, // Price (you can directly use it from item)
-                        item.uom // UoM
+                        item.uom, // UoM
+                         item.status
                     ]);
                 });
 
@@ -357,7 +368,7 @@
                 generatePdf(header, exportData, 'rawmaterials_filtered.pdf');
             } else {
                 // Fetch all data from backend
-                fetch('/rawMaterials/export-all')
+                fetch(`/rawMaterials/export-all?statusValue=${encodeURIComponent(statusValue)}`)
                     .then(response => {
                         if (!response.ok) throw new Error('Fetch failed');
                         return response.json();
@@ -371,7 +382,8 @@
                             item.rmcode || '',
                             item.categories || '', // ✅ Correct usage
                             item.price || '',
-                            item.uom || ''
+                            item.uom || '',
+                             item.status || ''
                         ]);
 
                         console.log("Final data to export:", allData);
@@ -775,7 +787,7 @@
                 const selectedCategories = Array.from(
                     document.querySelectorAll('.category-checkbox:checked')
                 ).map(cb => cb.value);
-
+                document.querySelector('.single-check').checked = false;
                 isFilter = true;
                 if (selectedCategories.length > 0) {
                     const queryParams = new URLSearchParams({
@@ -1031,6 +1043,7 @@
             const queryParams = new URLSearchParams({
                 rmText: searchText,
             });
+             document.querySelector('.single-check').checked = false;
             console.log(queryParams.toString());
             // Construct the URL dynamically based on selected categories
             const url = `/rawmaterial?${queryParams.toString()}`;
@@ -1077,6 +1090,10 @@
                 // exitEditingMode();
                 showEditDeleteButtons();
             }
+              document.querySelectorAll(".category-checkbox").forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            document.getElementById('categorySearch').value = "";
             if (this.checked) {
             // Uncheck all others
             checkboxes.forEach(cb => {
