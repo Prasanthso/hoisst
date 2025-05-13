@@ -20,14 +20,10 @@ class CheckRwmPriceThreshold extends Command
     {
         Log::info("Running check:rm-price-threshold...");
 
-        $storeId = session('store_id');
-
-        $materials = RawMaterial::where('status', 'active')
-            ->where('store_id', $storeId)
-            ->get();
-
+        $materials = RawMaterial::where('status', 'active')->get();
         $materialsToNotify = [];
 
+        // Step 1: Check for threshold violations
         foreach ($materials as $material) {
             if (is_numeric($material->price) && is_numeric($material->price_threshold)) {
                 if ((float)$material->price > (float)$material->price_threshold) {
@@ -38,54 +34,73 @@ class CheckRwmPriceThreshold extends Command
                         'rmcode' => $material->rmcode,
                         'price' => $material->price,
                         'threshold' => $material->price_threshold,
+                        'store_id' => $material->store_id,
                     ];
                 }
             }
         }
 
+        // Step 2: Exit early if no notifications
         if (empty($materialsToNotify)) {
             Log::info("No threshold breaches found.");
             return;
         }
 
-        $users = User::all();
         $whatsapp = new WhatsAppController();
 
-        foreach ($users as $user) {
-            $channel = 'email';
+        // Step 3: Group materials by store_id
+        $groupedByStore = collect($materialsToNotify)->groupBy('store_id');
 
-            try {
-                Mail::to($user->email)->send(new RmThresholdExceededMail($materialsToNotify));
-                Log::info("Email sent to {$user->email}");
-            } catch (\Exception $e) {
-                Log::error("Email error: " . $e->getMessage());
+        // Step 4: Loop through each store group and notify only that store's users
+        foreach ($groupedByStore as $storeId => $materialsInStore) {
+            // Get users only for this store
+            $storeUsers = User::where('store_id', $storeId)->get();
+
+            if ($storeUsers->isEmpty()) {
+                Log::warning("No users found for store ID: {$storeId}");
+                continue;
             }
 
-            if ($user->whatsapp_enabled && $user->whatsapp_number) {
-                $channel = 'both';
+            foreach ($storeUsers as $user) {
+                $channel = 'email';
+
+                // Email Notification
                 try {
-                    $message = "🔔 *Price Threshold Alert*\n";
-                    foreach ($materialsToNotify as $m) {
-                        $message .= "{$m['name']} (Code: {$m['rmcode']}) - ₹{$m['price']} > ₹{$m['threshold']}\n";
-                    }
-
-                    $whatsapp->sendMessage($user->whatsapp_number, $message, 'whatsapp');
-                    Log::info("WhatsApp sent to {$user->whatsapp_number}");
+                    Mail::to($user->email)->send(new RmThresholdExceededMail($materialsInStore->toArray()));
+                    Log::info("Email sent to {$user->email} for store {$storeId}");
                 } catch (\Exception $e) {
-                    Log::error("WhatsApp error: " . $e->getMessage());
-                    $channel = 'email'; // fallback
+                    Log::error("Email error for {$user->email} (store {$storeId}): " . $e->getMessage());
                 }
-            }
 
-            // Store alert
-            RmPriceUpdateAlert::create([
-                'user_id' => $user->id,
-                'raw_material_ids' => collect($materialsToNotify)->pluck('id')->toArray(),
-                'alerted_at' => now(),
-                'channel' => $channel,
-            ]);
+                // WhatsApp Notification
+                if ($user->whatsapp_enabled && $user->whatsapp_number) {
+                    $channel = 'both';
+                    try {
+                        $message = "🔔 *Price Threshold Alert*\n";
+                        foreach ($materialsInStore as $m) {
+                            $message .= "{$m['name']} (Code: {$m['rmcode']}) - ₹{$m['price']} > ₹{$m['threshold']}\n";
+                        }
+
+                        $whatsapp->sendMessage($user->whatsapp_number, $message, 'whatsapp');
+                        Log::info("WhatsApp sent to {$user->whatsapp_number} for store {$storeId}");
+                    } catch (\Exception $e) {
+                        Log::error("WhatsApp error for {$user->whatsapp_number} (store {$storeId}): " . $e->getMessage());
+                        $channel = 'email'; // fallback
+                    }
+                }
+
+                // Store alert record
+                RmPriceUpdateAlert::create([
+                    'user_id' => $user->id,
+                    'store_id' => $storeId,
+                    'raw_material_ids' => $materialsInStore->pluck('id')->toArray(),
+                    'alerted_at' => now(),
+                    'alert_type' => 'Price Threshold',
+                    'channel' => $channel,
+                ]);
+            }
         }
 
-        $this->info('Threshold check completed.');
+        $this->info('Raw material price threshold alerts processed successfully.');
     }
 }

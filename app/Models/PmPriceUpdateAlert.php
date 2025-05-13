@@ -11,6 +11,7 @@ class PmPriceUpdateAlert extends Model
 
     protected $fillable = [
         'user_id',
+        'store_id',
         'packing_material_ids',
         'alerted_at',
         'channel',

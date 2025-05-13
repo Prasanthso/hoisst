@@ -21,11 +21,7 @@ class CheckRmPriceThreshold extends Command
     {
         Log::info("Running check:pd-price-threshold...");
 
-        $storeId = session('store_id');
-
-        $materials = Product::where('status', 'active')
-            ->where('store_id', $storeId)
-            ->get();
+        $materials = Product::where('status', 'active')->get();
         $materialsToNotify = [];
 
         foreach ($materials as $material) {
@@ -38,6 +34,7 @@ class CheckRmPriceThreshold extends Command
                         'pdcode' => $material->pdcode,
                         'price' => $material->price,
                         'threshold' => $material->price_threshold,
+                        'store_id' => $material->store_id,
                     ];
                 }
             }
@@ -48,43 +45,52 @@ class CheckRmPriceThreshold extends Command
             return;
         }
 
-        $users = User::all();
         $whatsapp = new WhatsAppController();
+        $groupedByStore = collect($materialsToNotify)->groupBy('store_id');
 
-        foreach ($users as $user) {
-            $channel = 'email';
+        foreach ($groupedByStore as $storeId => $storeMaterials) {
+            $users = User::where('store_id', $storeId)->get();
 
-            try {
-                Mail::to($user->email)->send(new PdThresholdExceededMail($materialsToNotify));
-                Log::info("Email sent to {$user->email}");
-            } catch (\Exception $e) {
-                Log::error("Email error: " . $e->getMessage());
+            if ($users->isEmpty()) {
+                Log::warning("No users found for store ID: {$storeId}");
+                continue;
             }
 
-            if ($user->whatsapp_enabled && $user->whatsapp_number) {
-                $channel = 'both';
+            foreach ($users as $user) {
+                $channel = 'email';
+
                 try {
-                    $message = "🔔 *Price Threshold Alert*\n";
-                    foreach ($materialsToNotify as $m) {
-                        $message .= "{$m['name']} (Code: {$m['rmcode']}) - ₹{$m['price']} > ₹{$m['threshold']}\n";
-                    }
-
-                    $whatsapp->sendMessage($user->whatsapp_number, $message, 'whatsapp');
-                    Log::info("WhatsApp sent to {$user->whatsapp_number}");
+                    Mail::to($user->email)->send(new PdThresholdExceededMail($storeMaterials->toArray()));
+                    Log::info("Email sent to {$user->email} for store ID {$storeId}");
                 } catch (\Exception $e) {
-                    Log::error("WhatsApp error: " . $e->getMessage());
-                    $channel = 'email'; // fallback
+                    Log::error("Email error for {$user->email}: " . $e->getMessage());
                 }
-            }
 
-            // Store alert
-            PdPriceUpdateAlert::create([
-                'user_id' => $user->id,
-                'product_ids' => collect($materialsToNotify)->pluck('id')->toArray(),
-                'alerted_at' => now(),
-                'channel' => $channel,
-                'alert_type' => 'threshold',
-            ]);
+                if ($user->whatsapp_enabled && $user->whatsapp_number) {
+                    $channel = 'both';
+                    try {
+                        $message = "🔔 *Product Price Threshold Alert*\n";
+                        foreach ($storeMaterials as $m) {
+                            $message .= "{$m['name']} (Code: {$m['pdcode']}) - ₹{$m['price']} > ₹{$m['threshold']}\n";
+                        }
+
+                        $whatsapp->sendMessage($user->whatsapp_number, $message, 'whatsapp');
+                        Log::info("WhatsApp sent to {$user->whatsapp_number}");
+                    } catch (\Exception $e) {
+                        Log::error("WhatsApp error to {$user->whatsapp_number}: " . $e->getMessage());
+                        $channel = 'email';
+                    }
+                }
+
+                PdPriceUpdateAlert::create([
+                    'user_id' => $user->id,
+                    'store_id' => $storeId,
+                    'product_ids' => $storeMaterials->pluck('id')->toArray(),
+                    'alerted_at' => now(),
+                    'channel' => $channel,
+                    'alert_type' => 'Price Threshold',
+                ]);
+            }
         }
 
         $this->info('Threshold check completed.');

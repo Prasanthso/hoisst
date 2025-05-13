@@ -21,6 +21,7 @@ use App\Http\Controllers\OverAllCostingController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\AlertController;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\Overhead;
@@ -246,6 +247,5 @@ Route::get('/rawmaterialNotification', [NotificationController::class, 'rawmater
 Route::get('/packingmaterialNotification', [NotificationController::class, 'packingmaterialAlertNotification'])->name('packingmaterial.notification');
 Route::get('/lowmarginNotification', [NotificationController::class, 'lowMarginAlert'])->name('lowmargin.notification');
 
-
-
-
+Route::get('/viewalert', [AlertController::class, 'index'])->name('alert.index');
+Route::get('/alerts/export', [AlertController::class, 'export'])->name('alerts.export');

@@ -20,24 +20,21 @@ class CheckPmPriceThreshold extends Command
     {
         Log::info("Running check:pm-price-threshold...");
 
-        $storeId = session('store_id');
-
-        $materials = PackingMaterial::where('status', 'active')
-            ->where('store_id', $storeId)
-            ->get();
-            
+        $materials = PackingMaterial::where('status', 'active')->get();
         $materialsToNotify = [];
 
         foreach ($materials as $material) {
             if (is_numeric($material->price) && is_numeric($material->price_threshold)) {
                 if ((float)$material->price > (float)$material->price_threshold) {
                     Log::info("Threshold exceeded: {$material->name} (Price: {$material->price}, Threshold: {$material->price_threshold})");
+
                     $materialsToNotify[] = [
                         'id' => $material->id,
                         'name' => $material->name,
                         'pmcode' => $material->pmcode,
                         'price' => $material->price,
                         'threshold' => $material->price_threshold,
+                        'store_id' => $material->store_id,
                     ];
                 }
             }
@@ -48,45 +45,55 @@ class CheckPmPriceThreshold extends Command
             return;
         }
 
-        $users = User::all();
+        $groupedByStore = collect($materialsToNotify)->groupBy('store_id');
         $whatsapp = new WhatsAppController();
 
-        foreach ($users as $user) {
-            $channel = 'email';
+        foreach ($groupedByStore as $storeId => $storeMaterials) {
+            $users = User::where('store_id', $storeId)->get();
 
-            try {
-                Mail::to($user->email)->send(new PmThresholdExceededMail($materialsToNotify));
-                Log::info("Email sent to {$user->email}");
-            } catch (\Exception $e) {
-                Log::error("Email error: " . $e->getMessage());
+            if ($users->isEmpty()) {
+                Log::warning("No users found for store ID: {$storeId}");
+                continue;
             }
 
-            if ($user->whatsapp_enabled && $user->whatsapp_number) {
-                $channel = 'both';
+            foreach ($users as $user) {
+                $channel = 'email';
+
                 try {
-                    $message = "🔔 *Price Threshold Alert*\n";
-                    foreach ($materialsToNotify as $m) {
-                        $message .= "{$m['name']} (Code: {$m['rmcode']}) - ₹{$m['price']} > ₹{$m['threshold']}\n";
-                    }
-
-                    $whatsapp->sendMessage($user->whatsapp_number, $message, 'whatsapp');
-                    Log::info("WhatsApp sent to {$user->whatsapp_number}");
+                    Mail::to($user->email)->send(new PmThresholdExceededMail($storeMaterials->toArray()));
+                    Log::info("Email sent to {$user->email}");
                 } catch (\Exception $e) {
-                    Log::error("WhatsApp error: " . $e->getMessage());
-                    $channel = 'email'; // fallback
+                    Log::error("Email error: " . $e->getMessage());
                 }
-            }
 
-            // Store alert
-            PmPriceUpdateAlert::create([
-                'user_id' => $user->id,
-                'packing_material_ids' => collect($materialsToNotify)->pluck('id')->toArray(),
-                'alerted_at' => now(),
-                'channel' => $channel,
-                'alert_type' => 'threshold',
-            ]);
+                if ($user->whatsapp_enabled && $user->whatsapp_number) {
+                    $channel = 'both';
+                    try {
+                        $message = "🔔 *Packing Material Price Threshold Alert*\n";
+                        foreach ($storeMaterials as $m) {
+                            $message .= "{$m['name']} (Code: {$m['pmcode']}) - ₹{$m['price']} > ₹{$m['threshold']}\n";
+                        }
+
+                        $whatsapp->sendMessage($user->whatsapp_number, $message, 'whatsapp');
+                        Log::info("WhatsApp sent to {$user->whatsapp_number}");
+                    } catch (\Exception $e) {
+                        Log::error("WhatsApp error: " . $e->getMessage());
+                        $channel = 'email'; // fallback
+                    }
+                }
+
+                // Store alert
+                PmPriceUpdateAlert::create([
+                    'user_id' => $user->id,
+                    'store_id' => $storeId,
+                    'packing_material_ids' => $storeMaterials->pluck('id')->toArray(),
+                    'alerted_at' => now(),
+                    'channel' => $channel,
+                    'alert_type' => 'Price Threshold',
+                ]);
+            }
         }
 
-        $this->info('Threshold check completed.');
+        $this->info('Packing material threshold check completed.');
     }
 }
