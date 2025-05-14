@@ -329,7 +329,7 @@
     <!-- ======= Sidebar ======= -->
     <aside id="sidebar" class="sidebar" style="background-color: #BAEAF9;">
         <ul class="sidebar-nav" id="sidebar-nav">
-            <li class="nav-item">
+            <li class="nav-item" data-bs-toggle="tooltip" title="Get a quick overview of your sales, costs and profit.">
                 <a class="nav-link" href="/dashboard" style="background-color: rgb(186, 234, 249); font-size:17px;">
                     <img src="/assets/img/Dashboard.svg" alt="dashboard Icon" style="width: 1.1em; height: auto; margin-right: 6px;">
                     <span>Dashboard</span>
@@ -349,22 +349,22 @@
                             <span>Category</span>
                         </a>
                     </li>
-                    <li>
+                    <li data-bs-toggle="tooltip" title="Manage all your food items, SKUs or services in one place">
                         <a href="/products" class="{{ Request::is('products') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Products</span>
                         </a>
                     </li>
-                    <li>
+                    <li data-bs-toggle="tooltip"title="Track prices and stock of your kitchen or factory inputs">
                         <a href="/rawmaterial" class="{{ Request::is('rawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Raw Materials</span>
                         </a>
                     </li>
-                    <li>
+                    <li data-bs-toggle="tooltip" title="Manage cost and stock of boxes, bags, containers, etc.">
                         <a href="/packingmaterial" class="{{ Request::is('packingmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Packing Materials</span>
                         </a>
                     </li>
-                    <li>
+                    <li data-bs-toggle="tooltip" title="Record rent, staff salary, electricity and other fixed costs.">
                         <a href="/overheads" class="{{ Request::is('overheads') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Overhead Costs</span>
                         </a>
@@ -384,7 +384,7 @@
                             <span>Details & Description</span>
                         </a>
                     </li>
-                    <li>
+                    <li data-bs-toggle="tooltip" title="Set ingredients and see the exact cost to make each product.">
                         <a href="/pricing-records" class="{{Request::is('pricing-records') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Recipe Costing</span>
                         </a>
@@ -411,7 +411,7 @@
                 </a>
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item" data-bs-toggle="tooltip" title="view profit,cost and margin report to make better decisions.">
                 <a class="nav-link" href="/report" style="background-color: rgb(186, 234, 249); font-size:17px;">
                     <img src="/assets/img/Report.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 9px;">
                     <span>Reports</span>
