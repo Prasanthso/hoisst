@@ -4,7 +4,7 @@
 <main id="main" class="main">
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
-        <h1>Overheads</h1>
+        <h1>Overhead costs</h1>
         <div>
             <a href="{{ 'addoverheads' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
                 <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
