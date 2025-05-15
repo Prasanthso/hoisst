@@ -417,12 +417,12 @@
                     <span>Reports</span>
                 </a>
             </li>
-            <li class="nav-item" data-bs-toggle="tooltip" title="view profit,cost and margin report to make better decisions.">
+            {{-- <li class="nav-item" data-bs-toggle="tooltip" title="view profit,cost and margin report to make better decisions.">
                 <a class="nav-link" href="/viewvendors" style="background-color: rgb(186, 234, 249); font-size:17px;">
                     <img src="/assets/img/Report.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 9px;">
                     <span>Vendor</span>
                 </a>
-            </li>
+            </li> --}}
         </ul>
     </aside><!-- End Sidebar-->
 
