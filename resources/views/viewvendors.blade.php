@@ -4,7 +4,7 @@
 <main id="main" class="main">
 
     <!-- Page Title -->
-    <div class="pagetitle d-flex justify-content-between">
+    <div class="pagetitle d-flex justify-content-between mb-4">
         <h1 class="mb-0">Vendor List</h1>
         <div>
         <a href="#" class="btn btn-primary rounded-3 shadow" style="width: 200px;">
@@ -15,26 +15,24 @@
 
     <!-- Filters Section -->
     <section class="section dashboard">
-        <div class="row g-5">
-            <div class="col-md-3 rounded-3">
-                {{-- <label for="vendorType" class="form-label">Vendor Type</label> --}}
-                <select id="vendorType" class="form-select">
+        <div class="mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3 px-2 pt-4">
+            <div class="col-md-3">
+                <select id="vendorType" class="form-select rounded-2">
                     <option value="">Select Type</option>
                     <option value="Manufacture">Manufacture</option>
                     <option value="Distributor">Distributor</option>
                 </select>
             </div>
 
-            <div class="col-md-3 rounded-3">
-                {{-- <label for="vendorSearch" class="form-label">Search Vendor</label> --}}
-                <input type="text" class="form-control" id="vendorSearch" name="vendorsearch" placeholder="Vendor name...">
+            <div class="col-md-3">
+                <input type="text" class="form-control rounded-2" id="vendorSearch" name="vendorsearch" placeholder="Vendor name...">
             </div>
 
-            <div class="col-md-3 rounded-3">
-                {{-- <label for="vendorLocation" class="form-label">Location</label> --}}
-                <input type="text" class="form-control" id="vendorLocation" name="vendorlocation" placeholder="Location...">
+            <div class="col-md-3">
+                <input type="text" class="form-control rounded-2" id="vendorLocation" name="vendorlocation" placeholder="Location...">
             </div>
         </div>
+
 
     <!-- Vendor Table -->
     <div class="col-lg-10 mb-4">

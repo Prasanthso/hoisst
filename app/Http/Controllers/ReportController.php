@@ -132,9 +132,9 @@ class ReportController extends Controller
         //
     }
 
-     public function vendorslist()
-    {
-      return view('viewvendors');
-    }
+    //  public function vendorslist()
+    // {
+    //   return view('viewvendors');
+    // }
 
 }
