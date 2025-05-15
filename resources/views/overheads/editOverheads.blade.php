@@ -5,7 +5,7 @@
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
         <!-- Initially displaying "View Raw Material" -->
-        <h1 id="pageTitle">View Overheads</h1>
+        <h1 id="pageTitle">View Overhead costs</h1>
         <div class="d-flex justify-content-end mb-2 action-buttons">
             <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;" id="editButton">
                 <i class="fas fa-edit" style="color: black;"></i>
@@ -208,7 +208,7 @@
         // Toggle edit mode
         $('#editButton').on('click', function() {
             // Change the page title text
-            $('#pageTitle').text('Edit Overheads');
+            $('#pageTitle').text('Edit Overhead costs');
 
             // Enable form fields
             $('#overheadsForm input, #overheadsForm select').prop('disabled', false);

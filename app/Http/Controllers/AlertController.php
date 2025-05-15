@@ -28,7 +28,9 @@ class AlertController extends Controller
 
     public function index(Request $request)
     {
-        $combinedAlerts = $this->getFilteredAlerts($request);
+        $user = auth()->user();
+        $userid = $user->id;
+        $combinedAlerts = $this->getFilteredAlerts($request,$userid);
 
         // Paginate manually
         $perPage = 10;
@@ -44,15 +46,16 @@ class AlertController extends Controller
         return view('alert', ['alerts' => $pagedData]);
     }
 
-    private function getFilteredAlerts(Request $request)
+    private function getFilteredAlerts(Request $request, $userIds)
     {
         $storeId = session('store_id');
-        $userIds = User::where('store_id', $storeId)->pluck('id');
 
-        $lowMargin = LowMarginAlert::whereIn('user_id', $userIds)->get();
-        $pdAlertHistory = PdPriceUpdateAlert::whereIn('user_id', $userIds)->get();
-        $pmAlertHistory = PmPriceUpdateAlert::whereIn('user_id', $userIds)->get();
-        $rmAlertHistory = RmPriceUpdateAlert::whereIn('user_id', $userIds)->get();
+        // $userIds = User::where('store_id', $storeId)->pluck('id');
+
+        $lowMargin = LowMarginAlert::where('user_id', $userIds)->get();
+        $pdAlertHistory = PdPriceUpdateAlert::where('user_id', $userIds)->get();
+        $pmAlertHistory = PmPriceUpdateAlert::where('user_id', $userIds)->get();
+        $rmAlertHistory = RmPriceUpdateAlert::where('user_id', $userIds)->get();
 
         $products = Product::all()->keyBy('id'); // for PD + Low Margin
         $packingMaterials = PackingMaterial::all()->keyBy('id'); // for PM
