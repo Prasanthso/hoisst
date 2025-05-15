@@ -329,14 +329,14 @@
     <!-- ======= Sidebar ======= -->
     <aside id="sidebar" class="sidebar" style="background-color: #BAEAF9;">
         <ul class="sidebar-nav" id="sidebar-nav">
-            <li class="nav-item">
+            <li class="nav-item" data-bs-toggle="tooltip" title="View your overall business health — sales, costs, and profit margins in one place.">
                 <a class="nav-link" href="/dashboard" style="background-color: rgb(186, 234, 249); font-size:17px;">
                     <img src="/assets/img/Dashboard.svg" alt="dashboard Icon" style="width: 1.1em; height: auto; margin-right: 6px;">
                     <span>Dashboard</span>
                 </a>
             </li><!-- End Dashboard Nav -->
 
-            <li class="nav-item">
+            <li class="nav-item" data-bs-toggle="tooltip" title="Manage key business data like categories, products, raw materials, and cost heads.">
                 <a class="nav-link {{ Request::is('rawmaterial') || Request::is('showcategoryitem') || Request::is('products') || Request::is('overheads') || Request::is('packingmaterial') ? '' : 'collapsed' }}" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); font-size:17px;text-decoration: none;">
                     <img src="/assets/img/Masters.svg" alt="master Icon" style="width: 1em; height: auto; margin-right: 10px;">
                     <span>Masters</span><i class="bi bi-chevron-down ms-auto"></i>
@@ -344,52 +344,52 @@
                 <ul id="components-nav"
                     class="nav-content collapse {{ Request::is('rawmaterial') || Request::routeIs('rawMaterial.edit') || Request::is('showcategoryitem') || Request::is('addcategory') || Request::routeIs('categoryitem.edit') || Request::is('addrawmaterial') || Request::routeIs('packingMaterial.edit') || Request::is('packingmaterial') || Request::is('addpackingmaterial') || Request::is('overheads') || Request::is('addoverheads') || Request::routeIs('overheads.edit') || Request::is('products') || Request::routeIs('products.edit') || Request::is('addproduct') ? 'show' : '' }}"
                     data-bs-parent="#sidebar-nav">
-                    <li>
+                    <li data-bs-toggle="tooltip" title="Create and organize product, material, and overhead categories for smooth tracking.">
                         <a href="/showcategoryitem" class="{{ Request::is('showcategoryitem') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none">
                             <span>Category</span>
                         </a>
                     </li>
-                    <li>
+                    <li data-bs-toggle="tooltip" title="Add and manage the products you sell with their pricing and cost details.">
                         <a href="/products" class="{{ Request::is('products') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Products</span>
                         </a>
                     </li>
-                    <li>
+                    <li data-bs-toggle="tooltip"title="Track all raw materials — purchase price, usage, and vendor-wise data.">
                         <a href="/rawmaterial" class="{{ Request::is('rawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Raw Materials</span>
                         </a>
                     </li>
-                    <li>
+                    <li data-bs-toggle="tooltip" title="Manage packaging items like boxes, pouches, labels with cost monitoring.">
                         <a href="/packingmaterial" class="{{ Request::is('packingmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Packing Materials</span>
                         </a>
                     </li>
-                    <li>
+                    <li data-bs-toggle="tooltip" title="Record indirect expenses like rent, salaries, utilities affecting product costs.">
                         <a href="/overheads" class="{{ Request::is('overheads') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
-                            <span>Overheads</span>
+                            <span>Overhead Costs</span>
                         </a>
                     </li>
                 </ul>
             </li><!-- End Masters Nav -->
 
-            <li class="nav-item">
+            <li class="nav-item" data-bs-toggle="tooltip" title="Define how products are made — combining materials, packaging, and overheads.">
                 <a class="nav-link {{ Request::is('receipedetails') || Request::is('addreceipedetails') || Request::is('pricing-records') ? '' : 'collapsed'}} " data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); font-size:17px;text-decoration: none;">
                     <img src="/assets/img/Recipe.svg" alt="recipe Icon" style="width: 1em; height: auto; margin-right:10px;">
                     <span>Recipe</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="forms-nav" class="nav-content collapse {{ Request::is('receipedetails') || Request::is('addreceipedetails') || Request::routeIs('editrecipedetails.edit') || Request::is('pricing-records') || Request::is('pricing') || Request::routeIs('receipepricing.edit') || Request::is('overallcosting') || Request::is('addoverallcosting') || Request::routeIs('overallcosting.edit') ? 'show' :'' }}"
                     data-bs-parent="#sidebar-nav">
-                    <li>
+                    <li data-bs-toggle="tooltip" title="Add ingredients, quantities, and preparation details for accurate costing.">
                         <a href="/receipedetails" class="{{ Request::is('receipedetails') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Details & Description</span>
                         </a>
                     </li>
-                    <li>
+                    <li data-bs-toggle="tooltip" title="Calculate product-wise per-unit cost with real-time input price updates.">
                         <a href="/pricing-records" class="{{Request::is('pricing-records') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
-                            <span>Pricing</span>
+                            <span>Recipe Costing</span>
                         </a>
                     </li>
-                    <li>
+                    <li data-bs-toggle="tooltip" title="View total cost breakdown — raw materials, packaging, overheads for each product.">
                         <a href="/overallcosting" class="{{Request::is('overallcosting') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Overall Costing</span>
                         </a>
@@ -397,7 +397,7 @@
                 </ul>
             </li><!-- End Recipe Nav -->
 
-            <li class="nav-item">
+            <li class="nav-item" data-bs-toggle="tooltip" title="Set or revise product selling prices and instantly see updated margin calculations.">
                 <a class="nav-link" href="/recipepricing" style="background-color: rgb(186, 234, 249); font-size:17px;">
                     <img src="/assets/img/Recipepricing.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 8px;">
                     <span>Recipe Pricing</span>
@@ -411,12 +411,18 @@
                 </a>
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item" data-bs-toggle="tooltip" title="Get detailed reports on profits, costs, wastage, and business performance.">
                 <a class="nav-link" href="/report" style="background-color: rgb(186, 234, 249); font-size:17px;">
                     <img src="/assets/img/Report.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 9px;">
-                    <span>Report</span>
+                    <span>Reports</span>
                 </a>
             </li>
+            {{-- <li class="nav-item" data-bs-toggle="tooltip" title="view profit,cost and margin report to make better decisions.">
+                <a class="nav-link" href="/viewvendors" style="background-color: rgb(186, 234, 249); font-size:17px;">
+                    <img src="/assets/img/Report.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 9px;">
+                    <span>Vendor</span>
+                </a>
+            </li> --}}
         </ul>
     </aside><!-- End Sidebar-->
 
@@ -465,10 +471,11 @@
                 'packing material': '/packingmaterial',
                 'overhead': '/overheads',
                 'category': '/showcategoryitem',
-                'recipe': '/receipedetails',
-                'pricing': '/pricing-records',
+                'recipe details': '/receipedetails',
+                'recipe costing': '/pricing-records',
                 'overall costing': '/overallcosting',
                 'recipe pricing': '/recipepricing',
+                'alert' : '/viewalert',
                 'report': '/report'
             };
 

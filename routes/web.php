@@ -249,3 +249,5 @@ Route::get('/lowmarginNotification', [NotificationController::class, 'lowMarginA
 
 Route::get('/viewalert', [AlertController::class, 'index'])->name('alert.index');
 Route::get('/alerts/export', [AlertController::class, 'export'])->name('alerts.export');
+
+// Route::get('/viewvendors', [ReportController::class, 'vendorslist'])->name('vendors.view');

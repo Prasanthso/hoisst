@@ -17,9 +17,9 @@ class ReportController extends Controller
         $storeId = session('store_id');
 
         $reports = DB::select("
-        SELECT 
-            pm.id AS SNO, 
-            pm.name AS Product_Name, 
+        SELECT
+            pm.id AS SNO,
+            pm.name AS Product_Name,
             pm.price AS P_MRP,
             pm.tax AS tax,
             pm.margin AS margin,
@@ -34,11 +34,11 @@ class ReportController extends Controller
             COALESCE(pm_total.PM_Cost, 0) / COALESCE(rmst.Output, 1) AS PM_Cost,
             COALESCE(oh_total.Overhead_Cost, 0) / COALESCE(rmst.Output, 1) AS OH_Cost,
             COALESCE(moh_total.MOH_Cost, 0) / COALESCE(rmst.Output, 1) AS MOH_Cost,
-            rmst.Output 
-        FROM product_master pm 
-        JOIN recipe_master rmst ON pm.id = rmst.product_id 
+            rmst.Output
+        FROM product_master pm
+        JOIN recipe_master rmst ON pm.id = rmst.product_id
         LEFT JOIN (
-            SELECT 
+            SELECT
                 rfr.product_id,
                 GROUP_CONCAT(DISTINCT rfr.raw_material_id ORDER BY rfr.raw_material_id ASC SEPARATOR ', ') AS RM_IDs,
                 GROUP_CONCAT(DISTINCT rm.name ORDER BY rm.name ASC SEPARATOR ', ') AS RM_Names,
@@ -48,7 +48,7 @@ class ReportController extends Controller
             GROUP BY rfr.product_id
         ) AS rm_total ON pm.id = rm_total.product_id
         LEFT JOIN (
-            SELECT 
+            SELECT
                 pfr.product_id,
                 GROUP_CONCAT(DISTINCT pfr.packing_material_id ORDER BY pfr.packing_material_id ASC SEPARATOR ', ') AS PM_IDs,
                 GROUP_CONCAT(DISTINCT pkm.name ORDER BY pkm.name ASC SEPARATOR ', ') AS PM_Names,
@@ -58,25 +58,25 @@ class ReportController extends Controller
             GROUP BY pfr.product_id
         ) AS pm_total ON pm.id = pm_total.product_id
         LEFT JOIN (
-            SELECT 
-                ofr.product_id, 
+            SELECT
+                ofr.product_id,
                 SUM(COALESCE(ofr.quantity, 0) * COALESCE(oh.price, 0)) AS Overhead_Cost
             FROM oh_for_recipe ofr
             JOIN overheads oh ON ofr.overheads_id = oh.id
             GROUP BY ofr.product_id
         ) AS oh_total ON pm.id = oh_total.product_id
         LEFT JOIN (
-            SELECT 
-                product_id, 
+            SELECT
+                product_id,
                 SUM(COALESCE(price, 0)) AS MOH_Cost
             FROM moh_for_recipe
             GROUP BY product_id
         ) AS moh_total ON pm.id = moh_total.product_id
-        LEFT JOIN overall_costing oc 
+        LEFT JOIN overall_costing oc
             ON pm.id = oc.productId AND oc.status = 'active'
-        WHERE 
-            rmst.status = 'active' 
-            AND oc.suggested_mrp IS NOT NULL 
+        WHERE
+            rmst.status = 'active'
+            AND oc.suggested_mrp IS NOT NULL
             AND pm.store_id = :storeId
         ORDER BY pm.name ASC
     ", ['storeId' => $storeId]);
@@ -131,4 +131,10 @@ class ReportController extends Controller
     {
         //
     }
+
+    //  public function vendorslist()
+    // {
+    //   return view('viewvendors');
+    // }
+
 }

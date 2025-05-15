@@ -9,7 +9,7 @@
 
     <section class="section dashboard">
         <div class="card">
-            <div class="card-header  bg-dark text-white">Prduct Low Margin Alert</div>
+            <div class="card-header  bg-dark text-white">Product Low Margin Alert(s)</div>
             <div class="card-body">
                 <table class="table table-bordered">
                     <thead>
