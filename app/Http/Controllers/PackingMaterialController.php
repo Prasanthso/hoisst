@@ -107,11 +107,22 @@ class PackingMaterialController extends Controller
                         'c9.itemname as category_name9',
                         'c10.itemname as category_name10',
                         'pm.status'
-                    )
-                    // ->where('pm.status', '=', 'active')
-                    ->where('pm.store_id', $storeid)
-                    ->Where('pm.name', 'LIKE', "{$searchValue}%")
-                    //  ->orderBy('pm.name', 'asc')
+                    )     // Filter by active status
+
+                   ->where(function ($query) use ($selectedCategoryIds) {
+                        $query->whereIn('pm.category_id1', $selectedCategoryIds)
+                            ->orWhereIn('pm.category_id2', $selectedCategoryIds)
+                            ->orWhereIn('pm.category_id3', $selectedCategoryIds)
+                            ->orWhereIn('pm.category_id4', $selectedCategoryIds)
+                            ->orWhereIn('pm.category_id5', $selectedCategoryIds)
+                            ->orWhereIn('pm.category_id6', $selectedCategoryIds)
+                            ->orWhereIn('pm.category_id7', $selectedCategoryIds)
+                            ->orWhereIn('pm.category_id8', $selectedCategoryIds)
+                            ->orWhereIn('pm.category_id9', $selectedCategoryIds)
+                            ->orWhereIn('pm.category_id10', $selectedCategoryIds);
+                    })
+                     ->where('pm.store_id', $storeid)
+                     ->orderBy('pm.name', 'asc')
                     ->get();
 
                 return response()->json([
