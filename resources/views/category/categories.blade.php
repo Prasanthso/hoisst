@@ -211,6 +211,7 @@
         }
         console.log(statusValue);
             // const filteredItems = visibleData.data.filter(item => item.status === statusValue);
+            if (isFilter) {
             visibleData.forEach(item => {
                 // const categories = (item.categories || '').split(',').map(c => c.trim()).join(', ');
 
@@ -222,7 +223,7 @@
                     item.status
                 ]);
             });
-            if (isFilter) {
+
                 // Export filtered data
                 const ws = XLSX.utils.aoa_to_sheet(exportData);
                 const wb = XLSX.utils.book_new();
@@ -320,6 +321,7 @@
             statusValue = document.getElementById('inActive').value;
         }
         // const filteredItems = visibleData.filter(item => item.status === statusValue);
+        if (isFilter) {
         visibleData.forEach(item => {
         exportData.push([
             serial++, // Serial number
@@ -330,7 +332,7 @@
         ]);
     });
 
-    if (isFilter) {
+    // if (isFilter) {
         // Export filtered data to PDF
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
@@ -889,7 +891,7 @@
                         .then(data => {
                             filteredData = data.categoriesitems.data;
                             console.log('Fetched Data:', data.categoriesitems.data);
-                            visibleData = data.categoriesitems;
+                            visibleData = data.categoriesitems.data;
                             currentPage = 1; // reset to page 1 on new filter
                             renderTablePage(currentPage, filteredData);
                             renderPagination(filteredData.length);

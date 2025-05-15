@@ -275,6 +275,7 @@
         if (singleCheck && singleCheck.checked) {
             statusValue = document.getElementById('inActive').value;
         }
+           if (isFilter) {
                 visibleData.forEach(item => {
                     const categories = [
                         item.category_name1, item.category_name2, item.category_name3,
@@ -293,7 +294,7 @@
                         item.status
                     ]);
                 });
-            if (isFilter) {
+
                 // exportData = exportData.concat(visibleData);
                 const ws = XLSX.utils.aoa_to_sheet(exportData);
                 const wb = XLSX.utils.book_new();
