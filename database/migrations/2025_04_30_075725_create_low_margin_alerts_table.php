@@ -19,6 +19,7 @@ return new class extends Migration
             $table->float('threshold_margin');
             $table->timestamp('alerted_at');
             $table->string('channel'); // email / whatsapp / both
+             $table->unsignedBigInteger('store_id');
             $table->timestamps();
         });
     }

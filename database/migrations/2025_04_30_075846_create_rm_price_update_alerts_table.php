@@ -18,6 +18,7 @@ return new class extends Migration
             $table->timestamp('alerted_at');
             $table->string('channel'); // email, whatsapp, both
             $table->string('alert_type')->default('frequency');
+             $table->unsignedBigInteger('store_id');
             $table->timestamps();
         });
     }
