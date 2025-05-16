@@ -12,7 +12,7 @@ use App\Mail\PdThresholdExceededMail;
 use App\Http\Controllers\WhatsAppController;
 use App\Models\Product;
 
-class CheckRmPriceThreshold extends Command
+class CheckPdPriceThreshold extends Command
 {
     protected $signature = 'check:pd-price-threshold';
     protected $description = 'Check if Product price exceeds threshold and alert users';
