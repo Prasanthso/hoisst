@@ -147,7 +147,7 @@ class DashboardController extends Controller
             })
             ->values() // flatten
             ->sortByDesc('total_quantity') // optional: sort top products by total quantity
-            ->take(10);
+            ->take(15);
 
             // Prepare arrays for chart
             $months = $topModifications->pluck('month')->map(fn($m) => date("F", mktime(0, 0, 0, $m, 1)))->toArray();
