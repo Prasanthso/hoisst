@@ -145,7 +145,9 @@ class DashboardController extends Controller
             ->map(function ($group) {
                 return $group->sortByDesc('total_quantity')->first(); // top raw material per group
             })
-            ->values(); // flatten
+            ->values() // flatten
+            ->sortByDesc('total_quantity') // optional: sort top products by total quantity
+            ->take(10);
 
             // Prepare arrays for chart
             $months = $topModifications->pluck('month')->map(fn($m) => date("F", mktime(0, 0, 0, $m, 1)))->toArray();
