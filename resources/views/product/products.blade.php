@@ -149,7 +149,7 @@
                                      <span class="price-text">{{ $material->price }}</span>
                                      <input type="text" class="form-control price-input d-none" style="width: 80px;" value="{{ $material->price }}">
 
-                                     <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
+                                     <i class="fas fa-eye ms-2 mt-2 eye-icon" data-bs-toggle="tooltip" title="Check the price change history" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                                  </td>
                                  <td>{{ $material->uom }}</td> <!-- UoM -->
                                <td>{{ $material->pdCost ? number_format($material->pdCost, 2) : '0' }}</td>

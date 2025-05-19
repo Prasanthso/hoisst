@@ -148,7 +148,7 @@
                                 <td class="d-flex justify-content-between align-items-center">
                                     <span class="price-text">{{ $material->price }}</span>
                                     <input type="text" class="form-control price-input d-none" style="width: 80px;" value="{{ $material->price }}">
-                                    <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
+                                    <i class="fas fa-eye ms-2 mt-2 eye-icon" data-bs-toggle="tooltip" title="Check the price change history" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                                 </td>
                                 <td>{{ $material->uom }}</td> <!-- UoM -->
                                  <td><span class="badge {{ strtolower($material->status) === 'active' ? 'bg-success' : 'bg-danger' }}" style="font-weight: normal;">

@@ -85,7 +85,7 @@
                                 <td class="editable-mrp position-relative d-flex justify-content-between align-items-center">
                                     <span class="mrp-text">{{ number_format($S_MRP, 2) }}
                                     </span>
-                                    <i class="fas fa-pencil-alt edit-icon ms-2 mt-2"
+                                    <i class="fas fa-pencil-alt edit-icon ms-2 mt-2" data-bs-toggle="tooltip" title="Check the price against the expected margin"
                                         style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                                     <input type="text" class="form-control mrp-input d-none" value="{{ number_format($S_MRP, 2) }}">
                                 </td>
