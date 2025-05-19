@@ -406,7 +406,7 @@
 
             <li class="nav-item">
                 <a class="nav-link" href="/viewalert" style="background-color: rgb(186, 234, 249); font-size:17px;">
-                    <img src="/assets/img/Recipepricing.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 8px;">
+                    <img src="/assets/img/alert.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 8px;">
                     <span>Alert</span>
                 </a>
             </li>
