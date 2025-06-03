@@ -92,11 +92,16 @@
                                     </div>
                                     <div class="col">
                                         <div class="col-12">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <label for="inputMargin" class="form-label">Margin(%)</label>
-                                                <label class="form-label"> <a href="#" data-bs-toggle="modal" data-bs-target="#markupModal">Markup</a></label>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <label for="inputMargin" class="form-label">Margin(%)</label>
+                                                    <input type="number" id="marginInput" class="form-control mb-2" oninput="calculateMarkup()">
+                                                </div>
+                                                <div class="col-6">
+                                                    <label for="inputMargin" class="form-label">Markup</label>
+                                                    <input type="text" class="form-control mb-2" id="inputMargin" name="inputMargin" readonly>
+                                                </div>
                                             </div>
-                                            <input type="text" class="form-control mb-2" id="inputMargin" name="inputMargin">
                                         </div>
                                         <div class="col-12">
                                             <label for="inputMarginAmt" class="form-label">Margin Amount</label>
@@ -185,20 +190,21 @@
         let margin = parseFloat(document.getElementById('marginInput').value);
         if (!isNaN(margin) && margin < 100) {
             let markup = (margin * 100) / (100 - margin);
-            document.getElementById('markupResult').textContent = markup.toFixed(2);
+            document.getElementById('inputMargin').value = markup.toFixed(2); // Set value of input field
         } else {
-            document.getElementById('markupResult').textContent = "-";
+            document.getElementById('inputMargin').value = ""; // Clear or show placeholder
         }
     }
     document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById('applyMarkupBtn').addEventListener('click', function () {
-        let markupValue = document.getElementById('markupResult').textContent.trim();
-        if (markupValue && markupValue !== '-') {
-            document.getElementById('inputMargin').value = markupValue; // Assign value
-            calculate();
-        }
-        else{ document.getElementById('inputMargin').value = 0;}
-    });
+        document.getElementById('applyMarkupBtn').addEventListener('click', function() {
+            let markupValue = document.getElementById('markupResult').textContent.trim();
+            if (markupValue && markupValue !== '-') {
+                document.getElementById('inputMargin').value = markupValue; // Assign value
+                calculate();
+            } else {
+                document.getElementById('inputMargin').value = 0;
+            }
+        });
 
         const recipeSelect = document.getElementById('recipeSelect');
         const RmCostA = document.getElementById('inputRmcost');
