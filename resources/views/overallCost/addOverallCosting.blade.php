@@ -12,6 +12,9 @@
             @if(session('success'))
             <div id="success-message" class="alert alert-success">{{ session('success') }}</div>
             @endif
+            @foreach ($errors->all() as $error)
+            <div class="text-danger">{{ $error }}</div>
+            @endforeach
             <div class="col-lg-12">
                 <div class="col-lg-6">
 
@@ -58,30 +61,6 @@
                                             <label for="inputOverhead" id="lblinputOverhead" class="form-label">Overhead(C)</label>
                                             <input type="text" class="form-control mb-2" id="inputOverhead" name="inputOverhead" readonly>
                                         </div>
-
-                                        <!-- <div class="col">
-                                <div class="col-12">
-                                    <label for="inputRmSgmrp" class="form-label">RM(%) Suggested MRP</label>
-                                    <input type="text" class="form-control" id="inputRmSgmrp" name="inputRmSgmrp">
-                                </div>
-                                <div class="col-12">
-                                    <label for="inputPmSgmrp" class="form-label">PM(%) Suggested MRP</label>
-                                    <input type="text" class="form-control" id="inputPmSgmrp" name="inputPmSgmrp">
-                                </div>
-                                <div class="col-12">
-                                    <label for="inputSgMrp" class="form-label"> Suggested MRP </label>
-                                    <input type="text" class="form-control" id="inputSgMrp" name="inputSgMrp">
-                                </div>
-                                <div class="col-12">
-                                    <label for="inputSgMargin" class="form-label"> Suggested Margin </label>
-                                    <input type="text" class="form-control" id="inputSgMargin" name="inputSgMargin">
-                                </div>
-                            </div>-->
-
-                                        <!-- <div class="col-12">
-                                    <label for="inputOhAmt" class="form-label">Overhead Amount D</label>
-                                    <input type="text" class="form-control" id="inputOhAmt" name="inputOhAmt">
-                                </div>-->
 
                                         <div class="col-12 mb-2">
                                             {{-- <input type="hidden" class="form-control mb-2" name="productType" id="productType" value=""> --}}
@@ -188,49 +167,81 @@
 <script>
     function calculateMarkup() {
         let margin = parseFloat(document.getElementById('marginInput').value);
-        if (!isNaN(margin) && margin < 100) {
+        let markupInput = document.getElementById('inputMargin');
+        if (!isNaN(margin) && margin < 100 && margin >= 0) {
             let markup = (margin * 100) / (100 - margin);
-            document.getElementById('inputMargin').value = markup.toFixed(2); // Set value of input field
+            markupInput.value = markup.toFixed(2);
+            calculate(); // Trigger MRP calculation
         } else {
-            document.getElementById('inputMargin').value = ""; // Clear or show placeholder
+            markupInput.value = "0.00"; // Default to 0 for invalid input
+            calculate(); // Update with no markup
         }
     }
-    document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById('applyMarkupBtn').addEventListener('click', function() {
-            let markupValue = document.getElementById('markupResult').textContent.trim();
-            if (markupValue && markupValue !== '-') {
-                document.getElementById('inputMargin').value = markupValue; // Assign value
-                calculate();
-            } else {
-                document.getElementById('inputMargin').value = 0;
-            }
+
+    $(document).ready(function() {
+        $('#recipeSelect').select2({
+            theme: 'bootstrap-5',
+            placeholder: "Type or select a recipe...",
         });
 
-        const recipeSelect = document.getElementById('recipeSelect');
-        const RmCostA = document.getElementById('inputRmcost');
-        const PmCostB = document.getElementById('inputPmcost');
-        const RmPmCost = document.getElementById('inputRmPmcost');
-        const OhCostC = document.getElementById('inputOverhead');
-        const TotalCost = document.getElementById('inputTotalCost');
-        const permarginInput = document.getElementById('inputMargin'); // margin-25
-        const MarginAmt = document.getElementById('inputMarginAmt');
-        const Discount = document.getElementById('inputDiscount'); // discount 33.33
-        const pertaxInput = document.getElementById('inputTax');
-        const suggRate = document.getElementById('inputSuggRate');
-        const suggRatebftax = document.getElementById('inputSuggRatebf');
-        const suggestedMrp = document.getElementById('inputSuggMrp');
-        const recipeOutput = document.getElementById('inputRpoutput');
-        let discountAmt = document.getElementById('DiscountAmt');
+        $('#editButton').on('click', function() {
+            // Change the page title text
+            $('#pageTitle').text('Edit Overall Costing');
 
-        //    const totalRmCost = 0;
-        //    const totalPmCost = 0;
-        //    const totalOhCost = 0;
+            // Enable form fields
+            $('#overallCostingForm input, #overallCostingForm select').prop('disabled', false);
 
-        // Fetch the values correctly
-        let permargin = parseFloat(permarginInput.value) || 0;
-        let perdiscount = parseFloat(Discount.value) || 0;
-        let pertax = parseFloat(pertaxInput.value) || 0;
+            // Show the Save button
+            $('#saveButton').show();
+        });
+    });
 
+    function calculate() {
+        let totalCost = parseFloat(document.getElementById('inputTotalCost').value) || 0;
+        let markup = parseFloat(document.getElementById('inputMargin').value) || 0;
+        let pertax = parseFloat(document.getElementById('inputTax').value) || 0;
+        let perdiscount = parseFloat(document.getElementById('inputDiscount').value) || 0;
+        let recipeOutput = parseFloat(document.getElementById('inputRpoutput').value) || 0;
+
+        // Calculate Margin Amount using Markup
+        let marginAmt = (totalCost * markup / 100).toFixed(2);
+        let marginTotal = (totalCost + parseFloat(marginAmt)).toFixed(2);
+
+        // Calculate Tax Amount
+        let taxAmt = (parseFloat(marginTotal) * pertax / 100).toFixed(2);
+        let taxTotal = (parseFloat(marginTotal) + parseFloat(taxAmt)).toFixed(2);
+
+        // Calculate Discount Amount (subtract discount as it reduces the price)
+        let discAmt = (parseFloat(taxTotal) * perdiscount / 100).toFixed(2);
+        let netTotal = (parseFloat(taxTotal) + parseFloat(discAmt)).toFixed(2);
+
+        // Calculate Suggested Rate and Suggested Rate before Tax
+        // Use totalCost and marginTotal directly if recipeOutput is 0 to avoid division by zero
+        let suggRate = recipeOutput > 0 ? (totalCost / recipeOutput).toFixed(2) : totalCost.toFixed(2);
+        let suggRatebf = recipeOutput > 0 ? (parseFloat(marginTotal) / recipeOutput).toFixed(2) : marginTotal;
+
+        // Update UI Elements
+        document.getElementById('inputMarginAmt').value = marginAmt;
+        document.getElementById('DiscountAmt').innerHTML = "Discount Amount: " + discAmt;
+        document.getElementById('inputSuggMrp').value = netTotal;
+        document.getElementById('inputSuggRate').value = suggRate;
+        document.getElementById('inputSuggRatebf').value = suggRatebf;
+
+        // Debugging Logs
+        console.log("Total Cost:", totalCost);
+        console.log("Markup (%):", markup);
+        console.log("Margin Amount:", marginAmt);
+        console.log("Margin Total:", marginTotal);
+        console.log("Tax Amount:", taxAmt);
+        console.log("Tax Total:", taxTotal);
+        console.log("Discount Amount:", discAmt);
+        console.log("Suggested Rate:", suggRate);
+        console.log("Suggested Rate before Tax:", suggRatebf);
+        console.log("Suggested MRP:", netTotal);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // Initialize Select2
         $(document).ready(function() {
             $('#recipeSelect').select2({
                 theme: 'bootstrap-5',
@@ -238,254 +249,103 @@
             });
         });
 
+        // Event listener for recipe selection
         $('#recipeSelect').on('change', function() {
-            const selectedValue = $(this).val();
-            console.log("Selected value:", selectedValue);
-            if (selectedValue) {
-                recipedata(selectedValue);
+            const productId = $(this).val();
+            if (productId) {
+                recipedata(productId);
             } else {
-                console.log("No recipe selected.");
+                // Clear fields if no recipe is selected
+                document.getElementById('inputRmcost').value = '0.00';
+                document.getElementById('inputPmcost').value = '0.00';
+                document.getElementById('inputOverhead').value = '0.00';
+                document.getElementById('inputRmPmcost').value = '0.00';
+                document.getElementById('inputTotalCost').value = '0.00';
+                document.getElementById('inputTax').value = '0.00';
+                document.getElementById('inputRpoutput').value = '0';
+                document.getElementById('inputMargin').value = '0.00';
+                document.getElementById('inputMarginAmt').value = '0.00';
+                document.getElementById('inputSuggMrp').value = '0.00';
+                document.getElementById('inputSuggRate').value = '0.00';
+                document.getElementById('inputSuggRatebf').value = '0.00';
+                calculate();
             }
         });
 
-        async function recipedata(productId) {
-            // const productId = recipeSelect.value;
-            if (!productId) {
-                alert("Please enter a recipe");
-                return;
-            }
-            if (productId) {
-                try {
-                    // editRecipeBtn.setAttribute('data-id', productId);
-                    let response = await fetch(`/get-abc-cost?productId=${productId}`);
-                    let data = await response.json();
-                    if (response.ok) {
-                        console.log(data);
-                        const selectedText = recipeSelect.options[recipeSelect.selectedIndex].text.trim();
-                        recipeOutput.value = data.rpoutput;
+        // Event listener for margin input
+        document.getElementById('marginInput').addEventListener('input', calculateMarkup);
 
-                        pertaxInput.value = data.product_tax; //pertax;
-                        permarginInput.value = permargin;
-                        Discount.value = perdiscount.toFixed(2);
-                        updateCalculations(data);
-                        // toVisiable(data);
+        // Event listener for discount input
+        document.getElementById('inputDiscount').addEventListener('input', () => {
+            let perdiscount = parseFloat(document.getElementById('inputDiscount').value) || 0;
+            console.log(`Discount updated: ${perdiscount}%`);
+            calculate();
+        });
 
-                        // discountAmt.style.display = 'block';
-
-                        // if (selectedText) {
-                        //     RmCostA.value = data.rpoutput > 0 ? (data.totalRmCost / data.rpoutput).toFixed(2) : 'N/A';
-                        //     PmCostB.value = data.rpoutput > 0 ? (data.totalPmCost / data.rpoutput).toFixed(2) : 'N/A';
-                        //     OhCostC.value = data.rpoutput > 0 ? (data.totalOhCost / data.rpoutput).toFixed(2) : 'N/A';
-
-                        //     RmPmCost.value = (parseFloat(data.totalRmCost) + parseFloat(data.totalPmCost)).toFixed(2);
-                        //     TotalCost.value = (parseFloat(data.totalRmCost) + parseFloat(data.totalPmCost) + parseFloat(data.totalOhCost)).toFixed(2);
-
-                        //     MarginAmt.value = (parseFloat(TotalCost.value) * permargin / 100).toFixed(2);
-                        //     margin_Total = (parseFloat(TotalCost.value) + parseFloat(MarginAmt.value)).toFixed(2);
-
-                        //     tax_amt = (parseFloat(margin_Total) * pertax / 100).toFixed(2);
-                        //     tax_Total = (parseFloat(margin_Total) + parseFloat(tax_amt)).toFixed(2);
-
-                        //     disc_amt = (parseFloat(tax_Total) * perdiscount / 100).toFixed(2);
-                        //     discount_Total = (parseFloat(tax_Total) + parseFloat(disc_amt)).toFixed(2);
-                        //     Discount.value = parseFloat(disc_amt).toFixed(2);
-
-                        //     netTotal = parseFloat(discount_Total).toFixed(2);
-                        //     suggRate.value = data.rpoutput > 0 ? (parseFloat(TotalCost.value) / data.rpoutput).toFixed(2) : 'N/A';
-                        //     suggRatebftax.value = data.rpoutput > 0 ? (parseFloat(margin_Total) / data.rpoutput).toFixed(2) : 'N/A';
-                        //     suggestedMrp.value = data.rpoutput > 0 ? (parseFloat(netTotal) / data.rpoutput).toFixed(2) : 'N/A';
-                        // }
-
-                    } else {
-                        alert(data.error);
-                    }
-
-                } catch (error) {
-                    console.error(error);
-                    alert("Error fetching cost");
-                }
-            }
-        }
-
-        function updateCalculations(data) {
-            if (!data) return;
-
-            RmCostA.value = data.rpoutput > 0 ? (data.totalRmCost / data.rpoutput).toFixed(2) : 'N/A';
-            PmCostB.value = data.rpoutput > 0 ? (data.totalPmCost / data.rpoutput).toFixed(2) : 'N/A';
-            OhCostC.value = data.rpoutput > 0 ? (data.totalOhCost / data.rpoutput).toFixed(2) : 'N/A';
-            console.log(RmCostA, PmCostB, OhCostC);
-
-            // Ensure numerical values before calculations
-            let rmCost = parseFloat(RmCostA.value) || 0;
-            let pmCost = parseFloat(PmCostB.value) || 0;
-            let ohCost = parseFloat(OhCostC.value) || 0;
-
-            // Calculate Costs
-            RmPmCost.value = (rmCost + pmCost).toFixed(2);
-            // if(data.itemtype == 'Trading')
-            // {
-            //     console.log("Trading item price :", parseFloat(data.tradingCost));
-            //     console.log("item type" , data.itemtype);
-            //     document.getElementById('productType').value = 'Trading';
-            //     TotalCost.value = parseFloat(data.tradingCost).toFixed(2) || 0;
-            // }
-
-            TotalCost.value = (rmCost + pmCost + ohCost).toFixed(2);
-
-            // Recalculate margin
-            let totalCostNum = parseFloat(TotalCost.value);
-            let marginAmount = (totalCostNum * permargin / 100).toFixed(2);
-            MarginAmt.value = marginAmount;
-
-            let margin_Total = (totalCostNum + parseFloat(marginAmount)).toFixed(2);
-
-            // Recalculate tax
-            let pertax = parseFloat(pertaxInput.value) || 0;
-            let tax_amt = (parseFloat(margin_Total) * pertax / 100).toFixed(2);
-            let tax_Total = (parseFloat(margin_Total) + parseFloat(tax_amt)).toFixed(2);
-
-            // Recalculate discount
-            let disc_amt = (parseFloat(tax_Total) * perdiscount / 100).toFixed(2);
-            let discount_Total = (parseFloat(tax_Total) + parseFloat(disc_amt)).toFixed(2);
-            discountAmt.innerHTML = "Discount Amount: " + disc_amt;
-
-            // Final calculations
-            let netTotal = parseFloat(discount_Total).toFixed(2);
-            let recipeOut = parseFloat(recipeOutput.value) || 0;
-
-            suggRate.value = recipeOut > 0 ? totalCostNum.toFixed(2) : 'N/A';
-            suggRatebftax.value = recipeOut > 0 ? margin_Total : 'N/A';
-            suggestedMrp.value = recipeOut > 0 ? netTotal : 'N/A';
-        }
-
-        /*
-            function toVisiable(data)
-            {
-                if (!data) return;
-
-                if(data.itemtype == 'Trading')
-                {
-                    document.getElementById("lblinputRmcost").style.display = "none";
-                    document.getElementById("lblinputPmcost").style.display = "none";
-                    document.getElementById("lblinputRmPmcost").style.display = "none";
-                    document.getElementById("lblinputOverhead").style.display = "none";
-                    RmCostA.style.display = "none";
-                    PmCostB.style.display = "none";
-                    RmPmCost.style.display = "none";
-                    OhCostC.style.display  = "none";
-                    // RmCostA.value = 0;
-                    // PmCostB.value = 0;
-                    // RmPmCost.value = 0;
-                    // OhCostC.value = 0;
-                }
-                else{
-                    document.getElementById("lblinputRmcost").style.display = "block";
-                    document.getElementById("lblinputPmcost").style.display = "block";
-                    document.getElementById("lblinputRmPmcost").style.display = "block";
-                    document.getElementById("lblinputOverhead").style.display = "block";
-                    RmCostA.style.display = "block";
-                    PmCostB.style.display = "block";
-                    RmPmCost.style.display = "block";
-                    OhCostC.style.display  = "block";
-                }
-            }
-        */
-        // **Call updateCalculations when tax input changes**
-        pertaxInput.addEventListener('change', () => {
-            pertax = parseFloat(pertaxInput.value) || 0; // Update margin percentage
+        // Event listener for tax input (in case it becomes editable)
+        document.getElementById('inputTax').addEventListener('input', () => {
+            let pertax = parseFloat(document.getElementById('inputTax').value) || 0;
             console.log(`Tax updated: ${pertax}%`);
             calculate();
         });
 
-        // **Call updateCalculations when margin input changes**
-        permarginInput.addEventListener('change', () => {
-            let permargin = parseFloat(permarginInput.value) || 0; // Update margin percentage
-            console.log(`Margin updated: ${permargin}%`);
-            calculate();
-        });
-        permarginInput.addEventListener('input', () => {
-            let permargin = parseFloat(permarginInput.value) || 0; // Update margin percentage
-            console.log(`Margin updated: ${permargin}%`);
-            calculate();
-        });
-
-        // **Call updateCalculations when tax input changes**
-        Discount.addEventListener('change', () => {
-            let perdiscount = parseFloat(Discount.value) || 0; // Update margin percentage
-            console.log(`Discount updated: ${perdiscount}%`);
-            calculate();
-        });
-        Discount.addEventListener('input', () => {
-            let perdiscount = parseFloat(Discount.value) || 0; // Update margin percentage
-            console.log(`Discount updated: ${perdiscount}%`);
-            calculate();
-        });
-
-        function calculate() {
-            let totalCost = parseFloat(TotalCost.value) || 0;
-            let permargin = parseFloat(permarginInput.value) || 0;
-            let pertax = parseFloat(pertaxInput.value) || 0;
-            let perdiscount = parseFloat(Discount.value) || 0;
-
-            // Calculate Margin Amount
-            let marginAmt = (totalCost * permargin / 100).toFixed(2);
-            let marginTotal = (totalCost + parseFloat(marginAmt)).toFixed(2);
-
-            // Calculate Tax Amount
-            let taxAmt = (parseFloat(marginTotal) * pertax / 100).toFixed(2);
-            let taxTotal = (parseFloat(marginTotal) + parseFloat(taxAmt)).toFixed(2);
-
-            // Calculate Discount Amount
-            let discAmt = (parseFloat(taxTotal) * perdiscount / 100).toFixed(2);
-            let netTotal = (parseFloat(taxTotal) + parseFloat(discAmt)).toFixed(2);
-
-            // Update UI Elements
-            MarginAmt.value = marginAmt;
-            // pertaxInput.value = taxAmt;
-            discountAmt.innerHTML = discAmt;
-            suggestedMrp.value = netTotal;
-
-            // Debugging Logs
-            console.log("Total Cost:", totalCost);
-            console.log("Margin Amount:", marginAmt);
-            console.log("Margin Total:", marginTotal);
-            console.log("Tax Amount:", taxAmt);
-            console.log("Tax Total:", taxTotal);
-            console.log("Discount Amount:", discAmt);
-            console.log("Final Suggested MRP:", netTotal);
-        }
-
-        /*
-            function calculate() {
-                // Trigger the recalculation of margin-related values based on updated margin
-                 // Recalculate margin
-                 MarginAmt.value = (parseFloat(TotalCost.value) * permargin / 100).toFixed(2);
-                let margin_Total = (parseFloat(TotalCost.value) + parseFloat(MarginAmt.value)).toFixed(2);
-
-                let marginValue = parseFloat(MarginAmt.value);
-                if (isNaN(marginValue)) marginValue = 0;
-
-                let marginTotal = (parseFloat(TotalCost.value) + parseFloat(MarginAmt.value)).toFixed(2);
-                let taxAmt = (parseFloat(marginTotal) * pertax / 100).toFixed(2);
-                let taxTotal = (parseFloat(marginTotal) + parseFloat(taxAmt)).toFixed(2);
-
-                let discAmt = (parseFloat(taxTotal) * perdiscount / 100).toFixed(2);
-                let discountTotal = (parseFloat(taxTotal) + parseFloat(discAmt)).toFixed(2);
-                discountAmt.innerHTML = discAmt; //parseFloat(discAmt).toFixed(2);
-
-                console.log(recipeOutput.value);
-                let netTotal = parseFloat(discountTotal).toFixed(2);
-                suggRate.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(TotalCost.value)).toFixed(2) : 'N/A';
-                suggRatebftax.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(margin_Total)).toFixed(2) : 'N/A';
-                suggestedMrp.value = parseFloat(recipeOutput.value) > 0 ? (parseFloat(netTotal)).toFixed(2) : 'N/A';
+        // Form submission validation
+        document.querySelector('form').addEventListener('submit', function(event) {
+            let suggRate = document.getElementById('inputSuggRate').value;
+            let suggRatebf = document.getElementById('inputSuggRatebf').value;
+            if (!suggRate || !suggRatebf || isNaN(suggRate) || isNaN(suggRatebf)) {
+                event.preventDefault();
+                alert('Please ensure all cost fields are populated by selecting a recipe and setting a valid margin.');
             }
-            */
-
-        setTimeout(function() {
-            const successMessage = document.getElementById('success-message');
-            if (successMessage) {
-                successMessage.style.display = 'none';
-            }
-        }, 5000);
+        });
     });
+
+    async function recipedata(productId) {
+        if (!productId) {
+            alert("Please enter a recipe");
+            return;
+        }
+        try {
+            let response = await fetch(`/get-abc-cost?productId=${productId}`);
+            let data = await response.json();
+            if (response.ok) {
+                // Populate fields with fetched data, default to 0.00 if invalid
+                document.getElementById('inputRmcost').value = data.rpoutput > 0 ? (data.totalRmCost / data.rpoutput).toFixed(2) : '0.00';
+                document.getElementById('inputPmcost').value = data.rpoutput > 0 ? (data.totalPmCost / data.rpoutput).toFixed(2) : '0.00';
+                document.getElementById('inputOverhead').value = data.rpoutput > 0 ? (data.totalOhCost / data.rpoutput).toFixed(2) : '0.00';
+                document.getElementById('inputRmPmcost').value = (parseFloat(data.totalRmCost / data.rpoutput || 0) + parseFloat(data.totalPmCost / data.rpoutput || 0)).toFixed(2);
+                document.getElementById('inputTotalCost').value = (parseFloat(data.totalRmCost / data.rpoutput || 0) + parseFloat(data.totalPmCost / data.rpoutput || 0) + parseFloat(data.totalOhCost / data.rpoutput || 0)).toFixed(2);
+                document.getElementById('inputTax').value = parseFloat(data.product_tax || 0).toFixed(2);
+                document.getElementById('inputRpoutput').value = data.rpoutput || '0';
+                calculate(); // Trigger calculations after data fetch
+            } else {
+                alert(data.error);
+                // Clear fields on error
+                document.getElementById('inputRmcost').value = '0.00';
+                document.getElementById('inputPmcost').value = '0.00';
+                document.getElementById('inputOverhead').value = '0.00';
+                document.getElementById('inputRmPmcost').value = '0.00';
+                document.getElementById('inputTotalCost').value = '0.00';
+                document.getElementById('inputTax').value = '0.00';
+                document.getElementById('inputRpoutput').value = '0';
+                document.getElementById('inputSuggRate').value = '0.00';
+                document.getElementById('inputSuggRatebf').value = '0.00';
+                calculate();
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Error fetching cost");
+            // Clear fields on error
+            document.getElementById('inputRmcost').value = '0.00';
+            document.getElementById('inputPmcost').value = '0.00';
+            document.getElementById('inputOverhead').value = '0.00';
+            document.getElementById('inputRmPmcost').value = '0.00';
+            document.getElementById('inputTotalCost').value = '0.00';
+            document.getElementById('inputTax').value = '0.00';
+            document.getElementById('inputRpoutput').value = '0';
+            document.getElementById('inputSuggRate').value = '0.00';
+            document.getElementById('inputSuggRatebf').value = '0.00';
+            calculate();
+        }
+    }
 </script>
