@@ -415,7 +415,7 @@ class RecipePricingController extends Controller
             ->where('store_id', $storeId)
             ->delete();
         // Redirect back with a success message
-        return redirect()->route('receipepricing.index')->with('success', 'Recipe-Pricing data deleted successfully!');
+        return redirect()->route('receipepricing.form')->with('success', 'Recipe-Pricing data deleted successfully!');
 
     }
 }

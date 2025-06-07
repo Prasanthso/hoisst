@@ -1,0 +1,11 @@
+```,,,,,,,,
+# Instructions: The following row lists valid category values. Use these to create a dropdown for the 'category' column in your spreadsheet software (e.g., Excel Data Validation or Google Sheets Data Validation). Valid categories: raw_material, packing_material, overhead, manual_overhead,,,,
+# Valid Categories List for Dropdown,,,,,,,,
+category_values,raw_material,packing_material,overhead,manual_overhead,,,,
+# Main Data Starts Below,,,,,,,,
+category,name,quantity,code,uom,price,amount,type,value
+raw_material,Milk,10,RM0065,Kgs,2,20,-,-
+raw_material,oil,5,RM0066,Kgs,1.5,7.5,-,-
+packing_material,packing Material 1,5,PM0018,Kgs,1.5,7.5,-,-
+manual_overhead,Custom Overhead,-,-,-,-,-,price,100
+manual_overhead,Additional Fee,-,-,-,-,-,percentage,5
