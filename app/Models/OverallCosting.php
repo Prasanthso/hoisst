@@ -25,6 +25,7 @@ class OverallCosting extends Model
         // 'sg_margin',
         // 'oh_amt',
         'total_cost',
+        'og_margin',
         'margin',
         'margin_amt',
         'tax',

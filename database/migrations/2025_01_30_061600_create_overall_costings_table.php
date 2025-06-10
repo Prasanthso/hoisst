@@ -25,6 +25,7 @@ return new class extends Migration
             // $table->decimal('oh_amt', 10, 2);
             $table->decimal('total_cost', 10, 2)->default(0);
             $table->decimal('tax', 10, 2)->default(0);
+            $table->decimal('og_margin', 10, 2)->default(0);
             $table->decimal('margin', 10, 2)->default(0);
             $table->decimal('margin_amt', 10, 2)->default(0);
             $table->decimal('discount', 10, 2)->default(0);
