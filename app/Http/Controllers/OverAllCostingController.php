@@ -420,6 +420,7 @@ class OverAllCostingController extends Controller
                 // 'oh_amt' => (float) $request->inputOhAmt,
                 'total_cost' => (float) $request->inputTotalCost,
                 'tax' => (float) $request->inputTax,
+                'og_margin' => (float) $request->og_margin,
                 'margin' => (float) $request->inputMargin,
                 'margin_amt' => (float) $request->inputMarginAmt,
                 'discount' => (float) $request->inputDiscount,

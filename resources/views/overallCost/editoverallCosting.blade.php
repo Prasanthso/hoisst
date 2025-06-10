@@ -97,7 +97,7 @@
                                             <div class="row">
                                                 <div class="col-6">
                                                     <label for="inputMargin" class="form-label">Margin(%)</label>
-                                                    <input type="number" id="marginInput" class="form-control mb-2" oninput="calculateMarkup()" disabled>
+                                                    <input type="number" id="marginInput" class="form-control mb-2" name="og_margin" value="{{ $costing->og_margin }}" oninput="calculateMarkup()" disabled>
                                                 </div>
                                                 <div class="col-6">
                                                     <label for="inputMargin" class="form-label">Markup</label>

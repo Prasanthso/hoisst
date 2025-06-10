@@ -74,7 +74,7 @@
                                             <div class="row">
                                                 <div class="col-6">
                                                     <label for="inputMargin" class="form-label">Margin(%)</label>
-                                                    <input type="number" id="marginInput" class="form-control mb-2" oninput="calculateMarkup()">
+                                                    <input type="number" id="marginInput" name="og_margin" class="form-control mb-2" oninput="calculateMarkup()">
                                                 </div>
                                                 <div class="col-6">
                                                     <label for="inputMargin" class="form-label">Markup</label>
