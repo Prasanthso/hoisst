@@ -183,60 +183,50 @@ class OverAllCostingController extends Controller
     {
         $storeid = $request->session()->get('store_id');
 
-        $request->validate([
-            'productId' => 'required|exists:product_master,id',
-            'inputRmcost' => 'required|numeric',
-            'inputPmcost' => 'required|numeric',
-            'inputRmPmcost' => 'required|numeric',
-            'inputOverhead' => 'required|numeric',
-            // 'inputRmSgmrp' => 'required|numeric',
-            // 'inputPmSgmrp' => 'required|numeric',
-            // 'inputSgMrp' => 'required|numeric',
-            // 'inputSgMargin' => 'required|numeric',
-            // 'inputOhAmt' => 'required|numeric',
-            'inputTax' => 'required|numeric',
-            'inputMargin' => 'required|numeric',
-            'inputMarginAmt' => 'required|numeric',
-            'inputDiscount' => 'required|numeric',
-            'inputTotalCost' => 'required|numeric',
-            'inputSuggRate' => 'required|numeric',
-            'inputSuggRatebf' => 'required|numeric',
-            'inputSuggMrp' => 'required|numeric',
-        ]);
-        // $isTrading = $request->input('productType') === 'Trading';
-        // dd($request->inputPmcost,$request->inputRmPmcost,$request->inputOverhead);
-
         try {
-            OverallCosting::create([
-                'productId' => $request->productId,
-                'rm_cost_unit' => (float) $request->inputRmcost,
-                'pm_cost_unit' => (float) $request->inputPmcost,
-                'rm_pm_cost' =>  (float) $request->inputRmPmcost,
-                'overhead' => (float) $request->inputOverhead,
-                // 'rm_sg_mrp' => (float) $request->inputRmSgmrp,
-                // 'pm_sg_mrp' => (float) $request->inputPmSgmrp,
-                // 'sg_mrp' => (float) $request->inputSgMrp,
-                // 'sg_margin' => (float) $request->inputSgMargin,
-                // 'oh_amt' => (float) $request->inputOhAmt,
-                'total_cost' => (float) $request->inputTotalCost,
-                'tax' => (float) $request->inputTax,
-                'og_margin' => (float) $request->og_margin,
-                'margin' => (float) $request->inputMargin,
-                'margin_amt' => (float) $request->inputMarginAmt,
-                'discount' => (float) $request->inputDiscount,
-                'sugg_rate' => (float) $request->inputSuggRate,
-                'sugg_rate_bf' => (float) $request->inputSuggRatebf,
-                'suggested_mrp' => (float) $request->inputSuggMrp,
-                'status' => 'active',
-                'store_id' => $storeid
+            $validated = $request->validate([
+                'productId' => 'required|exists:product_master,id',
+                'inputRmcost' => 'required|numeric|min:0',
+                'inputPmcost' => 'required|numeric|min:0',
+                'inputRmPmcost' => 'required|numeric|min:0',
+                'inputOverhead' => 'required|numeric|min:0',
+                'inputTotalCost' => 'required|numeric|min:0',
+                'inputTax' => 'required|numeric|min:0',
+                'inputMargin' => 'required|numeric|min:0',
+                'inputMarginAmt' => 'required|numeric|min:0',
+                'inputDiscount' => 'required|numeric|min:0',
+                'inputSuggRate' => 'required|numeric|min:0',
+                'inputSuggRatebf' => 'required|numeric|min:0',
+                'inputSuggMrp' => 'required|numeric|min:0',
             ]);
 
+            OverallCosting::create([
+                'productId' => $validated['productId'],
+                'rm_cost_unit' => (float) $validated['inputRmcost'],
+                'pm_cost_unit' => (float) $validated['inputPmcost'],
+                'rm_pm_cost' => (float) $validated['inputRmPmcost'],
+                'overhead' => (float) $validated['inputOverhead'],
+                'total_cost' => (float) $validated['inputTotalCost'],
+                'tax' => (float) $validated['inputTax'],
+                'og_margin' => (float) $request->og_margin,
+                'margin' => (float) $validated['inputMargin'],
+                'margin_amt' => (float) $validated['inputMarginAmt'],
+                'discount' => (float) $validated['inputDiscount'],
+                'sugg_rate' => (float) $validated['inputSuggRate'],
+                'sugg_rate_bf' => (float) $validated['inputSuggRatebf'],
+                'suggested_mrp' => (float) $validated['inputSuggMrp'],
+                'status' => 'active',
+                'store_id' => $storeid,
+            ]);
+
+            return redirect()->route('overallcosting.index')->with('success', 'Costing saved successfully!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation error: ' . json_encode($e->errors()));
+            return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
             \Log::error('Error inserting OverallCosting data: ' . $e->getMessage());
-            return back()->with('error', 'Error saving data: ' . $e->getMessage());
+            return back()->with('error', 'Error saving data: ' . $e->getMessage())->withInput();
         }
-        // Redirect to another page with a success message
-        return redirect()->route('overallcosting.index')->with('success', 'Costing saved successfully!');
     }
     public function show(Request $request, $id)
     {
