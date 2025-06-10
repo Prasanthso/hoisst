@@ -208,6 +208,7 @@ class OverAllCostingController extends Controller
                 'overhead' => (float) $validated['inputOverhead'],
                 'total_cost' => (float) $validated['inputTotalCost'],
                 'tax' => (float) $validated['inputTax'],
+                'og_margin' => (float) $request->og_margin,
                 'margin' => (float) $validated['inputMargin'],
                 'margin_amt' => (float) $validated['inputMarginAmt'],
                 'discount' => (float) $validated['inputDiscount'],
