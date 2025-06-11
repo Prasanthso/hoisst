@@ -20,87 +20,119 @@ class CheckPmPriceUpdates extends Command
 
     public function handle()
     {
-        Log::info("Running check:pm-price-threshold...");
+        Log::info("Running check:rm-price-updates command...");
 
-        $activeMaterials = PackingMaterial::where('status', 'active')->get();
-        $alerts = [];
+        $packingMaterials = PackingMaterial::where('status', 'active')->get();
+        $now = Carbon::now();
+        $materialsToNotify = [];
 
-        // Check each material for price threshold breach
-        foreach ($activeMaterials as $material) {
-            $price = (float) $material->price;
-            $threshold = (float) $material->price_threshold;
+        if ($packingMaterials->isEmpty()) {
+            Log::warning("No active packing materials found.");
+            return;
+        }
 
-            if (is_numeric($material->price) && is_numeric($material->price_threshold) && $price > $threshold) {
-                Log::info("Threshold exceeded: {$material->name} (Price: ₹{$price}, Threshold: ₹{$threshold})");
+        foreach ($packingMaterials as $material) {
+            Log::info("Checking packing material: {$material->name}, ID: {$material->id}");
 
-                $alerts[] = [
-                    'id'        => $material->id,
-                    'name'      => $material->name,
-                    'pmcode'    => $material->pmcode,
-                    'price'     => $price,
-                    'threshold' => $threshold,
-                    'store_id'  => $material->store_id,
+            $lastUpdate = DB::table('pm_price_histories')
+                ->where('packing_material_id', $material->id)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            $lastUpdateDate = $lastUpdate ? Carbon::parse($lastUpdate->created_at) : Carbon::parse($material->created_at);
+            $updateFrequency = strtolower(trim($material->update_frequency));
+            $priceUpdateFrequency = (int) $material->price_update_frequency;
+
+            if (!in_array($updateFrequency, ['days', 'weeks', 'monthly', 'yearly'])) {
+                Log::warning("Invalid update_frequency for {$material->name}: {$updateFrequency}");
+                continue;
+            }
+
+            $checkDate = (clone $now);
+
+            switch ($updateFrequency) {
+                case 'days':
+                    $checkDate->subDays($priceUpdateFrequency);
+                    break;
+                case 'weeks':
+                    $checkDate->subWeeks($priceUpdateFrequency);
+                    break;
+                case 'monthly':
+                    $checkDate->subMonths($priceUpdateFrequency);
+                    break;
+                case 'yearly':
+                    $checkDate->subYears($priceUpdateFrequency);
+                    break;
+            }
+
+            if ($lastUpdateDate->lt($checkDate)) {
+                Log::info("Price update alert needed for: {$material->name}");
+                $materialsToNotify[] = [
+                    'name' => $material->name,
+                    'id' => $material->id,
+                    'pmcode' => $material->pmcode,
+                    'store_id' => $material->store_id,
                 ];
             }
         }
 
-        if (empty($alerts)) {
-            Log::info("No packing material threshold breaches found.");
+        if (empty($materialsToNotify)) {
+            Log::info("No price update alerts needed.");
             return;
         }
 
-        $groupedAlerts = collect($alerts)->groupBy('store_id');
-        $whatsapp = new WhatsAppController();
+        $whatsappController = new WhatsAppController();
 
-        foreach ($groupedAlerts as $storeId => $materials) {
-            $users = User::where('store_id', $storeId)->get();
+        // Group by store
+        $groupedByStore = collect($materialsToNotify)->groupBy('store_id');
 
-            if ($users->isEmpty()) {
+        foreach ($groupedByStore as $storeId => $storeMaterials) {
+            $storeUsers = User::where('store_id', $storeId)->get();
+
+            if ($storeUsers->isEmpty()) {
                 Log::warning("No users found for store ID: {$storeId}");
                 continue;
             }
 
-            foreach ($users as $user) {
+            foreach ($storeUsers as $user) {
+                Log::info("Sending notifications to user {$user->email} for store ID {$storeId}");
+
                 $channel = 'email';
 
-                // Send Email
                 try {
-                    Mail::to($user->email)->send(new PmThresholdExceededMail($materials->toArray()));
+                    Mail::to($user->email)->send(new PmPriceUpdateMail($storeMaterials->toArray()));
                     Log::info("Email sent to {$user->email}");
                 } catch (\Exception $e) {
-                    Log::error("Failed to send email to {$user->email}: " . $e->getMessage());
+                    Log::error("Email error to {$user->email}: " . $e->getMessage());
                 }
 
-                // Send WhatsApp
                 if ($user->whatsapp_enabled && $user->whatsapp_number) {
                     $channel = 'both';
-
                     try {
-                        $message = "🔔 *Packing Material Price Threshold Alert*\n";
-                        foreach ($materials as $m) {
-                            $message .= "{$m['name']} (Code: {$m['pmcode']}) - ₹{$m['price']} > ₹{$m['threshold']}\n";
+                        $message = "🔔 *Price Update Alert*\n";
+                        foreach ($storeMaterials as $m) {
+                            $message .= "{$m['name']} (Code: {$m['pmcode']})\n";
                         }
+                        $message .= "\nPlease update the prices accordingly.";
 
-                        $whatsapp->sendMessage($user->whatsapp_number, $message, 'whatsapp');
+                        $whatsappController->sendMessage($user->whatsapp_number, $message, 'whatsapp');
                         Log::info("WhatsApp sent to {$user->whatsapp_number}");
                     } catch (\Exception $e) {
-                        Log::error("Failed to send WhatsApp to {$user->whatsapp_number}: " . $e->getMessage());
+                        Log::error("WhatsApp error to {$user->whatsapp_number}: " . $e->getMessage());
                         $channel = 'email';
                     }
                 }
 
-                // Store alert log
                 PmPriceUpdateAlert::create([
-                    'user_id'              => $user->id,
-                    'store_id'             => $storeId,
-                    'packing_material_ids' => $materials->pluck('id')->toArray(),
-                    'alerted_at'           => now(),
-                    'channel'              => $channel,
-                    'alert_type'           => 'threshold',
+                    'user_id' => $user->id,
+                    'store_id' => $storeId,
+                    'packing_material_ids' => $storeMaterials->pluck('id')->toArray(),
+                    'alerted_at' => now(),
+                    'channel' => $channel,
                 ]);
             }
         }
 
-        $this->info('Packing material threshold check completed successfully.');
+        $this->info('Packing material price update frequency alerts checked successfully.');
     }
 }
