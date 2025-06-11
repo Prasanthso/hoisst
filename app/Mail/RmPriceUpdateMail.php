@@ -20,7 +20,7 @@ class RmPriceUpdateMail extends Mailable
 
     public function build()
     {
-        return $this->subject("Price Update Alert for Multiple Materials")
+        return $this->subject("Raw Material Price Update Alert")
             ->view('emails.rm_price_update')
             ->with([
                 'materials' => $this->materials

@@ -63,7 +63,7 @@ class CheckPdPriceThreshold extends Command
                     Mail::to($user->email)->send(new PdThresholdExceededMail($storeMaterials->toArray()));
                     Log::info("Email sent to {$user->email} for store ID {$storeId}");
                 } catch (\Exception $e) {
-                    Log::error("Email error for {$user->email}: " . $e->getMessage());
+                    Log::error("Email error for {$user->email} (store {$storeId}): " . $e->getMessage());
                 }
 
                 if ($user->whatsapp_enabled && $user->whatsapp_number) {

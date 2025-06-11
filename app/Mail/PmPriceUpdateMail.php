@@ -20,7 +20,7 @@ class PmPriceUpdateMail extends Mailable
 
     public function build()
     {
-        return $this->subject("Price Update Alert for Multiple Materials")
+        return $this->subject("Packing Material Price Update Alert")
             ->view('emails.pm_price_update')
             ->with([
                 'materials' => $this->materials
