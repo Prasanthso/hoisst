@@ -77,9 +77,22 @@
                                                     <input type="number" id="marginInput" name="og_margin" class="form-control mb-2" oninput="calculateMarkup()">
                                                 </div>
                                                 <div class="col-6">
-                                                    <label for="inputMargin" class="form-label">Markup</label>
-                                                    <input type="text" class="form-control mb-2" id="inputMargin" name="inputMargin" readonly>
+                                                    <label for="inputMargin"
+                                                        class="form-label"
+                                                        data-bs-toggle="tooltip"
+                                                        title="The percentage markup calculated from the margin.">
+                                                        Markup
+                                                    </label>
+
+                                                    <input type="text"
+                                                        class="form-control mb-2"
+                                                        id="inputMargin"
+                                                        name="inputMargin"
+                                                        readonly
+                                                        data-bs-toggle="tooltip"
+                                                        title="This field shows the calculated markup based on the margin.">
                                                 </div>
+
                                             </div>
                                         </div>
                                         <div class="col-12">

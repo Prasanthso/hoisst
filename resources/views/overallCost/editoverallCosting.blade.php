@@ -100,9 +100,26 @@
                                                     <input type="number" id="marginInput" class="form-control mb-2" name="og_margin" value="{{ $costing->og_margin }}" oninput="calculateMarkup()" disabled>
                                                 </div>
                                                 <div class="col-6">
-                                                    <label for="inputMargin" class="form-label">Markup</label>
-                                                    <input type="text" class="form-control mb-2" id="inputMargin" name="inputMargin" value="{{ $costing->margin }}" disabled readonly>
+                                                    <!-- Tooltip for the label -->
+                                                    <label for="inputMargin"
+                                                        class="form-label"
+                                                        data-bs-toggle="tooltip"
+                                                        title="The percentage markup calculated from the margin.">
+                                                        Markup
+                                                    </label>
+
+                                                    <!-- Tooltip for the input field -->
+                                                    <input type="text"
+                                                        class="form-control mb-2"
+                                                        id="inputMargin"
+                                                        name="inputMargin"
+                                                        value="{{ $costing->margin }}"
+                                                        disabled
+                                                        readonly
+                                                        data-bs-toggle="tooltip"
+                                                        title="This field shows the calculated markup based on the margin.">
                                                 </div>
+
                                             </div>
                                             <!-- <div class="d-flex justify-content-between align-items-center">
                                                 <label for="inputMargin" class="form-label">Margin(%)</label>
