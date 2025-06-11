@@ -59,6 +59,8 @@
                                          class="form-control mb-3"
                                          placeholder="Search ..."
                                          {{-- onkeyup="filterCategories()" --}} />
+                                    <button type="button" class="btn-sm btn-success" id="showbtn" value="show">show</button>
+                                     {{-- <button type="button" class="btn-sm btn-danger" id="clearbtn" value="clear">Clear</button> --}}
                                  </div>
                                  @foreach($categoryitems as $category)
                                  <div class="form-check category-item">
@@ -98,6 +100,7 @@
                             </div>
                         </div> --}}
                         {{-- <div class="d-flex action-buttons"> --}}
+
                         <button class="btn btn-sm edit-table-btn me-2" style="background-color: #d9f2ff; border-radius: 50%; padding: 10px; border: none;">
                             <i class="fas fa-edit" style="color: black;"></i>
                         </button>
@@ -248,6 +251,87 @@
  <script src="{{ asset('js/main.js') }}"></script>
 
  <script>
+
+    let checkedRowsData = JSON.parse(localStorage.getItem('checkedRowsData')) || [];
+         let isEditing = false; // Track if edit mode is active
+         let visibleData = [];
+         let isFilter = false;
+    // Function to update localStorage
+    function updateLocalStorage() {
+    localStorage.setItem('checkedRowsData', JSON.stringify(checkedRowsData));
+    }
+
+// Function to create/update checked rows data
+function createCheckedRowsTable() {
+  const pdtable = document.getElementById('productsTable');
+  const rows = pdtable.querySelectorAll('tr');
+if(!isEditing){
+  // Process current page rows
+  rows.forEach(row => {
+    const checkbox = row.querySelector('.row-checkbox');
+    if (checkbox) {
+      const rowId = row.getAttribute('data-id');
+      const isChecked = checkbox.checked;
+      const rowData = {
+        id: rowId,
+        serial: row.querySelector('td:nth-child(2)')?.textContent.trim(),
+        name: row.querySelector('td:nth-child(3) a')?.textContent.trim(),
+        pdcode: row.querySelector('td:nth-child(4)')?.textContent.trim(),
+        categories: row.querySelector('td:nth-child(5)')?.textContent.trim(),
+        price: row.querySelector('.price-text')?.textContent.trim(),
+        uom: row.querySelector('td:nth-child(7)')?.textContent.trim(),
+        cost: row.querySelector('td:nth-child(8)')?.textContent.trim(),
+        status: row.querySelector('td:nth-child(9) .badge')?.textContent.trim()
+      };
+
+      // Check if row is already in checkedRowsData
+      const existingIndex = checkedRowsData.findIndex(item => item.id === rowId);
+
+      if (isChecked && existingIndex === -1) {
+        // Add new checked row
+        checkedRowsData.push(rowData);
+      } else if (!isChecked && existingIndex !== -1) {
+        // Remove unchecked row
+        checkedRowsData.splice(existingIndex, 1);
+      }
+    }
+  });
+
+  // Update localStorage to persist data
+  updateLocalStorage();
+  console.log('Checked rows:', checkedRowsData);
+}
+}
+
+// Function to sync checkboxes with checkedRowsData on page load or pagination
+function syncCheckboxes() {
+  const pdtable = document.getElementById('productsTable');
+  const rows = pdtable.querySelectorAll('tr');
+
+  rows.forEach(row => {
+    const checkbox = row.querySelector('.row-checkbox');
+    if (checkbox) {
+      const rowId = row.getAttribute('data-id');
+      // Check if rowId exists in checkedRowsData
+      const isChecked = checkedRowsData.some(item => item.id === rowId);
+      checkbox.checked = isChecked;
+    }
+  });
+}
+
+// Event listener for checkbox changes
+function setupCheckboxListeners() {
+  const pdtable = document.getElementById('productsTable');
+  pdtable.addEventListener('change', (event) => {
+        if (event.target.classList.contains('row-checkbox')) {
+            // if (isEditing) {
+            //      enableEditing();
+            //  }
+            createCheckedRowsTable();
+        }
+  });
+}
+
      document.addEventListener("DOMContentLoaded", function() {
          const table = document.getElementById("productsTable");
          const editTableBtn = document.querySelector(".edit-table-btn");
@@ -255,9 +339,9 @@
          const selectAllCheckbox = document.getElementById('select-all');
          const rows = document.querySelectorAll('#productsTable tr');
          const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
-         let isEditing = false; // Track if edit mode is active
-         let visibleData = [];
-         let isFilter = false;
+        //  let isEditing = false; // Track if edit mode is active
+        //  let visibleData = [];
+        //  let isFilter = false;
 
          document.getElementById('exportBtn').addEventListener('click', function() {
              const table = document.getElementById('productsTable');
@@ -629,14 +713,10 @@
 
          getRowCheckboxes().forEach((checkbox) => {
              checkbox.addEventListener('change', () => {
-                 // const unselectedRows = Array.from(getRowCheckboxes()).filter(chk => !chk.checked);
-                 // If a row is unselected and editing mode is enabled, cancel editing mode
-                 // if (unselectedRows) {
-                 //     exitEditingMode();
-                 // }
-
-                 updateSelectAllState();
+                if(isEditing)
+                updateSelectAllState();
              });
+
          });
 
          // Initialize Edit button functionality
@@ -918,7 +998,6 @@
                 showPriceModal(materialId);
             });
         });
-
     }
 
     function renderPagination(totalItems) {
@@ -977,6 +1056,9 @@
             };
         }
         wrapper.appendChild(nextBtn);
+
+        syncCheckboxes();
+        setupCheckboxListeners();
     }
 
          function updateSerialNumbers() {
@@ -1011,9 +1093,10 @@
             const categoryItems = document.querySelectorAll(".category-item");
             if (searchTypeselection === 'category') {
                  document.querySelector('.single-check').checked = false;
+                 document.getElementById("showbtn").style.display = "none";
                 categoryItems.forEach(item => item.style.display = "block");
             } else if (searchTypeselection === 'items') {
-
+                 document.getElementById("showbtn").style.display = "block";
                 categoryItems.forEach(item => item.style.display = "none");
             }
         });
@@ -1054,13 +1137,15 @@
              item.style.display = isVisible ? '' : 'none';
          });
      }
+        // let searchText = [];
 
-     function filterItems() {
+        function filterItems() {
          let searchText = document.getElementById('categorySearch').value.toLowerCase().trim();
+         console.log(searchText);
          let table = document.getElementById('productsTable');
          let rows = table.getElementsByTagName('tr');
 
-         if (searchText.length > 0) {
+        if (searchText.length > 0) {
              const queryParams = new URLSearchParams({
                  pdText: searchText,
              });
@@ -1089,49 +1174,40 @@
                             renderTablePage(currentPage, filteredData);
                             // applyStatusColors();
                             renderPagination(filteredData.length);
-                    //          // Clear existing table content
-                    //          productsTable.innerHTML = '';
-                    //          console.log('Fetched Data:', data.product);
-                    //          // Populate the table with new data
-                    //          data.product.forEach((item, index) => {
-                    //             productsTable.innerHTML += `
-                    //     <tr data-id="${item.id}">
-                    //         <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
-                    //         <td>${index + 1}.</td>
-                    //         <td class="left-align"><a href="/editproduct/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
-                    //         <td>${item.pdcode}</td>
-                    //          <td>
-                    //             ${item.category_name1 ?? ''}
-                    //             ${item.category_name2 ? ', ' + item.category_name2 : ''}
-                    //             ${item.category_name3 ? ', ' + item.category_name3 : ''}
-                    //             ${item.category_name4 ? ', ' + item.category_name4 : ''}
-                    //             ${item.category_name5 ? ', ' + item.category_name5 : ''}
-                    //             ${item.category_name6 ? ', ' + item.category_name6 : ''}
-                    //             ${item.category_name7 ? ', ' + item.category_name7 : ''}
-                    //             ${item.category_name8 ? ', ' + item.category_name8 : ''}
-                    //             ${item.category_name9 ? ', ' + item.category_name9 : ''}
-                    //             ${item.category_name10 ? ', ' + item.category_name10 : ''}
-                    //         </td> <!-- Categories -->
-                    //         <td>
-                    //             <span class="price-text">${item.price}</span>
-                    //             <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
-                    //         </td>
-                    //         <td>${item.uom}</td>
-                    //     </tr>
-                    // `;
-                    //          });
 
                          })
                          .catch(error => {
                              console.error('Error:', error);
                              alert('An error occurred while fetching product(s).');
                          });
-                } else {
+                }
+                else {
                      location.reload();
                 }
         }
-    // function selection_isActive()
-    // {
+
+        document.getElementById('showbtn').addEventListener('click', function() {
+            isEditing = false;
+                console.log('added');
+                console.log(checkedRowsData);
+                visibleData = checkedRowsData;
+                    currentPage = 1; // reset to page 1 on new filter
+                    renderTablePage(currentPage, checkedRowsData);
+                    renderPagination(checkedRowsData.length);
+            });
+            /*
+    document.getElementById('clearbtn').addEventListener('click', function() {
+        const pdtable2 = document.getElementById('productsTable');
+        const rows2 = pdtable2.querySelectorAll('tr');
+        rows2.forEach(row2 => {
+            const checkbox = row2.querySelector('.row-checkbox');
+
+            //   const rowId = row.getAttribute('data-id');
+            checkbox.checked = false;
+
+            });
+            // location.reload();
+     });*/
         const checkboxes = document.querySelectorAll('.single-check');
 
         checkboxes.forEach(checkbox => {
@@ -1141,7 +1217,6 @@
                  isEditing = false;
                 // exitEditingMode();
                 showEditDeleteButtons();
-
             }
            document.querySelectorAll(".category-checkbox").forEach(checkbox => {
                 checkbox.checked = false;
@@ -1220,7 +1295,8 @@
             });
     // }
         default_searchType();
-        // selection_isActive();
+        syncCheckboxes();
+        setupCheckboxListeners();
 });
 
 

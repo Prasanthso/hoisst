@@ -342,7 +342,7 @@ class ProductController extends Controller
              ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom','pd.status','c1.itemname','c2.itemname','c3.itemname','c4.itemname','c5.itemname','c6.itemname','c7.itemname','c8.itemname','c9.itemname','c10.itemname','pd.tax','rp.Output','oc.margin','oc.discount')
         // ,'rmr.quantity','pmr.quantity','ohr.quantity','rm.price','pm.price','oh.price','moh.price'
              ->orderBy('pd.name', 'asc')
-            ->paginate(10);
+            ->paginate(4);
 
         return view('product.products', compact('product', 'categoryitems'));
     }
