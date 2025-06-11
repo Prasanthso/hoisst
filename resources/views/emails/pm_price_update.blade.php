@@ -24,7 +24,7 @@
 
 <body>
     <h2>🚨 Price Update Alert</h2>
-    <p>The following Packing materials require a price update:</p>
+    <p>The following packing materials require a price update:</p>
 
     <table>
         <thead>

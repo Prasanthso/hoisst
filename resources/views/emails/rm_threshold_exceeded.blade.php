@@ -25,8 +25,8 @@
 </head>
 
 <body>
-    <h2>🚨 Price Threshold Alert</h2>
-    <p>The following packing materials have exceeded their price threshold:</p>
+    <h2>🚨 Raw Material Price Threshold Alert</h2>
+    <p>The following raw materials have exceeded their price threshold:</p>
 
     <table>
         <thead>
