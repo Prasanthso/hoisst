@@ -25,7 +25,7 @@
 </head>
 
 <body>
-    <h2>🚨 Raw Material Price Threshold Alert</h2>
+    <h2>🚨 Price Threshold Alert</h2>
     <p>The following raw materials have exceeded their price threshold:</p>
 
     <table>
