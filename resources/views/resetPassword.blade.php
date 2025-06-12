@@ -6,20 +6,22 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
     <title>Hoisst Reset Password</title>
-    <meta content="" name="description">
-    <meta content="" name="keywords">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- Favicons -->
     <link href="{{ asset('/assets/img/favicon.png') }}" rel="icon">
     <link href="{{ asset('/assets/img/newlogo.png') }}" rel="newlogo">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
     <!-- Bootstrap 4 CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome for Eye Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
     <style>
@@ -27,7 +29,7 @@
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background-color: rgb(0, 171, 223);
+            background-color: #00bfff;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -85,12 +87,12 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             max-width: 400px;
             width: 100%;
-            height: auto;
         }
 
         .custom-input {
             height: 60px;
             border-radius: 30px;
+            padding-right: 45px;
         }
 
         .custom-btn {
@@ -99,51 +101,24 @@
             width: 160px;
         }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 20px;
-        }
-
-        .forgot-password {
-            display: block;
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        body {
-            background-color: #00bfff;
-            font-family: Arial, sans-serif;
-        }
-
-        .form-box {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            width: 300px;
-            margin: auto;
-            margin-top: 10%;
-            text-align: center;
-        }
-
-        input {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-            padding: 10px;
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #555;
         }
     </style>
 </head>
 
 <body>
     <!-- Floating Images -->
-    <img src="./uploads/cookie.png" alt="cookie" class="floating-img img2">
-    <img src="./uploads/samosa.png" alt="samosa" class="floating-img img1">
-    <img src="./uploads/cake.png" alt="cake" class="floating-img img3">
-    <img src="./uploads/bread.png" alt="bread" class="floating-img img4">
+    <img src="https://hoisst.trackmargin.com//uploads/cookie.png" alt="cookie" class="floating-img img2">
+    <img src="https://hoisst.trackmargin.com//uploads/samosa.png" alt="samosa" class="floating-img img1">
+    <img src="https://hoisst.trackmargin.com//uploads/cake.png" alt="cake" class="floating-img img3">
+    <img src="https://hoisst.trackmargin.com//uploads/bread.png" alt="bread" class="floating-img img4">
 
-    <!-- Centered Content -->
     <div class="container text-center">
         <div class="custom-container mx-auto text-left">
             <div class="d-flex justify-content-center mb-3">
@@ -153,14 +128,32 @@
             <form action="{{ route('password.update') }}" method="POST">
                 @csrf
                 <input type="hidden" name="token" value="{{ $token }}">
-                <input type="email" name="email" value="{{ $email }}" required placeholder="Email" class="form-control custom-input">
-                <input type="password" name="password" required placeholder="New Password" class="form-control custom-input">
-                <input type="password" name="password_confirmation" required placeholder="Confirm Password" class="form-control custom-input">
-                <button type="submit" class="btn btn-primary custom-btn">Reset Password</button>
+
+                <div class="form-group position-relative">
+                    <input type="email" name="email" value="{{ $email }}" required placeholder="Email" class="form-control custom-input">
+                </div>
+
+                <div class="form-group position-relative">
+                    <input type="password" name="password" id="password" required placeholder="New Password" class="form-control custom-input">
+                    <span class="toggle-password" onclick="togglePassword('password', this)">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+
+                <div class="form-group position-relative">
+                    <input type="password" name="password_confirmation" id="password_confirmation" required placeholder="Confirm Password" class="form-control custom-input">
+                    <span class="toggle-password" onclick="togglePassword('password_confirmation', this)">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary custom-btn">Reset Password</button>
+                </div>
             </form>
 
             @if ($errors->any())
-            <ul>
+            <ul class="text-danger mt-3">
                 @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>
                 @endforeach
@@ -169,6 +162,24 @@
 
         </div>
     </div>
+
+    <!-- Scripts -->
+    <script>
+        function togglePassword(fieldId, toggleIcon) {
+            const input = document.getElementById(fieldId);
+            const icon = toggleIcon.querySelector('i');
+
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+    </script>
 
     <!-- Bootstrap 4 JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

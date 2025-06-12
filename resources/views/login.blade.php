@@ -165,7 +165,12 @@
                         pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$"
                         title="Password must be at least 8 characters long, include at least one letter, one number, and one special character like @, #, $, etc."
                         required>
+                    <div class="form-check mt-2">
+                        <input type="checkbox" class="form-check-input" id="showPassword" onclick="togglePassword()">
+                        <label class="form-check-label" for="showPassword">Show Password</label>
+                    </div>
                 </div>
+
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary custom-btn">Login</button>
                 </div>
@@ -180,6 +185,14 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById("password");
+            passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+        }
+    </script>
+
 </body>
 
 </html>
