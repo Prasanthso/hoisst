@@ -42,7 +42,7 @@
                 <td>{{ $material['pmcode'] }}</td>
                 <td>{{ $material['name'] }}</td>
                 <td>
-                    <a href="{{ url('/editrawmaterial/' . $material['id']) }}">View Details</a>
+                    <a href="{{ url('/editpackingmaterial/' . $material['id']) }}">View Details</a>
                 </td>
             </tr>
             @endforeach
