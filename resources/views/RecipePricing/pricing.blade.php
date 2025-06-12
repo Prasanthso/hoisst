@@ -8,10 +8,20 @@
         <div class="row">
             <div class="mb-4">
                 <input type="file" id="importRecipeFile" accept=".csv" style="display: none;">
-                <a href="{{ asset('templates/recipe_costing_template.csv') }}" download class="btn" data-bs-toggle="tooltip" title="Download Template File">
-                    <i class="bi bi-download fs-4"></i>
+                <a href="{{ asset('templates/recipe_costing_template.csv') }}" download class="btn" data-bs-toggle="tooltip" title="Use category_values: raw_material,  packing_material, overhead">
+                    <button type="button" class="btn btn-success">
+                        <i class="bi bi-download fs-4"></i> Download Template
+                    </button>
                 </a>
-                <button type="button" class="btn btn-success" id="importRecipeBtn"><i class="fas fa-upload"></i> Import CSV</button>
+                <span data-bs-toggle="tooltip" title="Enter product details to enable">
+                    <button
+                        type="button"
+                        class="btn btn-success"
+                        id="importRecipeBtn"
+                        disabled>
+                        <i class="fas fa-upload"></i> Import CSV
+                    </button>
+                </span>
                 <!-- <a href="{{ asset('templates/recipe_costing_template.csv') }}" download>Download Template</a> -->
             </div>
         </div>
@@ -396,20 +406,45 @@
             const rpuomvalue = document.getElementById('recipeUoM').value.trim();
 
             if (rpvalue === "" || rpvalue === "Choose...") {
-                alert("Please fill in the Recipe Name.");
                 document.getElementById('productSelect').focus();
                 return false;
             } else if (rpopvalue === "") {
-                alert("Please fill in the Recipe Output.");
                 document.getElementById('recipeOutput').focus();
                 return false;
-            } else if (rpuomvalue === "") {
-                alert("Please fill in the Recipe UoM.");
+            } else if (rpuomvalue === "" || rpuomvalue === "UoM") {
                 document.getElementById('recipeUoM').focus();
                 return false;
             }
             return true;
         }
+
+        // Function to toggle the Import CSV button based on validation
+        function toggleImportButton() {
+            if (recipevalidation()) {
+                importRecipeBtn.disabled = false;
+            } else {
+                importRecipeBtn.disabled = true;
+            }
+        }
+
+        // Add event listeners to monitor changes in the required fields
+        productSelect.addEventListener('change', function() {
+            product_id = this.value;
+            console.log('Selected product ID:', product_id);
+            toggleImportButton();
+        });
+
+        rpoutputInput.addEventListener('input', function() {
+            toggleImportButton();
+            updateUnitTotal();
+        });
+
+        rpuomInput.addEventListener('change', function() {
+            toggleImportButton();
+        });
+
+        // Initial check to set the button state on page load
+        toggleImportButton();
 
         function toggleForms() {
             const priceheader = document.getElementById('ohHeaderPrice');
@@ -469,11 +504,6 @@
 
         fromMastersCheckbox.checked = true;
         toggleForms();
-
-        productSelect.addEventListener('change', function() {
-            product_id = this.value;
-            console.log('Selected product ID:', product_id);
-        });
 
         // Function to update dropdown options by disabling already selected items
         function updateDropdownOptions(category) {
@@ -1326,8 +1356,6 @@
             const unitCost = grandTotal / recipeOutput;
             unitCostInput.value = unitCost.toFixed(2);
         }
-
-        rpoutputInput.addEventListener('input', updateUnitTotal);
 
         function recipePricing() {
             const rpoutput = rpoutputInput.value.trim();

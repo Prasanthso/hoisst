@@ -1,7 +1,4 @@
-# Use the category values below to create a dropdown for the 'category' column in your spreadsheet software (e.g., Excel or Google Sheets) using data validation.,,,,,
-category_values,raw_material,packing_material,overhead,,,
-# Main Data Starts Below,,,,,,
 category,name,quantity,code,uom,price,amount
 raw_material,Milk,10,RM0065,Kgs,2,20
 packing_material,packing Material 1,5,PM0018,Kgs,1.5,7.5
-raw_material,oil,5,RM0066,Kgs,1.5,7.5
+overhead,Fuel,5,OH0066,Ltr,101,505
