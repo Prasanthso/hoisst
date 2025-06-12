@@ -59,8 +59,8 @@
                                          class="form-control mb-3"
                                          placeholder="Search ..."
                                          {{-- onkeyup="filterCategories()" --}} />
-                                    <button type="button" class="btn-sm btn-success" id="showbtn" value="show">show</button>
-                                     {{-- <button type="button" class="btn-sm btn-danger" id="clearbtn" value="clear">Clear</button> --}}
+                                    {{-- <button type="button" class="btn btn-success btn-sm px-1 py-1" id="showbtn" value="show">Find</button> --}}
+                                    {{-- <button type="button" class="btn btn-danger btn-sm px-1 py-1" id="clearbtn" value="clear">Cancel</button> --}}
                                  </div>
                                  @foreach($categoryitems as $category)
                                  <div class="form-check category-item">
@@ -251,57 +251,58 @@
  <script src="{{ asset('js/main.js') }}"></script>
 
  <script>
-
     let checkedRowsData = JSON.parse(localStorage.getItem('checkedRowsData')) || [];
          let isEditing = false; // Track if edit mode is active
          let visibleData = [];
          let isFilter = false;
+
     // Function to update localStorage
     function updateLocalStorage() {
     localStorage.setItem('checkedRowsData', JSON.stringify(checkedRowsData));
     }
 
-// Function to create/update checked rows data
-function createCheckedRowsTable() {
-  const pdtable = document.getElementById('productsTable');
-  const rows = pdtable.querySelectorAll('tr');
-if(!isEditing){
-  // Process current page rows
-  rows.forEach(row => {
-    const checkbox = row.querySelector('.row-checkbox');
-    if (checkbox) {
-      const rowId = row.getAttribute('data-id');
-      const isChecked = checkbox.checked;
-      const rowData = {
-        id: rowId,
-        serial: row.querySelector('td:nth-child(2)')?.textContent.trim(),
-        name: row.querySelector('td:nth-child(3) a')?.textContent.trim(),
-        pdcode: row.querySelector('td:nth-child(4)')?.textContent.trim(),
-        categories: row.querySelector('td:nth-child(5)')?.textContent.trim(),
-        price: row.querySelector('.price-text')?.textContent.trim(),
-        uom: row.querySelector('td:nth-child(7)')?.textContent.trim(),
-        cost: row.querySelector('td:nth-child(8)')?.textContent.trim(),
-        status: row.querySelector('td:nth-child(9) .badge')?.textContent.trim()
-      };
+    // Function to create/update checked rows data
+    function createCheckedRowsTable() {
+    const pdtable = document.getElementById('productsTable');
+    const rows = pdtable.querySelectorAll('tr');
+    if(!isEditing){
+    // Process current page rows
+    rows.forEach(row => {
+        const checkbox = row.querySelector('.row-checkbox');
+        if (checkbox) {
+        const rowId = row.getAttribute('data-id');
+        const isChecked = checkbox.checked;
+        const rowData = {
+            id: rowId,
+            serial: row.querySelector('td:nth-child(2)')?.textContent.trim(),
+            name: row.querySelector('td:nth-child(3) a')?.textContent.trim(),
+            pdcode: row.querySelector('td:nth-child(4)')?.textContent.trim(),
+            categories: row.querySelector('td:nth-child(5)')?.textContent.trim(),
+            price: row.querySelector('.price-text')?.textContent.trim(),
+            uom: row.querySelector('td:nth-child(7)')?.textContent.trim(),
+            cost: row.querySelector('td:nth-child(8)')?.textContent.trim(),
+            status: row.querySelector('td:nth-child(9) .badge')?.textContent.trim()
+        };
 
-      // Check if row is already in checkedRowsData
-      const existingIndex = checkedRowsData.findIndex(item => item.id === rowId);
+        // Check if row is already in checkedRowsData
+        const existingIndex = checkedRowsData.findIndex(item => item.id === rowId);
 
-      if (isChecked && existingIndex === -1) {
-        // Add new checked row
-        checkedRowsData.push(rowData);
-      } else if (!isChecked && existingIndex !== -1) {
-        // Remove unchecked row
-        checkedRowsData.splice(existingIndex, 1);
-      }
+        if (isChecked && existingIndex === -1) {
+            // Add new checked row
+            checkedRowsData.push(rowData);
+        } else if (!isChecked && existingIndex !== -1) {
+            // Remove unchecked row
+            checkedRowsData.splice(existingIndex, 1);
+        }
+        }
+    });
+
+        // Update localStorage to persist data
+        updateLocalStorage();
+        console.log('Checked rows:', checkedRowsData);
+        }
+
     }
-  });
-
-  // Update localStorage to persist data
-  updateLocalStorage();
-  console.log('Checked rows:', checkedRowsData);
-}
-}
 
 // Function to sync checkboxes with checkedRowsData on page load or pagination
 function syncCheckboxes() {
@@ -319,14 +320,20 @@ function syncCheckboxes() {
   });
 }
 
+// function setupCheckboxListeners() {
+//     getRowCheckboxes().forEach((checkbox) => {
+//         checkbox.addEventListener('change', () => {
+//             updateSelectAllState();
+//             console.log("test");
+//         });
+//     });
+// }
 // Event listener for checkbox changes
 function setupCheckboxListeners() {
   const pdtable = document.getElementById('productsTable');
   pdtable.addEventListener('change', (event) => {
         if (event.target.classList.contains('row-checkbox')) {
-            // if (isEditing) {
-            //      enableEditing();
-            //  }
+            if(!isEditing)
             createCheckedRowsTable();
         }
   });
@@ -342,6 +349,11 @@ function setupCheckboxListeners() {
         //  let isEditing = false; // Track if edit mode is active
         //  let visibleData = [];
         //  let isFilter = false;
+
+         if (selectAllCheckbox) {
+        selectAllCheckbox.checked = false;
+    }
+        const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
 
          document.getElementById('exportBtn').addEventListener('click', function() {
              const table = document.getElementById('productsTable');
@@ -504,7 +516,6 @@ function setupCheckboxListeners() {
          }
 
          // Function to get all row checkboxes dynamically
-         const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
 
          // Function to toggle editing mode for selected rows
          const toggleEditMode = (enable) => {
@@ -647,6 +658,7 @@ function setupCheckboxListeners() {
                  }
              });
              exitEditingMode();
+
          };
 
          // Function to exit edit mode
@@ -688,9 +700,10 @@ function setupCheckboxListeners() {
              } else {
                  exitEditingMode();
              }
+             console.log("selectAll");
          });
 
-         // Event listener for individual row checkboxes
+        //  // Event listener for individual row checkboxes
          const updateSelectAllState = () => {
              const allCheckboxes = getRowCheckboxes();
              const allChecked = Array.from(allCheckboxes).every((checkbox) => checkbox.checked);
@@ -702,23 +715,27 @@ function setupCheckboxListeners() {
              const anyChecked = Array.from(allCheckboxes).some((checkbox) => checkbox.checked);
 
              if (anyChecked && isEditing) {
-                 // editTableBtn.addEventListener("click", enableEditing);
                  enableEditing();
              } else {
                  exitEditingMode();
                  // cancelEditing();
              }
-
+              console.log("updateSelectAll");
          };
 
-         getRowCheckboxes().forEach((checkbox) => {
-             checkbox.addEventListener('change', () => {
-                if(isEditing)
+        //  getRowCheckboxes().forEach((checkbox) => {
+        //      checkbox.addEventListener('change', () => {
+        //         updateSelectAllState();
+        //         console.log("test");
+        //      });
+
+        //  });
+        document.getElementById('productsTable').addEventListener('change', function (e) {
+            if (e.target.classList.contains('row-checkbox')) {
                 updateSelectAllState();
-             });
-
-         });
-
+                console.log('Delegated checkbox change event fired');
+            }
+        });
          // Initialize Edit button functionality
          editTableBtn.addEventListener("click", enableEditing);
 
@@ -998,6 +1015,7 @@ function setupCheckboxListeners() {
                 showPriceModal(materialId);
             });
         });
+
     }
 
     function renderPagination(totalItems) {
@@ -1056,9 +1074,6 @@ function setupCheckboxListeners() {
             };
         }
         wrapper.appendChild(nextBtn);
-
-        syncCheckboxes();
-        setupCheckboxListeners();
     }
 
          function updateSerialNumbers() {
@@ -1078,13 +1093,17 @@ function setupCheckboxListeners() {
          }
 
          document.getElementById('categorySearch').addEventListener('keyup', function () {
-            const searchType = document.getElementById('searchtype').value;
-
-            if (searchType === 'category') {
-                filterCategories();
-            } else if (searchType === 'items') {
-                filterItems();
-                isFilter = true;
+            if (event.key === 'Enter' || event.keyCode === 13) {
+                SelectedItems();
+            }
+            else{
+                const searchType = document.getElementById('searchtype').value;
+                if (searchType === 'category') {
+                    filterCategories();
+                } else if (searchType === 'items') {
+                    filterItems();
+                    isFilter = true;
+                }
             }
         });
         document.getElementById('searchtype').addEventListener('change', function () {
@@ -1186,15 +1205,22 @@ function setupCheckboxListeners() {
                 }
         }
 
-        document.getElementById('showbtn').addEventListener('click', function() {
-            isEditing = false;
+       function SelectedItems()
+       {
                 console.log('added');
                 console.log(checkedRowsData);
                 visibleData = checkedRowsData;
                     currentPage = 1; // reset to page 1 on new filter
                     renderTablePage(currentPage, checkedRowsData);
                     renderPagination(checkedRowsData.length);
-            });
+                    syncCheckboxes();
+
+            // ✅ Exit edit mode if needed
+                isEditing = false;
+                enableEditing();
+                selectAllCheckbox.checked = true;
+            showSaveCancelButtons();
+        }
             /*
     document.getElementById('clearbtn').addEventListener('click', function() {
         const pdtable2 = document.getElementById('productsTable');
