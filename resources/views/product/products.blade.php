@@ -59,6 +59,7 @@
                                          class="form-control mb-3"
                                          placeholder="Search ..."
                                          {{-- onkeyup="filterCategories()" --}} />
+                                         <span id="findbadge" class="badge bg-primary" style="cursor: pointer;">Find</span>
                                     {{-- <button type="button" class="btn btn-success btn-sm px-1 py-1" id="showbtn" value="show">Find</button> --}}
                                     {{-- <button type="button" class="btn btn-danger btn-sm px-1 py-1" id="clearbtn" value="clear">Cancel</button> --}}
                                  </div>
@@ -1112,10 +1113,10 @@ function setupCheckboxListeners() {
             const categoryItems = document.querySelectorAll(".category-item");
             if (searchTypeselection === 'category') {
                  document.querySelector('.single-check').checked = false;
-                 document.getElementById("showbtn").style.display = "none";
+                 document.getElementById("findbadge").style.display = "none";
                 categoryItems.forEach(item => item.style.display = "block");
             } else if (searchTypeselection === 'items') {
-                 document.getElementById("showbtn").style.display = "block";
+                 document.getElementById("findbadge").style.display = "inline-block";
                 categoryItems.forEach(item => item.style.display = "none");
             }
         });
@@ -1204,6 +1205,9 @@ function setupCheckboxListeners() {
                      location.reload();
                 }
         }
+         document.getElementById('findbadge').addEventListener('click', function() {
+            SelectedItems();
+         });
 
        function SelectedItems()
        {
