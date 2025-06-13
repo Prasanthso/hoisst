@@ -252,21 +252,21 @@
  <script src="{{ asset('js/main.js') }}"></script>
 
  <script>
-    let checkedRowsData = JSON.parse(localStorage.getItem('checkedRowsData')) || [];
+    let productCheckedRows = JSON.parse(localStorage.getItem('productCheckedRows')) || [];
          let isEditing = false; // Track if edit mode is active
          let visibleData = [];
          let isFilter = false;
 
-    // Function to update localStorage
-    function updateLocalStorage() {
-    localStorage.setItem('checkedRowsData', JSON.stringify(checkedRowsData));
-    }
+        // Function to update localStorage
+        function updateLocalStorage() {
+        localStorage.setItem('productCheckedRows', JSON.stringify(productCheckedRows));
+        }
 
     // Function to create/update checked rows data
     function createCheckedRowsTable() {
     const pdtable = document.getElementById('productsTable');
     const rows = pdtable.querySelectorAll('tr');
-    if(!isEditing){
+    // if(!isEditing){
     // Process current page rows
     rows.forEach(row => {
         const checkbox = row.querySelector('.row-checkbox');
@@ -285,41 +285,39 @@
             status: row.querySelector('td:nth-child(9) .badge')?.textContent.trim()
         };
 
-        // Check if row is already in checkedRowsData
-        const existingIndex = checkedRowsData.findIndex(item => item.id === rowId);
+        // Check if row is already in productCheckedRows
+        const existingIndex = productCheckedRows.findIndex(item => item.id === rowId);
 
         if (isChecked && existingIndex === -1) {
             // Add new checked row
-            checkedRowsData.push(rowData);
+            productCheckedRows.push(rowData);
         } else if (!isChecked && existingIndex !== -1) {
             // Remove unchecked row
-            checkedRowsData.splice(existingIndex, 1);
+            productCheckedRows.splice(existingIndex, 1);
         }
         }
     });
-
         // Update localStorage to persist data
-        updateLocalStorage();
-        console.log('Checked rows:', checkedRowsData);
+       updateLocalStorage();
+        console.log('Checked rows:', productCheckedRows);
+        // }
+    }
+
+    // Function to sync checkboxes with productCheckedRows on page load or pagination
+    function syncCheckboxes() {
+    const pdtable = document.getElementById('productsTable');
+    const rows = pdtable.querySelectorAll('tr');
+
+    rows.forEach(row => {
+        const checkbox = row.querySelector('.row-checkbox');
+        if (checkbox) {
+        const rowId = row.getAttribute('data-id');
+        // Check if rowId exists in productCheckedRows
+        const isChecked = productCheckedRows.some(item => item.id === rowId);
+        checkbox.checked = isChecked;
         }
-
+    });
     }
-
-// Function to sync checkboxes with checkedRowsData on page load or pagination
-function syncCheckboxes() {
-  const pdtable = document.getElementById('productsTable');
-  const rows = pdtable.querySelectorAll('tr');
-
-  rows.forEach(row => {
-    const checkbox = row.querySelector('.row-checkbox');
-    if (checkbox) {
-      const rowId = row.getAttribute('data-id');
-      // Check if rowId exists in checkedRowsData
-      const isChecked = checkedRowsData.some(item => item.id === rowId);
-      checkbox.checked = isChecked;
-    }
-  });
-}
 
 // function setupCheckboxListeners() {
 //     getRowCheckboxes().forEach((checkbox) => {
@@ -330,17 +328,17 @@ function syncCheckboxes() {
 //     });
 // }
 // Event listener for checkbox changes
-function setupCheckboxListeners() {
-  const pdtable = document.getElementById('productsTable');
-  pdtable.addEventListener('change', (event) => {
-        if (event.target.classList.contains('row-checkbox')) {
-            if(!isEditing)
-            createCheckedRowsTable();
-        }
-  });
-}
+    function setupCheckboxListeners() {
+    const pdtable = document.getElementById('productsTable');
+    pdtable.addEventListener('change', (event) => {
+            if (event.target.classList.contains('row-checkbox')) {
+                if(!isEditing)
+                createCheckedRowsTable();
+            }
+    });
+    }
 
-     document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function() {
          const table = document.getElementById("productsTable");
          const editTableBtn = document.querySelector(".edit-table-btn");
          const deleteTableBtn = document.querySelector(".delete-table-btn");
@@ -351,10 +349,7 @@ function setupCheckboxListeners() {
         //  let visibleData = [];
         //  let isFilter = false;
 
-         if (selectAllCheckbox) {
-        selectAllCheckbox.checked = false;
-    }
-        const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
+         const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
 
          document.getElementById('exportBtn').addEventListener('click', function() {
              const table = document.getElementById('productsTable');
@@ -515,7 +510,6 @@ function setupCheckboxListeners() {
 
              doc.save(filename);
          }
-
          // Function to get all row checkboxes dynamically
 
          // Function to toggle editing mode for selected rows
@@ -657,6 +651,8 @@ function setupCheckboxListeners() {
                      // Revert input value to original price text for selected row
                      priceInput.value = priceText.textContent;
                  }
+                 checkbox.checked = false;
+                 selectAllCheckbox.checked= false;
              });
              exitEditingMode();
 
@@ -701,7 +697,7 @@ function setupCheckboxListeners() {
              } else {
                  exitEditingMode();
              }
-             console.log("selectAll");
+            //  console.log("selectAll");
          });
 
         //  // Event listener for individual row checkboxes
@@ -721,7 +717,7 @@ function setupCheckboxListeners() {
                  exitEditingMode();
                  // cancelEditing();
              }
-              console.log("updateSelectAll");
+             console.log("updateSelectAll");
          };
 
         //  getRowCheckboxes().forEach((checkbox) => {
@@ -729,10 +725,11 @@ function setupCheckboxListeners() {
         //         updateSelectAllState();
         //         console.log("test");
         //      });
-
         //  });
+
         document.getElementById('productsTable').addEventListener('change', function (e) {
             if (e.target.classList.contains('row-checkbox')) {
+                isloading = true;
                 updateSelectAllState();
                 console.log('Delegated checkbox change event fired');
             }
@@ -1094,10 +1091,10 @@ function setupCheckboxListeners() {
          }
 
          document.getElementById('categorySearch').addEventListener('keyup', function () {
-            if (event.key === 'Enter' || event.keyCode === 13) {
-                SelectedItems();
-            }
-            else{
+            // if (event.key === 'Enter' || event.keyCode === 13) {
+            //     SelectedItems();
+            // }
+            // else{
                 const searchType = document.getElementById('searchtype').value;
                 if (searchType === 'category') {
                     filterCategories();
@@ -1105,7 +1102,7 @@ function setupCheckboxListeners() {
                     filterItems();
                     isFilter = true;
                 }
-            }
+            // }
         });
         document.getElementById('searchtype').addEventListener('change', function () {
             const searchTypeselection = this.value;
@@ -1116,7 +1113,7 @@ function setupCheckboxListeners() {
                  document.getElementById("findbadge").style.display = "none";
                 categoryItems.forEach(item => item.style.display = "block");
             } else if (searchTypeselection === 'items') {
-                 document.getElementById("findbadge").style.display = "inline-block";
+                document.getElementById("findbadge").style.display = "inline-block";
                 categoryItems.forEach(item => item.style.display = "none");
             }
         });
@@ -1212,32 +1209,19 @@ function setupCheckboxListeners() {
        function SelectedItems()
        {
                 console.log('added');
-                console.log(checkedRowsData);
-                visibleData = checkedRowsData;
+                console.log(productCheckedRows);
+                visibleData = productCheckedRows;
                     currentPage = 1; // reset to page 1 on new filter
-                    renderTablePage(currentPage, checkedRowsData);
-                    renderPagination(checkedRowsData.length);
+                    renderTablePage(currentPage, productCheckedRows);
+                    renderPagination(productCheckedRows.length);
                     syncCheckboxes();
-
             // ✅ Exit edit mode if needed
                 isEditing = false;
                 enableEditing();
                 selectAllCheckbox.checked = true;
             showSaveCancelButtons();
         }
-            /*
-    document.getElementById('clearbtn').addEventListener('click', function() {
-        const pdtable2 = document.getElementById('productsTable');
-        const rows2 = pdtable2.querySelectorAll('tr');
-        rows2.forEach(row2 => {
-            const checkbox = row2.querySelector('.row-checkbox');
 
-            //   const rowId = row.getAttribute('data-id');
-            checkbox.checked = false;
-
-            });
-            // location.reload();
-     });*/
         const checkboxes = document.querySelectorAll('.single-check');
 
         checkboxes.forEach(checkbox => {
@@ -1325,10 +1309,9 @@ function setupCheckboxListeners() {
             });
     // }
         default_searchType();
-        syncCheckboxes();
+        // syncCheckboxes();
         setupCheckboxListeners();
 });
-
 
 function default_searchType()
 {
@@ -1371,5 +1354,6 @@ function default_searchType()
               });
               updateSerialNumbers();
           }
-             */
+    */
+
  </script>
