@@ -59,6 +59,7 @@
                                         class="form-control mb-3"
                                         placeholder="Search ..."
                                         {{-- onkeyup="filterCategories()" --}} />
+                                         <span id="findbadge" class="badge bg-primary" style="cursor: pointer;">Find</span>
                                 </div>
                                 @foreach($categoryitems as $category)
                                 <div class="form-check category-item">
@@ -243,6 +244,83 @@
 <script src="{{ asset('js/main.js') }}"></script>
 
 <script>
+    let checkedRowsData = JSON.parse(localStorage.getItem('ohCheckedRows')) || [];
+         let isEditing = false; // Track if edit mode is active
+         let visibleData = [];
+         let isFilter = false;
+
+        // Function to update localStorage
+        function ohupdateLocalStorage() {
+        localStorage.setItem('ohCheckedRows', JSON.stringify(checkedRowsData));
+        }
+
+    // Function to create/update checked rows data
+    function createCheckedRowsTable() {
+    const ohtable = document.getElementById('overheadsTable');
+    const rows = ohtable.querySelectorAll('tr');
+    // if(!isEditing){
+    // Process current page rows
+    rows.forEach(row => {
+        const checkbox = row.querySelector('.row-checkbox');
+        if (checkbox) {
+        const rowId = row.getAttribute('data-id');
+        const isChecked = checkbox.checked;
+        const rowData = {
+            id: rowId,
+            serial: row.querySelector('td:nth-child(2)')?.textContent.trim(),
+            name: row.querySelector('td:nth-child(3) a')?.textContent.trim(),
+            ohcode: row.querySelector('td:nth-child(4)')?.textContent.trim(),
+            categories: row.querySelector('td:nth-child(5)')?.textContent.trim(),
+            price: row.querySelector('.price-text')?.textContent.trim(),
+            uom: row.querySelector('td:nth-child(7)')?.textContent.trim(),
+           status: row.querySelector('td:nth-child(8) .badge')?.textContent.trim()
+        };
+
+        // Check if row is already in CheckedRows
+        const existingIndex = checkedRowsData.findIndex(item => item.id === rowId);
+
+        if (isChecked && existingIndex === -1) {
+            // Add new checked row
+            checkedRowsData.push(rowData);
+        } else if (!isChecked && existingIndex !== -1) {
+            // Remove unchecked row
+            checkedRowsData.splice(existingIndex, 1);
+        }
+        }
+    });
+        // Update localStorage to persist data
+       ohupdateLocalStorage();
+        console.log('Checked rows:', checkedRowsData);
+        // }
+    }
+
+    // Function to sync checkboxes with CheckedRows on page load or pagination
+    function syncCheckboxes() {
+    const ohtable = document.getElementById('overheadsTable');
+    const rows = ohtable.querySelectorAll('tr');
+
+    rows.forEach(row => {
+        const checkbox = row.querySelector('.row-checkbox');
+        if (checkbox) {
+        const rowId = row.getAttribute('data-id');
+        // Check if rowId exists in CheckedRows
+        const isChecked = checkedRowsData.some(item => item.id === rowId);
+        checkbox.checked = isChecked;
+        }
+    });
+    }
+
+// Event listener for checkbox changes
+    function setupCheckboxListeners() {
+    const ohtable = document.getElementById('overheadsTable');
+    ohtable.addEventListener('change', (event) => {
+            if (event.target.classList.contains('row-checkbox')) {
+                if(!isEditing)
+                createCheckedRowsTable();
+            }
+    });
+    }
+
     document.addEventListener("DOMContentLoaded", function() {
         const table = document.getElementById("overheadsTable");
         const editTableBtn = document.querySelector(".edit-table-btn");
@@ -250,9 +328,9 @@
         const selectAllCheckbox = document.getElementById('select-all');
         const rows = document.querySelectorAll('#overheadsTable tr');
         const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
-        let isEditing = false; // Track if edit mode is active
-        let visibleData = [];
-        let isFilter = false;
+        // let isEditing = false; // Track if edit mode is active
+        // let visibleData = [];
+        // let isFilter = false;
         document.getElementById('exportBtn').addEventListener('click', function() {
             const table = document.getElementById('overheadsTable');
             const rows = table.querySelectorAll('tr');
@@ -571,6 +649,8 @@
                     // Revert input value to original price text for selected row
                     priceInput.value = priceText.textContent;
                 }
+                checkbox.checked = false;
+                 selectAllCheckbox.checked= false;
             });
             exitEditingMode();
         };
@@ -639,14 +719,15 @@
 
         getRowCheckboxes().forEach((checkbox) => {
             checkbox.addEventListener('change', () => {
-                // const unselectedRows = Array.from(getRowCheckboxes()).filter(chk => !chk.checked);
-                // If a row is unselected and editing mode is enabled, cancel editing mode
-                // if (unselectedRows) {
-                //     exitEditingMode();
-                // }
-
                 updateSelectAllState();
             });
+        });
+        document.getElementById('overheadsTable').addEventListener('change', function (e) {
+            if (e.target.classList.contains('row-checkbox')) {
+                isloading = true;
+                updateSelectAllState();
+                console.log('Delegated checkbox change event fired');
+            }
         });
 
         // Initialize Edit button functionality
@@ -1013,7 +1094,9 @@
             if (searchTypeselection === 'category') {
                 document.querySelector('.single-check').checked = false;
                 categoryItems.forEach(item => item.style.display = "block");
+                document.getElementById("findbadge").style.display = "none";
             } else if (searchTypeselection === 'items') {
+                  document.getElementById("findbadge").style.display = "inline-block";
                 categoryItems.forEach(item => item.style.display = "none");
             }
         });
@@ -1129,8 +1212,26 @@
             location.reload();
         }
     }
-    //  function selection_isActive()
-    // {
+     document.getElementById('findbadge').addEventListener('click', function() {
+            SelectedItems();
+         });
+
+       function SelectedItems()
+       {
+                console.log('added');
+                console.log(checkedRowsData);
+                visibleData = checkedRowsData;
+                    currentPage = 1; // reset to page 1 on new filter
+                    renderTablePage(currentPage, checkedRowsData);
+                    renderPagination(checkedRowsData.length);
+                    syncCheckboxes();
+            // ✅ Exit edit mode if needed
+                isEditing = false;
+                enableEditing();
+                selectAllCheckbox.checked = true;
+            showSaveCancelButtons();
+        }
+
         const checkboxes = document.querySelectorAll('.single-check');
         checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function () {
@@ -1215,7 +1316,7 @@
         });
     // }
     default_searchType();
-    // selection_isActive();
+  setupCheckboxListeners();
 });
 
 function default_searchType()

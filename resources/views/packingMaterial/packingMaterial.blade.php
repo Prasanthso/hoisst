@@ -332,9 +332,9 @@
         const selectAllCheckbox = document.getElementById('select-all');
         const rows = document.querySelectorAll('#packingMaterialTable tr');
         const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
-        let isEditing = false; // Track if edit mode is active
-        let isFilter = false;
-        let visibleData = [];
+        // let isEditing = false; // Track if edit mode is active
+        // let isFilter = false;
+        // let visibleData = [];
 
         document.getElementById('exportBtn').addEventListener('click', function() {
             const table = document.getElementById('packingMaterialTable');
@@ -492,7 +492,6 @@
 
             doc.save(filename);
         }
-
 
         // Function to get all row checkboxes dynamically
         const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
@@ -704,16 +703,11 @@
 
         };
 
-        // getRowCheckboxes().forEach((checkbox) => {
-        //     checkbox.addEventListener('change', () => {
-        //         // const unselectedRows = Array.from(getRowCheckboxes()).filter(chk => !chk.checked);
-        //         // If a row is unselected and editing mode is enabled, cancel editing mode
-        //         // if (unselectedRows) {
-        //         //     exitEditingMode();
-        //         // }
-        //         updateSelectAllState();
-        //     });
-        // });
+        getRowCheckboxes().forEach((checkbox) => {
+            checkbox.addEventListener('change', () => {
+                updateSelectAllState();
+            });
+        });
         document.getElementById('packingMaterialTable').addEventListener('change', function (e) {
             if (e.target.classList.contains('row-checkbox')) {
                 isloading = true;
