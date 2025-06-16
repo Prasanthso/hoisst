@@ -271,7 +271,7 @@
 
     </section>
     <section class="section dashboard">
-        <div class="container mt-4">
+        {{-- <div class="container mt-4">
             <h5>Do you want to integrate WhatsApp API?</h5>
 
             <button class="btn btn-success me-2" onclick="window.location.href='{{ route('twilio.keys') }}'">Yes</button>
@@ -281,7 +281,7 @@
             <h5>Do you want to activate WhatsApp messages?</h5>
             <button class="btn btn-success me-2" onclick="window.location.href='{{ route('whatsapp') }}'">Yes</button>
         <button class="btn btn-danger" onclick="alert('WhatsApp mgs is not sent')">No</button>
-        </div>
+        </div> --}}
 
         {{-- <button class="btn btn-outline-primary whatsapp-btn" onclick="window.location.href='{{ route('whatsapp') }}'">whatsapp</button> --}}
 
