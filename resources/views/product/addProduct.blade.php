@@ -79,7 +79,7 @@
                                     <label for="itemType" class="form-label">Item Type</label>
                                     <select id="itemType" class="form-select" name="itemType_id">
                                         @foreach($itemtype as $types)
-                                        <option value="{{ $types->id }}"
+                                        <option value="{{ $types->itemtypename }}"
                                              data-name="{{ $types->itemtypename }}"
                                             {{ old('itemType_id') == $types->id ? 'selected' : '' }}>
                                             {{ $types->itemtypename }}
@@ -160,7 +160,7 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
-        // let hasTyped = false;
+        let hasTyped = false;
         $('#categorySelect').select2({
             theme: 'bootstrap-5',
             placeholder: 'Choose Categories',
@@ -173,26 +173,37 @@
         $('#itemType').select2({
             theme: 'bootstrap-5',
             placeholder: 'Select itemtype',
-          })
+          }).on('change', function () {
+            const itemTypeValue = $(this).val();
+            const purcCostDiv = $('#inputPurCost').closest('.col-12');
+            if (itemTypeValue === "Trading") {
+                purcCostDiv.show();
+            } else {
+                purcCostDiv.hide();
+                $('#inputPurCost').val('');
+            }
+          }).trigger('change')
           .on('change', function () {
-    const itemTypeValue = $(this).val(); // get selected value
-    const purcCost = document.querySelector("#inputPurCost");
-    const selectedOption = $(this).find('option:selected');
-    const itemTypeName = selectedOption.data('name');
-    if (itemTypeValue !== "2") {
-        // hasTyped = true;
-        clearError(purcCost); // hide error for non-Trading
-    }
-    // else {
-    //     if (purcCost.value.trim() === "") {
-    //         showError(purcCost, "This field is required!"); // show error if empty
-    //         isValid = false;
-    //     }
-    // }
-});
+            const itemTypeValue = $(this).val(); // get selected value
+            const purcCost = document.querySelector("#inputPurCost");
+            const selectedOption = $(this).find('option:selected');
+            const itemTypeName = selectedOption.data('name');
+            if (itemTypeValue !== "Trading") {
+                hasTyped = true;
+                clearError(purcCost); // hide error for non-Trading
+            }
+        });
     });
     document.addEventListener("DOMContentLoaded", function() {
        const btnsave = document.getElementById('btnsubmit');
+       let itemtype = document.getElementById("itemType");
+        let purcCost = document.getElementById("inputPurCost");
+
+        // if (itemtype.value !== "Trading") {
+        //     hasTyped = true;
+        //     console.log(itemtype.value);
+        // clearError(purcCost); // hide error for non-Trading
+        // }
 
     btnsave.addEventListener('click', function(event) {
     let isValid = true;
@@ -203,8 +214,8 @@
     let uom = document.getElementById("inputState");
     let itemweight = document.getElementById("inputItemWeight");
     let categorySelect = document.getElementById("categorySelect");
-    let itemtype = document.getElementById("itemType");
-    let purcCost = document.getElementById("inputPurCost");
+
+
     let mrp = document.getElementById("inputMargin");
     let price = document.getElementById("inputPrice");
     let tax = document.getElementById("inputTax");
@@ -226,11 +237,13 @@
         if (categorySelect.selectedOptions.length === 0) { showError(categorySelect, "Please select at least one category."); isValid = false; }
         if (itemtype.value.trim() === "") { showError(itemtype, "Item Type is required."); isValid = false; }
         // if ((itemtype.selectedOptions?.value === "Trading" && purcCost.value.trim() === "") || isNaN(purcCost.value)) { showError(purcCost, "Valid purcCost is required."); isValid = false; }
-        if (itemtype.value === "2") {
+        if (itemtype.value === "Trading") {
             if (purcCost.value.trim() === "" || isNaN(purcCost.value)) {
                 showError(purcCost, "Valid purcCost is required.");
                 isValid = false;
             }
+        } else {
+            clearError(purcCost); // Clear error if not Trading
         }
         if (mrp.value.trim() === "" || isNaN(mrp.value)) { showError(mrp, "Valid MRP is required."); isValid = false; }
         if (price.value.trim() === "" || isNaN(price.value)) { showError(price, "Valid Price is required."); isValid = false; }
@@ -255,7 +268,7 @@
                 const itemTypeValue =  document.querySelector("#itemtype")?.value;
                 const isPurcCost = input.id === "inputPurCost";
                 if (isPurcCost) {
-                    if (itemTypeValue === "2") {
+                    if (itemTypeValue === "Trading") {
                         if (input.value.trim() === "") {
                             hasTyped = false;
                             showError(input, "This field is required!");
