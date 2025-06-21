@@ -167,7 +167,7 @@
                         required>
                     <div class="form-check mt-2">
                         <input type="checkbox" class="form-check-input" id="showPassword" onclick="togglePassword()">
-                        <label class="form-check-label" for="showPassword">Show Passwords</label>
+                        <label class="form-check-label" for="showPassword">Show Password</label>
                     </div>
                 </div>
 

@@ -472,7 +472,7 @@ class ProductController extends Controller
             $categoryIds = $request->category_ids;
 
             $pdCode = UniqueCode::generatePdCode();
-
+            $stocks = ' ';
             try {
                 Product::create([
                     'name' => $request->name,
@@ -498,8 +498,8 @@ class ProductController extends Controller
                     'update_frequency' => $request->update_frequency,
                     'price_update_frequency' => $request->price_update_frequency,
                     'price_threshold' => $request->price_threshold,
-                    'minimum_stock_unit' => null,
-                    'minimum_stock_qty' => null,
+                    'minimum_stock_unit' => $stocks,
+                    'minimum_stock_qty' => $stocks,
                     'store_id' => $storeid,
                 ]);
             } catch (\Exception $e) {
