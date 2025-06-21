@@ -107,7 +107,7 @@
                                     oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
                                 </div>
                                 <div class="row">
-                                    <label for="update_frequency" class="form-label mb-2">Pricing update frequency</label>
+                                    {{-- <label for="update_frequency" class="form-label mb-2">Pricing update frequency</label>
                                     <div class="col-md-3">
                                         <select class="form-select mb-2" id="update_frequency" name="update_frequency">
                                             <option value="Days" {{ old('update_frequency') == 'Days' ? 'selected' : '' }}>Days</option>
@@ -115,19 +115,19 @@
                                             <option value="Monthly" {{ old('update_frequency') == 'Monthly' ? 'selected' : '' }}>Monthly</option>
                                             <option value="Yearly" {{ old('update_frequency') == 'Yearly' ? 'selected' : '' }}>Yearly</option>
                                         </select>
-                                    </div>
+                                    </div> --}}
                                     {{-- <div class="col-md-1">
                                 </div> --}}
-                                    <div class="col-md-9">
+                                    {{-- <div class="col-md-9">
                                         <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ old('price_update_frequency') }}"
                                         oninput="this.value = this.value.replace(/\D/g, '');">
-                                    </div>
+                                    </div> --}}
                                 </div>
-                                <div class="col-12">
+                                {{-- <div class="col-12">
                                     <label for="price_threshold" class="form-label">Price threshold</label>
                                     <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ old('price_threshold') }}"
                                     oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
-                                </div>
+                                </div> --}}
                                 <div>
                                     <button type="submit" class="btn btn-primary" id="btnsubmit">
                                         Save
@@ -208,8 +208,8 @@
     let mrp = document.getElementById("inputMargin");
     let price = document.getElementById("inputPrice");
     let tax = document.getElementById("inputTax");
-    let priceUpdateFreq = document.getElementById("price_update_frequency");
-    let priceThreshold = document.getElementById("price_threshold");
+    // let priceUpdateFreq = document.getElementById("price_update_frequency");
+    // let priceThreshold = document.getElementById("price_threshold");
 
     let errorDiv = document.getElementById("error-message");
     errorDiv.innerHTML = ""; // Clear previous errors
@@ -235,8 +235,8 @@
         if (mrp.value.trim() === "" || isNaN(mrp.value)) { showError(mrp, "Valid MRP is required."); isValid = false; }
         if (price.value.trim() === "" || isNaN(price.value)) { showError(price, "Valid Price is required."); isValid = false; }
         if (tax.value.trim() === "" || isNaN(tax.value)) { showError(tax, "Valid Tax value is required."); isValid = false; }
-        if (priceUpdateFreq.value.trim() === "" || isNaN(priceUpdateFreq.value)) { showError(priceUpdateFreq, "Valid Pricing Update Frequency is required."); isValid = false; }
-        if (priceThreshold.value.trim() === "" || isNaN(priceThreshold.value)) { showError(priceThreshold, "Valid Price Threshold is required."); isValid = false; }
+        // if (priceUpdateFreq.value.trim() === "" || isNaN(priceUpdateFreq.value)) { showError(priceUpdateFreq, "Valid Pricing Update Frequency is required."); isValid = false; }
+        // if (priceThreshold.value.trim() === "" || isNaN(priceThreshold.value)) { showError(priceThreshold, "Valid Price Threshold is required."); isValid = false; }
 
         if (!isValid) {
             event.preventDefault();

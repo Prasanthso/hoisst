@@ -117,7 +117,7 @@
                                     <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $product->price }}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
 
-                                <div class="row">
+                                {{-- <div class="row">
                                     <label for="update_frequency" class="form-label">Pricing update frequency</label>
                                     <div class="col-md-3">
                                         <select class="form-select mb-2" id="update_frequency" name="update_frequency" disabled>
@@ -131,12 +131,12 @@
                                     <div class="col-md-9">
                                         <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ $product->price_update_frequency }}" disabled>
                                     </div>
-                                </div>
-                                <div class="col-12">
+                                </div> --}}
+                                {{-- <div class="col-12">
                                     <label for="price_threshold" class="form-label">Price threshold</label>
                                     <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $product->price_threshold }}"
                                         oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
-                                </div>
+                                </div> --}}
                                 <fieldset class="row mb-3 mt-3">
                                     <legend class="col-form-label col-sm-2 pt-0">Status</legend>
                                     <div class="col-sm-10">
@@ -262,8 +262,8 @@
             let mrp = document.getElementById("inputMargin");
             let price = document.getElementById("inputPrice");
             let tax = document.getElementById("inputTax");
-            let priceUpdateFreq = document.getElementById("price_update_frequency");
-            let priceThreshold = document.getElementById("price_threshold");
+            // let priceUpdateFreq = document.getElementById("price_update_frequency");
+            // let priceThreshold = document.getElementById("price_threshold");
 
             let errorDiv = document.getElementById("error-message");
             errorDiv.innerHTML = ""; // Clear previous errors
@@ -316,14 +316,14 @@
                 showError(tax, "Valid Tax value is required.");
                 isValid = false;
             }
-            if (priceUpdateFreq.value.trim() === "" || isNaN(priceUpdateFreq.value)) {
-                showError(priceUpdateFreq, "Valid Pricing Update Frequency is required.");
-                isValid = false;
-            }
-            if (priceThreshold.value.trim() === "" || isNaN(priceThreshold.value)) {
-                showError(priceThreshold, "Valid Price Threshold is required.");
-                isValid = false;
-            }
+            // if (priceUpdateFreq.value.trim() === "" || isNaN(priceUpdateFreq.value)) {
+            //     showError(priceUpdateFreq, "Valid Pricing Update Frequency is required.");
+            //     isValid = false;
+            // }
+            // if (priceThreshold.value.trim() === "" || isNaN(priceThreshold.value)) {
+            //     showError(priceThreshold, "Valid Price Threshold is required.");
+            //     isValid = false;
+            // }
 
             if (!isValid) {
                 event.preventDefault();
