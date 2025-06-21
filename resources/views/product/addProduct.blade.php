@@ -191,6 +191,7 @@
             if (itemTypeValue !== "Trading") {
                 hasTyped = true;
                 clearError(purcCost); // hide error for non-Trading
+                clearError();
             }
         });
     });

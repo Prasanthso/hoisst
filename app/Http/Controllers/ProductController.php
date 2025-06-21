@@ -965,6 +965,7 @@ class ProductController extends Controller
             }
 
             $pdCode = UniqueCode::generatePdCode();
+            $stocks = ' ';
 
             for ($i = 1; $i <= 10; $i++) {
                 $categoryIds["id$i"] = !empty($row[$i + 4]) // Adjusting index to match $row[4] for category_id1
@@ -977,7 +978,7 @@ class ProductController extends Controller
                     ->value('id')
                     : null;            }
             $itemtype_id = DB::table('item_type')->where('itemtypename', $row[22])->where('status', 'active')->where('store_id', 0)->value('id');
-
+                $stocks =' ';
             Product::create([
                 'name' => $row[1] ?? null,
                 'pdcode' => $pdCode ?? null,
@@ -1001,6 +1002,8 @@ class ProductController extends Controller
                 'update_frequency' => $row[19],
                 'price_update_frequency' => $row[20],
                 'price_threshold' => $row[21],
+                'minimum_stock_unit' => $stocks,
+                'minimum_stock_qty' => $stocks,
                 'itemType_id' => $itemtype_id,
                 'store_id' => $storeid
             ]);
