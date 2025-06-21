@@ -37,6 +37,8 @@ class Product extends Model
         'recipe_crated_status',
         'price_update_frequency',
         'price_threshold',
+        'minimum_stock_unit',
+        'minimum_stock_qty',
         'store_id',
         'status',
     ];

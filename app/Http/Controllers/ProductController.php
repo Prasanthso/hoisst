@@ -498,6 +498,8 @@ class ProductController extends Controller
                     'update_frequency' => $request->update_frequency,
                     'price_update_frequency' => $request->price_update_frequency,
                     'price_threshold' => $request->price_threshold,
+                    'minimum_stock_unit' => null,
+                    'minimum_stock_qty' => null,
                     'store_id' => $storeid,
                 ]);
             } catch (\Exception $e) {

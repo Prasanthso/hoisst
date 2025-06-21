@@ -38,6 +38,8 @@ return new class extends Migration
             $table->enum('recipe_created_status', ['yes', 'no'])->default('no');
             $table->string('price_update_frequency');
             $table->string('price_threshold');
+            $table->string('minimum_stock')->nullable();
+            $table->string('minimum_stock_unit')->nullable();
             $table->string('status', 20)->default('active');
             $table->unsignedBigInteger('store_id');
             $table->timestamps();
