@@ -460,9 +460,9 @@ class ProductController extends Controller
                 'category_ids' => 'required|array',
                 'category_ids.*' => 'integer|exists:categoryitems,id',
                 'price' => 'required|string',
-                'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
-                'price_update_frequency' => 'required|string',
-                'price_threshold' => 'required|string',
+                // 'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
+                // 'price_update_frequency' => 'required|string',
+                // 'price_threshold' => 'required|string',
                 'hsnCode' => 'required|string',
                 // 'itemType_id' => 'integer|exists:item_type,id',
                 'itemWeight' => 'required|string',
@@ -473,6 +473,7 @@ class ProductController extends Controller
 
             $pdCode = UniqueCode::generatePdCode();
             $stocks = ' ';
+            $val = ' ';
             try {
                 Product::create([
                     'name' => $request->name,
@@ -495,9 +496,9 @@ class ProductController extends Controller
                     'margin' => $request->margin,
                     'price' => $request->price,
                     'tax' => $request->tax,
-                    'update_frequency' => $request->update_frequency,
-                    'price_update_frequency' => $request->price_update_frequency,
-                    'price_threshold' => $request->price_threshold,
+                    'update_frequency' => !empty($request->update_frequency) ? $request->update_frequency : $val,
+                    'price_update_frequency' => !empty($request->price_update_frequency) ? $request->price_update_frequency : $val,
+                    'price_threshold' => !empty($request->price_threshold) ? $request->price_threshold : $val,
                     'minimum_stock_unit' => $stocks,
                     'minimum_stock_qty' => $stocks,
                     'store_id' => $storeid,
@@ -634,9 +635,9 @@ class ProductController extends Controller
                 'category_ids' => 'required|array',
                 'category_ids.*' => 'integer|exists:categoryitems,id',
                 'price' => 'required|string',
-                'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
-                'price_update_frequency' => 'required|string',
-                'price_threshold' => 'required|string',
+                // 'update_frequency' => 'required|string|in:Days,Weeks,Monthly,Yearly',
+                // 'price_update_frequency' => 'required|string',
+                // 'price_threshold' => 'required|string',
                 'hsnCode' => 'required|string',
                 // 'itemType_id' => 'integer|exists:item_type,id',
                 'itemWeight' => 'required|string',
@@ -644,7 +645,7 @@ class ProductController extends Controller
             ]);
 
             $categoryIds = $request->category_ids;
-
+            $val = ' ';
             if ($product->price != $request->price) {
                 DB::table('pd_price_histories')->insert([
                     'product_id' => $product->id,
@@ -678,9 +679,9 @@ class ProductController extends Controller
                     'margin' => $request->margin,
                     'price' => $request->price,
                     'tax' => $request->tax,
-                    'update_frequency' => $request->update_frequency,
-                    'price_update_frequency' => $request->price_update_frequency,
-                    'price_threshold' => $request->price_threshold,
+                    'update_frequency' => $request->update_frequency ?? $val,
+                    'price_update_frequency' => $request->price_update_frequency ?? $val,
+                    'price_threshold' => $request->price_threshold ?? $val,
                     'status' => $request->status,
                     'store_id' => $storeid,
                 ]);
@@ -965,6 +966,7 @@ class ProductController extends Controller
             }
 
             $pdCode = UniqueCode::generatePdCode();
+            $stocks = ' ';
 
             for ($i = 1; $i <= 10; $i++) {
                 $categoryIds["id$i"] = !empty($row[$i + 4]) // Adjusting index to match $row[4] for category_id1
@@ -977,7 +979,7 @@ class ProductController extends Controller
                     ->value('id')
                     : null;            }
             $itemtype_id = DB::table('item_type')->where('itemtypename', $row[22])->where('status', 'active')->where('store_id', 0)->value('id');
-
+                $stocks =' ';
             Product::create([
                 'name' => $row[1] ?? null,
                 'pdcode' => $pdCode ?? null,
@@ -1001,6 +1003,8 @@ class ProductController extends Controller
                 'update_frequency' => $row[19],
                 'price_update_frequency' => $row[20],
                 'price_threshold' => $row[21],
+                'minimum_stock_unit' => $stocks,
+                'minimum_stock_qty' => $stocks,
                 'itemType_id' => $itemtype_id,
                 'store_id' => $storeid
             ]);

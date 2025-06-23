@@ -90,18 +90,20 @@
                                     <label for="itemType" class="form-label">Item Type</label>
                                     <select id="itemType" class="form-select" name="itemType_id" disabled>
                                         @foreach($itemtype as $types)
-                                        <option value="{{ $types->id }}"
+                                        <option value="{{ $types->itemtypename }}"
                                             data-name="{{ $types->itemtypename }}"
-                                            {{ (old('itemType_id', $product->itemType_id) == $types->id) ? 'selected' : '' }}>
+                                            {{ (old('itemType_id', $product->itemType_id) == $types->itemtypename) ? 'selected' : '' }}>
                                             {{ $types->itemtypename }}
                                         </option>
                                         @endforeach
                                     </select>
                                     {{-- <input type="text" class="form-control" placeholder="eg.Daily, Own, Trading" id="itemType" name="itemType" value="{{ old('itemType') }}"> --}}
                                 </div>
+                                <div id="trading-fields" style="display:none;">
                                 <div class="col-12">
                                     <label for="inputPurCost" class="form-label">Purchase Cost</label>
                                     <input type="text" class="form-control" id="inputPurCost" name="purcCost" value="{{ $product->purcCost }}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
+                                </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="inputMargin" class="form-label">Preferred Margin(%)</label>
@@ -116,26 +118,27 @@
                                     <label for="inputPrice" class="form-label">Present MRP</label>
                                     <input type="text" class="form-control" id="inputPrice" name="price" value="{{ $product->price }}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
-
-                                <div class="row">
-                                    <label for="update_frequency" class="form-label">Pricing update frequency</label>
-                                    <div class="col-md-3">
-                                        <select class="form-select mb-2" id="update_frequency" name="update_frequency" disabled>
-                                            <option selected>{{ $product->update_frequency }}</option>
-                                            <option>Days</option>
-                                            <option>Weeks</option>
-                                            <option>Monthly</option>
-                                            <option>Yearly</option>
-                                        </select>
+                                <div id="trading-fields2" style="display:none;">
+                                    <div class="row">
+                                        <label for="update_frequency" class="form-label">Pricing update frequency</label>
+                                        <div class="col-md-3">
+                                            <select class="form-select mb-2" id="update_frequency" name="update_frequency" disabled>
+                                                <option selected>{{ $product->update_frequency }}</option>
+                                                <option>Days</option>
+                                                <option>Weeks</option>
+                                                <option>Monthly</option>
+                                                <option>Yearly</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ $product->price_update_frequency }}" disabled>
+                                        </div>
                                     </div>
-                                    <div class="col-md-9">
-                                        <input type="text" class="form-control" id="price_update_frequency" name="price_update_frequency" value="{{ $product->price_update_frequency }}" disabled>
+                                    <div class="col-12">
+                                        <label for="price_threshold" class="form-label">Price threshold</label>
+                                        <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $product->price_threshold }}"
+                                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                     </div>
-                                </div>
-                                <div class="col-12">
-                                    <label for="price_threshold" class="form-label">Price threshold</label>
-                                    <input type="text" class="form-control" id="price_threshold" name="price_threshold" value="{{ $product->price_threshold }}"
-                                        oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" disabled>
                                 </div>
                                 <fieldset class="row mb-3 mt-3">
                                     <legend class="col-form-label col-sm-2 pt-0">Status</legend>
@@ -213,14 +216,31 @@
         $('#itemType').select2({
             theme: 'bootstrap-5',
             placeholder: 'Select itemtype',
-        }).on('change', function() {
+       }).on('change', function () {
+            const itemTypeValue = $(this).val();
+            if (itemTypeValue === "Trading") {
+                $('#trading-fields').show();
+                $('#trading-fields2').show();
+            } else {
+                $('#trading-fields').hide();
+                $('#trading-fields2').hide();
+                $('#inputPurCost').val('');
+                $('#price_update_frequency').val('');
+                $('#price_threshold').val('');
+            }
+          }).trigger('change')
+          .on('change', function () {
             const itemTypeValue = $(this).val(); // get selected value
             const purcCost = document.querySelector("#inputPurCost");
+            const updateFrequency = document.querySelector("#update_frequency");
+            const priceThreshold = document.querySelector("#price_threshold");
             const selectedOption = $(this).find('option:selected');
             const itemTypeName = selectedOption.data('name');
-            // itemTypeValue !== "2"
-            if (itemTypeValue !== "2") {
+            if (itemTypeValue !== "Trading") {
+                hasTyped = true;
                 clearError(purcCost); // hide error for non-Trading
+                clearError(updateFrequency);
+                clearError(priceThreshold);
             }
         });
 
@@ -247,6 +267,10 @@
     });
     document.addEventListener("DOMContentLoaded", function() {
         const btnsave = document.getElementById('saveButton');
+        let itemtype = document.getElementById("itemType");
+        let purcCost = document.getElementById("inputPurCost");
+        let priceUpdateFreq = document.getElementById("price_update_frequency");
+        let priceThreshold = document.getElementById("price_threshold");
 
         btnsave.addEventListener('click', function(event) {
             let isValid = true;
@@ -257,13 +281,13 @@
             let uom = document.getElementById("inputState");
             let itemweight = document.getElementById("inputItemWeight");
             let categorySelect = document.getElementById("categorySelect");
-            let itemtype = document.getElementById("itemType");
-            let purcCost = document.getElementById("inputPurCost");
+            // let itemtype = document.getElementById("itemType");
+            // let purcCost = document.getElementById("inputPurCost");
             let mrp = document.getElementById("inputMargin");
             let price = document.getElementById("inputPrice");
             let tax = document.getElementById("inputTax");
-            let priceUpdateFreq = document.getElementById("price_update_frequency");
-            let priceThreshold = document.getElementById("price_threshold");
+            // let priceUpdateFreq = document.getElementById("price_update_frequency");
+            // let priceThreshold = document.getElementById("price_threshold");
 
             let errorDiv = document.getElementById("error-message");
             errorDiv.innerHTML = ""; // Clear previous errors
@@ -297,7 +321,7 @@
                 showError(itemtype, "Item Type is required.");
                 isValid = false;
             }
-            if (itemtype.value === "2") {
+            if (itemtype.value === "Trading") {
                 if (purcCost.value.trim() === "" || isNaN(purcCost.value)) {
                     showError(purcCost, "Valid purcCost is required.");
                     isValid = false;
@@ -316,14 +340,22 @@
                 showError(tax, "Valid Tax value is required.");
                 isValid = false;
             }
-            if (priceUpdateFreq.value.trim() === "" || isNaN(priceUpdateFreq.value)) {
-                showError(priceUpdateFreq, "Valid Pricing Update Frequency is required.");
+            if (itemtype.value === "Trading" && priceUpdateFreq.value.trim() === "") {
+            showError(priceUpdateFreq, "Pricing Update Frequency is required.");
+            isValid = false;
+            }
+            if (itemtype.value === "Trading" && priceThreshold.value.trim() === "") {
+                showError(priceThreshold, "Price Threshold is required.");
                 isValid = false;
             }
-            if (priceThreshold.value.trim() === "" || isNaN(priceThreshold.value)) {
-                showError(priceThreshold, "Valid Price Threshold is required.");
-                isValid = false;
-            }
+            // if (priceUpdateFreq.value.trim() === "" || isNaN(priceUpdateFreq.value)) {
+            //     showError(priceUpdateFreq, "Valid Pricing Update Frequency is required.");
+            //     isValid = false;
+            // }
+            // if (priceThreshold.value.trim() === "" || isNaN(priceThreshold.value)) {
+            //     showError(priceThreshold, "Valid Price Threshold is required.");
+            //     isValid = false;
+            // }
 
             if (!isValid) {
                 event.preventDefault();
@@ -346,7 +378,7 @@
                 const itemTypeValue = document.querySelector("#itemtype")?.value;
                 const isPurcCost = input.id === "inputPurCost";
                 if (isPurcCost) {
-                    if (itemTypeValue === "2") {
+                    if (itemTypeValue === "Trading") {
                         if (input.value.trim() === "") {
                             hasTyped = false;
                             showError(input, "This field is required!");
