@@ -1005,7 +1005,7 @@ class ProductController extends Controller
                 'price_threshold' => $row[21],
                 'minimum_stock_unit' => $stocks,
                 'minimum_stock_qty' => $stocks,
-                'itemType_id' => $itemtype_id,
+                'itemType_id' => $row[22] , //$itemtype_id,
                 'store_id' => $storeid
             ]);
             $importedCount++;
