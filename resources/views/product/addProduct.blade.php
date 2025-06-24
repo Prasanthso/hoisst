@@ -79,7 +79,7 @@
                                     <label for="itemType" class="form-label">Item Type</label>
                                     <select id="itemType" class="form-select" name="itemType_id">
                                         @foreach($itemtype as $types)
-                                        <option value="{{ $types->itemtypename }}"
+                                        <option value="{{ $types->id }}"
                                              data-name="{{ $types->itemtypename }}"
                                             {{ old('itemType_id') == $types->id ? 'selected' : '' }}>
                                             {{ $types->itemtypename }}
@@ -177,7 +177,9 @@
             placeholder: 'Select itemtype',
           }).on('change', function () {
             const itemTypeValue = $(this).val();
-            if (itemTypeValue === "Trading") {
+            const selectedOption = $(this).find('option:selected');
+            const itemTypeName = selectedOption.data('name');
+            if (itemTypeName === "Trading") {
                 $('#trading-fields').show();
                 $('#trading-fields2').show();
             } else {
@@ -195,11 +197,21 @@
             const priceThreshold = document.querySelector("#price_threshold");
             const selectedOption = $(this).find('option:selected');
             const itemTypeName = selectedOption.data('name');
-            if (itemTypeValue !== "Trading") {
+            if (itemTypeName !== "Trading") {
                 hasTyped = true;
                 clearError(purcCost); // hide error for non-Trading
                 clearError(updateFrequency);
                 clearError(priceThreshold);
+            }
+            else{
+                 if (itemTypeValue === "Trading" && updateFrequency.value.trim() === "") {
+                    showError(updateFrequency, "Pricing Update Frequency is required.");
+                    hasTyped = false;
+                }
+                if (itemTypeValue === "Trading" && priceThreshold.value.trim() === "") {
+                    showError(priceThreshold, "Price Threshold is required.");
+                    hasTyped = false;
+                }
             }
         });
     });
@@ -227,6 +239,7 @@
 
     let errorDiv = document.getElementById("error-message");
     errorDiv.innerHTML = ""; // Clear previous errors
+    let selectedOption = itemtype.selectedOptions[0];
 
    // Validation checks
    if (name.value.trim() === "") { showError(name, "Name is required."); isValid = false; }
@@ -239,25 +252,34 @@
         if (itemweight.value.trim() === "") { showError(itemweight, "Net Weight is required."); isValid = false; }
         if (categorySelect.selectedOptions.length === 0) { showError(categorySelect, "Please select at least one category."); isValid = false; }
         if (itemtype.value.trim() === "") { showError(itemtype, "Item Type is required."); isValid = false; }
-        // if ((itemtype.selectedOptions?.value === "Trading" && purcCost.value.trim() === "") || isNaN(purcCost.value)) { showError(purcCost, "Valid purcCost is required."); isValid = false; }
-        if (itemtype.value === "Trading") {
-            if (purcCost.value.trim() === "" || isNaN(purcCost.value)) {
-                showError(purcCost, "Valid purcCost is required.");
-                isValid = false;
-            }
-        } else {
+        if (selectedOption && selectedOption.text.trim() === "Trading") {
+            if (purcCost.value.trim() === "" || isNaN(purcCost.value)) { showError(purcCost, "Valid purcCost is required."); isValid = false; }
+        }
+        else {
             clearError(purcCost); // Clear error if not Trading
             clearError(priceUpdateFreq);
             clearError(priceThreshold);
         }
+        // if (itemtype.value === "Trading") {
+        //     if (purcCost.value.trim() === "" || isNaN(purcCost.value)) {
+        //         showError(purcCost, "Valid purcCost is required.");
+        //         isValid = false;
+        //     }
+        // } else {
+        //     clearError(purcCost); // Clear error if not Trading
+        //     clearError(priceUpdateFreq);
+        //     clearError(priceThreshold);
+        // }
+
         if (mrp.value.trim() === "" || isNaN(mrp.value)) { showError(mrp, "Valid MRP is required."); isValid = false; }
         if (price.value.trim() === "" || isNaN(price.value)) { showError(price, "Valid Price is required."); isValid = false; }
         if (tax.value.trim() === "" || isNaN(tax.value)) { showError(tax, "Valid Tax value is required."); isValid = false; }
-        if (itemtype.value === "Trading" && priceUpdateFreq.value.trim() === "") {
+
+       if (selectedOption && selectedOption.text.trim() === "Trading" && priceUpdateFreq.value.trim() === "") {
             showError(priceUpdateFreq, "Pricing Update Frequency is required.");
             isValid = false;
         }
-        if (itemtype.value === "Trading" && priceThreshold.value.trim() === "") {
+        if (selectedOption && selectedOption.text.trim() === "Trading" && priceThreshold.value.trim() === "") {
             showError(priceThreshold, "Price Threshold is required.");
             isValid = false;
         }
@@ -280,8 +302,9 @@
                 clearError(input);
                 const itemTypeValue =  document.querySelector("#itemtype")?.value;
                 const isPurcCost = input.id === "inputPurCost";
+                 let selectedOption = itemtype.selectedOptions[0];
                 if (isPurcCost) {
-                    if (itemTypeValue === "Trading") {
+                    if (selectedOption && selectedOption.text.trim() === "Trading") {
                         if (input.value.trim() === "") {
                             hasTyped = false;
                             showError(input, "This field is required!");

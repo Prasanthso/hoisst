@@ -1100,7 +1100,7 @@
             } else if (errorMessage) {
                 errorMessage.style.display = 'none';
             }
-        }, 3000);
+        }, 500000);
     // });
 
     function filterCategories() {

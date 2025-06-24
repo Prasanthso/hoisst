@@ -1082,7 +1082,7 @@
             } else if (errorMessage) {
                 errorMessage.style.display = 'none';
             }
-        }, 4000);
+        }, 500000);
 
     // });
 
