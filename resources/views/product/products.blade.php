@@ -59,7 +59,7 @@
                                          class="form-control mb-3"
                                          placeholder="Search ..."
                                          {{-- onkeyup="filterCategories()" --}} />
-                                         <span id="findbadge" class="badge bg-primary" style="cursor: pointer;">Find</span>
+                                         <span id="findbadge" data-bs-toggle="tooltip" title="Select products for a price update." class="badge bg-primary" style="cursor: pointer;">Find</span>
                                     {{-- <button type="button" class="btn btn-success btn-sm px-1 py-1" id="showbtn" value="show">Find</button> --}}
                                     {{-- <button type="button" class="btn btn-danger btn-sm px-1 py-1" id="clearbtn" value="clear">Cancel</button> --}}
                                  </div>
