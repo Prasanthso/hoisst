@@ -60,7 +60,7 @@
                                         class="form-control mb-3"
                                         placeholder="Search..."
                                         {{-- onkeyup="filterCategories()" --}} />
-                                        <span id="findbadge" class="badge bg-primary" style="cursor: pointer;">Find</span>
+                                        <span id="findbadge" data-bs-toggle="tooltip" title="Select products for a price update." class="badge bg-primary" style="cursor: pointer;">Find</span>
                                 </div>
 
                                 @foreach($categoryitems as $category)
