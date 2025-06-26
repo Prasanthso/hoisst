@@ -571,6 +571,7 @@
                                             });
                                             updateSerialNumbers();
                                             alert("Selected row(s) deleted successfully!");
+                                             window.location.reload();
                                         }
                                     })
                                     .catch(error => {
