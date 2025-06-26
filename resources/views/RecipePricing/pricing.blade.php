@@ -929,6 +929,8 @@
                     updateOhTotalCost(amount);
                     updateDropdownOptions('overhead');
                     clearOhFields();
+                    fromMastersCheckbox.checked = true; // Reset to masters entry
+                    enterManuallyCheckbox.disabled = true;
                 })
                 .catch(error => console.error('Error:', error.message));
         }
@@ -1034,6 +1036,8 @@
                         overheadsTable.insertAdjacentHTML("beforeend", row);
                         updateOhTotalCost(manualOhPriceValue);
                         clearOhFields();
+                        enterManuallyCheckbox.checked = true; // Reset to masters entry
+                        fromMastersCheckbox.disabled = true;
                     } else {
                         alert("Failed to save manual overhead: " + (data.message || "Unknown error"));
                     }
