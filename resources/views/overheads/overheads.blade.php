@@ -1065,7 +1065,7 @@
             }
             wrapper.appendChild(nextBtn);
         }
-
+/*
     function renderPagination2(totalItems) {
         const totalPages = Math.ceil(totalItems / maxPerPage);
         const wrapper = document.getElementById('paginationWrapper');
@@ -1123,7 +1123,7 @@
         }
         wrapper.appendChild(nextBtn);
     }
-
+*/
         function updateSerialNumbers() {
             let currentPage = parseInt(document.querySelector("#currentPage").value) || 1; // Get current page number
             let perPage = parseInt(document.querySelector("#perPage").value) || 10;
