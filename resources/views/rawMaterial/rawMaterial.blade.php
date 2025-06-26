@@ -1176,7 +1176,6 @@
     }
 
     function filterItems() {
-
         let searchText = document.getElementById('categorySearch').value.toLowerCase().trim();
         let table = document.getElementById('rawMaterialTable');
         let rows = table.getElementsByTagName('tr');

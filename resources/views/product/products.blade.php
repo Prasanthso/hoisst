@@ -252,21 +252,21 @@
  <script src="{{ asset('js/main.js') }}"></script>
 
  <script>
-    let productCheckedRows = JSON.parse(localStorage.getItem('productCheckedRows')) || [];
+    let productCheckedRows = JSON.parse(localStorage.getItem('pdCheckedRows')) || [];
          let isEditing = false; // Track if edit mode is active
          let visibleData = [];
          let isFilter = false;
 
         // Function to update localStorage
-        function updateLocalStorage() {
-        localStorage.setItem('productCheckedRows', JSON.stringify(productCheckedRows));
+        function pdupdateLocalStorage() {
+        localStorage.setItem('pdCheckedRows', JSON.stringify(productCheckedRows));
         }
 
     // Function to create/update checked rows data
     function createCheckedRowsTable() {
     const pdtable = document.getElementById('productsTable');
     const rows = pdtable.querySelectorAll('tr');
-    // if(!isEditing){
+    if(!isEditing){
     // Process current page rows
     rows.forEach(row => {
         const checkbox = row.querySelector('.row-checkbox');
@@ -298,9 +298,9 @@
         }
     });
         // Update localStorage to persist data
-       updateLocalStorage();
+       pdupdateLocalStorage();
         console.log('Checked rows:', productCheckedRows);
-        // }
+        }
     }
 
     // Function to sync checkboxes with productCheckedRows on page load or pagination
@@ -327,6 +327,7 @@
 //         });
 //     });
 // }
+
 // Event listener for checkbox changes
     function setupCheckboxListeners() {
     const pdtable = document.getElementById('productsTable');
@@ -349,9 +350,7 @@
         //  let visibleData = [];
         //  let isFilter = false;
 
-         const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
-
-         document.getElementById('exportBtn').addEventListener('click', function() {
+        document.getElementById('exportBtn').addEventListener('click', function() {
              const table = document.getElementById('productsTable');
              const rows = table.querySelectorAll('tr');
              let exportData = [];
@@ -511,7 +510,7 @@
              doc.save(filename);
          }
          // Function to get all row checkboxes dynamically
-
+        const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
          // Function to toggle editing mode for selected rows
          const toggleEditMode = (enable) => {
              table.querySelectorAll("tr").forEach(row => {
