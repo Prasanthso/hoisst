@@ -131,33 +131,50 @@
             checkbox.addEventListener('change', toggleColumn);
         });
 
-        document.getElementById('exportBtn').addEventListener('click', function() {
-            const params = new URLSearchParams(window.location.search).toString();
-            fetch(`/alerts/export?${params}`)
-                .then(response => response.json())
-                .then(result => {
-                    const data = result.data;
-                    const rows = [
-                        ["S.NO", "Item_Name", "Item_code", "Alert Type", "Alert Medium", "Alerted_at"]
-                    ];
+       document.getElementById('exportBtn').addEventListener('click', function () {
+    const params = new URLSearchParams(window.location.search).toString();
 
-                    data.forEach((alert, index) => {
-                        rows.push([
-                            index + 1,
-                            alert.name,
-                            alert.code,
-                            alert.alert_type,
-                            alert.channel,
-                            new Date(alert.alerted_at).toLocaleString()
-                        ]);
-                    });
+    fetch(`/alerts/export?${params}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Server returned status " + response.status);
+            }
+            return response.json();
+        })
+        .then(result => {
+            if (!result.data || !Array.isArray(result.data)) {
+                console.error("Invalid or empty data:", result);
+                alert("No data found or something went wrong. Check console.");
+                return;
+            }
 
-                    const ws = XLSX.utils.aoa_to_sheet(rows);
-                    const wb = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(wb, ws, 'Alert_history');
-                    XLSX.writeFile(wb, 'Alert_history.xlsx');
-                });
+            const data = result.data;
+            const rows = [
+                ["S.NO", "Item_Name", "Item_code", "Alert Type", "Alert Medium", "Alerted_at"]
+            ];
+
+            data.forEach((alert, index) => {
+                rows.push([
+                    index + 1,
+                    alert.name,
+                    alert.code,
+                    alert.alert_type,
+                    alert.channel,
+                    new Date(alert.alerted_at).toLocaleString()
+                ]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Alert_history');
+            XLSX.writeFile(wb, 'Alert_history.xlsx');
+        })
+        .catch(error => {
+            console.error("Export error:", error);
+            alert("Export failed. Check the console for details.");
         });
+});
+
 
         document.getElementById('exportPdfBtn').addEventListener('click', function() {
             const params = new URLSearchParams(window.location.search).toString();
@@ -165,6 +182,7 @@
                 .then(response => response.json())
                 .then(result => {
                     const data = result.data;
+                    console.log("dataaa: ",data);
                     const {
                         jsPDF
                     } = window.jspdf;

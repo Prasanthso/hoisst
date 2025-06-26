@@ -143,11 +143,23 @@ class AlertController extends Controller
 
     public function export(Request $request)
     {
-        $alerts = $this->getFilteredAlerts($request);
+            try {
+                $storeId = session('store_id');
+                $userIds = session('user_id');
+                $alerts = $this->getFilteredAlerts($request, $userIds);
 
-        return response()->json([
-            'data' => $alerts
-        ]);
+                return response()->json(['data' => $alerts]);
+            } catch (\Throwable $e) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+        // $storeId = session('store_id');
+        //     $userIds = session('user_id');
+        //     $alerts = $this->getFilteredAlerts($request, $userIds);
+        // // $alerts = $this->getFilteredAlerts($request);
+
+        // return response()->json([
+        //     'data' => $alerts
+        // ]);
     }
 
     /**

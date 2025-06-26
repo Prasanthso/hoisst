@@ -252,21 +252,21 @@
  <script src="{{ asset('js/main.js') }}"></script>
 
  <script>
-    let productCheckedRows = JSON.parse(localStorage.getItem('productCheckedRows')) || [];
+    let productCheckedRows = JSON.parse(localStorage.getItem('pdCheckedRows')) || [];
          let isEditing = false; // Track if edit mode is active
          let visibleData = [];
          let isFilter = false;
 
         // Function to update localStorage
-        function updateLocalStorage() {
-        localStorage.setItem('productCheckedRows', JSON.stringify(productCheckedRows));
+        function pdupdateLocalStorage() {
+        localStorage.setItem('pdCheckedRows', JSON.stringify(productCheckedRows));
         }
 
     // Function to create/update checked rows data
     function createCheckedRowsTable() {
     const pdtable = document.getElementById('productsTable');
     const rows = pdtable.querySelectorAll('tr');
-    // if(!isEditing){
+    if(!isEditing){
     // Process current page rows
     rows.forEach(row => {
         const checkbox = row.querySelector('.row-checkbox');
@@ -298,9 +298,9 @@
         }
     });
         // Update localStorage to persist data
-       updateLocalStorage();
+       pdupdateLocalStorage();
         console.log('Checked rows:', productCheckedRows);
-        // }
+        }
     }
 
     // Function to sync checkboxes with productCheckedRows on page load or pagination
@@ -327,6 +327,7 @@
 //         });
 //     });
 // }
+
 // Event listener for checkbox changes
     function setupCheckboxListeners() {
     const pdtable = document.getElementById('productsTable');
@@ -349,9 +350,7 @@
         //  let visibleData = [];
         //  let isFilter = false;
 
-         const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
-
-         document.getElementById('exportBtn').addEventListener('click', function() {
+        document.getElementById('exportBtn').addEventListener('click', function() {
              const table = document.getElementById('productsTable');
              const rows = table.querySelectorAll('tr');
              let exportData = [];
@@ -511,7 +510,7 @@
              doc.save(filename);
          }
          // Function to get all row checkboxes dynamically
-
+        const getRowCheckboxes = () => document.querySelectorAll('.row-checkbox');
          // Function to toggle editing mode for selected rows
          const toggleEditMode = (enable) => {
              table.querySelectorAll("tr").forEach(row => {
@@ -1016,13 +1015,14 @@
 
     }
 
-    function renderPagination(totalItems) {
+        function renderPagination(totalItems) {
         const totalPages = Math.ceil(totalItems / maxPerPage);
         const wrapper = document.getElementById('paginationWrapper');
         wrapper.innerHTML = '';
-           if (totalPages <= 1) return;
-    // Previous Button
-    const prevBtn = document.createElement('button');
+        if (totalPages <= 1) return;
+
+        // Previous Button
+        const prevBtn = document.createElement('button');
         prevBtn.textContent = 'Previous';
         prevBtn.className = 'btn btn-md border border-primary mx-2';
         if (currentPage === 1) {
@@ -1036,27 +1036,30 @@
             };
         }
         wrapper.appendChild(prevBtn);
-        // Page Buttons
-        for (let i = 1; i <= totalPages; i++) {
-            const btn = document.createElement('button');
-            // btn.className = 'btn btn-md border border-primary text-primary bg-white mx-2';
-            // Default class
-        btn.className = 'btn btn-md border border-primary mx-1';
-        // Apply styles based on whether it's the current page
-        if (i === currentPage) {
-            btn.classList.add('bg-primary', 'text-white');
-        } else {
-            btn.classList.add('bg-white', 'text-primary');
+
+        // Only show currentPage and currentPage + 1
+        const pagesToShow = [currentPage];
+        if (currentPage + 1 <= totalPages) {
+            pagesToShow.push(currentPage + 1);
         }
+
+        pagesToShow.forEach(i => {
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-md border border-primary mx-1';
+            if (i === currentPage) {
+                btn.classList.add('bg-primary', 'text-white');
+            } else {
+                btn.classList.add('bg-white', 'text-primary');
+            }
             btn.textContent = i;
             btn.onclick = () => {
                 currentPage = i;
-
                 renderTablePage(currentPage, filteredData);
                 renderPagination(totalItems);
             };
             wrapper.appendChild(btn);
-        }
+        });
+
         // Next Button
         const nextBtn = document.createElement('button');
         nextBtn.textContent = 'Next';
