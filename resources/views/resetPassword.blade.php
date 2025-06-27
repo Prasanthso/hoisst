@@ -61,25 +61,6 @@
             left: 80%;
         }
 
-        .text {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 60px;
-            color: white;
-        }
-
-        .text img {
-            width: 70px;
-            height: 70px;
-            margin-right: 10px;
-        }
-
-        .text p {
-            font-size: 25px;
-            margin: 0;
-        }
-
         .custom-container {
             background-color: white;
             padding: 30px;
@@ -114,10 +95,10 @@
 
 <body>
     <!-- Floating Images -->
-    <img src="https://hoisst.trackmargin.com//uploads/cookie.png" alt="cookie" class="floating-img img2">
-    <img src="https://hoisst.trackmargin.com//uploads/samosa.png" alt="samosa" class="floating-img img1">
-    <img src="https://hoisst.trackmargin.com//uploads/cake.png" alt="cake" class="floating-img img3">
-    <img src="https://hoisst.trackmargin.com//uploads/bread.png" alt="bread" class="floating-img img4">
+    <img src="https://hoisst.trackmargin.com/uploads/cookie.png" alt="cookie" class="floating-img img2">
+    <img src="https://hoisst.trackmargin.com/uploads/samosa.png" alt="samosa" class="floating-img img1">
+    <img src="https://hoisst.trackmargin.com/uploads/cake.png" alt="cake" class="floating-img img3">
+    <img src="https://hoisst.trackmargin.com/uploads/bread.png" alt="bread" class="floating-img img4">
 
     <div class="container text-center">
         <div class="custom-container mx-auto text-left">
@@ -130,18 +111,27 @@
                 <input type="hidden" name="token" value="{{ $token }}">
 
                 <div class="form-group position-relative">
-                    <input type="email" name="email" value="{{ $email }}" required placeholder="Email" class="form-control custom-input">
+                    <input type="email" name="email" value="{{ $email }}" required placeholder="Email"
+                        class="form-control custom-input">
                 </div>
 
                 <div class="form-group position-relative">
-                    <input type="password" name="password" id="password" required placeholder="New Password" class="form-control custom-input">
+                    <input type="password" name="password" id="password" required
+                        placeholder="New Password"
+                        pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$"
+                        title="Password must be at least 8 characters, include a letter, a number, and a special character"
+                        class="form-control custom-input">
                     <span class="toggle-password" onclick="togglePassword('password', this)">
                         <i class="fas fa-eye"></i>
                     </span>
                 </div>
 
                 <div class="form-group position-relative">
-                    <input type="password" name="password_confirmation" id="password_confirmation" required placeholder="Confirm Password" class="form-control custom-input">
+                    <input type="password" name="password_confirmation" id="password_confirmation" required
+                        placeholder="Confirm Password"
+                        pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$"
+                        title="Password must be at least 8 characters, include a letter, a number, and a special character"
+                        class="form-control custom-input">
                     <span class="toggle-password" onclick="togglePassword('password_confirmation', this)">
                         <i class="fas fa-eye"></i>
                     </span>

@@ -39,7 +39,10 @@ class LoginController extends Controller
             // Generate a password reset token
             $token = Str::random(60);
 
-            // Store the token in the password_resets table
+            // Remove old tokens for this email
+            PasswordReset::where('email', $request->email)->delete();
+
+            // Insert the new token
             PasswordReset::create([
                 'email' => $request->email,
                 'token' => $token,
