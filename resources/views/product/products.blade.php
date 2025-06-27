@@ -1038,9 +1038,14 @@
         wrapper.appendChild(prevBtn);
 
         // Only show currentPage and currentPage + 1
-        const pagesToShow = [currentPage];
-        if (currentPage + 1 <= totalPages) {
-            pagesToShow.push(currentPage + 1);
+        // const pagesToShow = [currentPage];
+        // if (currentPage + 1 <= totalPages) {
+        //     pagesToShow.push(currentPage + 1);
+        // }
+
+        const pagesToShow = [];
+        for (let i = 1; i <= Math.min(5, totalPages); i++) {
+            pagesToShow.push(i);
         }
 
         pagesToShow.forEach(i => {
