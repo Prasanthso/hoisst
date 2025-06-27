@@ -101,7 +101,7 @@
                                 <td class="margin-perc">
                                     {{ $beforeTax > 0 ? number_format((($beforeTax -$cost) / $beforeTax) * 100, 2) . '%' : '0%' }}
                                 </td>
-                                <td class="d-none discount-value">{{ $report->discount }}</td>
+                                <!-- <td class="d-none discount-value">{{ $report->discount }}</td> -->
                                 @endforeach
 
                                 <!-- Add more rows as needed -->
