@@ -62,8 +62,8 @@
                         {{-- Array Of Links --}}
                         @if (is_array($element))
                             @foreach ($element as $page => $url)
-                                {{-- @if ($page == $paginator->currentPage() || $page == $paginator->currentPage() + 1) --}}
-                                @if ($page <= 5)
+                                @if ($page == $paginator->currentPage() || $page == $paginator->currentPage() + 1)
+                                {{-- @if ($page <= 5) --}}
                                     @if ($page == $paginator->currentPage())
                                         <li class="page-item active me-2" aria-current="page">
                                             <span class="page-link">{{ $page }}</span>
