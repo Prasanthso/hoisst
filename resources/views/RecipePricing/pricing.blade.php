@@ -1056,6 +1056,8 @@
 
                 if (!row) {
                     console.error("Row not found.");
+                    enterManuallyCheckbox.enabled = true; // Reset to masters entry
+                    fromMastersCheckbox.enabled = true;
                     return;
                 }
 
@@ -1074,6 +1076,7 @@
                 } else {
                     ohDelete(insertedId, row, token);
                 }
+
             }
         });
 
@@ -1095,6 +1098,12 @@
                     row.remove();
                     updateOhTotalCost(-amount);
                     updateDropdownOptions('overhead');
+                    console.log('row', overheadsTable.rows.length);
+                if (overheadsTable.rows.length == 0) {
+                    console.log('row test');
+                        enterManuallyCheckbox.disabled = false; // Reset to masters entry
+                        toggleForms();
+                    }
                 })
                 .catch(error => console.error('Error:', error.message));
         }
@@ -1116,6 +1125,11 @@
                     const amount = parseFloat(row.cells[5].textContent) || 0;
                     row.remove();
                     updateOhTotalCost(-amount);
+                if (overheadsTable.rows.length == 0) {
+                         // Reset to masters entry
+                        fromMastersCheckbox.disabled = false;
+                         toggleForms();
+                    }
                 })
                 .catch(error => console.error('Error:', error.message));
         }

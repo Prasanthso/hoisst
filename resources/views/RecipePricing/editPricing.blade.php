@@ -1545,6 +1545,7 @@
             // ohQuantityInput.addEventListener('input', updateOhAmount);
             // Add overheads
             ohAddButton.addEventListener('click', function() {
+
                 const product_id = productSelect.value;
                 if (!product_id) {
                     alert('Please select a valid product.');
@@ -1646,7 +1647,8 @@
         // Delete row functionality
         if (overheadsTable) {
             overheadsTable.addEventListener('click', function(e) {
-
+                //  const ohMohValue = document.getElementById("oh_mohValue").value;
+            // const enterManuallyCheckbox = document.getElementById("entermanually");
                 if (e.target.classList.contains('delete-icon')) {
                     const deleteIcon = e.target;
                     const row = deleteIcon.closest('tr');
@@ -1678,14 +1680,12 @@
                         })
                         .then(data => {
                             console.log('Success:', data);
-
                             // Remove the row from the table
                             const amount = parseFloat(row.cells[5].textContent) || 0;
                             row.remove();
-
                             // Update the total cost
                             updateOhTotalCost(-amount);
-
+                            window.location.reload();
                         })
                         .catch(error => console.error('Error:', error.message));
                 }
