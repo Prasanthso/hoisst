@@ -689,8 +689,110 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script>
     // Ensure functions are available in the global scope
-    document.addEventListener('DOMContentLoaded', function() {
+     function recipevalidation() {
+            const rpvalue = document.getElementById('productSelect').value.trim();
+            const rpopvalue = document.getElementById('recipeOutput').value.trim();
+            const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+            if (rpvalue === "" || rpvalue === "Choose...") {
+                document.getElementById('productSelect').focus();
+                return false;
+            } else if (rpopvalue === "") {
+                document.getElementById('recipeOutput').focus();
+                return false;
+            } else if (rpuomvalue === "" || rpuomvalue === "UoM") {
+                document.getElementById('recipeUoM').focus();
+                return false;
+            }
+            return true;
+        }
 
+    $(document).ready(function() {
+        $('#rawmaterial').select2({
+            tags: true,
+            placeholder: "Choose or type...",
+        });
+
+        // function recipevalidation() {
+        //     const rpvalue = document.getElementById('productSelect').value.trim();
+        //     const rpopvalue = document.getElementById('recipeOutput').value.trim();
+        //     const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+        //     if (rpvalue === "" || rpvalue === "Choose...") {
+        //         document.getElementById('productSelect').focus();
+        //         return false;
+        //     } else if (rpopvalue === "") {
+        //         document.getElementById('recipeOutput').focus();
+        //         return false;
+        //     } else if (rpuomvalue === "" || rpuomvalue === "UoM") {
+        //         document.getElementById('recipeUoM').focus();
+        //         return false;
+        //     }
+        //     return true;
+        // }
+
+         $('#rawmaterial').on('input', function() {
+            if (!recipevalidation()) return;
+            console.log('Raw material changed/input detected');
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.disabled) {
+                 document.getElementById('rmCode').value = '';
+                document.getElementById('rmUoM').value = '';
+                document.getElementById('rmPrice').value = '';
+                document.getElementById('rmAmount').value = '';
+                return;
+            }
+            const code = selectedOption.getAttribute('data-code');
+            const uom = selectedOption.getAttribute('data-uom');
+            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+            document.getElementById('rmCode').value = code || '';
+            document.getElementById('rmUoM').value = uom || '';
+            document.getElementById('rmPrice').value = price.toFixed(2);
+        });
+        $('#packingmaterial').select2({
+            tags: true,
+            placeholder: "Choose or type...",
+        });
+         $('#packingmaterial').on('input', function() {
+            if (!recipevalidation()) return;
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.disabled) {
+                document.getElementById('pmCode').value = '';
+                document.getElementById('pmUoM').value = '';
+                document.getElementById('pmPrice').value = '';
+                document.getElementById('pmAmount').value = '';
+                return;
+            }
+            const code = selectedOption.getAttribute('data-code');
+            const uom = selectedOption.getAttribute('data-uom');
+            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+
+            document.getElementById('pmCode').value = code || '';
+            document.getElementById('pmUoM').value = uom || '';
+            document.getElementById('pmPrice').value = price.toFixed(2);
+        });
+        $('#overheads').select2({
+            tags: true,
+            placeholder: "Choose or type...",
+        });
+         $('#overheads').on('input', function() {
+            if (!recipevalidation()) return;
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.disabled) {
+                document.getElementById('ohCode').value = '';
+                document.getElementById('ohUoM').value = '';
+                document.getElementById('ohPrice').value = '';
+                document.getElementById('ohAmount').value = '';
+                return;
+            }
+            const code = selectedOption.getAttribute('data-code');
+            const uom = selectedOption.getAttribute('data-uom');
+            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+            document.getElementById('ohCode').value = code || '';
+            document.getElementById('ohUoM').value = uom || '';
+            document.getElementById('ohPrice').value = price.toFixed(2);
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
         window.editRow = editRow;
         window.saveRow = saveRow;
 
@@ -776,7 +878,7 @@
             toggleForms();
         }
     }
-
+/*
     function recipevalidation() {
         const rpvalue = document.getElementById('productSelect').value.trim();
         const rpopvalue = document.getElementById('recipeOutput').value.trim();
@@ -795,7 +897,7 @@
             document.getElementById('recipeUoM').focus();
             return;
         }
-    }
+    }*/
 
     // raw materials recipe-pricing details
     // Function to enable editing for a specific row

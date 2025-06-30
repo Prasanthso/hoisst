@@ -349,18 +349,10 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-
-    $(document).ready(function() {
-        $('#rawmaterial').select2({
-            tags: true,
-            placeholder: "Choose or type...",
-        });
-
-        function recipevalidation() {
+ function recipevalidation() {
             const rpvalue = document.getElementById('productSelect').value.trim();
             const rpopvalue = document.getElementById('recipeOutput').value.trim();
             const rpuomvalue = document.getElementById('recipeUoM').value.trim();
-
             if (rpvalue === "" || rpvalue === "Choose...") {
                 document.getElementById('productSelect').focus();
                 return false;
@@ -373,6 +365,12 @@
             }
             return true;
         }
+
+    $(document).ready(function() {
+        $('#rawmaterial').select2({
+            tags: true,
+            placeholder: "Choose or type...",
+        });
 
          $('#rawmaterial').on('input', function() {
             if (!recipevalidation()) return;
@@ -487,23 +485,23 @@
         const importRecipeBtn = document.getElementById('importRecipeBtn');
         const importRecipeFile = document.getElementById('importRecipeFile');
 
-        function recipevalidation() {
-            const rpvalue = document.getElementById('productSelect').value.trim();
-            const rpopvalue = document.getElementById('recipeOutput').value.trim();
-            const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+        // function recipevalidation() {
+        //     const rpvalue = document.getElementById('productSelect').value.trim();
+        //     const rpopvalue = document.getElementById('recipeOutput').value.trim();
+        //     const rpuomvalue = document.getElementById('recipeUoM').value.trim();
 
-            if (rpvalue === "" || rpvalue === "Choose...") {
-                document.getElementById('productSelect').focus();
-                return false;
-            } else if (rpopvalue === "") {
-                document.getElementById('recipeOutput').focus();
-                return false;
-            } else if (rpuomvalue === "" || rpuomvalue === "UoM") {
-                document.getElementById('recipeUoM').focus();
-                return false;
-            }
-            return true;
-        }
+        //     if (rpvalue === "" || rpvalue === "Choose...") {
+        //         document.getElementById('productSelect').focus();
+        //         return false;
+        //     } else if (rpopvalue === "") {
+        //         document.getElementById('recipeOutput').focus();
+        //         return false;
+        //     } else if (rpuomvalue === "" || rpuomvalue === "UoM") {
+        //         document.getElementById('recipeUoM').focus();
+        //         return false;
+        //     }
+        //     return true;
+        // }
 
         // Function to toggle the Import CSV button based on validation
         function toggleImportButton() {
