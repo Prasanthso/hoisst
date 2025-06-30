@@ -32,9 +32,9 @@
             <div class="alert alert-success">{{ session('success') }}</div>
             @endif
             <div class="mb-4">
-                <label for="productSelect" class="form-label">Select Product</label>
+                <label for="productSelect" id="productSelectLabel" class="form-label">Select Product</label>
                 <div class="col-6">
-                    <select id="productSelect" class="form-select select2" aria-labelledby="productSelect">
+                    <select id="productSelect" class="form-select select2" aria-labelledby="productSelectLabel">
                         <option selected disabled>Choose...</option>
                         @foreach($products as $productItem)
                         <option value="{{ $productItem->id }}">
@@ -52,7 +52,7 @@
                 </div>
                 <div class="col-md-2 col-sm-10">
                     <label for="recipeUoM" class="form-label">UoM</label>
-                    <select id="recipeUoM" class="form-select select2" name="recipeUoM">
+                    <select id="recipeUoM" class="form-select" name="recipeUoM">
                         <option selected>UoM</option>
                         <option value="Ltr">Ltr</option>
                         <option value="Kgs">Kgs</option>
@@ -73,7 +73,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="rawmaterial" class="form-label">Raw Material</label>
-                    <select id="rawmaterial" class="form-select">
+                    <select id="rawmaterial" class="form-select select2" aria-labelledby="rawmaterial">
                         <option selected disabled>Choose...</option>
                         @foreach($rawMaterials as $rawMaterialItem)
                         <option
@@ -147,7 +147,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="packingmaterial" class="form-label">Packing Material</label>
-                    <select id="packingmaterial" class="form-select">
+                    <select id="packingmaterial" class="form-select select2">
                         <option selected disabled>Choose...</option>
                         @foreach($packingMaterials as $packingMaterialItem)
                         <option
@@ -348,7 +348,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+{{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> --}}
+
 <script>
+    let product_id = null;
  function recipevalidation() {
             const rpvalue = document.getElementById('productSelect').value.trim();
             const rpopvalue = document.getElementById('recipeOutput').value.trim();
@@ -367,11 +370,22 @@
         }
 
     $(document).ready(function() {
-        $('#rawmaterial').select2({
-            tags: true,
+     $('#productSelect').select2({
+             theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
 
+        $('#rawmaterial').select2({
+            theme: 'bootstrap-5',
+            placeholder: "Choose or type...",
+        });
+
+        $('#productSelect').on('input', function() {
+            product_id = this.value;
+            console.log('Selected ID:', product_id);
+            // if (!recipevalidation()) return;
+            // document.getElementById('importRecipeBtn').disabled = !product_id;
+        });
          $('#rawmaterial').on('input', function() {
             if (!recipevalidation()) return;
             console.log('Raw material changed/input detected');
@@ -391,7 +405,7 @@
             document.getElementById('rmPrice').value = price.toFixed(2);
         });
         $('#packingmaterial').select2({
-            tags: true,
+             theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
          $('#packingmaterial').on('input', function() {
@@ -413,7 +427,7 @@
             document.getElementById('pmPrice').value = price.toFixed(2);
         });
         $('#overheads').select2({
-            tags: true,
+             theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
          $('#overheads').on('input', function() {
@@ -513,7 +527,7 @@
         }
 
         // Add event listeners to monitor changes in the required fields
-        productSelect.addEventListener('change', function() {
+          productSelect.addEventListener('change', function() {
             product_id = this.value;
             console.log('Selected product ID:', product_id);
             toggleImportButton();
@@ -1244,6 +1258,8 @@
         });
 
         importRecipeFile.addEventListener('change', function(e) {
+            console.log(product_id);
+            product_id = productSelect.value;
             if (!product_id) {
                 alert('Please select a valid product.');
                 return;

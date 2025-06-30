@@ -17,9 +17,9 @@
             @endif
 
             <div class="mb-4">
-                <label for="productSelect" class="form-label">Select Product</label>
+                <label for="productSelect" id="productSelectLabel" class="form-label">Select Product</label>
                 <div class="col-6">
-                    <select id="productSelect" class="form-select select2" name="productSelect" aria-labelledby="productSelect">
+                    <select id="productSelect" class="form-select" name="productSelect" aria-labelledby="productSelectLabel">
                         <option value="" disabled selected>Select a Product</option>
                         @foreach ($products as $product)
                         <option value="{{ $product->id }}" selected>
@@ -708,26 +708,10 @@
 
     $(document).ready(function() {
         $('#rawmaterial').select2({
-            tags: true,
+              theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
 
-        // function recipevalidation() {
-        //     const rpvalue = document.getElementById('productSelect').value.trim();
-        //     const rpopvalue = document.getElementById('recipeOutput').value.trim();
-        //     const rpuomvalue = document.getElementById('recipeUoM').value.trim();
-        //     if (rpvalue === "" || rpvalue === "Choose...") {
-        //         document.getElementById('productSelect').focus();
-        //         return false;
-        //     } else if (rpopvalue === "") {
-        //         document.getElementById('recipeOutput').focus();
-        //         return false;
-        //     } else if (rpuomvalue === "" || rpuomvalue === "UoM") {
-        //         document.getElementById('recipeUoM').focus();
-        //         return false;
-        //     }
-        //     return true;
-        // }
 
          $('#rawmaterial').on('input', function() {
             if (!recipevalidation()) return;
@@ -748,7 +732,7 @@
             document.getElementById('rmPrice').value = price.toFixed(2);
         });
         $('#packingmaterial').select2({
-            tags: true,
+             theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
          $('#packingmaterial').on('input', function() {
@@ -770,7 +754,7 @@
             document.getElementById('pmPrice').value = price.toFixed(2);
         });
         $('#overheads').select2({
-            tags: true,
+             theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
          $('#overheads').on('input', function() {
