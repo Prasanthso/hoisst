@@ -661,28 +661,29 @@
             updateAmount();
         });
 
-        rawMaterialSelect.addEventListener('input', function() {
-            if (!recipevalidation()) return;
-            console.log('Raw material changed/input detected');
-            const selectedOption = this.options[this.selectedIndex];
-            if (selectedOption.disabled) {
-                clearFields();
-                return;
-            }
-            const code = selectedOption.getAttribute('data-code');
-            const uom = selectedOption.getAttribute('data-uom');
-            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+        // rawMaterialSelect.addEventListener('input', function() {
+        //     if (!recipevalidation()) return;
+        //     console.log('Raw material changed/input detected');
+        //     const selectedOption = this.options[this.selectedIndex];
+        //     if (selectedOption.disabled) {
+        //         clearFields();
+        //         return;
+        //     }
+        //     const code = selectedOption.getAttribute('data-code');
+        //     const uom = selectedOption.getAttribute('data-uom');
+        //     const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
 
-            codeInput.value = code || '';
-            uomInput.value = uom || '';
-            priceInput.value = price.toFixed(2);
+        //     codeInput.value = code || '';
+        //     uomInput.value = uom || '';
+        //     priceInput.value = price.toFixed(2);
 
-            updateAmount();
-        });
+        //     updateAmount();
+        // });
 
         quantityInput.addEventListener('input', updateAmount);
 
         addButton.addEventListener('click', function() {
+            product_id = productSelect.value;
             if (!product_id) {
                 alert('Please select a valid product.');
                 return;
@@ -824,6 +825,7 @@
         pmQuantityInput.addEventListener('input', updatePmAmount);
 
         pmAddButton.addEventListener('click', function() {
+             product_id = productSelect.value;
             if (!product_id) {
                 alert('Please select a valid product.');
                 return;
@@ -966,6 +968,7 @@
         ohQuantityInput.addEventListener('input', updateOhAmount);
 
         ohAddButton.addEventListener('click', function() {
+             product_id = productSelect.value;
             if (!product_id) {
                 alert('Please select a valid product.');
                 return;
@@ -1076,6 +1079,7 @@
 
         manualOhAddButton.addEventListener('click', function() {
             console.log("Add button clicked");
+             product_id = productSelect.value;
             if (!product_id) {
                 alert('Please select a valid product.');
                 return;
