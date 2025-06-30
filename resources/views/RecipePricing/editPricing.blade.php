@@ -33,7 +33,7 @@
             <div class="row mb-4">
                 <div class="col-md-3 col-sm-10 mb-2">
                     <label for="recipeOutput" class="form-label">Output</label>
-                    <input type="text" class="form-control rounded" id="recipeOutput" name="recipeOutput" value="{{ $products[0]->rp_output ?? '' }}">
+                    <input type="text" class="form-control rounded" id="recipeOutput" name="recipeOutput" value="{{ $products[0]->rp_output ?? '' }}" readonly>
                 </div>
                 <div class="col-md-2 col-sm-10">
                     <label for="recipeUoM" class="form-label">UoM</label>
