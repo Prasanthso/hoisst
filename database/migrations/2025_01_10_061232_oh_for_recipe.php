@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id(); // Auto-incrementing primary key
             $table->unsignedBigInteger('overheads_id');
             $table->unsignedBigInteger('product_id');
-            $table->decimal('quantity', 10, 2); // Numeric field for quantity with two decimal points
+            $table->decimal('quantity', 10, 3); // Numeric field for quantity with three decimal points
             $table->string('code'); // String field for the code
             $table->string('uom'); // String field for the unit of measurement
             $table->decimal('price', 10, 2); // Numeric field for price with two decimal points

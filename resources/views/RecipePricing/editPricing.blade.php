@@ -17,9 +17,9 @@
             @endif
 
             <div class="mb-4">
-                <label for="productSelect" class="form-label">Select Product</label>
+                <label for="productSelect" id="productSelectLabel" class="form-label">Select Product</label>
                 <div class="col-6">
-                    <select id="productSelect" class="form-select select2" name="productSelect" aria-labelledby="productSelect">
+                    <select id="productSelect" class="form-select" name="productSelect" aria-labelledby="productSelectLabel">
                         <option value="" disabled selected>Select a Product</option>
                         @foreach ($products as $product)
                         <option value="{{ $product->id }}" selected>
@@ -33,7 +33,7 @@
             <div class="row mb-4">
                 <div class="col-md-3 col-sm-10 mb-2">
                     <label for="recipeOutput" class="form-label">Output</label>
-                    <input type="text" class="form-control rounded" id="recipeOutput" name="recipeOutput" value="{{ $products[0]->rp_output ?? '' }}">
+                    <input type="text" class="form-control rounded" id="recipeOutput" name="recipeOutput" value="{{ $products[0]->rp_output ?? '' }}" readonly>
                 </div>
                 <div class="col-md-2 col-sm-10">
                     <label for="recipeUoM" class="form-label">UoM</label>
@@ -689,8 +689,94 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script>
     // Ensure functions are available in the global scope
-    document.addEventListener('DOMContentLoaded', function() {
+     function recipevalidation() {
+            const rpvalue = document.getElementById('productSelect').value.trim();
+            const rpopvalue = document.getElementById('recipeOutput').value.trim();
+            const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+            if (rpvalue === "" || rpvalue === "Choose...") {
+                document.getElementById('productSelect').focus();
+                return false;
+            } else if (rpopvalue === "") {
+                document.getElementById('recipeOutput').focus();
+                return false;
+            } else if (rpuomvalue === "" || rpuomvalue === "UoM") {
+                document.getElementById('recipeUoM').focus();
+                return false;
+            }
+            return true;
+        }
 
+    $(document).ready(function() {
+        $('#rawmaterial').select2({
+              theme: 'bootstrap-5',
+            placeholder: "Choose or type...",
+        });
+
+
+         $('#rawmaterial').on('input', function() {
+            if (!recipevalidation()) return;
+            console.log('Raw material changed/input detected');
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.disabled) {
+                 document.getElementById('rmCode').value = '';
+                document.getElementById('rmUoM').value = '';
+                document.getElementById('rmPrice').value = '';
+                document.getElementById('rmAmount').value = '';
+                return;
+            }
+            const code = selectedOption.getAttribute('data-code');
+            const uom = selectedOption.getAttribute('data-uom');
+            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+            document.getElementById('rmCode').value = code || '';
+            document.getElementById('rmUoM').value = uom || '';
+            document.getElementById('rmPrice').value = price.toFixed(2);
+        });
+        $('#packingmaterial').select2({
+             theme: 'bootstrap-5',
+            placeholder: "Choose or type...",
+        });
+         $('#packingmaterial').on('input', function() {
+            if (!recipevalidation()) return;
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.disabled) {
+                document.getElementById('pmCode').value = '';
+                document.getElementById('pmUoM').value = '';
+                document.getElementById('pmPrice').value = '';
+                document.getElementById('pmAmount').value = '';
+                return;
+            }
+            const code = selectedOption.getAttribute('data-code');
+            const uom = selectedOption.getAttribute('data-uom');
+            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+
+            document.getElementById('pmCode').value = code || '';
+            document.getElementById('pmUoM').value = uom || '';
+            document.getElementById('pmPrice').value = price.toFixed(2);
+        });
+        $('#overheads').select2({
+             theme: 'bootstrap-5',
+            placeholder: "Choose or type...",
+        });
+         $('#overheads').on('input', function() {
+            if (!recipevalidation()) return;
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.disabled) {
+                document.getElementById('ohCode').value = '';
+                document.getElementById('ohUoM').value = '';
+                document.getElementById('ohPrice').value = '';
+                document.getElementById('ohAmount').value = '';
+                return;
+            }
+            const code = selectedOption.getAttribute('data-code');
+            const uom = selectedOption.getAttribute('data-uom');
+            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+            document.getElementById('ohCode').value = code || '';
+            document.getElementById('ohUoM').value = uom || '';
+            document.getElementById('ohPrice').value = price.toFixed(2);
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
         window.editRow = editRow;
         window.saveRow = saveRow;
 
@@ -776,7 +862,7 @@
             toggleForms();
         }
     }
-
+/*
     function recipevalidation() {
         const rpvalue = document.getElementById('productSelect').value.trim();
         const rpopvalue = document.getElementById('recipeOutput').value.trim();
@@ -795,7 +881,7 @@
             document.getElementById('recipeUoM').focus();
             return;
         }
-    }
+    }*/
 
     // raw materials recipe-pricing details
     // Function to enable editing for a specific row

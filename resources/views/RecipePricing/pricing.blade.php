@@ -32,9 +32,9 @@
             <div class="alert alert-success">{{ session('success') }}</div>
             @endif
             <div class="mb-4">
-                <label for="productSelect" class="form-label">Select Product</label>
+                <label for="productSelect" id="productSelectLabel" class="form-label">Select Product</label>
                 <div class="col-6">
-                    <select id="productSelect" class="form-select select2" aria-labelledby="productSelect">
+                    <select id="productSelect" class="form-select select2" aria-labelledby="productSelectLabel">
                         <option selected disabled>Choose...</option>
                         @foreach($products as $productItem)
                         <option value="{{ $productItem->id }}">
@@ -52,7 +52,7 @@
                 </div>
                 <div class="col-md-2 col-sm-10">
                     <label for="recipeUoM" class="form-label">UoM</label>
-                    <select id="recipeUoM" class="form-select select2" name="recipeUoM">
+                    <select id="recipeUoM" class="form-select" name="recipeUoM">
                         <option selected>UoM</option>
                         <option value="Ltr">Ltr</option>
                         <option value="Kgs">Kgs</option>
@@ -73,7 +73,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="rawmaterial" class="form-label">Raw Material</label>
-                    <select id="rawmaterial" class="form-select">
+                    <select id="rawmaterial" class="form-select select2" aria-labelledby="rawmaterial">
                         <option selected disabled>Choose...</option>
                         @foreach($rawMaterials as $rawMaterialItem)
                         <option
@@ -147,7 +147,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="packingmaterial" class="form-label">Packing Material</label>
-                    <select id="packingmaterial" class="form-select">
+                    <select id="packingmaterial" class="form-select select2">
                         <option selected disabled>Choose...</option>
                         @foreach($packingMaterials as $packingMaterialItem)
                         <option
@@ -348,9 +348,108 @@
 
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
+{{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> --}}
 
+<script>
+    let product_id = null;
+ function recipevalidation() {
+            const rpvalue = document.getElementById('productSelect').value.trim();
+            const rpopvalue = document.getElementById('recipeOutput').value.trim();
+            const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+            if (rpvalue === "" || rpvalue === "Choose...") {
+                document.getElementById('productSelect').focus();
+                return false;
+            } else if (rpopvalue === "") {
+                document.getElementById('recipeOutput').focus();
+                return false;
+            } else if (rpuomvalue === "" || rpuomvalue === "UoM") {
+                document.getElementById('recipeUoM').focus();
+                return false;
+            }
+            return true;
+        }
+
+    $(document).ready(function() {
+     $('#productSelect').select2({
+             theme: 'bootstrap-5',
+            placeholder: "Choose or type...",
+        });
+
+        $('#rawmaterial').select2({
+            theme: 'bootstrap-5',
+            placeholder: "Choose or type...",
+        });
+
+        $('#productSelect').on('input', function() {
+            product_id = this.value;
+            console.log('Selected ID:', product_id);
+            // if (!recipevalidation()) return;
+            // document.getElementById('importRecipeBtn').disabled = !product_id;
+        });
+         $('#rawmaterial').on('input', function() {
+            if (!recipevalidation()) return;
+            console.log('Raw material changed/input detected');
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.disabled) {
+                 document.getElementById('rmCode').value = '';
+                document.getElementById('rmUoM').value = '';
+                document.getElementById('rmPrice').value = '';
+                document.getElementById('rmAmount').value = '';
+                return;
+            }
+            const code = selectedOption.getAttribute('data-code');
+            const uom = selectedOption.getAttribute('data-uom');
+            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+            document.getElementById('rmCode').value = code || '';
+            document.getElementById('rmUoM').value = uom || '';
+            document.getElementById('rmPrice').value = price.toFixed(2);
+        });
+        $('#packingmaterial').select2({
+             theme: 'bootstrap-5',
+            placeholder: "Choose or type...",
+        });
+         $('#packingmaterial').on('input', function() {
+            if (!recipevalidation()) return;
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.disabled) {
+                document.getElementById('pmCode').value = '';
+                document.getElementById('pmUoM').value = '';
+                document.getElementById('pmPrice').value = '';
+                document.getElementById('pmAmount').value = '';
+                return;
+            }
+            const code = selectedOption.getAttribute('data-code');
+            const uom = selectedOption.getAttribute('data-uom');
+            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+
+            document.getElementById('pmCode').value = code || '';
+            document.getElementById('pmUoM').value = uom || '';
+            document.getElementById('pmPrice').value = price.toFixed(2);
+        });
+        $('#overheads').select2({
+             theme: 'bootstrap-5',
+            placeholder: "Choose or type...",
+        });
+         $('#overheads').on('input', function() {
+            if (!recipevalidation()) return;
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.disabled) {
+                document.getElementById('ohCode').value = '';
+                document.getElementById('ohUoM').value = '';
+                document.getElementById('ohPrice').value = '';
+                document.getElementById('ohAmount').value = '';
+                return;
+            }
+            const code = selectedOption.getAttribute('data-code');
+            const uom = selectedOption.getAttribute('data-uom');
+            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+            document.getElementById('ohCode').value = code || '';
+            document.getElementById('ohUoM').value = uom || '';
+            document.getElementById('ohPrice').value = price.toFixed(2);
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
         const productSelect = document.getElementById('productSelect');
         const rawMaterialSelect = document.getElementById('rawmaterial');
         const quantityInput = document.getElementById('rmQuantity');
@@ -400,23 +499,23 @@
         const importRecipeBtn = document.getElementById('importRecipeBtn');
         const importRecipeFile = document.getElementById('importRecipeFile');
 
-        function recipevalidation() {
-            const rpvalue = document.getElementById('productSelect').value.trim();
-            const rpopvalue = document.getElementById('recipeOutput').value.trim();
-            const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+        // function recipevalidation() {
+        //     const rpvalue = document.getElementById('productSelect').value.trim();
+        //     const rpopvalue = document.getElementById('recipeOutput').value.trim();
+        //     const rpuomvalue = document.getElementById('recipeUoM').value.trim();
 
-            if (rpvalue === "" || rpvalue === "Choose...") {
-                document.getElementById('productSelect').focus();
-                return false;
-            } else if (rpopvalue === "") {
-                document.getElementById('recipeOutput').focus();
-                return false;
-            } else if (rpuomvalue === "" || rpuomvalue === "UoM") {
-                document.getElementById('recipeUoM').focus();
-                return false;
-            }
-            return true;
-        }
+        //     if (rpvalue === "" || rpvalue === "Choose...") {
+        //         document.getElementById('productSelect').focus();
+        //         return false;
+        //     } else if (rpopvalue === "") {
+        //         document.getElementById('recipeOutput').focus();
+        //         return false;
+        //     } else if (rpuomvalue === "" || rpuomvalue === "UoM") {
+        //         document.getElementById('recipeUoM').focus();
+        //         return false;
+        //     }
+        //     return true;
+        // }
 
         // Function to toggle the Import CSV button based on validation
         function toggleImportButton() {
@@ -428,7 +527,7 @@
         }
 
         // Add event listeners to monitor changes in the required fields
-        productSelect.addEventListener('change', function() {
+          productSelect.addEventListener('change', function() {
             product_id = this.value;
             console.log('Selected product ID:', product_id);
             toggleImportButton();
@@ -546,6 +645,7 @@
 
         rawMaterialSelect.addEventListener('change', function() {
             if (!recipevalidation()) return;
+            console.log('Raw material changed/input detected');
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.disabled) {
                 clearFields();
@@ -558,13 +658,32 @@
             codeInput.value = code || '';
             uomInput.value = uom || '';
             priceInput.value = price.toFixed(2);
-
             updateAmount();
         });
+
+        // rawMaterialSelect.addEventListener('input', function() {
+        //     if (!recipevalidation()) return;
+        //     console.log('Raw material changed/input detected');
+        //     const selectedOption = this.options[this.selectedIndex];
+        //     if (selectedOption.disabled) {
+        //         clearFields();
+        //         return;
+        //     }
+        //     const code = selectedOption.getAttribute('data-code');
+        //     const uom = selectedOption.getAttribute('data-uom');
+        //     const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+
+        //     codeInput.value = code || '';
+        //     uomInput.value = uom || '';
+        //     priceInput.value = price.toFixed(2);
+
+        //     updateAmount();
+        // });
 
         quantityInput.addEventListener('input', updateAmount);
 
         addButton.addEventListener('click', function() {
+            product_id = productSelect.value;
             if (!product_id) {
                 alert('Please select a valid product.');
                 return;
@@ -706,6 +825,7 @@
         pmQuantityInput.addEventListener('input', updatePmAmount);
 
         pmAddButton.addEventListener('click', function() {
+             product_id = productSelect.value;
             if (!product_id) {
                 alert('Please select a valid product.');
                 return;
@@ -848,6 +968,7 @@
         ohQuantityInput.addEventListener('input', updateOhAmount);
 
         ohAddButton.addEventListener('click', function() {
+             product_id = productSelect.value;
             if (!product_id) {
                 alert('Please select a valid product.');
                 return;
@@ -958,6 +1079,7 @@
 
         manualOhAddButton.addEventListener('click', function() {
             console.log("Add button clicked");
+             product_id = productSelect.value;
             if (!product_id) {
                 alert('Please select a valid product.');
                 return;
@@ -1140,6 +1262,8 @@
         });
 
         importRecipeFile.addEventListener('change', function(e) {
+            console.log(product_id);
+            product_id = productSelect.value;
             if (!product_id) {
                 alert('Please select a valid product.');
                 return;
