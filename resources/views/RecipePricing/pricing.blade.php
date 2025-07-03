@@ -93,19 +93,19 @@
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="rmCode" class="form-label">RM Code</label>
-                    <input type="text" class="form-control rounded" id="rmCode" name="rmCode" readonly>
+                    <input type="text" class="form-control rounded" id="rmCode" name="rmCode" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="rmUoM" class="form-label">UoM</label>
-                    <input type="text" class="form-control" id="rmUoM" name="rmUoM" readonly>
+                    <input type="text" class="form-control" id="rmUoM" name="rmUoM" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="rmPrice" class="form-label">Price</label>
-                    <input type="text" class="form-control rounded" id="rmPrice" name="rmPrice" readonly>
+                    <input type="text" class="form-control rounded" id="rmPrice" name="rmPrice" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="rmAmount" class="form-label">Amount</label>
-                    <input type="text" class="form-control" id="rmAmount" name="rmAmount">
+                    <input type="text" class="form-control" id="rmAmount" name="rmAmount" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 2;">
                     <button type="button" class="btn btn-primary rmaddbtn" id="rmaddbtn">
@@ -179,7 +179,7 @@
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="pmAmount" class="form-label">Amount</label>
-                    <input type="text" class="form-control" id="pmAmount" name="pmAmount">
+                    <input type="text" class="form-control" id="pmAmount" name="pmAmount" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 2;">
                     <button type="button" class="btn btn-primary pmaddbtn" id="pmaddbtn"><i class="fas fa-plus"></i> Add</button>
@@ -259,7 +259,7 @@
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="ohAmount" class="form-label">Amount</label>
-                    <input type="text" class="form-control" id="ohAmount" name="ohAmount">
+                    <input type="text" class="form-control" id="ohAmount" name="ohAmount" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 2;">
                     <button type="button" class="btn btn-primary ohaddbtn" id="ohaddbtn"><i class="fas fa-plus"></i> Add</button>
@@ -352,26 +352,33 @@
 
 <script>
     let product_id = null;
- function recipevalidation() {
-            const rpvalue = document.getElementById('productSelect').value.trim();
-            const rpopvalue = document.getElementById('recipeOutput').value.trim();
-            const rpuomvalue = document.getElementById('recipeUoM').value.trim();
-            if (rpvalue === "" || rpvalue === "Choose...") {
-                document.getElementById('productSelect').focus();
-                return false;
-            } else if (rpopvalue === "") {
-                document.getElementById('recipeOutput').focus();
-                return false;
-            } else if (rpuomvalue === "" || rpuomvalue === "UoM") {
-                document.getElementById('recipeUoM').focus();
-                return false;
-            }
-            return true;
+
+    function recipevalidation() {
+        const rpvalue = document.getElementById('productSelect').value.trim();
+        const rpopvalue = document.getElementById('recipeOutput').value.trim();
+        const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+
+        const outputValue = parseFloat(rpopvalue);
+
+        if (rpvalue === "" || rpvalue === "Choose...") {
+            return false;
         }
 
+        if (rpopvalue === "" || isNaN(outputValue) || outputValue <= 1) {
+            return false;
+        }
+
+        if (rpuomvalue === "" || rpuomvalue === "UoM") {
+            return false;
+        }
+
+        return true;
+    }
+
+
     $(document).ready(function() {
-     $('#productSelect').select2({
-             theme: 'bootstrap-5',
+        $('#productSelect').select2({
+            theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
 
@@ -386,12 +393,12 @@
             // if (!recipevalidation()) return;
             // document.getElementById('importRecipeBtn').disabled = !product_id;
         });
-         $('#rawmaterial').on('input', function() {
+        $('#rawmaterial').on('input', function() {
             if (!recipevalidation()) return;
             console.log('Raw material changed/input detected');
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.disabled) {
-                 document.getElementById('rmCode').value = '';
+                document.getElementById('rmCode').value = '';
                 document.getElementById('rmUoM').value = '';
                 document.getElementById('rmPrice').value = '';
                 document.getElementById('rmAmount').value = '';
@@ -405,10 +412,10 @@
             document.getElementById('rmPrice').value = price.toFixed(2);
         });
         $('#packingmaterial').select2({
-             theme: 'bootstrap-5',
+            theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
-         $('#packingmaterial').on('input', function() {
+        $('#packingmaterial').on('input', function() {
             if (!recipevalidation()) return;
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.disabled) {
@@ -427,10 +434,10 @@
             document.getElementById('pmPrice').value = price.toFixed(2);
         });
         $('#overheads').select2({
-             theme: 'bootstrap-5',
+            theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
-         $('#overheads').on('input', function() {
+        $('#overheads').on('input', function() {
             if (!recipevalidation()) return;
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.disabled) {
@@ -527,7 +534,7 @@
         }
 
         // Add event listeners to monitor changes in the required fields
-          productSelect.addEventListener('change', function() {
+        productSelect.addEventListener('change', function() {
             product_id = this.value;
             console.log('Selected product ID:', product_id);
             toggleImportButton();
@@ -825,7 +832,7 @@
         pmQuantityInput.addEventListener('input', updatePmAmount);
 
         pmAddButton.addEventListener('click', function() {
-             product_id = productSelect.value;
+            product_id = productSelect.value;
             if (!product_id) {
                 alert('Please select a valid product.');
                 return;
@@ -968,7 +975,7 @@
         ohQuantityInput.addEventListener('input', updateOhAmount);
 
         ohAddButton.addEventListener('click', function() {
-             product_id = productSelect.value;
+            product_id = productSelect.value;
             if (!product_id) {
                 alert('Please select a valid product.');
                 return;
@@ -1079,7 +1086,7 @@
 
         manualOhAddButton.addEventListener('click', function() {
             console.log("Add button clicked");
-             product_id = productSelect.value;
+            product_id = productSelect.value;
             if (!product_id) {
                 alert('Please select a valid product.');
                 return;
@@ -1221,8 +1228,8 @@
                     updateOhTotalCost(-amount);
                     updateDropdownOptions('overhead');
                     console.log('row', overheadsTable.rows.length);
-                if (overheadsTable.rows.length == 0) {
-                    console.log('row test');
+                    if (overheadsTable.rows.length == 0) {
+                        console.log('row test');
                         enterManuallyCheckbox.disabled = false; // Reset to masters entry
                         toggleForms();
                     }
@@ -1247,10 +1254,10 @@
                     const amount = parseFloat(row.cells[5].textContent) || 0;
                     row.remove();
                     updateOhTotalCost(-amount);
-                if (overheadsTable.rows.length == 0) {
-                         // Reset to masters entry
+                    if (overheadsTable.rows.length == 0) {
+                        // Reset to masters entry
                         fromMastersCheckbox.disabled = false;
-                         toggleForms();
+                        toggleForms();
                     }
                 })
                 .catch(error => console.error('Error:', error.message));

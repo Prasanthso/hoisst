@@ -19,7 +19,7 @@
             <div class="mb-4">
                 <label for="productSelect" id="productSelectLabel" class="form-label">Select Product</label>
                 <div class="col-6">
-                    <select id="productSelect" class="form-select" name="productSelect" aria-labelledby="productSelectLabel">
+                    <select id="productSelect" class="form-select" name="productSelect" aria-labelledby="productSelectLabel" disabled>
                         <option value="" disabled selected>Select a Product</option>
                         @foreach ($products as $product)
                         <option value="{{ $product->id }}" selected>
@@ -33,11 +33,11 @@
             <div class="row mb-4">
                 <div class="col-md-3 col-sm-10 mb-2">
                     <label for="recipeOutput" class="form-label">Output</label>
-                    <input type="text" class="form-control rounded" id="recipeOutput" name="recipeOutput" value="{{ $products[0]->rp_output ?? '' }}" readonly>
+                    <input type="text" class="form-control rounded" id="recipeOutput" name="recipeOutput" value="{{ $products[0]->rp_output ?? '' }}" disabled>
                 </div>
                 <div class="col-md-2 col-sm-10">
                     <label for="recipeUoM" class="form-label">UoM</label>
-                    <select id="recipeUoM" class="form-select select2" name="recipeUoM">
+                    <select id="recipeUoM" class="form-select select2" name="recipeUoM" disabled>
                         <option value="" disabled selected>UoM</option>
                         @foreach ($products as $rpuom)
                         <option value="{{ $rpuom->rp_uom }}" {{ $rpuom->rp_uom == $products[0]->rp_uom ? 'selected' : '' }}>
@@ -689,36 +689,33 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script>
     // Ensure functions are available in the global scope
-     function recipevalidation() {
-            const rpvalue = document.getElementById('productSelect').value.trim();
-            const rpopvalue = document.getElementById('recipeOutput').value.trim();
-            const rpuomvalue = document.getElementById('recipeUoM').value.trim();
-            if (rpvalue === "" || rpvalue === "Choose...") {
-                document.getElementById('productSelect').focus();
+    function recipevalidation() {
+        const rpvalue = document.getElementById('productSelect').value.trim();
+        const rpopvalue = document.getElementById('recipeOutput').value.trim();
+        const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+        if (rpvalue === "" || rpvalue === "Choose...") {
+            return false;
+        } else if (rpopvalue === "") {
                 return false;
-            } else if (rpopvalue === "") {
-                document.getElementById('recipeOutput').focus();
-                return false;
-            } else if (rpuomvalue === "" || rpuomvalue === "UoM") {
-                document.getElementById('recipeUoM').focus();
-                return false;
-            }
-            return true;
+        } else if (rpuomvalue === "" || rpuomvalue === "UoM") {
+            return false;
         }
+        return true;
+    }
 
     $(document).ready(function() {
         $('#rawmaterial').select2({
-              theme: 'bootstrap-5',
+            theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
 
 
-         $('#rawmaterial').on('input', function() {
+        $('#rawmaterial').on('input', function() {
             if (!recipevalidation()) return;
             console.log('Raw material changed/input detected');
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.disabled) {
-                 document.getElementById('rmCode').value = '';
+                document.getElementById('rmCode').value = '';
                 document.getElementById('rmUoM').value = '';
                 document.getElementById('rmPrice').value = '';
                 document.getElementById('rmAmount').value = '';
@@ -732,10 +729,10 @@
             document.getElementById('rmPrice').value = price.toFixed(2);
         });
         $('#packingmaterial').select2({
-             theme: 'bootstrap-5',
+            theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
-         $('#packingmaterial').on('input', function() {
+        $('#packingmaterial').on('input', function() {
             if (!recipevalidation()) return;
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.disabled) {
@@ -754,10 +751,10 @@
             document.getElementById('pmPrice').value = price.toFixed(2);
         });
         $('#overheads').select2({
-             theme: 'bootstrap-5',
+            theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
-         $('#overheads').on('input', function() {
+        $('#overheads').on('input', function() {
             if (!recipevalidation()) return;
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.disabled) {
@@ -862,26 +859,26 @@
             toggleForms();
         }
     }
-/*
-    function recipevalidation() {
-        const rpvalue = document.getElementById('productSelect').value.trim();
-        const rpopvalue = document.getElementById('recipeOutput').value.trim();
-        const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+    /*
+        function recipevalidation() {
+            const rpvalue = document.getElementById('productSelect').value.trim();
+            const rpopvalue = document.getElementById('recipeOutput').value.trim();
+            const rpuomvalue = document.getElementById('recipeUoM').value.trim();
 
-        if (rpvalue === "" && rpvalue === "Choose...") {
-            alert("Please fill in the Recipe Name.");
-            document.getElementById('productSelect').focus();
-            return;
-        } else if (rpopvalue === "") {
-            alert("Please fill in the Recipe Output.");
-            document.getElementById('recipeOutput').focus();
-            return;
-        } else if (rpuomvalue === "") {
-            alert("Please fill in the Recipe UoM.");
-            document.getElementById('recipeUoM').focus();
-            return;
-        }
-    }*/
+            if (rpvalue === "" && rpvalue === "Choose...") {
+                alert("Please fill in the Recipe Name.");
+                document.getElementById('productSelect').focus();
+                return;
+            } else if (rpopvalue === "") {
+                alert("Please fill in the Recipe Output.");
+                document.getElementById('recipeOutput').focus();
+                return;
+            } else if (rpuomvalue === "") {
+                alert("Please fill in the Recipe UoM.");
+                document.getElementById('recipeUoM').focus();
+                return;
+            }
+        }*/
 
     // raw materials recipe-pricing details
     // Function to enable editing for a specific row
@@ -1734,7 +1731,7 @@
         if (overheadsTable) {
             overheadsTable.addEventListener('click', function(e) {
                 //  const ohMohValue = document.getElementById("oh_mohValue").value;
-            // const enterManuallyCheckbox = document.getElementById("entermanually");
+                // const enterManuallyCheckbox = document.getElementById("entermanually");
                 if (e.target.classList.contains('delete-icon')) {
                     const deleteIcon = e.target;
                     const row = deleteIcon.closest('tr');
@@ -2027,10 +2024,10 @@
         const grandTotal = rawMaterialTotal + packingMaterialTotal + overheadsTotal; // Add other totals if needed
         totalCostInput.value = grandTotal.toFixed(2); // Display in Total Cost (A+B+C)
         // let totalcostval = parseFloat(document.getElementById('totalcost').value);
-            let countrpoutput = parseFloat(document.getElementById('recipeOutput').value);
-            let singleunit = grandTotal/countrpoutput;
-            const singlecost = document.getElementById('singletotalcost');
-            singlecost.value = singleunit.toFixed(2);
+        let countrpoutput = parseFloat(document.getElementById('recipeOutput').value);
+        let singleunit = grandTotal / countrpoutput;
+        const singlecost = document.getElementById('singletotalcost');
+        singlecost.value = singleunit.toFixed(2);
     }
 
     function clearMohFields() {
