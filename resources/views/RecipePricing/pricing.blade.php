@@ -59,6 +59,20 @@
                         <option value="Nos">Nos</option>
                     </select>
                 </div>
+                <div class="col-md-3 mb-2 col-sm-10 d-flex align-items-end gap-2">
+                    <button type="button" class="btn btn-primary" id="saveRecipeBtn" style="display: none;" disabled>
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                    <button type="button" class="btn btn-primary" id="editRecipeBtn" style="display: none;">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button type="button" class="btn btn-success" id="updateRecipeBtn" style="display: none;" disabled>
+                        <i class="fas fa-check"></i> Update
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="cancelRecipeBtn" style="display: none;">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
             </div>
 
             <!-- Raw Material Section -->
@@ -73,7 +87,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="rawmaterial" class="form-label">Raw Material</label>
-                    <select id="rawmaterial" class="form-select select2" aria-labelledby="rawmaterial">
+                    <select id="rawmaterial" class="form-select select2" aria-labelledby="rawmaterial" title="Save product details to enable" disabled>
                         <option selected disabled>Choose...</option>
                         @foreach($rawMaterials as $rawMaterialItem)
                         <option
@@ -93,19 +107,19 @@
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="rmCode" class="form-label">RM Code</label>
-                    <input type="text" class="form-control rounded" id="rmCode" name="rmCode" readonly>
+                    <input type="text" class="form-control rounded" id="rmCode" name="rmCode" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="rmUoM" class="form-label">UoM</label>
-                    <input type="text" class="form-control" id="rmUoM" name="rmUoM" readonly>
+                    <input type="text" class="form-control" id="rmUoM" name="rmUoM" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="rmPrice" class="form-label">Price</label>
-                    <input type="text" class="form-control rounded" id="rmPrice" name="rmPrice" readonly>
+                    <input type="text" class="form-control rounded" id="rmPrice" name="rmPrice" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="rmAmount" class="form-label">Amount</label>
-                    <input type="text" class="form-control" id="rmAmount" name="rmAmount">
+                    <input type="text" class="form-control" id="rmAmount" name="rmAmount" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 2;">
                     <button type="button" class="btn btn-primary rmaddbtn" id="rmaddbtn">
@@ -147,7 +161,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="packingmaterial" class="form-label">Packing Material</label>
-                    <select id="packingmaterial" class="form-select select2">
+                    <select id="packingmaterial" class="form-select select2" title="Save product details to enable" disabled>
                         <option selected disabled>Choose...</option>
                         @foreach($packingMaterials as $packingMaterialItem)
                         <option
@@ -179,7 +193,7 @@
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="pmAmount" class="form-label">Amount</label>
-                    <input type="text" class="form-control" id="pmAmount" name="pmAmount">
+                    <input type="text" class="form-control" id="pmAmount" name="pmAmount" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 2;">
                     <button type="button" class="btn btn-primary pmaddbtn" id="pmaddbtn"><i class="fas fa-plus"></i> Add</button>
@@ -227,7 +241,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="overheads" class="form-label">Overheads</label>
-                    <select id="overheads" class="form-select select2">
+                    <select id="overheads" class="form-select select2" title="Save product details to enable" disabled>
                         <option selected disabled>Choose...</option>
                         @foreach($overheads as $overheadsItem)
                         <option
@@ -259,7 +273,7 @@
                 </div>
                 <div class="d-flex flex-column" style="flex: 1.5;">
                     <label for="ohAmount" class="form-label">Amount</label>
-                    <input type="text" class="form-control" id="ohAmount" name="ohAmount">
+                    <input type="text" class="form-control" id="ohAmount" name="ohAmount" disabled>
                 </div>
                 <div class="d-flex flex-column" style="flex: 2;">
                     <button type="button" class="btn btn-primary ohaddbtn" id="ohaddbtn"><i class="fas fa-plus"></i> Add</button>
@@ -352,26 +366,33 @@
 
 <script>
     let product_id = null;
- function recipevalidation() {
-            const rpvalue = document.getElementById('productSelect').value.trim();
-            const rpopvalue = document.getElementById('recipeOutput').value.trim();
-            const rpuomvalue = document.getElementById('recipeUoM').value.trim();
-            if (rpvalue === "" || rpvalue === "Choose...") {
-                document.getElementById('productSelect').focus();
-                return false;
-            } else if (rpopvalue === "") {
-                document.getElementById('recipeOutput').focus();
-                return false;
-            } else if (rpuomvalue === "" || rpuomvalue === "UoM") {
-                document.getElementById('recipeUoM').focus();
-                return false;
-            }
-            return true;
+
+    function recipevalidation() {
+        const rpvalue = document.getElementById('productSelect').value.trim();
+        const rpopvalue = document.getElementById('recipeOutput').value.trim();
+        const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+
+        const outputValue = parseFloat(rpopvalue);
+
+        if (rpvalue === "" || rpvalue === "Choose...") {
+            return false;
         }
 
+        if (rpopvalue === "" || isNaN(outputValue) || outputValue <= 1) {
+            return false;
+        }
+
+        if (rpuomvalue === "" || rpuomvalue === "UoM") {
+            return false;
+        }
+
+        return true;
+    }
+
+
     $(document).ready(function() {
-     $('#productSelect').select2({
-             theme: 'bootstrap-5',
+        $('#productSelect').select2({
+            theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
 
@@ -386,12 +407,12 @@
             // if (!recipevalidation()) return;
             // document.getElementById('importRecipeBtn').disabled = !product_id;
         });
-         $('#rawmaterial').on('input', function() {
+        $('#rawmaterial').on('input', function() {
             if (!recipevalidation()) return;
             console.log('Raw material changed/input detected');
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.disabled) {
-                 document.getElementById('rmCode').value = '';
+                document.getElementById('rmCode').value = '';
                 document.getElementById('rmUoM').value = '';
                 document.getElementById('rmPrice').value = '';
                 document.getElementById('rmAmount').value = '';
@@ -405,10 +426,10 @@
             document.getElementById('rmPrice').value = price.toFixed(2);
         });
         $('#packingmaterial').select2({
-             theme: 'bootstrap-5',
+            theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
-         $('#packingmaterial').on('input', function() {
+        $('#packingmaterial').on('input', function() {
             if (!recipevalidation()) return;
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.disabled) {
@@ -427,10 +448,10 @@
             document.getElementById('pmPrice').value = price.toFixed(2);
         });
         $('#overheads').select2({
-             theme: 'bootstrap-5',
+            theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
-         $('#overheads').on('input', function() {
+        $('#overheads').on('input', function() {
             if (!recipevalidation()) return;
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.disabled) {
@@ -527,7 +548,7 @@
         }
 
         // Add event listeners to monitor changes in the required fields
-          productSelect.addEventListener('change', function() {
+        productSelect.addEventListener('change', function() {
             product_id = this.value;
             console.log('Selected product ID:', product_id);
             toggleImportButton();
@@ -825,7 +846,7 @@
         pmQuantityInput.addEventListener('input', updatePmAmount);
 
         pmAddButton.addEventListener('click', function() {
-             product_id = productSelect.value;
+            product_id = productSelect.value;
             if (!product_id) {
                 alert('Please select a valid product.');
                 return;
@@ -968,7 +989,7 @@
         ohQuantityInput.addEventListener('input', updateOhAmount);
 
         ohAddButton.addEventListener('click', function() {
-             product_id = productSelect.value;
+            product_id = productSelect.value;
             if (!product_id) {
                 alert('Please select a valid product.');
                 return;
@@ -1079,7 +1100,7 @@
 
         manualOhAddButton.addEventListener('click', function() {
             console.log("Add button clicked");
-             product_id = productSelect.value;
+            product_id = productSelect.value;
             if (!product_id) {
                 alert('Please select a valid product.');
                 return;
@@ -1221,8 +1242,8 @@
                     updateOhTotalCost(-amount);
                     updateDropdownOptions('overhead');
                     console.log('row', overheadsTable.rows.length);
-                if (overheadsTable.rows.length == 0) {
-                    console.log('row test');
+                    if (overheadsTable.rows.length == 0) {
+                        console.log('row test');
                         enterManuallyCheckbox.disabled = false; // Reset to masters entry
                         toggleForms();
                     }
@@ -1247,10 +1268,10 @@
                     const amount = parseFloat(row.cells[5].textContent) || 0;
                     row.remove();
                     updateOhTotalCost(-amount);
-                if (overheadsTable.rows.length == 0) {
-                         // Reset to masters entry
+                    if (overheadsTable.rows.length == 0) {
+                        // Reset to masters entry
                         fromMastersCheckbox.disabled = false;
-                         toggleForms();
+                        toggleForms();
                     }
                 })
                 .catch(error => console.error('Error:', error.message));
@@ -1539,6 +1560,20 @@
                 .then(data => {
                     console.log('Success:', data);
                     alert('Recipe-pricing added successfully');
+                    recipeId = data.recipe_id;
+                    // Store saved values
+                    savedProductId = product_id;
+                    savedOutput = output;
+                    savedUom = uom;
+                    // Disable input fields
+                    document.getElementById('productSelect').disabled = true;
+                    document.getElementById('recipeOutput').disabled = true;
+                    document.getElementById('recipeUoM').disabled = true;
+                    // Hide Save button, show Edit button
+                    document.getElementById('saveRecipeBtn').style.display = 'none';
+                    document.getElementById('editRecipeBtn').style.display = 'block';
+                    document.getElementById('updateRecipeBtn').style.display = 'none';
+                    document.getElementById('cancelRecipeBtn').style.display = 'none';
                 })
                 .catch(error => console.error('Error:', error.message));
         }
@@ -1546,6 +1581,207 @@
         updateUnitTotal();
     });
 </script>
+
+<script>
+    let recipeId = null;
+    let savedProductId = null;
+    let savedOutput = null;
+    let savedUom = null;
+
+    function recipePricing() {
+        const product_id = document.getElementById('productSelect').value;
+        const output = document.getElementById('recipeOutput').value.trim(); // fixed here
+        const uom = document.getElementById('recipeUoM').value.trim();
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+        if (!token) {
+            alert('CSRF token not found. Please refresh the page and try again.');
+            return;
+        }
+
+        fetch('/addrecipecosting', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                },
+                body: JSON.stringify({
+                    product_id: product_id,
+                    rpoutput: output,
+                    rpuom: uom,
+                }),
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    const msg = data.message || 'Server response not OK';
+                    const errors = data.errors ? JSON.stringify(data.errors) : '';
+                    throw new Error(`${msg}\n${errors}`);
+                }
+                return data;
+            })
+            .then(data => {
+                alert(data.message || 'Recipe saved successfully!');
+                recipeId = data.recipe_id;
+
+                // Store saved values
+                savedProductId = product_id;
+                savedOutput = output;
+                savedUom = uom;
+
+                // Disable inputs
+                document.getElementById('productSelect').disabled = true;
+                document.getElementById('recipeOutput').disabled = true;
+                document.getElementById('recipeUoM').disabled = true;
+
+                document.getElementById('rawmaterial').disabled = false;
+                document.getElementById('packingmaterial').disabled = false;
+                document.getElementById('overheads').disabled = false;
+
+                // Toggle buttons
+                document.getElementById('saveRecipeBtn').style.display = 'none';
+                document.getElementById('editRecipeBtn').style.display = 'block';
+                document.getElementById('updateRecipeBtn').style.display = 'none';
+                document.getElementById('cancelRecipeBtn').style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error:', error.message);
+                alert('Failed to save recipe: ' + error.message);
+            });
+    }
+
+    function updateRecipe() {
+        const product_id = document.getElementById('productSelect').value;
+        const output = document.getElementById('recipeOutput').value.trim();
+        const uom = document.getElementById('recipeUoM').value.trim();
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+        if (!token) {
+            alert('CSRF token not found. Please refresh the page and try again.');
+            return;
+        }
+
+        if (!recipeId) {
+            alert('No recipe ID found for updating. Please save the recipe first.');
+            return;
+        }
+
+        fetch(`/recipepricing/${recipeId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                },
+                body: JSON.stringify({
+                    product_id: product_id,
+                    rpoutput: output,
+                    rpuom: uom,
+                }),
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    const msg = data.message || 'Server response not OK';
+                    const errors = data.errors ? JSON.stringify(data.errors) : '';
+                    throw new Error(`${msg}\n${errors}`);
+                }
+                return data;
+            })
+            .then(data => {
+                alert(data.message || 'Recipe updated successfully!');
+                // Update saved values
+                savedProductId = product_id;
+                savedOutput = output;
+                savedUom = uom;
+
+                // Disable input fields
+                document.getElementById('productSelect').disabled = true;
+                document.getElementById('recipeOutput').disabled = true;
+                document.getElementById('recipeUoM').disabled = true;
+
+                // Toggle buttons
+                document.getElementById('updateRecipeBtn').style.display = 'none';
+                document.getElementById('cancelRecipeBtn').style.display = 'none';
+                document.getElementById('editRecipeBtn').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error:', error.message);
+                alert('Failed to update recipe: ' + error.message);
+            });
+    }
+
+
+    // (You can keep `updateRecipe()` the same with similar fixes if needed)
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const productSelect = document.getElementById('productSelect');
+        const rpoutputInput = document.getElementById('recipeOutput');
+        const rpuomInput = document.getElementById('recipeUoM');
+        const saveRecipeBtn = document.getElementById('saveRecipeBtn');
+        const editRecipeBtn = document.getElementById('editRecipeBtn');
+        const updateRecipeBtn = document.getElementById('updateRecipeBtn');
+        const cancelRecipeBtn = document.getElementById('cancelRecipeBtn');
+
+        function toggleSaveButton() {
+            const isValid = recipevalidation();
+            saveRecipeBtn.style.display = recipeId ? 'none' : (isValid ? 'block' : 'none');
+            saveRecipeBtn.disabled = !isValid;
+            updateRecipeBtn.disabled = !isValid;
+        }
+
+        productSelect.addEventListener('change', toggleSaveButton);
+        rpoutputInput.addEventListener('input', toggleSaveButton);
+        rpuomInput.addEventListener('change', toggleSaveButton);
+
+        saveRecipeBtn.addEventListener('click', function() {
+            if (recipevalidation()) {
+                recipePricing();
+            } else {
+                alert('Please fill all required fields correctly before saving.');
+            }
+        });
+
+        editRecipeBtn.addEventListener('click', function() {
+            productSelect.disabled = false;
+            rpoutputInput.disabled = false;
+            rpuomInput.disabled = false;
+            editRecipeBtn.style.display = 'none';
+            updateRecipeBtn.style.display = 'block';
+            cancelRecipeBtn.style.display = 'block';
+            toggleSaveButton();
+        });
+
+        updateRecipeBtn.addEventListener('click', function() {
+            if (recipevalidation()) {
+                updateRecipe();
+            } else {
+                alert('Please fill all required fields correctly before updating.');
+            }
+        });
+
+        cancelRecipeBtn.addEventListener('click', function() {
+            productSelect.value = savedProductId || 'Choose...';
+            rpoutputInput.value = savedOutput || '';
+            rpuomInput.value = savedUom || 'UoM';
+
+            if (typeof $(productSelect).select2 === 'function') {
+                $(productSelect).trigger('change');
+            }
+
+            productSelect.disabled = true;
+            rpoutputInput.disabled = true;
+            rpuomInput.disabled = true;
+
+            updateRecipeBtn.style.display = 'none';
+            cancelRecipeBtn.style.display = 'none';
+            editRecipeBtn.style.display = 'block';
+            toggleSaveButton();
+        });
+
+        toggleSaveButton();
+    });
+</script>
+
 
 <!-- Template Main JS File -->
 <script src="{{ asset('js/main.js') }}"></script>

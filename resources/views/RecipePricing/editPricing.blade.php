@@ -19,7 +19,7 @@
             <div class="mb-4">
                 <label for="productSelect" id="productSelectLabel" class="form-label">Select Product</label>
                 <div class="col-6">
-                    <select id="productSelect" class="form-select" name="productSelect" aria-labelledby="productSelectLabel">
+                    <select id="productSelect" class="form-select" name="productSelect" aria-labelledby="productSelectLabel" disabled>
                         <option value="" disabled selected>Select a Product</option>
                         @foreach ($products as $product)
                         <option value="{{ $product->id }}" selected>
@@ -33,11 +33,11 @@
             <div class="row mb-4">
                 <div class="col-md-3 col-sm-10 mb-2">
                     <label for="recipeOutput" class="form-label">Output</label>
-                    <input type="text" class="form-control rounded" id="recipeOutput" name="recipeOutput" value="{{ $products[0]->rp_output ?? '' }}" readonly>
+                    <input type="text" class="form-control rounded" id="recipeOutput" name="recipeOutput" value="{{ $products[0]->rp_output ?? '' }}" disabled>
                 </div>
                 <div class="col-md-2 col-sm-10">
                     <label for="recipeUoM" class="form-label">UoM</label>
-                    <select id="recipeUoM" class="form-select select2" name="recipeUoM">
+                    <select id="recipeUoM" class="form-select select2" name="recipeUoM" disabled>
                         <option value="" disabled selected>UoM</option>
                         @foreach ($products as $rpuom)
                         <option value="{{ $rpuom->rp_uom }}" {{ $rpuom->rp_uom == $products[0]->rp_uom ? 'selected' : '' }}>
@@ -100,7 +100,6 @@
                 </div>
             </div>
 
-            @if(isset($pricingData) && $pricingData->isNotEmpty())
             <div class="row mb-4">
                 <!-- Raw Materials Table -->
                 <div class="table-responsive">
@@ -116,8 +115,9 @@
                             </tr>
                         </thead>
                         <tbody id="rawMaterialTable">
-                            @php $rmTotal = 0;
+                            @php
                             $filteredData = collect($pricingData)->unique('rid')->values();
+                            $rmTotal = 0;
                             @endphp
                             @foreach($filteredData as $data)
                             @if($data->rm_name)
@@ -161,11 +161,11 @@
                             @endif
                             @endforeach
 
-                            @if($pricingData->whereNotNull('rm_name')->isEmpty())
+                            <!-- @if($pricingData->whereNotNull('rm_name')->isEmpty())
                             <tr>
-                                <td colspan="6">No records available for Raw Materials</td>
+                                <td colspan="6">No Raw Materials Added</td>
                             </tr>
-                            @endif
+                            @endif -->
                         </tbody>
                     </table>
                     <div class="text-end" style="background-color: #eaf8ff; width:90%;">
@@ -173,7 +173,6 @@
                     </div>
                 </div>
             </div>
-            @endif
 
             <div class="row mb-2">
                 <div class="col-auto">
@@ -242,7 +241,8 @@
                         <tbody id="packingMaterialTable">
                             @php
                             $filteredData = collect($pricingData)->unique('pid')->values();
-                            $pmTotal = 0; @endphp
+                            $pmTotal = 0; 
+                            @endphp
                             @foreach($filteredData as $data)
                             @if($data->pm_name)
                             @php
@@ -285,11 +285,11 @@
                             @endif
                             @endforeach
 
-                            @if($pricingData->whereNotNull('pm_name')->isEmpty())
+                            <!-- @if($pricingData->whereNotNull('pm_name')->isEmpty())
                             <tr>
-                                <td colspan="6">No records available for Packing Materials</td>
+                                <td colspan="6">No Packing Materials Added</td>
                             </tr>
-                            @endif
+                            @endif -->
                         </tbody>
                     </table>
                     <div class="text-end" style="background-color:#F1F1F1; width:90%;">
@@ -423,7 +423,7 @@
                             @endif
                             @empty
                             <tr>
-                                <td colspan="6">No records available for Manual Overheads</td>
+                                <td colspan="6">No Overheads Added</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -523,7 +523,7 @@
                             @endif
                             @empty
                             <tr>
-                                <td colspan="6">No records available for Manual Overheads</td>
+                                <td colspan="6">No Manual Overheads Added</td>
                             </tr>
                             @endforelse
 
@@ -650,23 +650,31 @@
             @endif
 
             <div class="d-flex justify-content-between">
-                <div class=" mb-2">
+                <!-- Total Cost -->
+                <div class="mb-2">
                     <div class="mt-2">
-                        <label for="totalcost" class="form-label">Total Cost (A+B+C):
+                        <label for="totalcost" class="form-label">Total Cost (A+B+C):</label>
                     </div>
                     <div>
-                        <input type="text" class="form-control" id="totalcost" value="{{ ($rmTotal ?: 0) + ($pmTotal ?: 0) + ($ohTotal ?: 0) + ($mohTotal ?: 0) }}" disabled>
+                        <input type="text" class="form-control" id="totalcost"
+                            value="{{ ($rmTotal ?? 0) + ($pmTotal ?? 0) + ($ohTotal ?? 0) + ($mohTotal ?? 0) }}"
+                            disabled>
                     </div>
                 </div>
+
+                <!-- Unit Cost -->
                 <div class="row mb-2">
                     <div class="mt-2">
                         <label for="unitcost" class="form-label">Unit Cost:</label>
                     </div>
                     <div class="col-md-7">
-                        <input type="text" class="form-control" id="singletotalcost" value="{{ $data->rp_output ? round(($rmTotal + $pmTotal + $ohTotal + $mohTotal) / $data->rp_output, 2) : 0 }}" disabled>
+                        <input type="text" class="form-control" id="singletotalcost"
+                            value="{{ ($data->rp_output ?? 0) > 0 ? round((($rmTotal ?? 0) + ($pmTotal ?? 0) + ($ohTotal ?? 0) + ($mohTotal ?? 0)) / $data->rp_output, 2) : 0 }}"
+                            disabled>
                     </div>
                 </div>
             </div>
+
         </div>
     </section>
 </main>
@@ -689,36 +697,33 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script>
     // Ensure functions are available in the global scope
-     function recipevalidation() {
-            const rpvalue = document.getElementById('productSelect').value.trim();
-            const rpopvalue = document.getElementById('recipeOutput').value.trim();
-            const rpuomvalue = document.getElementById('recipeUoM').value.trim();
-            if (rpvalue === "" || rpvalue === "Choose...") {
-                document.getElementById('productSelect').focus();
-                return false;
-            } else if (rpopvalue === "") {
-                document.getElementById('recipeOutput').focus();
-                return false;
-            } else if (rpuomvalue === "" || rpuomvalue === "UoM") {
-                document.getElementById('recipeUoM').focus();
-                return false;
-            }
-            return true;
+    function recipevalidation() {
+        const rpvalue = document.getElementById('productSelect').value.trim();
+        const rpopvalue = document.getElementById('recipeOutput').value.trim();
+        const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+        if (rpvalue === "" || rpvalue === "Choose...") {
+            return false;
+        } else if (rpopvalue === "") {
+            return false;
+        } else if (rpuomvalue === "" || rpuomvalue === "UoM") {
+            return false;
         }
+        return true;
+    }
 
     $(document).ready(function() {
         $('#rawmaterial').select2({
-              theme: 'bootstrap-5',
+            theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
 
 
-         $('#rawmaterial').on('input', function() {
+        $('#rawmaterial').on('input', function() {
             if (!recipevalidation()) return;
             console.log('Raw material changed/input detected');
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.disabled) {
-                 document.getElementById('rmCode').value = '';
+                document.getElementById('rmCode').value = '';
                 document.getElementById('rmUoM').value = '';
                 document.getElementById('rmPrice').value = '';
                 document.getElementById('rmAmount').value = '';
@@ -732,10 +737,10 @@
             document.getElementById('rmPrice').value = price.toFixed(2);
         });
         $('#packingmaterial').select2({
-             theme: 'bootstrap-5',
+            theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
-         $('#packingmaterial').on('input', function() {
+        $('#packingmaterial').on('input', function() {
             if (!recipevalidation()) return;
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.disabled) {
@@ -754,10 +759,10 @@
             document.getElementById('pmPrice').value = price.toFixed(2);
         });
         $('#overheads').select2({
-             theme: 'bootstrap-5',
+            theme: 'bootstrap-5',
             placeholder: "Choose or type...",
         });
-         $('#overheads').on('input', function() {
+        $('#overheads').on('input', function() {
             if (!recipevalidation()) return;
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.disabled) {
@@ -862,26 +867,26 @@
             toggleForms();
         }
     }
-/*
-    function recipevalidation() {
-        const rpvalue = document.getElementById('productSelect').value.trim();
-        const rpopvalue = document.getElementById('recipeOutput').value.trim();
-        const rpuomvalue = document.getElementById('recipeUoM').value.trim();
+    /*
+        function recipevalidation() {
+            const rpvalue = document.getElementById('productSelect').value.trim();
+            const rpopvalue = document.getElementById('recipeOutput').value.trim();
+            const rpuomvalue = document.getElementById('recipeUoM').value.trim();
 
-        if (rpvalue === "" && rpvalue === "Choose...") {
-            alert("Please fill in the Recipe Name.");
-            document.getElementById('productSelect').focus();
-            return;
-        } else if (rpopvalue === "") {
-            alert("Please fill in the Recipe Output.");
-            document.getElementById('recipeOutput').focus();
-            return;
-        } else if (rpuomvalue === "") {
-            alert("Please fill in the Recipe UoM.");
-            document.getElementById('recipeUoM').focus();
-            return;
-        }
-    }*/
+            if (rpvalue === "" && rpvalue === "Choose...") {
+                alert("Please fill in the Recipe Name.");
+                document.getElementById('productSelect').focus();
+                return;
+            } else if (rpopvalue === "") {
+                alert("Please fill in the Recipe Output.");
+                document.getElementById('recipeOutput').focus();
+                return;
+            } else if (rpuomvalue === "") {
+                alert("Please fill in the Recipe UoM.");
+                document.getElementById('recipeUoM').focus();
+                return;
+            }
+        }*/
 
     // raw materials recipe-pricing details
     // Function to enable editing for a specific row
@@ -1734,7 +1739,7 @@
         if (overheadsTable) {
             overheadsTable.addEventListener('click', function(e) {
                 //  const ohMohValue = document.getElementById("oh_mohValue").value;
-            // const enterManuallyCheckbox = document.getElementById("entermanually");
+                // const enterManuallyCheckbox = document.getElementById("entermanually");
                 if (e.target.classList.contains('delete-icon')) {
                     const deleteIcon = e.target;
                     const row = deleteIcon.closest('tr');
@@ -2027,10 +2032,10 @@
         const grandTotal = rawMaterialTotal + packingMaterialTotal + overheadsTotal; // Add other totals if needed
         totalCostInput.value = grandTotal.toFixed(2); // Display in Total Cost (A+B+C)
         // let totalcostval = parseFloat(document.getElementById('totalcost').value);
-            let countrpoutput = parseFloat(document.getElementById('recipeOutput').value);
-            let singleunit = grandTotal/countrpoutput;
-            const singlecost = document.getElementById('singletotalcost');
-            singlecost.value = singleunit.toFixed(2);
+        let countrpoutput = parseFloat(document.getElementById('recipeOutput').value);
+        let singleunit = grandTotal / countrpoutput;
+        const singlecost = document.getElementById('singletotalcost');
+        singlecost.value = singleunit.toFixed(2);
     }
 
     function clearMohFields() {
