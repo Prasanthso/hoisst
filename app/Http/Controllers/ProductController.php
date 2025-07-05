@@ -771,7 +771,8 @@ class ProductController extends Controller
                         ->from('recipedetails')
                         ->where('store_id',$storeid)
                         ->whereColumn('recipedetails.product_id', 'product_master.id')
-                        ->where('status', '=', 'active');
+                        ->whereIn('status', ['active', 'inactive']);
+                        // ->where('status', '=', 'active');
                 })
                 ->whereNotExists(function ($query) use ($storeid) {
                     $query->select(DB::raw(1))
