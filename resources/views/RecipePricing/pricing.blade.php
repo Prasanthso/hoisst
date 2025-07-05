@@ -13,7 +13,7 @@
                         <i class="bi bi-download fs-4"></i> Download Template
                     </button>
                 </a>
-                <span data-bs-toggle="tooltip" title="Save product details to enable">
+                <span data-bs-toggle="tooltip" title="Enter product details to enable">
                     <button
                         type="button"
                         class="btn btn-success"
@@ -539,13 +539,13 @@
         // }
 
         // Function to toggle the Import CSV button based on validation
-        // function toggleImportButton() {
-        //     if (recipevalidation()) {
-        //         importRecipeBtn.disabled = false;
-        //     } else {
-        //         importRecipeBtn.disabled = true;
-        //     }
-        // }
+        function toggleImportButton() {
+            if (recipevalidation()) {
+                importRecipeBtn.disabled = false;
+            } else {
+                importRecipeBtn.disabled = true;
+            }
+        }
 
         // Add event listeners to monitor changes in the required fields
         productSelect.addEventListener('change', function() {
@@ -1637,8 +1637,6 @@
                 document.getElementById('rawmaterial').disabled = false;
                 document.getElementById('packingmaterial').disabled = false;
                 document.getElementById('overheads').disabled = false;
-
-                document.getElementById('importRecipeBtn').disabled = false;
 
                 // Toggle buttons
                 document.getElementById('saveRecipeBtn').style.display = 'none';
