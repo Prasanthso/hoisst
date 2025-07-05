@@ -59,6 +59,20 @@
                         <option value="Nos">Nos</option>
                     </select>
                 </div>
+                <div class="col-md-3 mb-2 col-sm-10 d-flex align-items-end gap-2">
+                    <button type="button" class="btn btn-primary" id="saveRecipeBtn" style="display: none;" disabled>
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                    <button type="button" class="btn btn-primary" id="editRecipeBtn" style="display: none;">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button type="button" class="btn btn-success" id="updateRecipeBtn" style="display: none;" disabled>
+                        <i class="fas fa-check"></i> Update
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="cancelRecipeBtn" style="display: none;">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
             </div>
 
             <!-- Raw Material Section -->
@@ -73,7 +87,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="rawmaterial" class="form-label">Raw Material</label>
-                    <select id="rawmaterial" class="form-select select2" aria-labelledby="rawmaterial">
+                    <select id="rawmaterial" class="form-select select2" aria-labelledby="rawmaterial" disabled>
                         <option selected disabled>Choose...</option>
                         @foreach($rawMaterials as $rawMaterialItem)
                         <option
@@ -147,7 +161,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="packingmaterial" class="form-label">Packing Material</label>
-                    <select id="packingmaterial" class="form-select select2">
+                    <select id="packingmaterial" class="form-select select2" disabled>
                         <option selected disabled>Choose...</option>
                         @foreach($packingMaterials as $packingMaterialItem)
                         <option
@@ -227,7 +241,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="overheads" class="form-label">Overheads</label>
-                    <select id="overheads" class="form-select select2">
+                    <select id="overheads" class="form-select select2" disabled>
                         <option selected disabled>Choose...</option>
                         @foreach($overheads as $overheadsItem)
                         <option
@@ -1546,6 +1560,20 @@
                 .then(data => {
                     console.log('Success:', data);
                     alert('Recipe-pricing added successfully');
+                    recipeId = data.recipe_id;
+                    // Store saved values
+                    savedProductId = product_id;
+                    savedOutput = output;
+                    savedUom = uom;
+                    // Disable input fields
+                    document.getElementById('productSelect').disabled = true;
+                    document.getElementById('recipeOutput').disabled = true;
+                    document.getElementById('recipeUoM').disabled = true;
+                    // Hide Save button, show Edit button
+                    document.getElementById('saveRecipeBtn').style.display = 'none';
+                    document.getElementById('editRecipeBtn').style.display = 'block';
+                    document.getElementById('updateRecipeBtn').style.display = 'none';
+                    document.getElementById('cancelRecipeBtn').style.display = 'none';
                 })
                 .catch(error => console.error('Error:', error.message));
         }
@@ -1553,6 +1581,207 @@
         updateUnitTotal();
     });
 </script>
+
+<script>
+    let recipeId = null;
+    let savedProductId = null;
+    let savedOutput = null;
+    let savedUom = null;
+
+    function recipePricing() {
+        const product_id = document.getElementById('productSelect').value;
+        const output = document.getElementById('recipeOutput').value.trim(); // fixed here
+        const uom = document.getElementById('recipeUoM').value.trim();
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+        if (!token) {
+            alert('CSRF token not found. Please refresh the page and try again.');
+            return;
+        }
+
+        fetch('/addrecipecosting', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                },
+                body: JSON.stringify({
+                    product_id: product_id,
+                    rpoutput: output,
+                    rpuom: uom,
+                }),
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    const msg = data.message || 'Server response not OK';
+                    const errors = data.errors ? JSON.stringify(data.errors) : '';
+                    throw new Error(`${msg}\n${errors}`);
+                }
+                return data;
+            })
+            .then(data => {
+                alert(data.message || 'Recipe saved successfully!');
+                recipeId = data.recipe_id;
+
+                // Store saved values
+                savedProductId = product_id;
+                savedOutput = output;
+                savedUom = uom;
+
+                // Disable inputs
+                document.getElementById('productSelect').disabled = true;
+                document.getElementById('recipeOutput').disabled = true;
+                document.getElementById('recipeUoM').disabled = true;
+
+                document.getElementById('rawmaterial').disabled = false;
+                document.getElementById('packingmaterial').disabled = false;
+                document.getElementById('overheads').disabled = false;
+
+                // Toggle buttons
+                document.getElementById('saveRecipeBtn').style.display = 'none';
+                document.getElementById('editRecipeBtn').style.display = 'block';
+                document.getElementById('updateRecipeBtn').style.display = 'none';
+                document.getElementById('cancelRecipeBtn').style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error:', error.message);
+                alert('Failed to save recipe: ' + error.message);
+            });
+    }
+
+    function updateRecipe() {
+        const product_id = document.getElementById('productSelect').value;
+        const output = document.getElementById('recipeOutput').value.trim();
+        const uom = document.getElementById('recipeUoM').value.trim();
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+        if (!token) {
+            alert('CSRF token not found. Please refresh the page and try again.');
+            return;
+        }
+
+        if (!recipeId) {
+            alert('No recipe ID found for updating. Please save the recipe first.');
+            return;
+        }
+
+        fetch(`/recipepricing/${recipeId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                },
+                body: JSON.stringify({
+                    product_id: product_id,
+                    rpoutput: output,
+                    rpuom: uom,
+                }),
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    const msg = data.message || 'Server response not OK';
+                    const errors = data.errors ? JSON.stringify(data.errors) : '';
+                    throw new Error(`${msg}\n${errors}`);
+                }
+                return data;
+            })
+            .then(data => {
+                alert(data.message || 'Recipe updated successfully!');
+                // Update saved values
+                savedProductId = product_id;
+                savedOutput = output;
+                savedUom = uom;
+
+                // Disable input fields
+                document.getElementById('productSelect').disabled = true;
+                document.getElementById('recipeOutput').disabled = true;
+                document.getElementById('recipeUoM').disabled = true;
+
+                // Toggle buttons
+                document.getElementById('updateRecipeBtn').style.display = 'none';
+                document.getElementById('cancelRecipeBtn').style.display = 'none';
+                document.getElementById('editRecipeBtn').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error:', error.message);
+                alert('Failed to update recipe: ' + error.message);
+            });
+    }
+
+
+    // (You can keep `updateRecipe()` the same with similar fixes if needed)
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const productSelect = document.getElementById('productSelect');
+        const rpoutputInput = document.getElementById('recipeOutput');
+        const rpuomInput = document.getElementById('recipeUoM');
+        const saveRecipeBtn = document.getElementById('saveRecipeBtn');
+        const editRecipeBtn = document.getElementById('editRecipeBtn');
+        const updateRecipeBtn = document.getElementById('updateRecipeBtn');
+        const cancelRecipeBtn = document.getElementById('cancelRecipeBtn');
+
+        function toggleSaveButton() {
+            const isValid = recipevalidation();
+            saveRecipeBtn.style.display = recipeId ? 'none' : (isValid ? 'block' : 'none');
+            saveRecipeBtn.disabled = !isValid;
+            updateRecipeBtn.disabled = !isValid;
+        }
+
+        productSelect.addEventListener('change', toggleSaveButton);
+        rpoutputInput.addEventListener('input', toggleSaveButton);
+        rpuomInput.addEventListener('change', toggleSaveButton);
+
+        saveRecipeBtn.addEventListener('click', function() {
+            if (recipevalidation()) {
+                recipePricing();
+            } else {
+                alert('Please fill all required fields correctly before saving.');
+            }
+        });
+
+        editRecipeBtn.addEventListener('click', function() {
+            productSelect.disabled = false;
+            rpoutputInput.disabled = false;
+            rpuomInput.disabled = false;
+            editRecipeBtn.style.display = 'none';
+            updateRecipeBtn.style.display = 'block';
+            cancelRecipeBtn.style.display = 'block';
+            toggleSaveButton();
+        });
+
+        updateRecipeBtn.addEventListener('click', function() {
+            if (recipevalidation()) {
+                updateRecipe();
+            } else {
+                alert('Please fill all required fields correctly before updating.');
+            }
+        });
+
+        cancelRecipeBtn.addEventListener('click', function() {
+            productSelect.value = savedProductId || 'Choose...';
+            rpoutputInput.value = savedOutput || '';
+            rpuomInput.value = savedUom || 'UoM';
+
+            if (typeof $(productSelect).select2 === 'function') {
+                $(productSelect).trigger('change');
+            }
+
+            productSelect.disabled = true;
+            rpoutputInput.disabled = true;
+            rpuomInput.disabled = true;
+
+            updateRecipeBtn.style.display = 'none';
+            cancelRecipeBtn.style.display = 'none';
+            editRecipeBtn.style.display = 'block';
+            toggleSaveButton();
+        });
+
+        toggleSaveButton();
+    });
+</script>
+
 
 <!-- Template Main JS File -->
 <script src="{{ asset('js/main.js') }}"></script>

@@ -169,6 +169,8 @@ Route::middleware('auth')->group(function () {
     // Route::post('/rm-for-recipe', [RmForRecipeController::class, 'rmstore'])->name('rm.for.recipe');
     // Route::post('/rm-for-recipe', [RmForRecipeController::class, 'store']);
 
+    Route::post('/addrecipecosting', [RmForRecipeController::class, 'addRecipeCosting']);
+    Route::patch('/recipepricing/{id}', [RmForRecipeController::class, 'updateRecipe']);
 
     Route::post('/rm-for-recipe', [RmForRecipeController::class, 'store'])->name('rm.store');
     Route::delete('/rm-for-recipe/{id}', [RmForRecipeController::class, 'destroy'])->name('rm.delete');
