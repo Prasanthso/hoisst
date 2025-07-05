@@ -778,7 +778,8 @@ class ProductController extends Controller
                         ->from('recipe_master')
                         ->where('store_id',$storeid)
                         ->whereColumn('recipe_master.product_id', 'product_master.id')
-                        ->where('status', '=', 'active');
+                        ->whereIn('status', ['active', 'inactive']);
+                        // ->where('status', '=', 'active');
                 })
                 ->get();
 
