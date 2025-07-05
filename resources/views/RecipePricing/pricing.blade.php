@@ -87,7 +87,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="rawmaterial" class="form-label">Raw Material</label>
-                    <select id="rawmaterial" class="form-select select2" aria-labelledby="rawmaterial" disabled>
+                    <select id="rawmaterial" class="form-select select2" aria-labelledby="rawmaterial" title="Save product details to enable" disabled>
                         <option selected disabled>Choose...</option>
                         @foreach($rawMaterials as $rawMaterialItem)
                         <option
@@ -161,7 +161,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="packingmaterial" class="form-label">Packing Material</label>
-                    <select id="packingmaterial" class="form-select select2" disabled>
+                    <select id="packingmaterial" class="form-select select2" title="Save product details to enable" disabled>
                         <option selected disabled>Choose...</option>
                         @foreach($packingMaterials as $packingMaterialItem)
                         <option
@@ -241,7 +241,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="overheads" class="form-label">Overheads</label>
-                    <select id="overheads" class="form-select select2" disabled>
+                    <select id="overheads" class="form-select select2" title="Save product details to enable" disabled>
                         <option selected disabled>Choose...</option>
                         @foreach($overheads as $overheadsItem)
                         <option
