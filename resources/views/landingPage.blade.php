@@ -188,7 +188,7 @@
     <div class="left-half">
         <div class="text">
             <img src="./uploads/symbol.png" alt="symbol">
-            <p>Recipe Management <br> System</p>
+            <p>Margin Management <br> System</p>
         </div>
         <div class="description">
             <p>Organize, store, and streamline the preparation and scaling of authentic bakery recipes</p>
