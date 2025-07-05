@@ -100,7 +100,6 @@
                 </div>
             </div>
 
-            @if(isset($pricingData) && $pricingData->isNotEmpty())
             <div class="row mb-4">
                 <!-- Raw Materials Table -->
                 <div class="table-responsive">
@@ -116,8 +115,9 @@
                             </tr>
                         </thead>
                         <tbody id="rawMaterialTable">
-                            @php $rmTotal = 0;
+                            @php
                             $filteredData = collect($pricingData)->unique('rid')->values();
+                            $rmTotal = 0;
                             @endphp
                             @foreach($filteredData as $data)
                             @if($data->rm_name)
@@ -161,11 +161,11 @@
                             @endif
                             @endforeach
 
-                            @if($pricingData->whereNotNull('rm_name')->isEmpty())
+                            <!-- @if($pricingData->whereNotNull('rm_name')->isEmpty())
                             <tr>
-                                <td colspan="6">No records available for Raw Materials</td>
+                                <td colspan="6">No Raw Materials Added</td>
                             </tr>
-                            @endif
+                            @endif -->
                         </tbody>
                     </table>
                     <div class="text-end" style="background-color: #eaf8ff; width:90%;">
@@ -173,7 +173,6 @@
                     </div>
                 </div>
             </div>
-            @endif
 
             <div class="row mb-2">
                 <div class="col-auto">
@@ -242,7 +241,8 @@
                         <tbody id="packingMaterialTable">
                             @php
                             $filteredData = collect($pricingData)->unique('pid')->values();
-                            $pmTotal = 0; @endphp
+                            $pmTotal = 0; 
+                            @endphp
                             @foreach($filteredData as $data)
                             @if($data->pm_name)
                             @php
@@ -285,11 +285,11 @@
                             @endif
                             @endforeach
 
-                            @if($pricingData->whereNotNull('pm_name')->isEmpty())
+                            <!-- @if($pricingData->whereNotNull('pm_name')->isEmpty())
                             <tr>
-                                <td colspan="6">No records available for Packing Materials</td>
+                                <td colspan="6">No Packing Materials Added</td>
                             </tr>
-                            @endif
+                            @endif -->
                         </tbody>
                     </table>
                     <div class="text-end" style="background-color:#F1F1F1; width:90%;">
@@ -423,7 +423,7 @@
                             @endif
                             @empty
                             <tr>
-                                <td colspan="6">No records available for Manual Overheads</td>
+                                <td colspan="6">No Overheads Added</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -523,7 +523,7 @@
                             @endif
                             @empty
                             <tr>
-                                <td colspan="6">No records available for Manual Overheads</td>
+                                <td colspan="6">No Manual Overheads Added</td>
                             </tr>
                             @endforelse
 
@@ -650,23 +650,31 @@
             @endif
 
             <div class="d-flex justify-content-between">
-                <div class=" mb-2">
+                <!-- Total Cost -->
+                <div class="mb-2">
                     <div class="mt-2">
-                        <label for="totalcost" class="form-label">Total Cost (A+B+C):
+                        <label for="totalcost" class="form-label">Total Cost (A+B+C):</label>
                     </div>
                     <div>
-                        <input type="text" class="form-control" id="totalcost" value="{{ ($rmTotal ?: 0) + ($pmTotal ?: 0) + ($ohTotal ?: 0) + ($mohTotal ?: 0) }}" disabled>
+                        <input type="text" class="form-control" id="totalcost"
+                            value="{{ ($rmTotal ?? 0) + ($pmTotal ?? 0) + ($ohTotal ?? 0) + ($mohTotal ?? 0) }}"
+                            disabled>
                     </div>
                 </div>
+
+                <!-- Unit Cost -->
                 <div class="row mb-2">
                     <div class="mt-2">
                         <label for="unitcost" class="form-label">Unit Cost:</label>
                     </div>
                     <div class="col-md-7">
-                        <input type="text" class="form-control" id="singletotalcost" value="{{ $data->rp_output ? round(($rmTotal + $pmTotal + $ohTotal + $mohTotal) / $data->rp_output, 2) : 0 }}" disabled>
+                        <input type="text" class="form-control" id="singletotalcost"
+                            value="{{ ($data->rp_output ?? 0) > 0 ? round((($rmTotal ?? 0) + ($pmTotal ?? 0) + ($ohTotal ?? 0) + ($mohTotal ?? 0)) / $data->rp_output, 2) : 0 }}"
+                            disabled>
                     </div>
                 </div>
             </div>
+
         </div>
     </section>
 </main>
@@ -696,7 +704,7 @@
         if (rpvalue === "" || rpvalue === "Choose...") {
             return false;
         } else if (rpopvalue === "") {
-                return false;
+            return false;
         } else if (rpuomvalue === "" || rpuomvalue === "UoM") {
             return false;
         }
