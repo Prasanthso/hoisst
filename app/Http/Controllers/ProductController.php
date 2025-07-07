@@ -76,16 +76,17 @@ class ProductController extends Controller
                     (
                         (
                             (
-                                SUM(DISTINCT rmr.quantity * rm.price) +
-                                SUM(DISTINCT pmr.quantity * pm.price) +
-                                COALESCE(SUM(DISTINCT ohr.quantity * oh.price), SUM(DISTINCT moh.price))
-                            ) / rp.Output
-                        ) *
-                        (1 + (oc.margin / 100))
-                    ) *
-                    (1 + (pd.tax / 100))
-                ) *
-                (1 + (oc.discount / 100))
+                                COALESCE(SUM(DISTINCT rmr.quantity * rm.price), 0) +
+                    COALESCE(SUM(DISTINCT pmr.quantity * pm.price), 0) +
+                    COALESCE(SUM(DISTINCT ohr.quantity * oh.price), 0, SUM(DISTINCT moh.price), 0)
+                ) / rp.Output
+            ) *
+            (1 + COALESCE(oc.margin, 0) / 100)
+        ) *
+        (1 + COALESCE(pd.tax, 0) / 100)
+    ) *
+    (1 + COALESCE(oc.discount, 0) / 100)
+
                 AS pdCost
             ')
                     )
@@ -161,16 +162,17 @@ class ProductController extends Controller
                     (
                         (
                             (
-                                SUM(DISTINCT rmr.quantity * rm.price) +
-                                SUM(DISTINCT pmr.quantity * pm.price) +
-                                COALESCE(SUM(DISTINCT ohr.quantity * oh.price), SUM(DISTINCT moh.price))
-                            ) / rp.Output
-                        ) *
-                        (1 + (oc.margin / 100))
-                    ) *
-                    (1 + (pd.tax / 100))
-                ) *
-                (1 + (oc.discount / 100))
+                                COALESCE(SUM(DISTINCT rmr.quantity * rm.price), 0) +
+                    COALESCE(SUM(DISTINCT pmr.quantity * pm.price), 0) +
+                    COALESCE(SUM(DISTINCT ohr.quantity * oh.price), 0, SUM(DISTINCT moh.price), 0)
+                ) / rp.Output
+            ) *
+            (1 + COALESCE(oc.margin, 0) / 100)
+        ) *
+        (1 + COALESCE(pd.tax, 0) / 100)
+    ) *
+    (1 + COALESCE(oc.discount, 0) / 100)
+
                 AS pdCost
             ')
                     )
@@ -247,16 +249,17 @@ class ProductController extends Controller
                     (
                         (
                             (
-                                SUM(DISTINCT rmr.quantity * rm.price) +
-                                SUM(DISTINCT pmr.quantity * pm.price) +
-                                COALESCE(SUM(DISTINCT ohr.quantity * oh.price), SUM(DISTINCT moh.price))
-                            ) / rp.Output
-                        ) *
-                        (1 + (oc.margin / 100))
-                    ) *
-                    (1 + (pd.tax / 100))
-                ) *
-                (1 + (oc.discount / 100))
+                                COALESCE(SUM(DISTINCT rmr.quantity * rm.price), 0) +
+                    COALESCE(SUM(DISTINCT pmr.quantity * pm.price), 0) +
+                    COALESCE(SUM(DISTINCT ohr.quantity * oh.price), 0, SUM(DISTINCT moh.price), 0)
+                ) / rp.Output
+            ) *
+            (1 + COALESCE(oc.margin, 0) / 100)
+        ) *
+        (1 + COALESCE(pd.tax, 0) / 100)
+    ) *
+    (1 + COALESCE(oc.discount, 0) / 100)
+
                 AS pdCost
             ')
                 )
@@ -323,16 +326,17 @@ class ProductController extends Controller
                     (
                         (
                             (
-                                SUM(DISTINCT rmr.quantity * rm.price) +
-                                SUM(DISTINCT pmr.quantity * pm.price) +
-                                COALESCE(SUM(DISTINCT ohr.quantity * oh.price), SUM(DISTINCT moh.price))
-                            ) / rp.Output
-                        ) *
-                        (1 + (oc.margin / 100))
-                    ) *
-                    (1 + (pd.tax / 100))
-                ) *
-                (1 + (oc.discount / 100))
+                                COALESCE(SUM(DISTINCT rmr.quantity * rm.price), 0) +
+                    COALESCE(SUM(DISTINCT pmr.quantity * pm.price), 0) +
+                    COALESCE(SUM(DISTINCT ohr.quantity * oh.price), 0, SUM(DISTINCT moh.price), 0)
+                ) / rp.Output
+            ) *
+            (1 + COALESCE(oc.margin, 0) / 100)
+        ) *
+        (1 + COALESCE(pd.tax, 0) / 100)
+    ) *
+    (1 + COALESCE(oc.discount, 0) / 100)
+
                 AS pdCost
             ')
             )
