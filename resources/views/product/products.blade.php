@@ -281,7 +281,7 @@
             categories: row.querySelector('td:nth-child(5)')?.textContent.trim(),
             price: row.querySelector('.price-text')?.textContent.trim(),
             uom: row.querySelector('td:nth-child(7)')?.textContent.trim(),
-            cost: row.querySelector('td:nth-child(8)')?.textContent.trim(),
+            pdCost: parseFloat(row.querySelector('td:nth-child(8)')?.textContent.trim()) || 0,
             status: row.querySelector('td:nth-child(9) .badge')?.textContent.trim()
         };
 
@@ -966,21 +966,21 @@
                 item.category_name7, item.category_name8, item.category_name9,
                 item.category_name10
             ].filter(Boolean).join(', ');
-
+            const cost = item.pdCost ? parseFloat(item.pdCost).toFixed(2) : '0'; // Ensure pdCost is a number
             table.innerHTML += `
                 <tr data-id="${item.id}">
                     <td><input type="checkbox" class="form-check-input row-checkbox" value="${item.id}"></td>
                     <td>${start + index + 1}.</td>
                     <td class="left-align"><a href="/editproduct/${item.id}" style="color: black; font-size:16px; text-decoration: none;">${item.name}</a></td>
                     <td>${item.pdcode}</td>
-                    <td>${categories}</td>
+                    <td>${item.categories}</td>
                     <td class="d-flex justify-content-between align-items-center">
                         <span class="price-text">${item.price}</span>
                         <input type="text" class="form-control price-input d-none" style="width: 80px;" value="${item.price}">
                         <i class="fas fa-eye ms-2 mt-2 eye-icon" style="font-size: 0.8rem; cursor: pointer; color: #007bff;"></i>
                      </td>
                     <td>${item.uom}</td>
-                   <td>${item.pdCost ? item.pdCost.toFixed(2) : '0'}</td>
+                   <td>${cost}</td>
                    <td>
                     <span class="badge" style="background-color: ${item.status.toLowerCase() === 'active' ? 'green' : '#dc3545'}; font-weight: normal;">
                     ${item.status}

@@ -156,7 +156,6 @@ class ProductController extends Controller
                         'c9.itemname as category_name9',
                         'c10.itemname as category_name10',
                         'pd.status',
-
                     DB::raw('
                 (
                     (
@@ -319,22 +318,21 @@ class ProductController extends Controller
                 'c10.itemname as category_name10',
                 'pd.status',
 
-                DB::raw('
-            (
+                    DB::raw('
                 (
                     (
                         (
-                            COALESCE(SUM(DISTINCT rmr.quantity * rm.price), 0) +
-                            COALESCE(SUM(DISTINCT pmr.quantity * pm.price), 0) +
-                            COALESCE(SUM(DISTINCT ohr.quantity * oh.price), 0) +
-                            COALESCE(SUM(DISTINCT moh.price), 0)
-                        ) / rp.Output
+                            (
+                                SUM(DISTINCT rmr.quantity * rm.price) +
+                                SUM(DISTINCT pmr.quantity * pm.price) +
+                                COALESCE(SUM(DISTINCT ohr.quantity * oh.price), SUM(DISTINCT moh.price))
+                            ) / rp.Output
+                        ) *
+                        (1 + (oc.margin / 100))
                     ) *
-                    (1 + COALESCE(oc.margin, 0) / 100)
-                ) *
-                (1 + COALESCE(pd.tax, 0) / 100)
+                (1 + (pd.tax, 0) / 100)
             ) *
-            (1 + COALESCE(oc.markupDiscount, 0) / 100)
+            (1 + (oc.markupDiscount, 0) / 100)
             AS pdCost
         ')
             )
