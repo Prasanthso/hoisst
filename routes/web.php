@@ -197,7 +197,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/check-product-exists', [RecipePricingController::class, 'checkProductExists']);
 
-    Route::get('/recipepricing', [RecipePricingController::class, 'showRecipePricingList'])->name('showRecipePricingList');
+    Route::get('/margincalculator', [RecipePricingController::class, 'showRecipePricingList'])->name('showRecipePricingList');
 
     Route::get('/overallcosting', [OverAllCostingController::class, 'index'])->name('overallcosting.index');
     Route::get('/addoverallcosting', [OverAllCostingController::class, 'create'])->name('overallcosting.create');

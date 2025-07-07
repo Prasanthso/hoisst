@@ -104,9 +104,30 @@
                                             <input type="text" class="form-control mb-2" id="inputTax" name="inputTax" readonly>
                                         </div>
                                         <div class="col-12">
-                                            <label for="inputDiscount" class="form-label">Discount(%)</label>
-                                            <input type="text" class="form-control" id="inputDiscount" name="inputDiscount">
-                                            <div id="DiscountAmt" class="mb-2" style="color:blue;"></div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <label for="inputDiscount" class="form-label">Discount(%)</label>
+                                                    <input type="text" class="form-control" id="inputDiscount" name="inputDiscount">
+
+                                                </div>
+                                                <div class="col-6">
+                                                    <label for="markupDiscount"
+                                                        class="form-label"
+                                                        data-bs-toggle="tooltip"
+                                                        title="The percentage markup calculated from the discount.">
+                                                        Markup
+                                                    </label>
+
+                                                    <input type="text"
+                                                        class="form-control mb-2"
+                                                        id="markupDiscount"
+                                                        name="markupDiscount"
+                                                        readonly
+                                                        data-bs-toggle="tooltip"
+                                                        title="This field shows the calculated markup based on the discount.">
+                                                </div>
+                                                <div id="DiscountAmt" class="mb-2" style="color:blue;"></div>
+                                            </div>
                                         </div>
                                         <div class="col-12" hidden>
                                             <label for="inputSuggRate" class="form-label">Suggested Rate</label>
@@ -213,7 +234,7 @@
         let totalCost = parseFloat(document.getElementById('inputTotalCost').value) || 0;
         let markup = parseFloat(document.getElementById('inputMargin').value) || 0;
         let pertax = parseFloat(document.getElementById('inputTax').value) || 0;
-        let perdiscount = parseFloat(document.getElementById('inputDiscount').value) || 0;
+        let perdiscount = parseFloat(document.getElementById('markupDiscount').value) || 0;
         let recipeOutput = parseFloat(document.getElementById('inputRpoutput').value) || 0;
 
         // Calculate Margin Amount using Markup
@@ -239,19 +260,35 @@
         document.getElementById('inputSuggMrp').value = netTotal;
         document.getElementById('inputSuggRate').value = suggRate;
         document.getElementById('inputSuggRatebf').value = suggRatebf;
-
-        // Debugging Logs
-        console.log("Total Cost:", totalCost);
-        console.log("Markup (%):", markup);
-        console.log("Margin Amount:", marginAmt);
-        console.log("Margin Total:", marginTotal);
-        console.log("Tax Amount:", taxAmt);
-        console.log("Tax Total:", taxTotal);
-        console.log("Discount Amount:", discAmt);
-        console.log("Suggested Rate:", suggRate);
-        console.log("Suggested Rate before Tax:", suggRatebf);
-        console.log("Suggested MRP:", netTotal);
     }
+
+    function calculateDiscountMarkup() {
+        let discount = parseFloat(document.getElementById('inputDiscount').value);
+        let markupField = document.getElementById('markupDiscount');
+        let discountAmtDiv = document.getElementById('DiscountAmt');
+
+        // Optional: Get base price if you want to show amount saved
+        let basePrice = parseFloat(document.getElementById('basePrice')?.value || 0);
+
+        if (!isNaN(discount) && discount < 100 && discount >= 0) {
+            let markup = (discount * 100) / (100 - discount);
+            markupField.value = markup.toFixed(2);
+
+            if (basePrice > 0) {
+                // let discountAmount = (discount / 100) * basePrice;
+                discountAmtDiv.innerHTML = "Discount Amount: ₹" + discountAmount.toFixed(2);
+            } else {
+                discountAmtDiv.innerHTML = "";
+            }
+        } else {
+            markupField.value = "0.00";
+            discountAmtDiv.innerHTML = "";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById('inputDiscount').addEventListener('input', calculateDiscountMarkup);
+    });
 
     document.addEventListener("DOMContentLoaded", () => {
         // Initialize Select2

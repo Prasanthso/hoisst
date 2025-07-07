@@ -25,6 +25,7 @@ class ReportController extends Controller
             pm.margin AS margin,
             oc.suggested_mrp AS S_MRP,
             oc.discount AS discount,
+            oc.markupDiscount AS markupDiscount,
             oc.margin_amt As margin_amt,
             rm_total.RM_IDs,
             rm_total.RM_Names,

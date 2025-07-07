@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>Dashboard - Recipe Management System</title>
+    <title>Dashboard - Margin Management System</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -354,7 +354,7 @@
                             <span>Products</span>
                         </a>
                     </li>
-                    <li data-bs-toggle="tooltip"title="Track all raw materials — purchase price, usage, and vendor-wise data.">
+                    <li data-bs-toggle="tooltip" title="Track all raw materials — purchase price, usage, and vendor-wise data.">
                         <a href="/rawmaterial" class="{{ Request::is('rawmaterial') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
                             <span>Raw Materials</span>
                         </a>
@@ -375,7 +375,7 @@
             <li class="nav-item" data-bs-toggle="tooltip" title="Define how products are made — combining materials, packaging, and overheads.">
                 <a class="nav-link {{ Request::is('receipedetails') || Request::is('addreceipedetails') || Request::is('pricing-records') ? '' : 'collapsed'}} " data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" style="background-color: rgb(186, 234, 249); font-size:17px;text-decoration: none;">
                     <img src="/assets/img/Recipe.svg" alt="recipe Icon" style="width: 1em; height: auto; margin-right:10px;">
-                    <span>Recipe</span><i class="bi bi-chevron-down ms-auto"></i>
+                    <span>Costing</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="forms-nav" class="nav-content collapse {{ Request::is('receipedetails') || Request::is('addreceipedetails') || Request::routeIs('editrecipedetails.edit') || Request::is('pricing-records') || Request::is('pricing') || Request::routeIs('receipepricing.edit') || Request::is('overallcosting') || Request::is('addoverallcosting') || Request::routeIs('overallcosting.edit') ? 'show' :'' }}"
                     data-bs-parent="#sidebar-nav">
@@ -398,9 +398,9 @@
             </li><!-- End Recipe Nav -->
 
             <li class="nav-item" data-bs-toggle="tooltip" title="Set or revise product selling prices and instantly see updated margin calculations.">
-                <a class="nav-link" href="/recipepricing" style="background-color: rgb(186, 234, 249); font-size:17px;">
+                <a class="nav-link" href="/margincalculator" style="background-color: rgb(186, 234, 249); font-size:17px;">
                     <img src="/assets/img/Recipepricing.svg" alt="dashboard Icon" style="width: 1em; height: auto; margin-right: 8px;">
-                    <span>Recipe Pricing</span>
+                    <span>Margin Calculator</span>
                 </a>
             </li>
 
@@ -475,7 +475,7 @@
                 'recipe costing': '/pricing-records',
                 'overall costing': '/overallcosting',
                 'recipe pricing': '/recipepricing',
-                'alert' : '/viewalert',
+                'alert': '/viewalert',
                 'report': '/report'
             };
 
