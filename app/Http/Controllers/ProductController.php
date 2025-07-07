@@ -17,7 +17,7 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-   public function index(Request $request)
+    public function index(Request $request)
     {
         $storeid = $request->session()->get('store_id');
         $categoryitems = CategoryItems::pdCategoryItem($storeid);
@@ -39,20 +39,20 @@ class ProductController extends Controller
                     ->leftJoin('categoryitems as c7', 'pd.category_id7', '=', 'c7.id')
                     ->leftJoin('categoryitems as c8', 'pd.category_id8', '=', 'c8.id')
                     ->leftJoin('categoryitems as c9', 'pd.category_id9', '=', 'c9.id')
-                     ->leftJoin('categoryitems as c10', 'pd.category_id10', '=', 'c10.id')
-                  ->leftJoin('rm_for_recipe as rmr', 'pd.id', '=', 'rmr.product_id')
-                ->leftJoin('pm_for_recipe as pmr', 'pd.id', '=', 'pmr.product_id')
-                ->leftJoin('oh_for_recipe as ohr', 'pd.id', '=', 'ohr.product_id')
-                ->leftJoin('moh_for_recipe as moh', 'pd.id', '=', 'moh.product_id')
-                ->leftJoin('overall_costing as oc', function($join) {
-                    $join->on('pd.id', '=', 'oc.productId')
-                        ->where('oc.status', '=', 'active'); // assuming 1 means active
-                })
-            // ->leftJoin('overall_costing as oc', 'pd.id', '=', 'oc.productId')
-                ->leftJoin('recipe_master as rp', 'pd.id', '=', 'rp.product_id')
-                ->leftJoin('raw_materials as rm', 'rmr.raw_material_id', '=', 'rm.id')
-                        ->leftJoin('packing_materials as pm', 'pmr.packing_material_id', '=', 'pm.id')
-                        ->leftJoin('overheads as oh', 'ohr.overheads_id', '=', 'oh.id')
+                    ->leftJoin('categoryitems as c10', 'pd.category_id10', '=', 'c10.id')
+                    ->leftJoin('rm_for_recipe as rmr', 'pd.id', '=', 'rmr.product_id')
+                    ->leftJoin('pm_for_recipe as pmr', 'pd.id', '=', 'pmr.product_id')
+                    ->leftJoin('oh_for_recipe as ohr', 'pd.id', '=', 'ohr.product_id')
+                    ->leftJoin('moh_for_recipe as moh', 'pd.id', '=', 'moh.product_id')
+                    ->leftJoin('overall_costing as oc', function ($join) {
+                        $join->on('pd.id', '=', 'oc.productId')
+                            ->where('oc.status', '=', 'active'); // assuming 1 means active
+                    })
+                    // ->leftJoin('overall_costing as oc', 'pd.id', '=', 'oc.productId')
+                    ->leftJoin('recipe_master as rp', 'pd.id', '=', 'rp.product_id')
+                    ->leftJoin('raw_materials as rm', 'rmr.raw_material_id', '=', 'rm.id')
+                    ->leftJoin('packing_materials as pm', 'pmr.packing_material_id', '=', 'pm.id')
+                    ->leftJoin('overheads as oh', 'ohr.overheads_id', '=', 'oh.id')
                     ->select(
                         'pd.id',
                         'pd.name',
@@ -71,7 +71,7 @@ class ProductController extends Controller
                         'c10.itemname as category_name10',
                         'pd.status',
 
-                    DB::raw('
+                        DB::raw('
                 (
                     (
                         (
@@ -92,7 +92,7 @@ class ProductController extends Controller
                     // ->where('pd.status', $statusValue) // Filter by active status
                     ->where('pd.store_id', $storeid)
                     ->where('pd.name', 'LIKE', "{$searchValue}%")
-                    ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom','pd.status','c1.itemname','c2.itemname','c3.itemname','c4.itemname','c5.itemname','c6.itemname','c7.itemname','c8.itemname','c9.itemname','c10.itemname','pd.tax','rp.Output','oc.margin','oc.discount')
+                    ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom', 'pd.status', 'c1.itemname', 'c2.itemname', 'c3.itemname', 'c4.itemname', 'c5.itemname', 'c6.itemname', 'c7.itemname', 'c8.itemname', 'c9.itemname', 'c10.itemname', 'pd.tax', 'rp.Output', 'oc.margin', 'oc.discount')
                     ->get();
                 // Return filtered raw materials as JSON response
                 return response()->json([
@@ -102,7 +102,7 @@ class ProductController extends Controller
                 ]);
             }
 
-            if(!empty($selectedCategoryIds)) {
+            if (!empty($selectedCategoryIds)) {
                 $selectedCategoryIds = explode(',', $selectedCategoryIds);
                 $selectedCategoryIds = array_filter($selectedCategoryIds, fn($id) => is_numeric($id) && $id > 0);
 
@@ -126,19 +126,19 @@ class ProductController extends Controller
                     ->leftJoin('categoryitems as c8', 'pd.category_id8', '=', 'c8.id')
                     ->leftJoin('categoryitems as c9', 'pd.category_id9', '=', 'c9.id')
                     ->leftJoin('categoryitems as c10', 'pd.category_id10', '=', 'c10.id')
-                   ->leftJoin('rm_for_recipe as rmr', 'pd.id', '=', 'rmr.product_id')
-                ->leftJoin('pm_for_recipe as pmr', 'pd.id', '=', 'pmr.product_id')
-                ->leftJoin('oh_for_recipe as ohr', 'pd.id', '=', 'ohr.product_id')
-                ->leftJoin('moh_for_recipe as moh', 'pd.id', '=', 'moh.product_id')
-                 ->leftJoin('overall_costing as oc', function($join) {
-                    $join->on('pd.id', '=', 'oc.productId')
-                        ->where('oc.status', '=', 'active'); // assuming 1 means active
-                })
-            // ->leftJoin('overall_costing as oc', 'pd.id', '=', 'oc.productId')
-                ->leftJoin('recipe_master as rp', 'pd.id', '=', 'rp.product_id')
-                ->leftJoin('raw_materials as rm', 'rmr.raw_material_id', '=', 'rm.id')
-                        ->leftJoin('packing_materials as pm', 'pmr.packing_material_id', '=', 'pm.id')
-                        ->leftJoin('overheads as oh', 'ohr.overheads_id', '=', 'oh.id')
+                    ->leftJoin('rm_for_recipe as rmr', 'pd.id', '=', 'rmr.product_id')
+                    ->leftJoin('pm_for_recipe as pmr', 'pd.id', '=', 'pmr.product_id')
+                    ->leftJoin('oh_for_recipe as ohr', 'pd.id', '=', 'ohr.product_id')
+                    ->leftJoin('moh_for_recipe as moh', 'pd.id', '=', 'moh.product_id')
+                    ->leftJoin('overall_costing as oc', function ($join) {
+                        $join->on('pd.id', '=', 'oc.productId')
+                            ->where('oc.status', '=', 'active'); // assuming 1 means active
+                    })
+                    // ->leftJoin('overall_costing as oc', 'pd.id', '=', 'oc.productId')
+                    ->leftJoin('recipe_master as rp', 'pd.id', '=', 'rp.product_id')
+                    ->leftJoin('raw_materials as rm', 'rmr.raw_material_id', '=', 'rm.id')
+                    ->leftJoin('packing_materials as pm', 'pmr.packing_material_id', '=', 'pm.id')
+                    ->leftJoin('overheads as oh', 'ohr.overheads_id', '=', 'oh.id')
                     ->select(
                         'pd.id',
                         'pd.name',
@@ -156,7 +156,7 @@ class ProductController extends Controller
                         'c9.itemname as category_name9',
                         'c10.itemname as category_name10',
                         'pd.status',
-                    DB::raw('
+                        DB::raw('
                 (
                     (
                         (
@@ -174,7 +174,7 @@ class ProductController extends Controller
                 AS pdCost
             ')
                     )
-                        ->where(function ($query) use ($selectedCategoryIds) {
+                    ->where(function ($query) use ($selectedCategoryIds) {
                         $query->whereIn('c1.id', $selectedCategoryIds)
                             ->orWhereIn('c2.id', $selectedCategoryIds)
                             ->orWhereIn('c3.id', $selectedCategoryIds)
@@ -188,7 +188,7 @@ class ProductController extends Controller
                     })
                     // ->where('pd.status', $statusValue) // Filter by active status
                     ->where('pd.store_id', $storeid)
-                     ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom','pd.status','c1.itemname','c2.itemname','c3.itemname','c4.itemname','c5.itemname','c6.itemname','c7.itemname','c8.itemname','c9.itemname','c10.itemname','pd.tax','rp.Output','oc.margin','oc.discount')
+                    ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom', 'pd.status', 'c1.itemname', 'c2.itemname', 'c3.itemname', 'c4.itemname', 'c5.itemname', 'c6.itemname', 'c7.itemname', 'c8.itemname', 'c9.itemname', 'c10.itemname', 'pd.tax', 'rp.Output', 'oc.margin', 'oc.discount')
                     ->orderBy('pd.name', 'asc')
                     ->get();
                 // Return filtered raw materials as JSON response
@@ -198,7 +198,7 @@ class ProductController extends Controller
                     'product' => $product
                 ]);
             }
-              if (!empty($statusValue)) {
+            if (!empty($statusValue)) {
 
                 $product = DB::table('product_master as pd')
                     ->leftJoin('categoryitems as c1', 'pd.category_id1', '=', 'c1.id')
@@ -211,19 +211,19 @@ class ProductController extends Controller
                     ->leftJoin('categoryitems as c8', 'pd.category_id8', '=', 'c8.id')
                     ->leftJoin('categoryitems as c9', 'pd.category_id9', '=', 'c9.id')
                     ->leftJoin('categoryitems as c10', 'pd.category_id10', '=', 'c10.id')
-                ->leftJoin('rm_for_recipe as rmr', 'pd.id', '=', 'rmr.product_id')
-                ->leftJoin('pm_for_recipe as pmr', 'pd.id', '=', 'pmr.product_id')
-                ->leftJoin('oh_for_recipe as ohr', 'pd.id', '=', 'ohr.product_id')
-                ->leftJoin('moh_for_recipe as moh', 'pd.id', '=', 'moh.product_id')
-               ->leftJoin('overall_costing as oc', function($join) {
-                    $join->on('pd.id', '=', 'oc.productId')
-                        ->where('oc.status', '=', 'active'); // assuming 1 means active
-                })
-            // ->leftJoin('overall_costing as oc', 'pd.id', '=', 'oc.productId')
-                ->leftJoin('recipe_master as rp', 'pd.id', '=', 'rp.product_id')
-                ->leftJoin('raw_materials as rm', 'rmr.raw_material_id', '=', 'rm.id')
-                        ->leftJoin('packing_materials as pm', 'pmr.packing_material_id', '=', 'pm.id')
-                        ->leftJoin('overheads as oh', 'ohr.overheads_id', '=', 'oh.id')
+                    ->leftJoin('rm_for_recipe as rmr', 'pd.id', '=', 'rmr.product_id')
+                    ->leftJoin('pm_for_recipe as pmr', 'pd.id', '=', 'pmr.product_id')
+                    ->leftJoin('oh_for_recipe as ohr', 'pd.id', '=', 'ohr.product_id')
+                    ->leftJoin('moh_for_recipe as moh', 'pd.id', '=', 'moh.product_id')
+                    ->leftJoin('overall_costing as oc', function ($join) {
+                        $join->on('pd.id', '=', 'oc.productId')
+                            ->where('oc.status', '=', 'active'); // assuming 1 means active
+                    })
+                    // ->leftJoin('overall_costing as oc', 'pd.id', '=', 'oc.productId')
+                    ->leftJoin('recipe_master as rp', 'pd.id', '=', 'rp.product_id')
+                    ->leftJoin('raw_materials as rm', 'rmr.raw_material_id', '=', 'rm.id')
+                    ->leftJoin('packing_materials as pm', 'pmr.packing_material_id', '=', 'pm.id')
+                    ->leftJoin('overheads as oh', 'ohr.overheads_id', '=', 'oh.id')
                     ->select(
                         'pd.id',
                         'pd.name',
@@ -242,7 +242,7 @@ class ProductController extends Controller
                         'c10.itemname as category_name10',
                         'pd.status',
 
-                    DB::raw('
+                        DB::raw('
                 (
                     (
                         (
@@ -259,10 +259,10 @@ class ProductController extends Controller
                 (1 + (oc.discount / 100))
                 AS pdCost
             ')
-                )
+                    )
                     ->where('pd.status', $statusValue) // Filter by active status
                     ->where('pd.store_id', $storeid)
-                     ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom','pd.status','c1.itemname','c2.itemname','c3.itemname','c4.itemname','c5.itemname','c6.itemname','c7.itemname','c8.itemname','c9.itemname','c10.itemname','pd.tax','rp.Output','oc.margin','oc.discount')
+                    ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom', 'pd.status', 'c1.itemname', 'c2.itemname', 'c3.itemname', 'c4.itemname', 'c5.itemname', 'c6.itemname', 'c7.itemname', 'c8.itemname', 'c9.itemname', 'c10.itemname', 'pd.tax', 'rp.Output', 'oc.margin', 'oc.discount')
                     ->orderBy('pd.name', 'asc')
                     // ->where('pd.name', 'LIKE', "{$searchValue}%")
                     ->get();
@@ -287,14 +287,14 @@ class ProductController extends Controller
             ->leftJoin('categoryitems as c8', 'pd.category_id8', '=', 'c8.id')
             ->leftJoin('categoryitems as c9', 'pd.category_id9', '=', 'c9.id')
             ->leftJoin('categoryitems as c10', 'pd.category_id10', '=', 'c10.id')
-                ->leftJoin('rm_for_recipe as rmr', 'pd.id', '=', 'rmr.product_id')
+            ->leftJoin('rm_for_recipe as rmr', 'pd.id', '=', 'rmr.product_id')
             ->leftJoin('pm_for_recipe as pmr', 'pd.id', '=', 'pmr.product_id')
             ->leftJoin('oh_for_recipe as ohr', 'pd.id', '=', 'ohr.product_id')
             ->leftJoin('moh_for_recipe as moh', 'pd.id', '=', 'moh.product_id')
-            ->leftJoin('overall_costing as oc', function($join) {
-                    $join->on('pd.id', '=', 'oc.productId')
-                        ->where('oc.status', '=', 'active'); // assuming 1 means active
-                })
+            ->leftJoin('overall_costing as oc', function ($join) {
+                $join->on('pd.id', '=', 'oc.productId')
+                    ->where('oc.status', '=', 'active'); // assuming 1 means active
+            })
             // ->leftJoin('overall_costing as oc', 'pd.id', '=', 'oc.productId')
             ->leftJoin('recipe_master as rp', 'pd.id', '=', 'rp.product_id')
             ->leftJoin('raw_materials as rm', 'rmr.raw_material_id', '=', 'rm.id')
@@ -318,7 +318,7 @@ class ProductController extends Controller
                 'c10.itemname as category_name10',
                 'pd.status',
 
-                    DB::raw('
+                DB::raw('
                 (
                     (
                         (
@@ -338,9 +338,9 @@ class ProductController extends Controller
             )
             // ->where('pd.status', $statusValue) // Filter by active status
             ->where('pd.store_id', $storeid)
-             ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom','pd.status','c1.itemname','c2.itemname','c3.itemname','c4.itemname','c5.itemname','c6.itemname','c7.itemname','c8.itemname','c9.itemname','c10.itemname','pd.tax','rp.Output','oc.margin','oc.discount')
-        // ,'rmr.quantity','pmr.quantity','ohr.quantity','rm.price','pm.price','oh.price','moh.price'
-             ->orderBy('pd.name', 'asc')
+            ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom', 'pd.status', 'c1.itemname', 'c2.itemname', 'c3.itemname', 'c4.itemname', 'c5.itemname', 'c6.itemname', 'c7.itemname', 'c8.itemname', 'c9.itemname', 'c10.itemname', 'pd.tax', 'rp.Output', 'oc.margin', 'oc.discount')
+            // ,'rmr.quantity','pmr.quantity','ohr.quantity','rm.price','pm.price','oh.price','moh.price'
+            ->orderBy('pd.name', 'asc')
             ->paginate(10);
 
         return view('product.products', compact('product', 'categoryitems'));
