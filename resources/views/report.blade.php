@@ -157,7 +157,7 @@
                                 $total_perc = ($total * 100) / $report->P_MRP;
                                 $cost = $total + $report->OH_Cost + $report->MOH_Cost;
 
-                                $sellingRate = ($report->P_MRP * 100)/(100 + $report->discount);
+                                $sellingRate = ($report->P_MRP * 100)/(100 + $report->markupDiscount);
                                 $beforeTax = ($sellingRate * 100) / (100 + $report->tax);
                                 $OH_PERC = ($report->OH_Cost + $report->MOH_Cost/$total) * 100;
                                 $MARGINAMOUNT = $beforeTax-$cost;

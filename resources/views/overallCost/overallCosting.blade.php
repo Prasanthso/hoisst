@@ -193,7 +193,7 @@
                         // Convert margin, tax, and discount to numbers
                         const margin = parseFloat(costing.margin) || 0;
                         const tax = parseFloat(costing.tax) || 0;
-                        const discount = parseFloat(costing.discount) || 0;
+                        const discount = parseFloat(costing.markupDiscount) || 0;
 
                         // Calculate values
                         const cost_margin = totalCost * (margin / 100);

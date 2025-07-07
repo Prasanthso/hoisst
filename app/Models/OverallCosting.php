@@ -30,6 +30,7 @@ class OverallCosting extends Model
         'margin_amt',
         'tax',
         'discount',
+        'markupDiscount',
         'sugg_rate',
         'sugg_rate_bf',
         'suggested_mrp',

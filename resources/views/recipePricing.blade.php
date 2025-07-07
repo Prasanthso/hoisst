@@ -68,10 +68,10 @@
                             $cost_with_tax = $cost_with_margin + $tax_amount;
 
                             // Apply discount
-                            $discount_amount = ($cost_with_tax * $report->discount) / 100;
+                            $discount_amount = ($cost_with_tax * $report->markupDiscount) / 100;
                             $S_MRP = $cost_with_tax + $discount_amount;
 
-                            $sellingRate = ($S_MRP * 100)/(100 + $report->discount);
+                            $sellingRate = ($S_MRP * 100)/(100 + $report->markupDiscount);
                             $beforeTax = ($sellingRate * 100) / (100 + $report->tax);
                             $margin = $beforeTax - $cost;
                             $marginPercentage = ($beforeTax > 0) ? ($margin / $beforeTax) * 100 : 0;
@@ -101,7 +101,7 @@
                                 <td class="margin-perc">
                                     {{ $beforeTax > 0 ? number_format((($beforeTax -$cost) / $beforeTax) * 100, 2) . '%' : '0%' }}
                                 </td>
-                                <!-- <td class="d-none discount-value">{{ $report->discount }}</td> -->
+                                <!-- <td class="d-none discount-value">{{ $report->markupDiscount }}</td> -->
                                 @endforeach
 
                                 <!-- Add more rows as needed -->

@@ -29,6 +29,7 @@ return new class extends Migration
             $table->decimal('margin', 10, 2)->default(0);
             $table->decimal('margin_amt', 10, 2)->default(0);
             $table->decimal('discount', 10, 2)->default(0);
+            $table->decimal('markupDiscount', 10, 2)->default(0);
             $table->decimal('sugg_rate', 10, 2)->default(0);
             $table->decimal('sugg_rate_bf', 10, 2)->default(0);
             $table->decimal('suggested_mrp', 10, 2)->default(0);
