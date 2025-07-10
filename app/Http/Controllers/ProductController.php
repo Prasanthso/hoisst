@@ -85,7 +85,7 @@ class ProductController extends Controller
         ) *
         (1 + COALESCE(pd.tax, 0) / 100)
     ) *
-    (1 + COALESCE(oc.discount, 0) / 100)
+    (1 + COALESCE(oc.markupDiscount, 0) / 100)
 
                 AS pdCost
             ')
@@ -93,7 +93,7 @@ class ProductController extends Controller
                     // ->where('pd.status', $statusValue) // Filter by active status
                     ->where('pd.store_id', $storeid)
                     ->where('pd.name', 'LIKE', "{$searchValue}%")
-                    ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom', 'pd.status', 'c1.itemname', 'c2.itemname', 'c3.itemname', 'c4.itemname', 'c5.itemname', 'c6.itemname', 'c7.itemname', 'c8.itemname', 'c9.itemname', 'c10.itemname', 'pd.tax', 'rp.Output', 'oc.margin', 'oc.discount')
+                    ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom', 'pd.status', 'c1.itemname', 'c2.itemname', 'c3.itemname', 'c4.itemname', 'c5.itemname', 'c6.itemname', 'c7.itemname', 'c8.itemname', 'c9.itemname', 'c10.itemname', 'pd.tax', 'rp.Output', 'oc.margin', 'oc.markupDiscount', 'oc.discount')
                     ->get();
                 // Return filtered raw materials as JSON response
                 return response()->json([
@@ -171,7 +171,7 @@ class ProductController extends Controller
         ) *
         (1 + COALESCE(pd.tax, 0) / 100)
     ) *
-    (1 + COALESCE(oc.discount, 0) / 100)
+    (1 + COALESCE(oc.markupDiscount, 0) / 100)
 
                 AS pdCost
             ')
@@ -190,7 +190,7 @@ class ProductController extends Controller
                     })
                     // ->where('pd.status', $statusValue) // Filter by active status
                     ->where('pd.store_id', $storeid)
-                    ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom', 'pd.status', 'c1.itemname', 'c2.itemname', 'c3.itemname', 'c4.itemname', 'c5.itemname', 'c6.itemname', 'c7.itemname', 'c8.itemname', 'c9.itemname', 'c10.itemname', 'pd.tax', 'rp.Output', 'oc.margin', 'oc.discount')
+                    ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom', 'pd.status', 'c1.itemname', 'c2.itemname', 'c3.itemname', 'c4.itemname', 'c5.itemname', 'c6.itemname', 'c7.itemname', 'c8.itemname', 'c9.itemname', 'c10.itemname', 'pd.tax', 'rp.Output', 'oc.margin', 'oc.markupDiscount', 'oc.discount')
                     ->orderBy('pd.name', 'asc')
                     ->get();
                 // Return filtered raw materials as JSON response
@@ -258,14 +258,14 @@ class ProductController extends Controller
         ) *
         (1 + COALESCE(pd.tax, 0) / 100)
     ) *
-    (1 + COALESCE(oc.discount, 0) / 100)
+    (1 + COALESCE(oc.markupDiscount, 0) / 100)
 
                 AS pdCost
             ')
                     )
                     ->where('pd.status', $statusValue) // Filter by active status
                     ->where('pd.store_id', $storeid)
-                    ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom', 'pd.status', 'c1.itemname', 'c2.itemname', 'c3.itemname', 'c4.itemname', 'c5.itemname', 'c6.itemname', 'c7.itemname', 'c8.itemname', 'c9.itemname', 'c10.itemname', 'pd.tax', 'rp.Output', 'oc.margin', 'oc.discount')
+                    ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom', 'pd.status', 'c1.itemname', 'c2.itemname', 'c3.itemname', 'c4.itemname', 'c5.itemname', 'c6.itemname', 'c7.itemname', 'c8.itemname', 'c9.itemname', 'c10.itemname', 'pd.tax', 'rp.Output', 'oc.margin', 'oc.markupDiscount', 'oc.discount')
                     ->orderBy('pd.name', 'asc')
                     // ->where('pd.name', 'LIKE', "{$searchValue}%")
                     ->get();
@@ -335,14 +335,14 @@ class ProductController extends Controller
         ) *
         (1 + COALESCE(pd.tax, 0) / 100)
     ) *
-    (1 + COALESCE(oc.discount, 0) / 100)
+    (1 + COALESCE(oc.markupDiscount, 0) / 100)
 
                 AS pdCost
             ')
             )
             // ->where('pd.status', $statusValue) // Filter by active status
             ->where('pd.store_id', $storeid)
-            ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom', 'pd.status', 'c1.itemname', 'c2.itemname', 'c3.itemname', 'c4.itemname', 'c5.itemname', 'c6.itemname', 'c7.itemname', 'c8.itemname', 'c9.itemname', 'c10.itemname', 'pd.tax', 'rp.Output', 'oc.margin', 'oc.discount')
+            ->groupBy('pd.id', 'pd.name', 'pd.pdcode', 'pd.price', 'pd.uom', 'pd.status', 'c1.itemname', 'c2.itemname', 'c3.itemname', 'c4.itemname', 'c5.itemname', 'c6.itemname', 'c7.itemname', 'c8.itemname', 'c9.itemname', 'c10.itemname', 'pd.tax', 'rp.Output', 'oc.margin', 'oc.markupDiscount', 'oc.discount')
             // ,'rmr.quantity','pmr.quantity','ohr.quantity','rm.price','pm.price','oh.price','moh.price'
             ->orderBy('pd.name', 'asc')
             ->paginate(10);
