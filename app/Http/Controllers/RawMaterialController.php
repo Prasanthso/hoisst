@@ -586,6 +586,7 @@ class RawMaterialController extends Controller
     public function importExcel(Request $request)
     {
         $storeid = $request->session()->get('store_id');
+        try{
         $request->validate([
             'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048'
         ]);
@@ -783,6 +784,10 @@ class RawMaterialController extends Controller
         }
         return back()->with('success',  $message);
         // return back()->with('success', 'Excel file imported successfully!');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'There was an issue importing the Excel file. Please check the file format and try again.');
+        }
     }
 
     public function exportAll(Request $request)

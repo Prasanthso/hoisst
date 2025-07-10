@@ -806,6 +806,8 @@ class ProductController extends Controller
     public function importExcel(Request $request)
     {
         $storeid = $request->session()->get('store_id');
+        try
+        {
         $request->validate([
             'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048'
         ]);
@@ -1019,6 +1021,11 @@ class ProductController extends Controller
                 $message .= ' Skipped rows: ' . implode(' | ', $skippedRows);
             }
             return back()->with('success',  $message);
+        } catch (\Exception $e) {
+            // Handle the error gracefully (e.g., log it and show an error message)
+            // \Log::error('Error importing data: ' . $e->getMessage());
+            return back()->with('error', 'There was an issue importing the Excel file. Please check the file format and try again.');
+        }
     }
 
     public function exportAll(Request $request)
