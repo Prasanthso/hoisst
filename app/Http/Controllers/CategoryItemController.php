@@ -469,7 +469,7 @@ class CategoryItemController extends Controller
           return back()->with('success',  $message);
         //   return back()->with('success', 'Excel file imported successfully!');
         } catch (\Exception $e) {
-            return back()->with('error', 'There was an issue importing the Excel file');
+            return back()->with('error', 'There was an issue importing the Excel file. It might be due to an invalid file format or values. Please check the file and try again.');
         }
     }
 

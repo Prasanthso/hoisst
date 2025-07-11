@@ -30,6 +30,8 @@
         <div class="container mt-5">
             @if(session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
+            @elseif(session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
             <div class="mb-4">
                 <label for="productSelect" id="productSelectLabel" class="form-label">Select Product</label>
@@ -1283,6 +1285,7 @@
         });
 
         importRecipeFile.addEventListener('change', function(e) {
+        try{
             console.log(product_id);
             product_id = productSelect.value;
             if (!product_id) {
@@ -1432,6 +1435,11 @@
             };
 
             reader.readAsText(file);
+        }catch (error) {
+            console.error('Error processing CSV file:', error);
+            alert('There was an issue importing the Excel file. It might be due to an invalid file format or values. Please check the file and try again.');
+            e.target.value = '';
+        }
         });
 
         function updateAmount() {

@@ -753,7 +753,7 @@ class OverheadController extends Controller
         } catch (\Exception $e) {
             // Handle the error gracefully (e.g., log it and show an error message)
             // \Log::error('Error importing Excel file: ' . $e->getMessage());
-            return back()->with('error', 'There was an issue importing the Excel file. Please check the file format and try again.');
+           return back()->with('error', 'There was an issue importing the Excel file. It might be due to an invalid file format or values. Please check the file and try again.');
         }
       }
 
