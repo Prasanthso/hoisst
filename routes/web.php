@@ -6,6 +6,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CategoryItemController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\BulkRecipe;
 use App\Http\Controllers\Auth\PasswordController;
 
 use App\Http\Controllers\DashboardController;
@@ -161,6 +162,11 @@ Route::middleware('auth')->group(function () {
 
     // pricing route
     Route::get('/pricing', [RecipePricingController::class, 'index'])->name('receipepricing.index');
+    Route::get('/bulkrecipe', [BulkRecipe::class, 'index'])->name('receipepricing.bulk');
+
+    Route::post('/upload-bulk-recipe', [BulkRecipe::class, 'importBulkRecipe'])
+        ->name('bulk-recipe.import');
+
     // Route::get('/addreceipedetails', [RecipeController::class, 'create'])->name('addreceipedetails.create');
     // Route::post('/savereceipedetails', [RecipeController::class, 'store'])->name('savereceipedetails.store');
     // // Route::get('/recipe/{id}', [RecipeController::class, 'show'])->name('recipe.show');

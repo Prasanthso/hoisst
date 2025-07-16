@@ -55,7 +55,6 @@
                 <div class="col-md-2 col-sm-10">
                     <label for="recipeUoM" class="form-label">UoM</label>
                     <select id="recipeUoM" class="form-select" name="recipeUoM">
-                        <option selected>UoM</option>
                         <option value="Ltr">Ltr</option>
                         <option value="Kgs">Kgs</option>
                         <option value="Nos">Nos</option>
@@ -1285,161 +1284,161 @@
         });
 
         importRecipeFile.addEventListener('change', function(e) {
-        try{
-            console.log(product_id);
-            product_id = productSelect.value;
-            if (!product_id) {
-                alert('Please select a valid product.');
-                return;
-            }
-            if (!recipevalidation()) return;
+            try {
+                console.log(product_id);
+                product_id = productSelect.value;
+                if (!product_id) {
+                    alert('Please select a valid product.');
+                    return;
+                }
+                if (!recipevalidation()) return;
 
-            const file = e.target.files[0];
-            if (!file) return;
+                const file = e.target.files[0];
+                if (!file) return;
 
-            // Check file extension
-            const validExtension = /\.csv$/i.test(file.name);
-            if (!validExtension) {
-                alert('Invalid file type. Please upload a CSV file. Download the template for the correct format.');
-                e.target.value = '';
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const text = e.target.result;
-                const rows = text.split('\n').map(row => row.trim()).filter(row => row);
-
-                // Validate the header exactly
-                const expectedHeader = 'category,name,quantity,code,uom,price,amount';
-                let headerIndex = rows.findIndex(row => row === expectedHeader);
-                if (headerIndex === -1) {
-                    alert('Invalid CSV format: The header does not match the expected format. Please download the template and use the correct format:\n' + expectedHeader);
+                // Check file extension
+                const validExtension = /\.csv$/i.test(file.name);
+                if (!validExtension) {
+                    alert('Invalid file type. Please upload a CSV file. Download the template for the correct format.');
                     e.target.value = '';
                     return;
                 }
 
-                // Skip rows before the header and process data rows after the header
-                const dataRows = rows.slice(headerIndex + 1).filter(row => row && !row.startsWith('#'));
-                if (dataRows.length === 0) {
-                    alert('No data rows found in the CSV file. Please ensure the file contains data in the correct format.');
-                    e.target.value = '';
-                    return;
-                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    const rows = text.split('\n').map(row => row.trim()).filter(row => row);
 
-                const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                if (!token) {
-                    console.error('CSRF token not found.');
-                    alert('CSRF token not found. Please refresh the page and try again.');
-                    e.target.value = '';
-                    return;
-                }
-
-                const rpoutput = rpoutputInput.value.trim();
-                const rpuom = rpuomInput.value;
-
-                let successCount = 0;
-                let failureCount = 0;
-                const errors = [];
-
-                const processRow = (row, index) => {
-                    const [category, name, quantity, code, uom, price, amount] = row.split(',').map(item => item.trim());
-                    if (!category || !name) {
-                        errors.push(`Row ${index + 1}: Invalid data - missing category or name. Row: ${row}`);
-                        failureCount++;
+                    // Validate the header exactly
+                    const expectedHeader = 'category,name,quantity,code,uom,price,amount';
+                    let headerIndex = rows.findIndex(row => row === expectedHeader);
+                    if (headerIndex === -1) {
+                        alert('Invalid CSV format: The header does not match the expected format. Please download the template and use the correct format:\n' + expectedHeader);
+                        e.target.value = '';
                         return;
                     }
 
-                    try {
-                        if (category === 'raw_material') {
-                            if (!quantity || !code || !uom || !price || !amount) {
-                                throw new Error(`Invalid raw material data - missing required fields. Row: ${row}`);
-                            }
-                            if (isNaN(parseFloat(quantity)) || isNaN(parseFloat(price)) || isNaN(parseFloat(amount))) {
-                                throw new Error(`Invalid raw material data - quantity, price, and amount must be numeric. Row: ${row}`);
-                            }
-                            const rows = Array.from(tableBody.querySelectorAll('tr'));
-                            if (rows.some(row => row.cells[0].textContent === name)) {
-                                throw new Error(`Raw material ${name} is already added.`);
-                            }
-                            const rawMaterialOption = Array.from(rawMaterialSelect.options).find(option => option.text === name);
-                            if (!rawMaterialOption) {
-                                throw new Error(`Raw material ${name} not found in the database.`);
-                            }
-                            const rawMaterialId = rawMaterialOption.value;
-                            addRawMaterial(rawMaterialId, name, parseFloat(quantity), code, uom, parseFloat(price), parseFloat(amount), rpoutput, rpuom, token);
-                            successCount++;
-                        } else if (category === 'packing_material') {
-                            if (!quantity || !code || !uom || !price || !amount) {
-                                throw new Error(`Invalid packing material data - missing required fields. Row: ${row}`);
-                            }
-                            if (isNaN(parseFloat(quantity)) || isNaN(parseFloat(price)) || isNaN(parseFloat(amount))) {
-                                throw new Error(`Invalid packing material data - quantity, price, and amount must be numeric. Row: ${row}`);
-                            }
-                            const rows = Array.from(packingMaterialTable.querySelectorAll('tr'));
-                            if (rows.some(row => row.cells[0].textContent === name)) {
-                                throw new Error(`Packing material ${name} is already added.`);
-                            }
-                            const packingMaterialOption = Array.from(packingMaterialSelect.options).find(option => option.text === name);
-                            if (!packingMaterialOption) {
-                                throw new Error(`Packing material ${name} not found in the database.`);
-                            }
-                            const packingMaterialId = packingMaterialOption.value;
-                            addPackingMaterial(packingMaterialId, name, parseFloat(quantity), code, uom, parseFloat(price), parseFloat(amount), token);
-                            successCount++;
-                        } else if (category === 'overhead') {
-                            if (!quantity || !code || !uom || !price || !amount) {
-                                throw new Error(`Invalid overhead data - missing required fields. Row: ${row}`);
-                            }
-                            if (isNaN(parseFloat(quantity)) || isNaN(parseFloat(price)) || isNaN(parseFloat(amount))) {
-                                throw new Error(`Invalid overhead data - quantity, price, and amount must be numeric. Row: ${row}`);
-                            }
-                            const rows = Array.from(overheadsTable.querySelectorAll('tr'));
-                            if (rows.some(row => row.cells[0].textContent === name)) {
-                                throw new Error(`Overhead ${name} is already added.`);
-                            }
-                            const overheadOption = Array.from(overheadsSelect.options).find(option => option.text === name);
-                            if (!overheadOption) {
-                                throw new Error(`Overhead ${name} not found in the database.`);
-                            }
-                            const overheadId = overheadOption.value;
-                            addOverhead(overheadId, name, parseFloat(quantity), code, uom, parseFloat(price), parseFloat(amount), token);
-                            successCount++;
-                        } else {
-                            throw new Error(`Unknown category: ${category}`);
-                        }
-                    } catch (error) {
-                        errors.push(`Row ${index + 1}: ${error.message}`);
-                        failureCount++;
+                    // Skip rows before the header and process data rows after the header
+                    const dataRows = rows.slice(headerIndex + 1).filter(row => row && !row.startsWith('#'));
+                    if (dataRows.length === 0) {
+                        alert('No data rows found in the CSV file. Please ensure the file contains data in the correct format.');
+                        e.target.value = '';
+                        return;
                     }
+
+                    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    if (!token) {
+                        console.error('CSRF token not found.');
+                        alert('CSRF token not found. Please refresh the page and try again.');
+                        e.target.value = '';
+                        return;
+                    }
+
+                    const rpoutput = rpoutputInput.value.trim();
+                    const rpuom = rpuomInput.value;
+
+                    let successCount = 0;
+                    let failureCount = 0;
+                    const errors = [];
+
+                    const processRow = (row, index) => {
+                        const [category, name, quantity, code, uom, price, amount] = row.split(',').map(item => item.trim());
+                        if (!category || !name) {
+                            errors.push(`Row ${index + 1}: Invalid data - missing category or name. Row: ${row}`);
+                            failureCount++;
+                            return;
+                        }
+
+                        try {
+                            if (category === 'raw_material') {
+                                if (!quantity || !code || !uom || !price || !amount) {
+                                    throw new Error(`Invalid raw material data - missing required fields. Row: ${row}`);
+                                }
+                                if (isNaN(parseFloat(quantity)) || isNaN(parseFloat(price)) || isNaN(parseFloat(amount))) {
+                                    throw new Error(`Invalid raw material data - quantity, price, and amount must be numeric. Row: ${row}`);
+                                }
+                                const rows = Array.from(tableBody.querySelectorAll('tr'));
+                                if (rows.some(row => row.cells[0].textContent === name)) {
+                                    throw new Error(`Raw material ${name} is already added.`);
+                                }
+                                const rawMaterialOption = Array.from(rawMaterialSelect.options).find(option => option.text === name);
+                                if (!rawMaterialOption) {
+                                    throw new Error(`Raw material ${name} not found in the database.`);
+                                }
+                                const rawMaterialId = rawMaterialOption.value;
+                                addRawMaterial(rawMaterialId, name, parseFloat(quantity), code, uom, parseFloat(price), parseFloat(amount), rpoutput, rpuom, token);
+                                successCount++;
+                            } else if (category === 'packing_material') {
+                                if (!quantity || !code || !uom || !price || !amount) {
+                                    throw new Error(`Invalid packing material data - missing required fields. Row: ${row}`);
+                                }
+                                if (isNaN(parseFloat(quantity)) || isNaN(parseFloat(price)) || isNaN(parseFloat(amount))) {
+                                    throw new Error(`Invalid packing material data - quantity, price, and amount must be numeric. Row: ${row}`);
+                                }
+                                const rows = Array.from(packingMaterialTable.querySelectorAll('tr'));
+                                if (rows.some(row => row.cells[0].textContent === name)) {
+                                    throw new Error(`Packing material ${name} is already added.`);
+                                }
+                                const packingMaterialOption = Array.from(packingMaterialSelect.options).find(option => option.text === name);
+                                if (!packingMaterialOption) {
+                                    throw new Error(`Packing material ${name} not found in the database.`);
+                                }
+                                const packingMaterialId = packingMaterialOption.value;
+                                addPackingMaterial(packingMaterialId, name, parseFloat(quantity), code, uom, parseFloat(price), parseFloat(amount), token);
+                                successCount++;
+                            } else if (category === 'overhead') {
+                                if (!quantity || !code || !uom || !price || !amount) {
+                                    throw new Error(`Invalid overhead data - missing required fields. Row: ${row}`);
+                                }
+                                if (isNaN(parseFloat(quantity)) || isNaN(parseFloat(price)) || isNaN(parseFloat(amount))) {
+                                    throw new Error(`Invalid overhead data - quantity, price, and amount must be numeric. Row: ${row}`);
+                                }
+                                const rows = Array.from(overheadsTable.querySelectorAll('tr'));
+                                if (rows.some(row => row.cells[0].textContent === name)) {
+                                    throw new Error(`Overhead ${name} is already added.`);
+                                }
+                                const overheadOption = Array.from(overheadsSelect.options).find(option => option.text === name);
+                                if (!overheadOption) {
+                                    throw new Error(`Overhead ${name} not found in the database.`);
+                                }
+                                const overheadId = overheadOption.value;
+                                addOverhead(overheadId, name, parseFloat(quantity), code, uom, parseFloat(price), parseFloat(amount), token);
+                                successCount++;
+                            } else {
+                                throw new Error(`Unknown category: ${category}`);
+                            }
+                        } catch (error) {
+                            errors.push(`Row ${index + 1}: ${error.message}`);
+                            failureCount++;
+                        }
+                    };
+
+                    // Process each row
+                    dataRows.forEach((row, index) => {
+                        processRow(row, index);
+                    });
+
+                    // Display summary
+                    let summaryMessage = `CSV Import Summary:\n- Successfully imported: ${successCount} rows\n- Failed: ${failureCount} rows`;
+                    if (errors.length > 0) {
+                        summaryMessage += '\n\nErrors encountered:\n' + errors.join('\n');
+                    }
+                    alert(summaryMessage);
+
+                    e.target.value = '';
                 };
 
-                // Process each row
-                dataRows.forEach((row, index) => {
-                    processRow(row, index);
-                });
+                reader.onerror = function() {
+                    alert('Error reading the file. Please ensure the file is a valid CSV and try again.');
+                    e.target.value = '';
+                };
 
-                // Display summary
-                let summaryMessage = `CSV Import Summary:\n- Successfully imported: ${successCount} rows\n- Failed: ${failureCount} rows`;
-                if (errors.length > 0) {
-                    summaryMessage += '\n\nErrors encountered:\n' + errors.join('\n');
-                }
-                alert(summaryMessage);
-
+                reader.readAsText(file);
+            } catch (error) {
+                console.error('Error processing CSV file:', error);
+                alert('There was an issue importing the Excel file. It might be due to an invalid file format or values. Please check the file and try again.');
                 e.target.value = '';
-            };
-
-            reader.onerror = function() {
-                alert('Error reading the file. Please ensure the file is a valid CSV and try again.');
-                e.target.value = '';
-            };
-
-            reader.readAsText(file);
-        }catch (error) {
-            console.error('Error processing CSV file:', error);
-            alert('There was an issue importing the Excel file. It might be due to an invalid file format or values. Please check the file and try again.');
-            e.target.value = '';
-        }
+            }
         });
 
         function updateAmount() {
@@ -1522,9 +1521,9 @@
             const packingMaterialTotal = parseFloat(totalPmCostSpan.textContent) || 0;
             const overheadsTotal = parseFloat(totalOhCostSpan.textContent) || 0;
             const grandTotal = rawMaterialTotal + packingMaterialTotal + overheadsTotal;
-            const recipeOutput = parseFloat(rpoutputInput.value) || 1;
+            const recipeOutput = parseFloat(rpoutputInput.value) || 0;
 
-            const unitCost = grandTotal / recipeOutput;
+            const unitCost = recipeOutput > 0 ? grandTotal / recipeOutput : 0;
             unitCostInput.value = unitCost.toFixed(2);
         }
 
@@ -1596,9 +1595,22 @@
     let savedOutput = null;
     let savedUom = null;
 
+    function recipevalidation() {
+        const product_id = document.getElementById('productSelect').value;
+        const output = document.getElementById('recipeOutput').value.trim();
+        const uom = document.getElementById('recipeUoM').value;
+
+        // Validate product selected, output is positive number, uom selected
+        if (!product_id || product_id === 'Choose...') return false;
+        if (!output || isNaN(output) || Number(output) <= 0) return false;
+        if (!uom || uom === 'UoM') return false;
+
+        return true;
+    }
+
     function recipePricing() {
         const product_id = document.getElementById('productSelect').value;
-        const output = document.getElementById('recipeOutput').value.trim(); // fixed here
+        const output = document.getElementById('recipeOutput').value.trim();
         const uom = document.getElementById('recipeUoM').value.trim();
         const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
@@ -1697,17 +1709,14 @@
             })
             .then(data => {
                 alert(data.message || 'Recipe updated successfully!');
-                // Update saved values
                 savedProductId = product_id;
                 savedOutput = output;
                 savedUom = uom;
 
-                // Disable input fields
                 document.getElementById('productSelect').disabled = true;
                 document.getElementById('recipeOutput').disabled = true;
                 document.getElementById('recipeUoM').disabled = true;
 
-                // Toggle buttons
                 document.getElementById('updateRecipeBtn').style.display = 'none';
                 document.getElementById('cancelRecipeBtn').style.display = 'none';
                 document.getElementById('editRecipeBtn').style.display = 'block';
@@ -1717,9 +1726,6 @@
                 alert('Failed to update recipe: ' + error.message);
             });
     }
-
-
-    // (You can keep `updateRecipe()` the same with similar fixes if needed)
 
     document.addEventListener('DOMContentLoaded', function() {
         const productSelect = document.getElementById('productSelect');
@@ -1789,6 +1795,7 @@
         toggleSaveButton();
     });
 </script>
+
 
 
 <!-- Template Main JS File -->

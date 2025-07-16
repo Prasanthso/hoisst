@@ -16,6 +16,10 @@
             <a href="{{ 'pricing' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
                 <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
             </a>
+
+            <a href="{{ 'bulkrecipe' }}" class='text-decoration-none ps-add-btn text-white py-1 px-4'>
+                <button type="button" class="btn btn-success"><i class="fas fa-plus"></i> Bulk Import</button>
+            </a>
             <!-- </div>-->
         </div>
     </div>

@@ -17,11 +17,12 @@ class RecipeMaster extends Model
         'uom',
         'totalCost',
         'singleCost',
-        'store_id'
+        'status',
+        'store_id',
     ];
 
-    // public function product()
-    // {
-    //     return $this->belongsTo(ProductMaster::class, 'product_id');
-    // }
+    public function product()
+    {
+        return $this->belongsTo(\App\Models\Product::class, 'product_id');
+    }
 }

@@ -377,7 +377,7 @@
                     <img src="/assets/img/Recipe.svg" alt="recipe Icon" style="width: 1em; height: auto; margin-right:10px;">
                     <span>Costing</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
-                <ul id="forms-nav" class="nav-content collapse {{ Request::is('receipedetails') || Request::is('addreceipedetails') || Request::routeIs('editrecipedetails.edit') || Request::is('pricing-records') || Request::is('pricing') || Request::routeIs('receipepricing.edit') || Request::is('overallcosting') || Request::is('addoverallcosting') || Request::routeIs('overallcosting.edit') ? 'show' :'' }}"
+                <ul id="forms-nav" class="nav-content collapse {{ Request::is('receipedetails') || Request::is('addreceipedetails') || Request::routeIs('editrecipedetails.edit') || Request::is('pricing-records') || Request::is('pricing') || Request::routeIs('receipepricing.edit') || Request::is('overallcosting') || Request::is('addoverallcosting') || Request::routeIs('overallcosting.edit') || Request::routeIs('receipepricing.bulk') ? 'show' :'' }}"
                     data-bs-parent="#sidebar-nav">
                     <li data-bs-toggle="tooltip" title="Add ingredients, quantities, and preparation details for accurate costing.">
                         <a href="/receipedetails" class="{{ Request::is('receipedetails') ? 'active' : '' }}" style="background-color: rgb(186, 234, 249); font-size:16px;text-decoration: none;">
