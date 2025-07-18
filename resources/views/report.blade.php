@@ -149,20 +149,6 @@
                             </thead>
                             <tbody id="ReportTable">
                                 @foreach ($reports as $index => $report)
-                                <!-- @php
-                                $rm_perc = $report->RM_Cost * 100 / $report->P_MRP;
-                                $pm_perc = $report->PM_Cost * 100 / $report->P_MRP;
-                                $oh_perc = ($report->RM_Cost + $report->PM_Cost) * $report->PM_Cost / 100;
-                                $total = $report->RM_Cost + $report->PM_Cost;
-                                $total_perc = ($total * 100) / $report->P_MRP;
-                                $cost = $total + $report->OH_Cost + $report->MOH_Cost;
-
-                                $sellingRate = ($report->P_MRP * 100)/(100 + $report->markupDiscount);
-                                $beforeTax = ($sellingRate * 100) / (100 + $report->tax);
-                                $OH_PERC = ($report->OH_Cost + $report->MOH_Cost/$total) * 100;
-                                $MARGINAMOUNT = $beforeTax-$cost;
-                                $marginPerc = ($MARGINAMOUNT/$beforeTax)*100;
-                                @endphp -->
                                 @php
                                 $p_mrp = $report->P_MRP ?: 1; // Prevent division by zero
 
