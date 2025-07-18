@@ -22,7 +22,7 @@ class OverAllCostingController extends Controller
             )
             ->where('overall_costing.status', 'active') // Fetch only active records
             ->where('overall_costing.store_id',$storeid)
-            ->paginate(10000);
+            ->paginate(10);
         return view('overallCost.overallCosting', compact('costings'));
     }
 
