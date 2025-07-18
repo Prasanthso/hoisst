@@ -149,7 +149,7 @@
                             </thead>
                             <tbody id="ReportTable">
                                 @foreach ($reports as $index => $report)
-                                @php
+                                <!-- @php
                                 $rm_perc = $report->RM_Cost * 100 / $report->P_MRP;
                                 $pm_perc = $report->PM_Cost * 100 / $report->P_MRP;
                                 $oh_perc = ($report->RM_Cost + $report->PM_Cost) * $report->PM_Cost / 100;
@@ -162,7 +162,30 @@
                                 $OH_PERC = ($report->OH_Cost + $report->MOH_Cost/$total) * 100;
                                 $MARGINAMOUNT = $beforeTax-$cost;
                                 $marginPerc = ($MARGINAMOUNT/$beforeTax)*100;
+                                @endphp -->
+                                @php
+                                $p_mrp = $report->P_MRP ?: 1; // Prevent division by zero
+
+                                $rm_perc = $report->P_MRP != 0 ? ($report->RM_Cost * 100 / $report->P_MRP) : 0;
+                                $pm_perc = $report->P_MRP != 0 ? ($report->PM_Cost * 100 / $report->P_MRP) : 0;
+
+                                $total = $report->RM_Cost + $report->PM_Cost;
+                                $total_perc = $report->P_MRP != 0 ? ($total * 100 / $report->P_MRP) : 0;
+
+                                $cost = $total + $report->OH_Cost + $report->MOH_Cost;
+
+                                $markup = $report->markupDiscount ?: 0;
+                                $sellingRate = ($markup != -100) ? ($report->P_MRP * 100) / (100 + $markup) : 0;
+
+                                $tax = $report->tax ?: 0;
+                                $beforeTax = ($tax != -100) ? ($sellingRate * 100) / (100 + $tax) : 0;
+
+                                $OH_PERC = $total != 0 ? (($report->OH_Cost + $report->MOH_Cost) / $total) * 100 : 0;
+
+                                $MARGINAMOUNT = $beforeTax - $cost;
+                                $marginPerc = $beforeTax != 0 ? ($MARGINAMOUNT / $beforeTax) * 100 : 0;
                                 @endphp
+
                                 <tr data-rm="{{ strtolower($report->RM_Names) }}" data-pm="{{ strtolower($report->PM_Names) }}">
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $report->Product_Name }}</td>
