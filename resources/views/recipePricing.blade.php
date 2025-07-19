@@ -32,7 +32,8 @@
                         </button> -->
                     </div>
                     <!-- Move table left by wrapping in a div and adjusting margin -->
-                    <div style="margin-left: -20px; width: 100%;">
+
+                    <div style="margin-left: -60px; width: 100%;">
                     <!-- Bordered Table -->
                     <table class="table table-bordered table-responsive" id="reportTable">
                         <thead class="custom-header">
