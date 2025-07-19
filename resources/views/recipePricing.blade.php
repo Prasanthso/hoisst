@@ -4,8 +4,9 @@
 <main id="main" class="main">
 
     <div class="pagetitle d-flex px-4 pt-4 justify-content-between">
-        <h1>Recipe Pricing</h1>
-        <div>
+        <h1>Margin Calculator</h1>
+        <div class="input-group mb-2" style="width: 600px;">
+            <input type="text" id="searchInput" class="form-control me-2" placeholder="Search by Product Name">
             <button type="button" class="btn btn-success" id="exportBtn">
                 <i class="fas fa-file-excel"></i> Export to Excel
             </button>
@@ -30,9 +31,10 @@
                             <i class="fas fa-trash" style="color: red;"></i>
                         </button> -->
                     </div>
-
+                    <!-- Move table left by wrapping in a div and adjusting margin -->
+                    <div style="margin-left: -20px; width: 100%;">
                     <!-- Bordered Table -->
-                    <table class="table table-bordered" id="reportTable">
+                    <table class="table table-bordered table-responsive" id="reportTable">
                         <thead class="custom-header">
                             <tr>
                                 <th scope="col" style="color:white;">S.NO</th>
@@ -107,6 +109,7 @@
                                 <!-- Add more rows as needed -->
                         </tbody>
                     </table>
+                    </div>
                     <!-- Pagination Links -->
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -215,6 +218,22 @@
             const cell = $(this).closest('.editable-mrp');
             cell.find('.mrp-text').addClass('d-none');
             cell.find('.edit-icon').addClass('d-none');
+        });
+
+
+        // Search Functionality by Product Name
+        $('#searchInput').on('keyup', function() {
+            const searchTerm = $(this).val().toLowerCase();
+            $('#reportTable tbody tr').each(function(index) {
+                // Get the product name from a data attribute set in the Blade template
+                // const productName = $(this).data('product-name') ? $(this).data('product-name').toLowerCase() : '';
+            const productName = $(this).find('td:nth-child(2) span').text().toLowerCase();
+            if (productName.indexOf(searchTerm) !== -1) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+            });
         });
 
         // PDF Export Function
