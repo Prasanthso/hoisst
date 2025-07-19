@@ -57,7 +57,7 @@ class BulkRecipe extends Controller
                     ])->first();
 
                     if (!$product) {
-                        $skippedCodes[] = $pdcode . ' (product not found)';
+                        $skippedCodes[] = $pdcode . ' - ' . ($row['B'] ?? 'Unknown Product') . ' (product not found)';
                         $currentRecipe = null;
                         continue;
                     }
@@ -68,7 +68,7 @@ class BulkRecipe extends Controller
                     ])->first();
 
                     if ($existingRecipe) {
-                        $skippedCodes[] = $pdcode . ' (recipe already exists)';
+                        $skippedCodes[] = $pdcode . ' - ' . $product->name . ' (recipe already exists)';
                         $currentRecipe = null;
                         continue;
                     }
@@ -129,7 +129,9 @@ class BulkRecipe extends Controller
                                 'updated_at'      => now(),
                             ]);
                         } else {
-                            $skippedCodes[] = $code;
+                            $rawInactive = \App\Models\RawMaterial::where('rmcode', $code)->first();
+                            $name = $rawInactive ? $rawInactive->name : 'Unknown';
+                            $skippedCodes[] = $code . ' - ' . $name . ' (raw material not found)';
                         }
                         break;
 
@@ -154,7 +156,9 @@ class BulkRecipe extends Controller
                                 'updated_at'          => now(),
                             ]);
                         } else {
-                            $skippedCodes[] = $code;
+                            $pmInactive = \App\Models\PackingMaterial::where('pmcode', $code)->first();
+                            $name = $pmInactive ? $pmInactive->name : 'Unknown';
+                            $skippedCodes[] = $code . ' - ' . $name . ' (packing material not found)';
                         }
                         break;
 
@@ -179,7 +183,9 @@ class BulkRecipe extends Controller
                                 'updated_at'   => now(),
                             ]);
                         } else {
-                            $skippedCodes[] = $code;
+                            $ohInactive = \App\Models\Overhead::where('ohcode', $code)->first();
+                            $name = $ohInactive ? $ohInactive->name : 'Unknown';
+                            $skippedCodes[] = $code . ' - ' . $name . ' (overhead not found)';
                         }
                         break;
                 }

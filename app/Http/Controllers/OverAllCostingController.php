@@ -21,8 +21,7 @@ class OverAllCostingController extends Controller
                 'product_master.name as product_name' // Select product name from product_master
             )
             ->where('overall_costing.status', 'active') // Fetch only active records
-            ->where('overall_costing.store_id',$storeid)
-            ->paginate(10);
+            ->where('overall_costing.store_id',$storeid)->get(); // Retrieve all active overall_costing records
         return view('overallCost.overallCosting', compact('costings'));
     }
 
